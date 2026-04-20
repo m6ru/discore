@@ -152,7 +152,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 - **`profiles` visibility** — a `SELECT` policy must filter: `auth.uid() = id OR visibility = 'public'`. A logged-in user must never be able to read a private profile by querying the REST API directly.
 - **`join_code` is not a secret** — it is a usability gate, not a security mechanism. Security is enforced by RLS on `round_participants`. A user who obtains a code can join the round, which is the intended behaviour.
 - **No client-supplied roles** — there is no admin role in the MVP. No user should be able to modify any field that elevates their own permissions. If a `role` column is added in future, it must only be writable via a server-side trigger or service role, never via the client.
-- **Anon key is public by design** — but with the above RLS policies in place, an unauthenticated request using the anon key must return zero rows from every table.
+- **Publishable key is public by design** — but with the above RLS policies in place, an unauthenticated request using the publishable key must return zero rows from every table.
 
 ---
 
