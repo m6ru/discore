@@ -42,6 +42,12 @@ export default async function HomePage() {
         >
           Create round
         </Link>
+        <Link
+          href="/rounds/invites"
+          className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium"
+        >
+          Round invites
+        </Link>
       </nav>
     </main>
   );

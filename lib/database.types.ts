@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       courses: {
@@ -253,6 +228,58 @@ export type Database = {
           visibility?: string
         }
         Relationships: []
+      }
+      round_invitations: {
+        Row: {
+          created_at: string
+          id: string
+          invited_by: string
+          invited_user_id: string
+          responded_at: string | null
+          round_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invited_by: string
+          invited_user_id: string
+          responded_at?: string | null
+          round_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invited_by?: string
+          invited_user_id?: string
+          responded_at?: string | null
+          round_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "round_invitations_invited_user_id_fkey"
+            columns: ["invited_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "round_invitations_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "rounds"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       round_participants: {
         Row: {
@@ -487,9 +514,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

@@ -7,6 +7,16 @@ type RoundPageProps = {
   params: Promise<{ roundId: string }>;
 };
 
+type InviteRow = {
+  id: string;
+  invited_user_id: string;
+  status: string;
+  created_at: string;
+  profiles: {
+    display_name: string;
+  } | null;
+};
+
 export default async function RoundPage({ params }: RoundPageProps) {
   const { roundId } = await params;
 
@@ -50,6 +60,11 @@ export default async function RoundPage({ params }: RoundPageProps) {
     .select("id, user_id, guest_name, joined_at")
     .eq("round_id", round.id)
     .order("joined_at", { ascending: true });
+  const { data: invites, error: invitesError } = await supabase
+    .from("round_invitations")
+    .select("id, invited_user_id, status, created_at, profiles!round_invitations_invited_user_id_fkey(display_name)")
+    .eq("round_id", round.id)
+    .order("created_at", { ascending: true });
 
   const layoutRow = Array.isArray(round.layouts) ? round.layouts[0] : round.layouts;
   const courseRow = Array.isArray(layoutRow?.courses) ? layoutRow?.courses[0] : layoutRow?.courses;
@@ -93,14 +108,18 @@ export default async function RoundPage({ params }: RoundPageProps) {
         <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
           Failed to load participants: {participantsError.message}
         </p>
+      ) : invitesError ? (
+        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          Failed to load invitations: {invitesError.message}
+        </p>
       ) : (
         <RoundSession
           roundId={round.id}
           roundStatus={round.status}
-          joinCode={round.join_code}
           currentUserId={user.id}
           scorerDisplayName={user.email ?? user.id}
           initialParticipants={participantsForUi}
+          initialInvites={(invites ?? []) as InviteRow[]}
         />
       )}
 

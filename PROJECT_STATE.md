@@ -2,7 +2,7 @@
 
 ## Current Phase
 - Phase 2 complete: Database & Auth Foundation.
-- App/UI work is minimal and intentionally not feature-complete yet.
+- Phase 3 in progress: Draft-first round setup and participant management baseline implemented.
 
 ## Core Stack
 - Next.js (App Router)
@@ -38,6 +38,7 @@ In `supabase/migrations/`:
 3. `20260420185200_seed_courses.sql`
 4. `20260420193000_true_history_hardening.sql`
 5. `20260420195000_fix_round_participants_rls_recursion.sql`
+6. `20260428192554_enforce_single_active_round_per_scorer.sql`
 
 ## Database Status (Verified)
 - Required tables exist:
@@ -61,10 +62,13 @@ In `supabase/migrations/`:
   - `layouts (course_id, slug)`
   - `round_participants (round_id, user_id)` (guest rows unaffected due to null semantics)
 - Round status supports:
+  - `draft`
   - `active`
   - `completed`
   - `abandoned`
-- Default round status: `active`.
+- Default round status: `draft`.
+- Single active round per scorer is enforced via partial unique index:
+  - `rounds_one_active_per_scorer_idx` on `rounds (scorer_id)` where `status = 'active'`
 
 ## RLS Recursion Fix
 - Added `SECURITY DEFINER` helper:
@@ -81,8 +85,22 @@ In `supabase/migrations/`:
   - `npx supabase gen types typescript --linked > lib/database.types.ts`
 
 ## Current App Wiring Snapshot
-- `app/page.tsx` currently performs a basic server query to `courses` (placeholder verification page).
+- `app/page.tsx` is a basic authenticated entry page with links to auth and round creation.
 - Session refresh middleware is in place.
+- Round create flow:
+  - `app/rounds/new/page.tsx`
+  - `app/rounds/new/create-round-form.tsx`
+  - Creates rounds as `draft`, auto-adds scorer as participant, redirects to `/rounds/[roundId]`.
+- Round setup/session flow:
+  - `app/rounds/[roundId]/page.tsx`
+  - `app/rounds/[roundId]/round-session.tsx`
+  - Displays course/layout/holes/par, participant list, join code guidance, guest add form.
+  - Draft actions: Start round, Delete draft.
+  - Active action: Abandon round.
+
+## Near-Term Product Direction
+- Registered-user participation is moving toward invite + confirm flow (pending invitations), rather than direct code-only self-join.
+- Current baseline still supports guest add in setup and join code visibility.
 
 ## Product Decision (Confirmed Sidenote)
 ### Frictionless Onboarding — Option A
