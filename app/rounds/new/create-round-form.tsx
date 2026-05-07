@@ -3,7 +3,6 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { generateJoinCode } from "@/lib/rounds/join-code";
 
 type LayoutOption = {
   id: string;
@@ -11,8 +10,6 @@ type LayoutOption = {
   total_par: number;
   total_distance_m: number;
 };
-
-const MAX_JOIN_CODE_RETRIES = 5;
 
 type Props = {
   layouts: LayoutOption[];
@@ -53,58 +50,50 @@ export function CreateRoundForm({ layouts }: Props) {
         return;
       }
 
-      for (let attempt = 0; attempt < MAX_JOIN_CODE_RETRIES; attempt += 1) {
-        const roundId = crypto.randomUUID();
-        const joinCode = generateJoinCode();
-        const { error: insertError } = await supabase
-          .from("rounds")
-          .insert({
-            id: roundId,
-            layout_id: layoutId,
-            scorer_id: user.id,
-            join_code: joinCode,
-            status: "draft",
-          });
+      const roundId = crypto.randomUUID();
+      const { error: insertError } = await supabase
+        .from("rounds")
+        .insert({
+          id: roundId,
+          layout_id: layoutId,
+          scorer_id: user.id,
+          status: "draft",
+        });
 
-        if (!insertError) {
-          const { error: scorerParticipantError } = await supabase
-            .from("round_participants")
-            .insert({
-              round_id: roundId,
-              user_id: user.id,
-            });
-
-          if (scorerParticipantError && scorerParticipantError.code !== "23505") {
-            setError(
-              `Round created, but failed to add you as participant: ${scorerParticipantError.message}`
-            );
-            return;
-          }
-
-          router.push(`/rounds/${roundId}`);
-          router.refresh();
-          return;
-        }
-
-        if (insertError.code !== "23505") {
-          setError(
-            [
-              `Round create failed: ${insertError.message}`,
-              `code=${insertError.code ?? "n/a"}`,
-              `details=${insertError.details ?? "n/a"}`,
-              `hint=${insertError.hint ?? "n/a"}`,
-            ].join(" | ")
-          );
-          return;
-        }
-
-        if ((insertError.details ?? "").includes("rounds_one_active_per_scorer_idx")) {
+      if (insertError) {
+        if (
+          insertError.code === "23505" &&
+          (insertError.details ?? "").includes("rounds_one_active_per_scorer_idx")
+        ) {
           setError("You already have an active round. Finish it before creating a new one.");
           return;
         }
+
+        setError(
+          [
+            `Round create failed: ${insertError.message}`,
+            `code=${insertError.code ?? "n/a"}`,
+            `details=${insertError.details ?? "n/a"}`,
+            `hint=${insertError.hint ?? "n/a"}`,
+          ].join(" | ")
+        );
+        return;
       }
 
-      setError("Could not generate a unique join code");
+      const { error: scorerParticipantError } = await supabase
+        .from("round_participants")
+        .insert({
+          round_id: roundId,
+          user_id: user.id,
+        });
+
+      if (scorerParticipantError && scorerParticipantError.code !== "23505") {
+        setError(`Round created, but failed to add you as participant: ${scorerParticipantError.message}`);
+        return;
+      }
+
+      router.push(`/rounds/${roundId}`);
+      router.refresh();
     } finally {
       setIsSubmitting(false);
     }

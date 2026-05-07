@@ -77,7 +77,6 @@ create table public.rounds (
   id uuid primary key default gen_random_uuid(),
   scorer_id uuid not null references public.profiles (id) on delete cascade,
   layout_id uuid not null references public.layouts (id) on delete cascade,
-  join_code text not null unique check (join_code ~ '^[A-Z0-9]{6}$'),
   status text not null default 'active' check (status in ('active', 'completed', 'abandoned')),
   starting_hole smallint not null default 1,
   started_at timestamptz not null default now(),

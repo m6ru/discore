@@ -328,7 +328,6 @@ export type Database = {
           completed_at: string | null
           created_at: string
           id: string
-          join_code: string
           layout_id: string
           scorer_id: string
           started_at: string
@@ -340,7 +339,6 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           id?: string
-          join_code: string
           layout_id: string
           scorer_id: string
           started_at?: string
@@ -352,7 +350,6 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           id?: string
-          join_code?: string
           layout_id?: string
           scorer_id?: string
           started_at?: string

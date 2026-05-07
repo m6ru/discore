@@ -43,6 +43,7 @@ In `supabase/migrations/`:
 8. `20260429103500_fix_round_invitation_policy_recursion.sql`
 9. `20260429105500_round_participants_draft_only.sql`
 10. `20260429113000_round_participants_delete_draft.sql`
+11. `20260507093000_remove_round_join_code.sql`
 
 ## Database Status (Verified)
 - Required tables exist:
@@ -104,7 +105,7 @@ In `supabase/migrations/`:
   - `app/rounds/[roundId]/page.tsx`
   - `app/rounds/[roundId]/round-session.tsx`
   - Displays course/layout/holes/par and one unified participants list (scorer + guests + invited users); pending invited users are shown inline as `(pending)`.
-  - Join code is no longer shown in round and invite UI surfaces.
+  - Join code has been removed from app flow and schema; participation is invite/draft based.
   - Add-participant input is visible only in `draft`.
   - Draft actions: Start round, Delete draft, remove non-scorer participants/invites.
   - Start round is blocked while pending invites exist.

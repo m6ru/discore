@@ -103,7 +103,7 @@ Two strictly separate client instances are required due to Next.js App Router's 
 - Fields: hole number, par, distance (metres), notes.
 
 **rounds**
-- Fields: `scorer_id` (FK → profiles), `layout_id` (FK → layouts), `started_at`, `completed_at` (nullable), `status` (`active` / `completed` / `abandoned`), `join_code` (short unique code for joining, e.g. 6 characters).
+- Fields: `scorer_id` (FK → profiles), `layout_id` (FK → layouts), `started_at`, `completed_at` (nullable), `status` (`draft` / `active` / `completed` / `abandoned`).
 - Single-round only for MVP. Tournament/multi-round grouping is a future consideration — reserve a nullable `tournament_id` column to keep the option open without building the feature.
 
 **round_participants**
@@ -120,13 +120,13 @@ Two strictly separate client instances are required due to Next.js App Router's 
 
 ---
 
-## 6. Round Join Flow
+## 6. Round Participation Flow
 
-1. Scorer creates a round → system generates a unique `join_code` (6 alphanumeric characters).
-2. Scorer shares the code or a link (e.g. `/join/ABC123`) with players on the course.
-3. Registered users enter the code → added to `round_participants` with their `user_id` → round appears on their profile dashboard.
-4. Scorer can also add **guests** by name → added to `round_participants` with `guest_name`, null `user_id`.
-5. No confirmation step required — physical presence at the course is the implicit gate (only people the Scorer tells the code to can join).
+1. Scorer creates a round in `draft`.
+2. Scorer invites registered users and/or adds guests in setup.
+3. Invitees accept or decline from the invites page.
+4. Accepted users are added to `round_participants` with their `user_id`; guests are inserted with `guest_name`.
+5. Scorer starts the round only after setup is resolved (no pending invites).
 
 ---
 
@@ -143,14 +143,13 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 | `layouts` | Anyone authenticated. | Service role only. | Service role only. | Not permitted. |
 | `holes` | Anyone authenticated. | Service role only. | Service role only. | Not permitted. |
 | `rounds` | Participant in the round (`round_participants`) or Scorer. | Authenticated users (own rounds). | Scorer only (`scorer_id = auth.uid()`). | Not permitted. |
-| `round_participants` | Members of the same round only. | Authenticated user joining via valid `join_code`, or Scorer adding a guest. | Not permitted. | Not permitted. |
+| `round_participants` | Members of the same round only. | Scorer adds guests/participants in `draft`, or invited user accepts invite while round is `draft`. | Not permitted. | Not permitted. |
 | `hole_scores` | Members of the same round only. | Not permitted directly — Scorer writes via `rounds.scorer_id = auth.uid()` check. | Scorer of the parent round only (`rounds.scorer_id = auth.uid()`). | Not permitted. |
 
 ### Critical policy implementation notes
 
 - **`hole_scores` write policy must join to `rounds`** — the policy must verify `auth.uid() = (SELECT scorer_id FROM rounds WHERE id = hole_scores.round_id)`. Never trust a `scorer_id` value sent from the client.
 - **`profiles` visibility** — a `SELECT` policy must filter: `auth.uid() = id OR visibility = 'public'`. A logged-in user must never be able to read a private profile by querying the REST API directly.
-- **`join_code` is not a secret** — it is a usability gate, not a security mechanism. Security is enforced by RLS on `round_participants`. A user who obtains a code can join the round, which is the intended behaviour.
 - **No client-supplied roles** — there is no admin role in the MVP. No user should be able to modify any field that elevates their own permissions. If a `role` column is added in future, it must only be writable via a server-side trigger or service role, never via the client.
 - **Publishable key is public by design** — but with the above RLS policies in place, an unauthenticated request using the publishable key must return zero rows from every table.
 
