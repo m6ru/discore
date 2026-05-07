@@ -17,6 +17,22 @@ type InviteRow = {
   } | null;
 };
 
+type HoleRow = {
+  id: string;
+  hole_number: number;
+  par: number;
+};
+
+type HoleScoreRow = {
+  id: string;
+  participant_id: string;
+  hole_id: string;
+  strokes: number;
+  ob: number;
+  putts: number | null;
+  fairway_hit: boolean | null;
+};
+
 export default async function RoundPage({ params }: RoundPageProps) {
   const { roundId } = await params;
 
@@ -32,7 +48,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
   const { data: round, error: roundError } = await supabase
     .from("rounds")
     .select(
-      "id, join_code, status, started_at, scorer_id, layout_id, layouts(name, total_par, total_distance_m, courses(name))"
+      "id, status, started_at, scorer_id, layout_id, layouts(name, total_par, total_distance_m, courses(name))"
     )
     .eq("id", roundId)
     .maybeSingle();
@@ -72,6 +88,15 @@ export default async function RoundPage({ params }: RoundPageProps) {
     .from("holes")
     .select("*", { count: "exact", head: true })
     .eq("layout_id", round.layout_id);
+  const { data: holes, error: holesError } = await supabase
+    .from("holes")
+    .select("id, hole_number, par")
+    .eq("layout_id", round.layout_id)
+    .order("hole_number", { ascending: true });
+  const { data: existingScores, error: existingScoresError } = await supabase
+    .from("hole_scores")
+    .select("id, participant_id, hole_id, strokes, ob, putts, fairway_hit")
+    .eq("round_id", round.id);
   const safeParticipants = participants ?? [];
   const hasScorerParticipant = safeParticipants.some((participant) => participant.user_id === user.id);
   const participantsForUi = hasScorerParticipant
@@ -99,8 +124,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
           <span className="font-medium">{layoutRow?.total_par ?? "?"}</span>
         </p>
         <p className="text-sm text-zinc-600">
-          Join code <span className="font-medium">{round.join_code}</span> - Status{" "}
-          <span className="font-medium">{round.status}</span>
+          Status <span className="font-medium">{round.status}</span>
         </p>
       </header>
 
@@ -112,6 +136,14 @@ export default async function RoundPage({ params }: RoundPageProps) {
         <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
           Failed to load invitations: {invitesError.message}
         </p>
+      ) : holesError ? (
+        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          Failed to load holes: {holesError.message}
+        </p>
+      ) : existingScoresError ? (
+        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          Failed to load scores: {existingScoresError.message}
+        </p>
       ) : (
         <RoundSession
           roundId={round.id}
@@ -120,6 +152,8 @@ export default async function RoundPage({ params }: RoundPageProps) {
           scorerDisplayName={user.email ?? user.id}
           initialParticipants={participantsForUi}
           initialInvites={(invites ?? []) as InviteRow[]}
+          holes={(holes ?? []) as HoleRow[]}
+          initialHoleScores={(existingScores ?? []) as HoleScoreRow[]}
         />
       )}
 

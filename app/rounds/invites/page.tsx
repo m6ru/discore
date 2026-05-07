@@ -16,7 +16,7 @@ export default async function RoundInvitesPage() {
 
   const { data: invites, error } = await supabase
     .from("round_invitations")
-    .select("id, round_id, status, created_at, rounds(join_code)")
+    .select("id, round_id, status, created_at")
     .eq("invited_user_id", user.id)
     .eq("status", "pending")
     .order("created_at", { ascending: false });

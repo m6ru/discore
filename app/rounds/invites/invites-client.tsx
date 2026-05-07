@@ -9,9 +9,6 @@ type Invite = {
   round_id: string;
   status: string;
   created_at: string;
-  rounds: {
-    join_code: string;
-  }[] | null;
 };
 
 type Props = {
@@ -77,9 +74,7 @@ export function InvitesClient({ currentUserId, invites }: Props) {
         <ul className="space-y-2">
           {invites.map((invite) => (
             <li key={invite.id} className="rounded border border-zinc-200 p-3">
-              <p className="text-sm">
-                Round code: <span className="font-medium">{invite.rounds?.[0]?.join_code ?? "n/a"}</span>
-              </p>
+              <p className="text-sm font-medium">Round invitation</p>
               <p className="text-xs text-zinc-500">Status: {invite.status}</p>
               <div className="mt-3 flex gap-2">
                 <button
