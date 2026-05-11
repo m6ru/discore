@@ -67,10 +67,6 @@ export default async function RoundPage({ params }: RoundPageProps) {
     notFound();
   }
 
-  if (round.scorer_id !== user.id) {
-    redirect("/?message=Only+the+scorer+can+manage+this+round");
-  }
-
   const { data: participants, error: participantsError } = await supabase
     .from("round_participants")
     .select("id, user_id, guest_name, joined_at")
@@ -97,14 +93,28 @@ export default async function RoundPage({ params }: RoundPageProps) {
     .from("hole_scores")
     .select("id, participant_id, hole_id, strokes, ob, putts, fairway_hit")
     .eq("round_id", round.id);
+  const isScorer = round.scorer_id === user.id;
   const safeParticipants = participants ?? [];
-  const hasScorerParticipant = safeParticipants.some((participant) => participant.user_id === user.id);
+  const isRoundParticipant = safeParticipants.some((participant) => participant.user_id === user.id);
+
+  if (!isScorer && !isRoundParticipant) {
+    redirect("/?message=You+must+be+a+round+participant+to+view+this+round");
+  }
+
+  const { data: scorerProfile } = await supabase
+    .from("profiles")
+    .select("display_name")
+    .eq("id", round.scorer_id)
+    .maybeSingle();
+  const hasScorerParticipant = safeParticipants.some(
+    (participant) => participant.user_id === round.scorer_id
+  );
   const participantsForUi = hasScorerParticipant
     ? safeParticipants
     : [
         {
           id: "scorer-self",
-          user_id: user.id,
+          user_id: round.scorer_id,
           guest_name: null,
           joined_at: round.started_at,
         },
@@ -148,8 +158,10 @@ export default async function RoundPage({ params }: RoundPageProps) {
         <RoundSession
           roundId={round.id}
           roundStatus={round.status}
+          scorerUserId={round.scorer_id}
+          isScorer={isScorer}
           currentUserId={user.id}
-          scorerDisplayName={user.email ?? user.id}
+          scorerDisplayName={scorerProfile?.display_name ?? "Scorer"}
           initialParticipants={participantsForUi}
           initialInvites={(invites ?? []) as InviteRow[]}
           holes={(holes ?? []) as HoleRow[]}

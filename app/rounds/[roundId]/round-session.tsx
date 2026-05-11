@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -56,6 +56,8 @@ type HoleScoreRow = {
 type Props = {
   roundId: string;
   roundStatus: string;
+  scorerUserId: string;
+  isScorer: boolean;
   currentUserId: string;
   scorerDisplayName: string;
   initialParticipants: ParticipantRow[];
@@ -63,6 +65,218 @@ type Props = {
   holes: HoleRow[];
   initialHoleScores: HoleScoreRow[];
 };
+
+function formatVsPar(diff: number): string {
+  if (diff === 0) {
+    return "E";
+  }
+  return diff > 0 ? `+${diff}` : String(diff);
+}
+
+function segmentHoleTitle(segmentHoles: HoleRow[]): string {
+  if (segmentHoles.length === 0) {
+    return "";
+  }
+  const start = segmentHoles[0].hole_number;
+  const end = segmentHoles[segmentHoles.length - 1].hole_number;
+  return `Holes ${start}–${end}`;
+}
+
+function segmentPlayerStats(
+  participantId: string,
+  segmentHoles: HoleRow[],
+  scoreLookup: Map<string, number>
+): { totalStrokes: number; vsPar: number; thru: number } {
+  let totalStrokes = 0;
+  let parForScoredHoles = 0;
+  let thru = 0;
+  for (const h of segmentHoles) {
+    const s = scoreLookup.get(`${participantId}:${h.id}`);
+    if (s !== undefined) {
+      totalStrokes += s;
+      parForScoredHoles += h.par;
+      thru += 1;
+    }
+  }
+  return { totalStrokes, vsPar: totalStrokes - parForScoredHoles, thru };
+}
+
+type ScorecardSegmentProps = {
+  segmentHoles: HoleRow[];
+  allHoles: HoleRow[];
+  scoreLookup: Map<string, number>;
+  scoringParticipants: ParticipantRow[];
+  getParticipantLabel: (participant: ParticipantRow) => string;
+  activeHole: HoleRow | null;
+  roundStatus: string;
+};
+
+function ScorecardSegment({
+  segmentHoles,
+  allHoles,
+  scoreLookup,
+  scoringParticipants,
+  getParticipantLabel,
+  activeHole,
+  roundStatus,
+}: ScorecardSegmentProps) {
+  const segmentLayoutPar = segmentHoles.reduce((sum, h) => sum + h.par, 0);
+  const tableColSpan = segmentHoles.length + 5;
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold tracking-tight text-zinc-900">{segmentHoleTitle(segmentHoles)}</h3>
+      <div className="overflow-x-auto rounded-lg border border-zinc-200 bg-white shadow-sm">
+        <table className="w-max min-w-full border-collapse text-left text-sm">
+          <thead>
+            <tr className="border-b border-zinc-200">
+              <th
+                rowSpan={2}
+                className="sticky left-0 z-20 min-w-[7.5rem] border-b border-r border-zinc-200 bg-zinc-50 px-2.5 py-2.5 align-bottom text-left text-xs font-semibold uppercase tracking-wide text-zinc-600"
+              >
+                Player
+              </th>
+              <th
+                rowSpan={2}
+                className="border-b border-r border-zinc-200 bg-zinc-100 px-2 py-2.5 text-center text-xs font-semibold text-zinc-800"
+                title="Total strokes on all holes with a saved score"
+              >
+                Strokes
+              </th>
+              <th
+                rowSpan={2}
+                className="border-b border-r border-zinc-200 bg-zinc-100 px-2 py-2.5 text-center text-xs font-semibold text-zinc-800"
+                title="Versus par for the full round (holes with scores only)"
+              >
+                +/−
+              </th>
+              {segmentHoles.map((h) => {
+                const isCurrent = roundStatus === "active" && activeHole?.id === h.id;
+                return (
+                  <th
+                    key={h.id}
+                    className={`min-w-[2.75rem] border-b border-zinc-200 px-0.5 py-1.5 text-center text-xs font-semibold tabular-nums ${
+                      isCurrent ? "bg-amber-100 text-amber-950" : "bg-zinc-50 text-zinc-800"
+                    }`}
+                  >
+                    {h.hole_number}
+                  </th>
+                );
+              })}
+              <th
+                rowSpan={2}
+                className="border-b border-l border-r border-zinc-200 bg-emerald-50/80 px-2 py-2.5 text-center text-xs font-semibold text-emerald-950"
+                title="Strokes on the holes in this block only"
+              >
+                Block
+              </th>
+              <th
+                rowSpan={2}
+                className="border-b border-zinc-200 bg-emerald-50/80 px-2 py-2.5 text-center text-xs font-semibold text-emerald-950"
+                title="Versus par for this block only"
+              >
+                +/−
+              </th>
+            </tr>
+            <tr>
+              {segmentHoles.map((h) => {
+                const isCurrent = roundStatus === "active" && activeHole?.id === h.id;
+                return (
+                  <th
+                    key={`par-${h.id}`}
+                    className={`border-b border-zinc-200 px-0.5 py-1 text-center text-[10px] font-medium tabular-nums ${
+                      isCurrent ? "bg-amber-100 text-amber-900" : "bg-zinc-50 text-zinc-500"
+                    }`}
+                  >
+                    P{h.par}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {scoringParticipants.length === 0 ? (
+              <tr>
+                <td colSpan={tableColSpan} className="px-3 py-4 text-center text-sm text-zinc-500">
+                  No scoring players yet.
+                </td>
+              </tr>
+            ) : (
+              scoringParticipants.map((participant) => {
+                const full = segmentPlayerStats(participant.id, allHoles, scoreLookup);
+                const { totalStrokes, vsPar, thru } = segmentPlayerStats(
+                  participant.id,
+                  segmentHoles,
+                  scoreLookup
+                );
+                return (
+                  <tr key={participant.id} className="border-b border-zinc-100 last:border-b-0">
+                    <td className="sticky left-0 z-10 whitespace-nowrap border-r border-zinc-200 bg-white px-2.5 py-2 text-xs font-medium text-zinc-900">
+                      {getParticipantLabel(participant)}
+                    </td>
+                    <td className="border-r border-zinc-100 bg-zinc-50/50 px-2 py-2 text-center text-xs font-semibold tabular-nums text-zinc-900">
+                      {full.thru > 0 ? full.totalStrokes : "—"}
+                    </td>
+                    <td className="border-r border-zinc-100 bg-zinc-50/50 px-2 py-2 text-center text-xs font-semibold tabular-nums text-zinc-800">
+                      {full.thru > 0 ? formatVsPar(full.vsPar) : "—"}
+                    </td>
+                    {segmentHoles.map((h) => {
+                      const strokes = scoreLookup.get(`${participant.id}:${h.id}`);
+                      const isCurrent = roundStatus === "active" && activeHole?.id === h.id;
+                      return (
+                        <td
+                          key={h.id}
+                          className={`px-0.5 py-2 text-center text-xs tabular-nums ${
+                            isCurrent ? "bg-amber-50/90 font-medium text-amber-950" : "text-zinc-800"
+                          }`}
+                        >
+                          {strokes !== undefined ? strokes : "—"}
+                        </td>
+                      );
+                    })}
+                    <td className="border-l border-r border-emerald-100/80 bg-emerald-50/40 px-2 py-2 text-center text-xs font-semibold tabular-nums text-emerald-950">
+                      {thru > 0 ? totalStrokes : "—"}
+                    </td>
+                    <td className="bg-emerald-50/40 px-2 py-2 text-center text-xs font-semibold tabular-nums text-emerald-950">
+                      {thru > 0 ? formatVsPar(vsPar) : "—"}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+          <tfoot>
+            <tr className="border-t border-zinc-200">
+              <td className="sticky left-0 z-10 border-r border-zinc-200 bg-zinc-100 px-2.5 py-2 text-xs font-semibold text-zinc-700">
+                Par
+              </td>
+              <td className="border-r border-zinc-100 bg-zinc-100 px-2 py-2 text-center text-xs text-zinc-400">
+                —
+              </td>
+              <td className="border-r border-zinc-100 bg-zinc-100 px-2 py-2 text-center text-xs text-zinc-400">
+                —
+              </td>
+              {segmentHoles.map((h) => (
+                <td
+                  key={`foot-par-${h.id}`}
+                  className="bg-zinc-100 px-0.5 py-2 text-center text-xs tabular-nums text-zinc-600"
+                >
+                  {h.par}
+                </td>
+              ))}
+              <td className="border-l border-r border-emerald-100 bg-emerald-50/60 px-2 py-2 text-center text-xs font-semibold tabular-nums text-emerald-900">
+                {segmentLayoutPar}
+              </td>
+              <td className="bg-emerald-50/60 px-2 py-2 text-center text-xs text-emerald-800/70">
+                —
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  );
+}
 
 function getFirstIncompleteHoleIndex(
   holes: HoleRow[],
@@ -87,6 +301,8 @@ function getFirstIncompleteHoleIndex(
 export function RoundSession({
   roundId,
   roundStatus,
+  scorerUserId,
+  isScorer,
   currentUserId,
   scorerDisplayName,
   initialParticipants,
@@ -135,14 +351,14 @@ export function RoundSession({
           key: `guest-${participant.id}`,
           label: participant.guest_name,
           isPending: false,
-          canRemove: roundStatus === "draft",
+          canRemove: roundStatus === "draft" && isScorer,
           source: "participant",
           participantId: participant.id,
         });
         continue;
       }
 
-      if (participant.user_id === currentUserId) {
+      if (participant.user_id === scorerUserId) {
         rows.push({
           key: `user-${participant.id}`,
           label: `${scorerDisplayName} (scorer)`,
@@ -159,7 +375,7 @@ export function RoundSession({
         key: `user-${participant.id}`,
         label: inviteNameByUserId.get(participant.user_id ?? "") ?? `Registered user (${participant.user_id})`,
         isPending: false,
-        canRemove: roundStatus === "draft",
+        canRemove: roundStatus === "draft" && isScorer,
         source: "participant",
         participantId: participant.id,
         invitedUserId: participant.user_id ?? undefined,
@@ -178,7 +394,7 @@ export function RoundSession({
         key: `invite-${invite.id}`,
         label: invite.profiles?.display_name ?? invite.invited_user_id,
         isPending: invite.status === "pending",
-        canRemove: roundStatus === "draft",
+        canRemove: roundStatus === "draft" && isScorer,
         source: "invite",
         inviteId: invite.id,
         invitedUserId: invite.invited_user_id,
@@ -186,7 +402,7 @@ export function RoundSession({
     }
 
     return rows;
-  }, [participants, invites, currentUserId, scorerDisplayName, inviteNameByUserId, roundStatus]);
+  }, [participants, invites, scorerUserId, scorerDisplayName, inviteNameByUserId, roundStatus, isScorer]);
 
   const hasPendingInvite = useMemo(
     () => unifiedPlayers.some((player) => player.isPending),
@@ -229,6 +445,37 @@ export function RoundSession({
   const showFinalSummary = roundStatus === "completed" || (roundStatus === "active" && allScoresComplete);
   const showFrontNineSummary = roundStatus === "active" && !showFinalSummary && frontNineComplete;
 
+  const sortedHoles = useMemo(
+    () => [...holes].sort((a, b) => a.hole_number - b.hole_number),
+    [holes]
+  );
+
+  const scoreLookup = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const row of holeScores) {
+      map.set(`${row.participant_id}:${row.hole_id}`, row.strokes);
+    }
+    return map;
+  }, [holeScores]);
+
+  const holeSegments = useMemo(() => {
+    const segments: HoleRow[][] = [];
+    for (let i = 0; i < sortedHoles.length; i += 9) {
+      segments.push(sortedHoles.slice(i, i + 9));
+    }
+    return segments;
+  }, [sortedHoles]);
+
+  const holeProgressDots = useMemo(() => {
+    return sortedHoles.map((h) => {
+      const allScored =
+        scoringParticipants.length > 0 &&
+        scoringParticipants.every((p) => scoreLookup.get(`${p.id}:${h.id}`) !== undefined);
+      const isCurrent = roundStatus === "active" && activeHole?.id === h.id;
+      return { hole: h, allScored, isCurrent };
+    });
+  }, [sortedHoles, scoringParticipants, scoreLookup, activeHole, roundStatus]);
+
   function getStrokeInputValue(participantId: string): string {
     if (!activeHole) {
       return "";
@@ -260,24 +507,27 @@ export function RoundSession({
       .reduce((sum, score) => sum + score.strokes, 0);
   }
 
-  function withScorerParticipant(rows: ParticipantRow[]): ParticipantRow[] {
-    const hasScorer = rows.some((participant) => participant.user_id === currentUserId);
-    if (hasScorer) {
-      return rows;
-    }
+  const withScorerParticipant = useCallback(
+    (rows: ParticipantRow[]): ParticipantRow[] => {
+      const hasScorer = rows.some((participant) => participant.user_id === scorerUserId);
+      if (hasScorer) {
+        return rows;
+      }
 
-    return [
-      {
-        id: "scorer-self",
-        user_id: currentUserId,
-        guest_name: null,
-        joined_at: new Date(0).toISOString(),
-      },
-      ...rows,
-    ];
-  }
+      return [
+        {
+          id: "scorer-self",
+          user_id: scorerUserId,
+          guest_name: null,
+          joined_at: new Date(0).toISOString(),
+        },
+        ...rows,
+      ];
+    },
+    [scorerUserId]
+  );
 
-  async function loadParticipants() {
+  const loadParticipants = useCallback(async () => {
     const { data, error } = await supabase
       .from("round_participants")
       .select("id, user_id, guest_name, joined_at")
@@ -290,9 +540,9 @@ export function RoundSession({
     }
 
     setParticipants(withScorerParticipant(data ?? []));
-  }
+  }, [supabase, roundId, withScorerParticipant]);
 
-  async function loadInvites() {
+  const loadInvites = useCallback(async () => {
     const { data, error } = await supabase
       .from("round_invitations")
       .select("id, invited_user_id, status, created_at, profiles!round_invitations_invited_user_id_fkey(display_name)")
@@ -305,7 +555,52 @@ export function RoundSession({
     }
 
     setInvites((data ?? []) as InviteRow[]);
-  }
+  }, [supabase, roundId]);
+
+  const loadHoleScores = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("hole_scores")
+      .select("id, participant_id, hole_id, strokes, ob, putts, fairway_hit")
+      .eq("round_id", roundId);
+
+    if (error) {
+      setStatus(`Failed to refresh scores: ${error.message}`);
+      return;
+    }
+
+    setHoleScores((data ?? []) as HoleScoreRow[]);
+  }, [supabase, roundId]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`round-session:${roundId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "round_participants", filter: `round_id=eq.${roundId}` },
+        () => {
+          void loadParticipants();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "round_invitations", filter: `round_id=eq.${roundId}` },
+        () => {
+          void loadInvites();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "hole_scores", filter: `round_id=eq.${roundId}` },
+        () => {
+          void loadHoleScores();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [supabase, roundId, loadParticipants, loadInvites, loadHoleScores]);
 
   useEffect(() => {
     const query = participantName.trim();
@@ -344,6 +639,10 @@ export function RoundSession({
 
   async function onAddParticipant(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!isScorer) {
+      return;
+    }
 
     if (roundStatus !== "draft") {
       setStatus("Participants can only be changed while the round is in draft.");
@@ -405,6 +704,10 @@ export function RoundSession({
   }
 
   async function onStartRound() {
+    if (!isScorer) {
+      return;
+    }
+
     setIsTransitioning(true);
     setStatus(null);
 
@@ -427,6 +730,10 @@ export function RoundSession({
   }
 
   async function onDeleteDraft() {
+    if (!isScorer) {
+      return;
+    }
+
     const confirmed = window.confirm("Delete this draft round?");
     if (!confirmed) {
       return;
@@ -447,6 +754,10 @@ export function RoundSession({
   }
 
   async function onAbandonRound() {
+    if (!isScorer) {
+      return;
+    }
+
     const confirmed = window.confirm("Abandon this round?");
     if (!confirmed) {
       return;
@@ -470,6 +781,10 @@ export function RoundSession({
   }
 
   async function onRemovePlayer(player: UnifiedPlayer) {
+    if (!isScorer) {
+      return;
+    }
+
     if (roundStatus !== "draft" || !player.canRemove) {
       return;
     }
@@ -522,6 +837,10 @@ export function RoundSession({
   }
 
   async function saveCurrentHoleScores() {
+    if (!isScorer) {
+      return false;
+    }
+
     if (!activeHole) {
       return false;
     }
@@ -642,7 +961,9 @@ export function RoundSession({
 
   return (
     <section className="space-y-5 rounded-lg border border-zinc-200 p-4">
-      <h2 className="text-lg font-semibold">Participants</h2>
+      <h2 className="text-lg font-semibold">Round</h2>
+
+      <h3 className="text-base font-semibold text-zinc-800">Participants</h3>
 
       <div className="space-y-2">
         <h3 className="text-sm font-medium text-zinc-700">Players</h3>
@@ -674,7 +995,7 @@ export function RoundSession({
         ) : null}
       </div>
 
-      {roundStatus === "draft" ? (
+      {roundStatus === "draft" && isScorer ? (
         <form onSubmit={onAddParticipant} className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <label className="flex-1 space-y-1 text-sm">
             <span>Player name</span>
@@ -756,7 +1077,7 @@ export function RoundSession({
               </li>
             ))}
           </ul>
-          {roundStatus === "active" ? (
+          {roundStatus === "active" && isScorer ? (
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
@@ -774,22 +1095,56 @@ export function RoundSession({
       ) : null}
 
       {roundStatus === "active" && !showFinalSummary ? (
-        <div className="space-y-3 rounded-md border border-zinc-200 p-3">
-          <h3 className="text-sm font-semibold text-zinc-800">Scoring</h3>
+        <div
+          className={`rounded-2xl border shadow-sm ${
+            isScorer && canScore
+              ? "border-zinc-200/90 bg-gradient-to-b from-white to-zinc-50 p-5 sm:p-6"
+              : "border-zinc-200 bg-zinc-50/40 p-4"
+          }`}
+        >
           {!canScore ? (
             <p className="text-sm text-zinc-500">No participants available for scoring.</p>
-          ) : (
-            <>
-              <p className="text-sm text-zinc-700">
-                Hole <span className="font-medium">{activeHole?.hole_number}</span> of{" "}
-                <span className="font-medium">{holes.length}</span> - Par{" "}
-                <span className="font-medium">{activeHole?.par}</span>
-              </p>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {scoringParticipants.map((participant) => {
-                  return (
-                    <label key={participant.id} className="space-y-1 text-sm">
-                      <span>{getParticipantLabel(participant)}</span>
+          ) : isScorer ? (
+            activeHole ? (
+              <div className="space-y-6">
+                <div className="text-center sm:text-left">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-400">Enter scores</p>
+                  <div className="mt-2 flex flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-3">
+                    <p className="text-4xl font-semibold tabular-nums tracking-tight text-zinc-900">
+                      {activeHole.hole_number}
+                      <span className="text-xl font-normal text-zinc-400"> / {holes.length}</span>
+                    </p>
+                    <span className="hidden h-6 w-px bg-zinc-200 sm:inline-block" aria-hidden />
+                    <p className="text-base text-zinc-500">
+                      Par <span className="font-semibold text-zinc-800">{activeHole.par}</span>
+                    </p>
+                  </div>
+                </div>
+
+                {sortedHoles.length > 0 ? (
+                  <div className="flex flex-wrap items-center justify-center gap-1.5 sm:justify-start" aria-hidden>
+                    {holeProgressDots.map(({ hole, allScored, isCurrent }) => (
+                      <span
+                        key={hole.id}
+                        title={`Hole ${hole.hole_number}${allScored ? " — saved" : ""}${isCurrent ? " — current" : ""}`}
+                        className={`h-2.5 w-2.5 shrink-0 rounded-full transition-colors ${
+                          isCurrent
+                            ? "bg-amber-400 ring-2 ring-amber-300/80 ring-offset-2 ring-offset-white"
+                            : allScored
+                              ? "bg-emerald-500"
+                              : "bg-zinc-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                ) : null}
+
+                <div className="space-y-4">
+                  {scoringParticipants.map((participant) => (
+                    <label key={participant.id} className="block">
+                      <span className="mb-1.5 block text-xs font-medium text-zinc-500">
+                        {getParticipantLabel(participant)}
+                      </span>
                       <input
                         type="number"
                         inputMode="numeric"
@@ -799,43 +1154,51 @@ export function RoundSession({
                         onChange={(event) =>
                           setDraftStrokeInputs((prev) => ({
                             ...prev,
-                            [`${activeHole?.id ?? "none"}:${participant.id}`]: event.target.value,
+                            [`${activeHole.id}:${participant.id}`]: event.target.value,
                           }))
                         }
-                        className="w-full rounded border border-zinc-300 px-3 py-2"
-                        placeholder="Strokes"
+                        className="h-14 w-full rounded-xl border-2 border-zinc-200 bg-white px-4 text-center text-2xl font-semibold tabular-nums text-zinc-900 shadow-inner outline-none transition-colors placeholder:text-zinc-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15"
+                        placeholder="—"
+                        autoComplete="off"
                       />
                     </label>
-                  );
-                })}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {currentHoleIndex > 0 ? (
+                  ))}
+                </div>
+
+                <div className="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:flex-wrap sm:justify-end">
+                  {currentHoleIndex > 0 ? (
+                    <button
+                      type="button"
+                      onClick={onPreviousHole}
+                      disabled={isSubmitting}
+                      className="rounded-xl border border-zinc-200 bg-white px-5 py-3 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 disabled:opacity-60"
+                    >
+                      Back
+                    </button>
+                  ) : null}
                   <button
                     type="button"
-                    onClick={onPreviousHole}
+                    onClick={() => void onSaveAndAdvanceHole()}
                     disabled={isSubmitting}
-                    className="rounded border border-zinc-300 px-4 py-2 text-sm font-medium disabled:opacity-60"
+                    className="rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-emerald-700 disabled:opacity-60"
                   >
-                    Previous hole
+                    {isSubmitting ? "Saving…" : isLastHole ? "Save scores" : "Save & next hole"}
                   </button>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={() => void onSaveAndAdvanceHole()}
-                  disabled={isSubmitting}
-                  className="rounded border border-zinc-300 px-4 py-2 text-sm font-medium disabled:opacity-60"
-                >
-                  {isSubmitting ? "Saving..." : isLastHole ? "Save scores" : "Save & next hole"}
-                </button>
+                </div>
               </div>
-            </>
+            ) : null
+          ) : (
+            <p className="text-sm text-zinc-600">
+              Current hole: <span className="font-medium">{activeHole?.hole_number}</span> of{" "}
+              <span className="font-medium">{holes.length}</span> (par {activeHole?.par}). Follow the scorecard below
+              for hole-by-hole scores.
+            </p>
           )}
         </div>
       ) : null}
 
       <div className="flex flex-wrap gap-2 pt-2">
-        {roundStatus === "draft" ? (
+        {roundStatus === "draft" && isScorer ? (
           <>
             <button
               type="button"
@@ -856,7 +1219,7 @@ export function RoundSession({
           </>
         ) : null}
 
-        {roundStatus === "active" ? (
+        {roundStatus === "active" && isScorer ? (
           <button
             type="button"
             onClick={onAbandonRound}
@@ -868,10 +1231,38 @@ export function RoundSession({
         ) : null}
       </div>
 
-      {roundStatus === "draft" && hasPendingInvite ? (
+      {roundStatus === "draft" && hasPendingInvite && isScorer ? (
         <p className="text-xs text-zinc-500">
           Resolve pending invitations (accept or remove) before starting the round.
         </p>
+      ) : null}
+
+      {holeSegments.length > 0 ? (
+        <div className="space-y-10 border-t border-zinc-200 pt-8">
+          <div>
+            <h3 className="text-base font-semibold tracking-tight text-zinc-900">Scorecard</h3>
+            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-zinc-500">
+              Up to nine holes per table. <span className="font-medium text-zinc-600">Strokes</span> and the first{" "}
+              <span className="font-medium text-zinc-600">+/−</span> are for the full round;{" "}
+              <span className="font-medium text-emerald-800">Block</span> columns count only that section. Scroll
+              sideways on narrow screens.
+            </p>
+          </div>
+          {holeSegments.map((segment, idx) => (
+            <ScorecardSegment
+              key={`seg-${idx}-${segment[0]?.id ?? idx}`}
+              segmentHoles={segment}
+              allHoles={sortedHoles}
+              scoreLookup={scoreLookup}
+              scoringParticipants={scoringParticipants}
+              getParticipantLabel={getParticipantLabel}
+              activeHole={activeHole}
+              roundStatus={roundStatus}
+            />
+          ))}
+        </div>
+      ) : sortedHoles.length === 0 ? (
+        <p className="text-sm text-zinc-500">No holes loaded for this layout.</p>
       ) : null}
     </section>
   );

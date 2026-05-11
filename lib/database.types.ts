@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -11,6 +11,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -202,29 +227,41 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          birth_year: number | null
+          city: string | null
           created_at: string
           date_of_birth: string | null
           display_name: string
+          first_name: string | null
           gender: string | null
           id: string
+          last_name: string | null
           visibility: string
         }
         Insert: {
           avatar_url?: string | null
+          birth_year?: number | null
+          city?: string | null
           created_at?: string
           date_of_birth?: string | null
           display_name: string
+          first_name?: string | null
           gender?: string | null
           id: string
+          last_name?: string | null
           visibility?: string
         }
         Update: {
           avatar_url?: string | null
+          birth_year?: number | null
+          city?: string | null
           created_at?: string
           date_of_birth?: string | null
           display_name?: string
+          first_name?: string | null
           gender?: string | null
           id?: string
+          last_name?: string | null
           visibility?: string
         }
         Relationships: []
@@ -379,7 +416,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_round_invite: {
+        Args: { p_round_id: string; p_user_id: string }
+        Returns: boolean
+      }
       is_round_member: {
+        Args: { p_round_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_round_scorer: {
         Args: { p_round_id: string; p_user_id: string }
         Returns: boolean
       }
@@ -511,6 +556,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

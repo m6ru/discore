@@ -2,7 +2,7 @@
 
 ## Current Phase
 - Phase 2 complete: Database & Auth Foundation.
-- Phase 3 in progress: Draft-first lifecycle, invite flow, and active-round scorer workflow are implemented; observer/live scoring visibility and polish remain.
+- Phase 3 in progress: Draft-first lifecycle, invite flow, active-round scorer workflow, and observer read-only round visibility are implemented; realtime live updates and polish remain.
 
 ## Core Stack
 - Next.js (App Router)
@@ -95,7 +95,7 @@ In `supabase/migrations/`:
   - `npx supabase gen types typescript --linked > lib/database.types.ts`
 
 ## Current App Wiring Snapshot
-- `app/page.tsx` is a basic authenticated entry page with links to auth and round creation.
+- `app/page.tsx` is the hub entry page for signed-in/signed-out users, with primary round actions and inline pending invite actions for signed-in users.
 - Session refresh middleware is in place.
 - Round create flow:
   - `app/rounds/new/page.tsx`
@@ -104,7 +104,9 @@ In `supabase/migrations/`:
 - Round setup/session flow:
   - `app/rounds/[roundId]/page.tsx`
   - `app/rounds/[roundId]/round-session.tsx`
+  - Round page access is available to scorer and accepted participants; non-participants are redirected.
   - Displays course/layout/holes/par and one unified participants list (scorer + guests + invited users); pending invited users are shown inline as `(pending)`.
+  - Observer mode is read-only and hides scorer controls.
   - Join code has been removed from app flow and schema; participation is invite/draft based.
   - Add-participant input is visible only in `draft`.
   - Draft actions: Start round, Delete draft, remove non-scorer participants/invites.
@@ -114,15 +116,14 @@ In `supabase/migrations/`:
   - End UX: final read-only round summary appears after all holes are scored, with explicit confirmation to end round; completed rounds are read-only.
   - Active action: Abandon round.
 - Round invitations flow:
-  - `app/rounds/invites/page.tsx`
-  - `app/rounds/invites/invites-client.tsx`
-  - Invitee accepts/declines pending invitations.
+  - Pending invites are surfaced inline on the home hub (`app/page.tsx`) via `app/home-invites.tsx`.
+  - Invitee accepts/declines directly from hub.
   - Accept path inserts `round_participants` first, then updates invitation status to preserve consistency.
 
 ## Near-Term Product Direction
-- Registered-user participation uses invite + confirm flow with pending invitations and a dedicated invites page.
+- Registered-user participation uses invite + confirm flow with pending invitations handled directly from the home hub.
 - Guest add in setup remains supported.
-- Next implementation target in Phase 3: observer/read visibility and realtime behavior during active rounds, plus scoring UX polish.
+- Next implementation target in Phase 3: realtime score updates during active rounds, plus scoring UX polish.
 
 ## Product Decision (Confirmed Sidenote)
 ### Frictionless Onboarding — Option A
