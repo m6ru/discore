@@ -4,17 +4,30 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-type Invite = {
+export type InviteWithContext = {
   id: string;
   round_id: string;
-  status: string;
   created_at: string;
+  course_name: string | null;
+  layout_name: string | null;
+  inviter_display_name: string | null;
 };
 
 type Props = {
   currentUserId: string;
-  invites: Invite[];
+  invites: InviteWithContext[];
 };
+
+function formatDateTime(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export function HomeInvites({ currentUserId, invites }: Props) {
   const supabase = useMemo(() => createClient(), []);
@@ -22,7 +35,10 @@ export function HomeInvites({ currentUserId, invites }: Props) {
   const [status, setStatus] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  async function onRespond(invite: Invite, nextStatus: "accepted" | "declined") {
+  async function onRespond(
+    invite: InviteWithContext,
+    nextStatus: "accepted" | "declined"
+  ) {
     setBusyId(invite.id);
     setStatus(null);
 
@@ -76,8 +92,16 @@ export function HomeInvites({ currentUserId, invites }: Props) {
       <ul className="space-y-2">
         {invites.map((invite) => (
           <li key={invite.id} className="rounded border border-zinc-200 p-3">
-            <p className="text-sm font-medium">Round invitation</p>
-            <p className="text-xs text-zinc-500">Round {invite.round_id.slice(0, 8)}</p>
+            <p className="text-sm font-medium text-zinc-900">
+              {invite.course_name ?? "Unknown course"}
+            </p>
+            <p className="text-xs text-zinc-600">
+              {invite.layout_name ?? "Unknown layout"}
+            </p>
+            <p className="mt-1 text-xs text-zinc-500">
+              Invited by {invite.inviter_display_name ?? "the scorer"} ·{" "}
+              {formatDateTime(invite.created_at)}
+            </p>
             <div className="mt-3 flex gap-2">
               <button
                 type="button"

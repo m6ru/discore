@@ -1,8 +1,54 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import {
+  formatVsPar,
+  getFirstIncompleteHoleIndex,
+  getTotalStrokes,
+  segmentPlayerStats,
+} from "@/lib/scoring/stats";
+import { makeScoreLookupKey } from "@/lib/scoring/types";
+
+const LEGACY_PENDING_QUEUE_PREFIX = "discore_pending_queue";
+
+function clearLegacyPendingQueueStorage(roundId: string): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+  try {
+    window.localStorage.removeItem(`${LEGACY_PENDING_QUEUE_PREFIX}:${roundId}`);
+  } catch {
+    /* ignore */
+  }
+}
+
+function mergeHoleScoresByCell(
+  base: HoleScoreRow[],
+  incoming: HoleScoreRow[]
+): HoleScoreRow[] {
+  const next = [...base];
+  for (const row of incoming) {
+    const idx = next.findIndex(
+      (s) =>
+        s.participant_id === row.participant_id && s.hole_id === row.hole_id
+    );
+    if (idx >= 0) {
+      next[idx] = row;
+    } else {
+      next.push(row);
+    }
+  }
+  return next;
+}
 
 type ParticipantRow = {
   id: string;
@@ -48,8 +94,7 @@ type HoleScoreRow = {
   participant_id: string;
   hole_id: string;
   strokes: number;
-  ob: number;
-  putts: number | null;
+  ob: boolean;
   fairway_hit: boolean | null;
 };
 
@@ -66,13 +111,6 @@ type Props = {
   initialHoleScores: HoleScoreRow[];
 };
 
-function formatVsPar(diff: number): string {
-  if (diff === 0) {
-    return "E";
-  }
-  return diff > 0 ? `+${diff}` : String(diff);
-}
-
 function segmentHoleTitle(segmentHoles: HoleRow[]): string {
   if (segmentHoles.length === 0) {
     return "";
@@ -80,25 +118,6 @@ function segmentHoleTitle(segmentHoles: HoleRow[]): string {
   const start = segmentHoles[0].hole_number;
   const end = segmentHoles[segmentHoles.length - 1].hole_number;
   return `Holes ${start}–${end}`;
-}
-
-function segmentPlayerStats(
-  participantId: string,
-  segmentHoles: HoleRow[],
-  scoreLookup: Map<string, number>
-): { totalStrokes: number; vsPar: number; thru: number } {
-  let totalStrokes = 0;
-  let parForScoredHoles = 0;
-  let thru = 0;
-  for (const h of segmentHoles) {
-    const s = scoreLookup.get(`${participantId}:${h.id}`);
-    if (s !== undefined) {
-      totalStrokes += s;
-      parForScoredHoles += h.par;
-      thru += 1;
-    }
-  }
-  return { totalStrokes, vsPar: totalStrokes - parForScoredHoles, thru };
 }
 
 type ScorecardSegmentProps = {
@@ -221,7 +240,7 @@ function ScorecardSegment({
                       {full.thru > 0 ? formatVsPar(full.vsPar) : "—"}
                     </td>
                     {segmentHoles.map((h) => {
-                      const strokes = scoreLookup.get(`${participant.id}:${h.id}`);
+                      const strokes = scoreLookup.get(makeScoreLookupKey(participant.id, h.id));
                       const isCurrent = roundStatus === "active" && activeHole?.id === h.id;
                       return (
                         <td
@@ -278,26 +297,6 @@ function ScorecardSegment({
   );
 }
 
-function getFirstIncompleteHoleIndex(
-  holes: HoleRow[],
-  participants: ParticipantRow[],
-  scores: HoleScoreRow[]
-): number {
-  const scoringParticipants = participants.filter((participant) => participant.id !== "scorer-self");
-  if (holes.length === 0 || scoringParticipants.length === 0) {
-    return 0;
-  }
-
-  const firstIncompleteIndex = holes.findIndex((hole) =>
-    scoringParticipants.some(
-      (participant) =>
-        !scores.some((score) => score.hole_id === hole.id && score.participant_id === participant.id)
-    )
-  );
-
-  return firstIncompleteIndex === -1 ? holes.length - 1 : firstIncompleteIndex;
-}
-
 export function RoundSession({
   roundId,
   roundStatus,
@@ -321,11 +320,32 @@ export function RoundSession({
   const [searchResults, setSearchResults] = useState<ProfileSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState<ProfileSearchResult | null>(null);
+  // Must match SSR output on first paint; merge `localStorage` queue in useLayoutEffect (client only).
   const [holeScores, setHoleScores] = useState<HoleScoreRow[]>(initialHoleScores);
   const [currentHoleIndex, setCurrentHoleIndex] = useState(() =>
     getFirstIncompleteHoleIndex(holes, initialParticipants, initialHoleScores)
   );
   const [draftStrokeInputs, setDraftStrokeInputs] = useState<Record<string, string>>({});
+  const [draftObInputs, setDraftObInputs] = useState<Record<string, boolean>>({});
+  const [lastSavedEvent, setLastSavedEvent] = useState<{
+    holeId: string;
+    participantId: string;
+    savedAt: number;
+  } | null>(null);
+  /** `0` until after layout (matches SSR); avoids hydration drift vs Date.now(). */
+  const [renderNow, setRenderNow] = useState(0);
+
+  useEffect(() => {
+    if (isScorer) {
+      clearLegacyPendingQueueStorage(roundId);
+    }
+  }, [roundId, isScorer]);
+
+  useLayoutEffect(() => {
+    queueMicrotask(() => {
+      setRenderNow(Date.now());
+    });
+  }, [roundId]);
 
   const inviteNameByUserId = useMemo(() => {
     const map = new Map<string, string>();
@@ -408,10 +428,9 @@ export function RoundSession({
     () => unifiedPlayers.some((player) => player.isPending),
     [unifiedPlayers]
   );
-  const scoringParticipants = useMemo(
-    () => participants.filter((participant) => participant.id !== "scorer-self"),
-    [participants]
-  );
+  // The scorer is guaranteed (server-side) to be in `round_participants`, so
+  // there's no longer any synthetic row to filter out.
+  const scoringParticipants = participants;
   const activeHole = holes[currentHoleIndex] ?? null;
   const canScore = roundStatus === "active" && !!activeHole && scoringParticipants.length > 0;
   const isLastHole = activeHole ? currentHoleIndex === holes.length - 1 : false;
@@ -453,7 +472,7 @@ export function RoundSession({
   const scoreLookup = useMemo(() => {
     const map = new Map<string, number>();
     for (const row of holeScores) {
-      map.set(`${row.participant_id}:${row.hole_id}`, row.strokes);
+      map.set(makeScoreLookupKey(row.participant_id, row.hole_id), row.strokes);
     }
     return map;
   }, [holeScores]);
@@ -470,11 +489,66 @@ export function RoundSession({
     return sortedHoles.map((h) => {
       const allScored =
         scoringParticipants.length > 0 &&
-        scoringParticipants.every((p) => scoreLookup.get(`${p.id}:${h.id}`) !== undefined);
+        scoringParticipants.every((p) => scoreLookup.get(makeScoreLookupKey(p.id, h.id)) !== undefined);
       const isCurrent = roundStatus === "active" && activeHole?.id === h.id;
       return { hole: h, allScored, isCurrent };
     });
   }, [sortedHoles, scoringParticipants, scoreLookup, activeHole, roundStatus]);
+
+  const lastSavedLabel = useMemo(() => {
+    if (!lastSavedEvent || renderNow === 0) {
+      return null;
+    }
+    const hole = sortedHoles.find((h) => h.id === lastSavedEvent.holeId);
+    if (!hole) {
+      return null;
+    }
+    const participant = participants.find((p) => p.id === lastSavedEvent.participantId);
+    const participantLabel = participant
+      ? unifiedPlayers.find((item) => item.participantId === participant.id)?.label ??
+        participant.guest_name ??
+        "Player"
+      : "Player";
+    const cleanLabel = participantLabel.replace(" (pending)", "");
+    const diffMs = Math.max(0, renderNow - lastSavedEvent.savedAt);
+    let relative: string;
+    if (diffMs < 10_000) {
+      relative = "just now";
+    } else if (diffMs < 60_000) {
+      relative = `${Math.floor(diffMs / 1000)}s ago`;
+    } else if (diffMs < 3_600_000) {
+      relative = `${Math.floor(diffMs / 60_000)}m ago`;
+    } else {
+      relative = `${Math.floor(diffMs / 3_600_000)}h ago`;
+    }
+    return `Hole ${hole.hole_number} saved by ${cleanLabel} · ${relative}`;
+  }, [lastSavedEvent, renderNow, sortedHoles, participants, unifiedPlayers]);
+
+  const leaderboardRows = useMemo(() => {
+    const rows = scoringParticipants.map((participant) => {
+      const stats = segmentPlayerStats(participant.id, sortedHoles, scoreLookup);
+      const label =
+        unifiedPlayers.find((item) => item.participantId === participant.id)?.label ??
+        participant.guest_name ??
+        "Player";
+      return {
+        participantId: participant.id,
+        label: label.replace(" (pending)", ""),
+        totalStrokes: stats.totalStrokes,
+        vsPar: stats.vsPar,
+        thru: stats.thru,
+      };
+    });
+    rows.sort((a, b) => {
+      if (a.thru === 0 && b.thru === 0) return a.label.localeCompare(b.label);
+      if (a.thru === 0) return 1;
+      if (b.thru === 0) return -1;
+      if (a.vsPar !== b.vsPar) return a.vsPar - b.vsPar;
+      if (a.totalStrokes !== b.totalStrokes) return a.totalStrokes - b.totalStrokes;
+      return a.label.localeCompare(b.label);
+    });
+    return rows;
+  }, [scoringParticipants, sortedHoles, scoreLookup, unifiedPlayers]);
 
   function getStrokeInputValue(participantId: string): string {
     if (!activeHole) {
@@ -493,6 +567,21 @@ export function RoundSession({
     return existing ? String(existing.strokes) : "";
   }
 
+  function isObChecked(participantId: string): boolean {
+    if (!activeHole) {
+      return false;
+    }
+    const key = `${activeHole.id}:${participantId}`;
+    const draftValue = draftObInputs[key];
+    if (draftValue !== undefined) {
+      return draftValue;
+    }
+    const existing = holeScores.find(
+      (score) => score.hole_id === activeHole.id && score.participant_id === participantId
+    );
+    return existing?.ob ?? false;
+  }
+
   function getParticipantLabel(participant: ParticipantRow): string {
     const player =
       unifiedPlayers.find((item) => item.participantId === participant.id)?.label ??
@@ -500,32 +589,6 @@ export function RoundSession({
       "Player";
     return player.replace(" (pending)", "");
   }
-
-  function getTotalStrokes(participantId: string, targetHoleIds: string[]): number {
-    return holeScores
-      .filter((score) => score.participant_id === participantId && targetHoleIds.includes(score.hole_id))
-      .reduce((sum, score) => sum + score.strokes, 0);
-  }
-
-  const withScorerParticipant = useCallback(
-    (rows: ParticipantRow[]): ParticipantRow[] => {
-      const hasScorer = rows.some((participant) => participant.user_id === scorerUserId);
-      if (hasScorer) {
-        return rows;
-      }
-
-      return [
-        {
-          id: "scorer-self",
-          user_id: scorerUserId,
-          guest_name: null,
-          joined_at: new Date(0).toISOString(),
-        },
-        ...rows,
-      ];
-    },
-    [scorerUserId]
-  );
 
   const loadParticipants = useCallback(async () => {
     const { data, error } = await supabase
@@ -539,8 +602,8 @@ export function RoundSession({
       return;
     }
 
-    setParticipants(withScorerParticipant(data ?? []));
-  }, [supabase, roundId, withScorerParticipant]);
+    setParticipants(data ?? []);
+  }, [supabase, roundId]);
 
   const loadInvites = useCallback(async () => {
     const { data, error } = await supabase
@@ -560,7 +623,7 @@ export function RoundSession({
   const loadHoleScores = useCallback(async () => {
     const { data, error } = await supabase
       .from("hole_scores")
-      .select("id, participant_id, hole_id, strokes, ob, putts, fairway_hit")
+      .select("id, participant_id, hole_id, strokes, ob, fairway_hit")
       .eq("round_id", roundId);
 
     if (error) {
@@ -572,13 +635,51 @@ export function RoundSession({
   }, [supabase, roundId]);
 
   useEffect(() => {
+    if (roundStatus === "completed" || roundStatus === "abandoned") {
+      clearLegacyPendingQueueStorage(roundId);
+    }
+  }, [roundStatus, roundId]);
+
+  useEffect(() => {
+    if (!lastSavedEvent) {
+      return;
+    }
+    const interval = setInterval(() => setRenderNow(Date.now()), 15000);
+    return () => clearInterval(interval);
+  }, [lastSavedEvent]);
+
+  useEffect(() => {
     const channel = supabase
       .channel(`round-session:${roundId}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "round_participants", filter: `round_id=eq.${roundId}` },
-        () => {
-          void loadParticipants();
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            const oldRow = payload.old as { id?: string } | null;
+            if (oldRow?.id) {
+              const deletedId = oldRow.id;
+              setParticipants((prev) => prev.filter((row) => row.id !== deletedId));
+            } else {
+              void loadParticipants();
+            }
+            return;
+          }
+          const newRow = payload.new as Partial<ParticipantRow> | null;
+          if (!newRow || !newRow.id) {
+            void loadParticipants();
+            return;
+          }
+          const row: ParticipantRow = {
+            id: newRow.id,
+            user_id: newRow.user_id ?? null,
+            guest_name: newRow.guest_name ?? null,
+            joined_at: newRow.joined_at ?? new Date().toISOString(),
+          };
+          setParticipants((prev) => {
+            const filtered = prev.filter((existing) => existing.id !== row.id);
+            return [...filtered, row].sort((a, b) => a.joined_at.localeCompare(b.joined_at));
+          });
         }
       )
       .on(
@@ -591,8 +692,54 @@ export function RoundSession({
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "hole_scores", filter: `round_id=eq.${roundId}` },
-        () => {
-          void loadHoleScores();
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            const oldRow = payload.old as { id?: string } | null;
+            if (oldRow?.id) {
+              const deletedId = oldRow.id;
+              setHoleScores((prev) => prev.filter((row) => row.id !== deletedId));
+            } else {
+              void loadHoleScores();
+            }
+            return;
+          }
+          const newRow = payload.new as Partial<HoleScoreRow> | null;
+          if (
+            !newRow ||
+            !newRow.id ||
+            !newRow.participant_id ||
+            !newRow.hole_id ||
+            typeof newRow.strokes !== "number"
+          ) {
+            void loadHoleScores();
+            return;
+          }
+          const row: HoleScoreRow = {
+            id: newRow.id,
+            participant_id: newRow.participant_id,
+            hole_id: newRow.hole_id,
+            strokes: newRow.strokes,
+            ob: typeof newRow.ob === "boolean" ? newRow.ob : false,
+            fairway_hit:
+              typeof newRow.fairway_hit === "boolean" ? newRow.fairway_hit : null,
+          };
+          setHoleScores((prev) => {
+            const filtered = prev.filter(
+              (existing) =>
+                !(
+                  existing.participant_id === row.participant_id &&
+                  existing.hole_id === row.hole_id
+                )
+            );
+            return [...filtered, row];
+          });
+          const savedAt = Date.now();
+          setLastSavedEvent({
+            holeId: row.hole_id,
+            participantId: row.participant_id,
+            savedAt,
+          });
+          setRenderNow(savedAt);
         }
       )
       .subscribe();
@@ -600,7 +747,13 @@ export function RoundSession({
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [supabase, roundId, loadParticipants, loadInvites, loadHoleScores]);
+  }, [
+    supabase,
+    roundId,
+    loadParticipants,
+    loadInvites,
+    loadHoleScores,
+  ]);
 
   useEffect(() => {
     const query = participantName.trim();
@@ -749,7 +902,8 @@ export function RoundSession({
       return;
     }
 
-    router.push("/rounds/new");
+    clearLegacyPendingQueueStorage(roundId);
+    router.push("/");
     router.refresh();
   }
 
@@ -776,7 +930,8 @@ export function RoundSession({
       return;
     }
 
-    router.push("/rounds/new");
+    clearLegacyPendingQueueStorage(roundId);
+    router.push("/");
     router.refresh();
   }
 
@@ -836,80 +991,93 @@ export function RoundSession({
     }
   }
 
-  async function saveCurrentHoleScores() {
-    if (!isScorer) {
+  async function saveCurrentHoleScores(): Promise<boolean> {
+    if (!isScorer || !activeHole) {
       return false;
     }
 
-    if (!activeHole) {
-      return false;
-    }
-
-    const payload: Array<{
-      round_id: string;
-      participant_id: string;
-      hole_id: string;
-      strokes: number;
-      ob: number;
-      putts: number | null;
-      fairway_hit: boolean | null;
-    }> = [];
+    type RowInput = { participantId: string; strokes: number; ob: boolean };
+    const rowInputs: RowInput[] = [];
 
     for (const participant of scoringParticipants) {
       const rawValue = getStrokeInputValue(participant.id).trim();
       const strokes = Number(rawValue);
 
       if (!Number.isInteger(strokes) || strokes < 1 || strokes > 25) {
-        setStatus(`Enter valid strokes (1-25) for every player on hole ${activeHole.hole_number}.`);
+        setStatus(
+          `Enter valid strokes (1-25) for every player on hole ${activeHole.hole_number}.`
+        );
         return false;
       }
 
-      payload.push({
-        round_id: roundId,
-        participant_id: participant.id,
-        hole_id: activeHole.id,
+      rowInputs.push({
+        participantId: participant.id,
         strokes,
-        ob: 0,
-        putts: null,
-        fairway_hit: null,
+        ob: isObChecked(participant.id),
       });
     }
+
+    const payload = rowInputs.map((r) => ({
+      round_id: roundId,
+      participant_id: r.participantId,
+      hole_id: activeHole.id,
+      strokes: r.strokes,
+      ob: r.ob,
+      fairway_hit: null as boolean | null,
+    }));
 
     setIsSubmitting(true);
     setStatus(null);
+
     const { data, error } = await supabase
       .from("hole_scores")
       .upsert(payload, { onConflict: "round_id,participant_id,hole_id" })
-      .select("id, participant_id, hole_id, strokes, ob, putts, fairway_hit");
+      .select("id, participant_id, hole_id, strokes, ob, fairway_hit");
+
+    setIsSubmitting(false);
 
     if (error) {
-      setStatus(`Save failed: ${error.message}`);
-      setIsSubmitting(false);
+      setStatus(`Could not save scores: ${error.message}`);
       return false;
     }
 
-    const updatedRows = (data ?? []) as HoleScoreRow[];
+    const returned = (data ?? []) as HoleScoreRow[];
     setHoleScores((prev) => {
-      const remaining = prev.filter(
+      const without = prev.filter(
         (score) =>
-          !updatedRows.some(
-            (updated) =>
-              updated.hole_id === score.hole_id && updated.participant_id === score.participant_id
+          !rowInputs.some(
+            (r) =>
+              r.participantId === score.participant_id &&
+              activeHole.id === score.hole_id
           )
       );
-      return [...remaining, ...updatedRows];
+      return mergeHoleScoresByCell(without, returned);
     });
-    if (activeHole) {
-      setDraftStrokeInputs((prev) => {
-        const next = { ...prev };
-        for (const participant of scoringParticipants) {
-          delete next[`${activeHole.id}:${participant.id}`];
-        }
-        return next;
+
+    setDraftStrokeInputs((prev) => {
+      const next = { ...prev };
+      for (const participant of scoringParticipants) {
+        delete next[`${activeHole.id}:${participant.id}`];
+      }
+      return next;
+    });
+    setDraftObInputs((prev) => {
+      const next = { ...prev };
+      for (const participant of scoringParticipants) {
+        delete next[`${activeHole.id}:${participant.id}`];
+      }
+      return next;
+    });
+
+    queueMicrotask(() => {
+      const savedAt = Date.now();
+      setLastSavedEvent({
+        holeId: activeHole.id,
+        participantId: scoringParticipants[0]!.id,
+        savedAt,
       });
-    }
-    setIsSubmitting(false);
-    setStatus("Scores saved.");
+      setRenderNow(savedAt);
+    });
     return true;
   }
 
@@ -945,6 +1113,8 @@ export function RoundSession({
     }
 
     setIsTransitioning(true);
+    setStatus(null);
+
     const { error } = await supabase
       .from("rounds")
       .update({ status: "completed", completed_at: new Date().toISOString() })
@@ -955,7 +1125,8 @@ export function RoundSession({
       return;
     }
 
-    router.push("/rounds/new");
+    clearLegacyPendingQueueStorage(roundId);
+    router.push("/");
     router.refresh();
   }
 
@@ -1052,6 +1223,13 @@ export function RoundSession({
         <p className="rounded-md border border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-700">{status}</p>
       ) : null}
 
+      {roundStatus === "active" && lastSavedLabel ? (
+        <p className="flex items-center gap-2 text-xs text-zinc-500">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
+          {lastSavedLabel}
+        </p>
+      ) : null}
+
       {showFrontNineSummary ? (
         <div className="space-y-2 rounded-md border border-zinc-200 bg-zinc-50 p-3">
           <h3 className="text-sm font-semibold text-zinc-800">Front 9 summary</h3>
@@ -1059,7 +1237,7 @@ export function RoundSession({
             {scoringParticipants.map((participant) => (
               <li key={`front9-${participant.id}`} className="flex items-center justify-between">
                 <span>{getParticipantLabel(participant)}</span>
-                <span className="font-medium">{getTotalStrokes(participant.id, firstNineHoleIds)}</span>
+                <span className="font-medium">{getTotalStrokes(holeScores, participant.id, firstNineHoleIds)}</span>
               </li>
             ))}
           </ul>
@@ -1073,7 +1251,7 @@ export function RoundSession({
             {scoringParticipants.map((participant) => (
               <li key={`final-${participant.id}`} className="flex items-center justify-between">
                 <span>{getParticipantLabel(participant)}</span>
-                <span className="font-medium">{getTotalStrokes(participant.id, holeIds)}</span>
+                <span className="font-medium">{getTotalStrokes(holeScores, participant.id, holeIds)}</span>
               </li>
             ))}
           </ul>
@@ -1108,7 +1286,9 @@ export function RoundSession({
             activeHole ? (
               <div className="space-y-6">
                 <div className="text-center sm:text-left">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-400">Enter scores</p>
+                  <div className="flex items-center justify-center gap-2 sm:justify-start">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-400">Enter scores</p>
+                  </div>
                   <div className="mt-2 flex flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-3">
                     <p className="text-4xl font-semibold tabular-nums tracking-tight text-zinc-900">
                       {activeHole.hole_number}
@@ -1140,29 +1320,56 @@ export function RoundSession({
                 ) : null}
 
                 <div className="space-y-4">
-                  {scoringParticipants.map((participant) => (
-                    <label key={participant.id} className="block">
-                      <span className="mb-1.5 block text-xs font-medium text-zinc-500">
-                        {getParticipantLabel(participant)}
-                      </span>
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        min={1}
-                        max={25}
-                        value={getStrokeInputValue(participant.id)}
-                        onChange={(event) =>
-                          setDraftStrokeInputs((prev) => ({
-                            ...prev,
-                            [`${activeHole.id}:${participant.id}`]: event.target.value,
-                          }))
-                        }
-                        className="h-14 w-full rounded-xl border-2 border-zinc-200 bg-white px-4 text-center text-2xl font-semibold tabular-nums text-zinc-900 shadow-inner outline-none transition-colors placeholder:text-zinc-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15"
-                        placeholder="—"
-                        autoComplete="off"
-                      />
-                    </label>
-                  ))}
+                  {scoringParticipants.map((participant) => {
+                    const obChecked = isObChecked(participant.id);
+                    const obKey = `${activeHole.id}:${participant.id}`;
+                    return (
+                      <div key={participant.id} className="space-y-2">
+                        <label className="block">
+                          <span className="mb-1.5 block text-xs font-medium text-zinc-500">
+                            {getParticipantLabel(participant)}
+                          </span>
+                          <div className="flex items-stretch gap-2">
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              min={1}
+                              max={25}
+                              value={getStrokeInputValue(participant.id)}
+                              onChange={(event) =>
+                                setDraftStrokeInputs((prev) => ({
+                                  ...prev,
+                                  [`${activeHole.id}:${participant.id}`]: event.target.value,
+                                }))
+                              }
+                              className="h-14 flex-1 rounded-xl border-2 border-zinc-200 bg-white px-4 text-center text-2xl font-semibold tabular-nums text-zinc-900 shadow-inner outline-none transition-colors placeholder:text-zinc-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15"
+                              placeholder="—"
+                              autoComplete="off"
+                            />
+                            <button
+                              type="button"
+                              role="switch"
+                              aria-checked={obChecked}
+                              aria-label={`Toggle OB for ${getParticipantLabel(participant)}`}
+                              onClick={() =>
+                                setDraftObInputs((prev) => ({
+                                  ...prev,
+                                  [obKey]: !obChecked,
+                                }))
+                              }
+                              className={`h-14 w-16 shrink-0 rounded-xl border-2 text-sm font-semibold uppercase tracking-wide transition-colors ${
+                                obChecked
+                                  ? "border-rose-500 bg-rose-500 text-white shadow-sm"
+                                  : "border-zinc-200 bg-white text-zinc-500 hover:border-rose-200 hover:text-rose-600"
+                              }`}
+                            >
+                              OB
+                            </button>
+                          </div>
+                        </label>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 <div className="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:flex-wrap sm:justify-end">
@@ -1235,6 +1442,55 @@ export function RoundSession({
         <p className="text-xs text-zinc-500">
           Resolve pending invitations (accept or remove) before starting the round.
         </p>
+      ) : null}
+
+      {roundStatus !== "draft" &&
+      leaderboardRows.length > 0 &&
+      leaderboardRows.some((row) => row.thru > 0) ? (
+        <div className="space-y-3 border-t border-zinc-200 pt-8">
+          <div className="flex items-baseline justify-between">
+            <h3 className="text-base font-semibold tracking-tight text-zinc-900">Leaderboard</h3>
+            <p className="text-[11px] uppercase tracking-wide text-zinc-500">
+              Sorted by vs par
+            </p>
+          </div>
+          <ol className="divide-y divide-zinc-100 rounded-lg border border-zinc-200 bg-white">
+            {leaderboardRows.map((row, index) => {
+              const positionLabel = row.thru === 0 ? "—" : String(index + 1);
+              const vsParLabel = row.thru > 0 ? formatVsPar(row.vsPar) : "—";
+              const vsParTone =
+                row.thru === 0
+                  ? "text-zinc-400"
+                  : row.vsPar < 0
+                    ? "text-emerald-700"
+                    : row.vsPar > 0
+                      ? "text-rose-700"
+                      : "text-zinc-700";
+              return (
+                <li
+                  key={row.participantId}
+                  className="flex items-center gap-3 px-3 py-2 text-sm"
+                >
+                  <span className="w-6 shrink-0 text-center text-xs font-semibold tabular-nums text-zinc-500">
+                    {positionLabel}
+                  </span>
+                  <span className="flex-1 truncate text-zinc-900">{row.label}</span>
+                  <span
+                    className={`w-12 shrink-0 text-right text-sm font-semibold tabular-nums ${vsParTone}`}
+                  >
+                    {vsParLabel}
+                  </span>
+                  <span className="w-10 shrink-0 text-right text-sm tabular-nums text-zinc-700">
+                    {row.thru > 0 ? row.totalStrokes : "—"}
+                  </span>
+                  <span className="w-16 shrink-0 text-right text-[11px] text-zinc-500">
+                    thru {row.thru}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       ) : null}
 
       {holeSegments.length > 0 ? (

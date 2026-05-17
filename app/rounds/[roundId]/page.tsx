@@ -28,8 +28,7 @@ type HoleScoreRow = {
   participant_id: string;
   hole_id: string;
   strokes: number;
-  ob: number;
-  putts: number | null;
+  ob: boolean;
   fairway_hit: boolean | null;
 };
 
@@ -91,7 +90,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
     .order("hole_number", { ascending: true });
   const { data: existingScores, error: existingScoresError } = await supabase
     .from("hole_scores")
-    .select("id, participant_id, hole_id, strokes, ob, putts, fairway_hit")
+    .select("id, participant_id, hole_id, strokes, ob, fairway_hit")
     .eq("round_id", round.id);
   const isScorer = round.scorer_id === user.id;
   const safeParticipants = participants ?? [];
@@ -106,20 +105,39 @@ export default async function RoundPage({ params }: RoundPageProps) {
     .select("display_name")
     .eq("id", round.scorer_id)
     .maybeSingle();
+
+  // Invariant: the scorer must be in `round_participants`. The create-round
+  // form already inserts this row, but a partial failure there (or any
+  // historical row predating this invariant) could leave it missing. Self-heal
+  // here so the rest of the app can treat round_participants as authoritative
+  // and drop the old "scorer-self" synthetic injection.
+  let participantsForUi = safeParticipants;
   const hasScorerParticipant = safeParticipants.some(
     (participant) => participant.user_id === round.scorer_id
   );
-  const participantsForUi = hasScorerParticipant
-    ? safeParticipants
-    : [
-        {
-          id: "scorer-self",
-          user_id: round.scorer_id,
-          guest_name: null,
-          joined_at: round.started_at,
-        },
-        ...safeParticipants,
-      ];
+  if (isScorer && !hasScorerParticipant) {
+    const { error: scorerInsertError } = await supabase
+      .from("round_participants")
+      .insert({ round_id: round.id, user_id: round.scorer_id });
+
+    if (scorerInsertError && scorerInsertError.code !== "23505") {
+      return (
+        <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
+          <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+            Failed to register you as a participant: {scorerInsertError.message}
+          </p>
+        </main>
+      );
+    }
+
+    const { data: refreshedParticipants } = await supabase
+      .from("round_participants")
+      .select("id, user_id, guest_name, joined_at")
+      .eq("round_id", round.id)
+      .order("joined_at", { ascending: true });
+
+    participantsForUi = refreshedParticipants ?? safeParticipants;
+  }
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
@@ -156,6 +174,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
         </p>
       ) : (
         <RoundSession
+          key={round.id}
           roundId={round.id}
           roundStatus={round.status}
           scorerUserId={round.scorer_id}

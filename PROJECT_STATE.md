@@ -1,8 +1,11 @@
 # Discore — Project State
 
+> Companion docs: `BLUEPRINT.md` (fixed rules) and `ROADMAP.md` (slice plan and
+> what's next). When starting a new chat, read all three in that order.
+
 ## Current Phase
 - Phase 2 complete: Database & Auth Foundation.
-- Phase 3 in progress: Draft-first lifecycle, invite flow, active-round scorer workflow, and observer read-only round visibility are implemented; realtime live updates and polish remain.
+- Phase 3 in progress: Draft-first lifecycle, invite flow, active-round scorer workflow, observer read-only round visibility, **online-first** hole-score writes (Blueprint §3a: awaited batched upserts, drafts retained in React on failure), round history, resume-active-round on the home hub, enriched invite cards, the `round_participants` scorer-self-heal, boolean OB capture (putts dropped for MVP), a ranked leaderboard pane, a Realtime-fed "last saved" indicator, and in-place Realtime payload merges. Remaining for Phase 3 is `fairway_hit` capture (intentionally deferred) and Phase 4 PWA polish.
 
 ## Core Stack
 - Next.js (App Router)
@@ -44,6 +47,8 @@ In `supabase/migrations/`:
 9. `20260429105500_round_participants_draft_only.sql`
 10. `20260429113000_round_participants_delete_draft.sql`
 11. `20260507093000_remove_round_join_code.sql`
+12. `20260511125000_profile_account_fields_and_avatar_storage.sql`
+13. `20260515160047_hole_scores_ob_boolean.sql`
 
 ## Database Status (Verified)
 - Required tables exist:
@@ -95,7 +100,11 @@ In `supabase/migrations/`:
   - `npx supabase gen types typescript --linked > lib/database.types.ts`
 
 ## Current App Wiring Snapshot
-- `app/page.tsx` is the hub entry page for signed-in/signed-out users, with primary round actions and inline pending invite actions for signed-in users.
+- `app/page.tsx` is the hub entry page for signed-in/signed-out users. For signed-in users it surfaces, in order:
+  - A "Resume your round" section listing every `active` round the user participates in (joined to layouts + courses, role badge: `Scorer` vs `Observer`).
+  - Pending invites with enriched context (course, layout, inviter display name, timestamp).
+  - Primary actions (Start round, Round history, Account/Sign in).
+- `app/rounds/page.tsx` is the round history page: lists all `active` / `completed` / `abandoned` rounds the user participated in, joined to layout + course, ordered by `started_at` desc. Each row links to `/rounds/[id]`.
 - Session refresh middleware is in place.
 - Round create flow:
   - `app/rounds/new/page.tsx`
@@ -105,25 +114,45 @@ In `supabase/migrations/`:
   - `app/rounds/[roundId]/page.tsx`
   - `app/rounds/[roundId]/round-session.tsx`
   - Round page access is available to scorer and accepted participants; non-participants are redirected.
+  - Server-side invariant: the scorer is guaranteed to be in `round_participants`. If absent, the page inserts the missing row and refetches before rendering. The old `scorer-self` synthetic injection has been removed.
   - Displays course/layout/holes/par and one unified participants list (scorer + guests + invited users); pending invited users are shown inline as `(pending)`.
   - Observer mode is read-only and hides scorer controls.
   - Join code has been removed from app flow and schema; participation is invite/draft based.
   - Add-participant input is visible only in `draft`.
   - Draft actions: Start round, Delete draft, remove non-scorer participants/invites.
   - Start round is blocked while pending invites exist.
-  - Active scoring: scorer enters strokes per hole, save auto-advances to next hole, and scorer can navigate back to previous holes for corrections.
+  - Active scoring: scorer enters strokes per hole; **Save** awaits a batched `hole_scores` upsert for all players on the hole, then advances (or shows an error while keeping drafts). Scorer can navigate back to previous holes for corrections.
+  - Each active-hole card has a per-player OB toggle pill rendered inline with the strokes input. OB is a boolean flag (default `false`), sent in the same upsert as strokes; the pill turns rose-red when active and will drive the scorecard's OB marker in a future polish slice.
+  - The previous integer `ob` count and the `putts` column have been retired (see `20260515160047_hole_scores_ob_boolean.sql`). The future advanced-stats slice will reintroduce per-attempt C1 / C2 inputs and Driving Accuracy (`fairway_hit`) behind a per-round opt-in toggle.
+  - A ranked leaderboard pane sits above the scorecard whenever the round is not `draft` and at least one hole has been scored. Rows show position, label, vs-par badge (color-coded), total strokes, and `thru N`, sorted by vs-par asc, then strokes asc, then label.
+  - A "last saved" indicator (`Hole X saved by Y · just now`) is rendered below the round status whenever Realtime delivers a `hole_scores` INSERT/UPDATE. Relative time is refreshed by a state-backed ticker every 15 s; no `Date.now` calls occur during render.
+  - Realtime handlers merge payloads in place: `hole_scores` INSERT/UPDATE replace the matching `(participant_id, hole_id)` row; `round_participants` INSERT/UPDATE/DELETE apply payload-driven mutations; `round_invitations` still triggers a refetch because the payload omits the joined profile. `loadHoleScores` / `loadParticipants` remain as defensive fallbacks for malformed payloads.
   - Midpoint UX: front-9 read-only summary appears once holes 1-9 are fully scored.
-  - End UX: final read-only round summary appears after all holes are scored, with explicit confirmation to end round; completed rounds are read-only.
-  - Active action: Abandon round.
+  - End UX: final read-only round summary appears after all holes are scored, with explicit confirmation to end round; completing the round runs a final save if needed, then marks the round completed. Completed rounds are read-only.
+  - Terminal transitions (complete / abandon / delete draft) redirect to the hub `/`, not `/rounds/new`.
+  - Active action: Abandon round (also clears legacy `discore_pending_queue:<roundId>` in `localStorage` if present).
 - Round invitations flow:
-  - Pending invites are surfaced inline on the home hub (`app/page.tsx`) via `app/home-invites.tsx`.
+  - Pending invites are surfaced inline on the home hub (`app/page.tsx`) via `app/home-invites.tsx`, with course / layout / inviter / time pulled in via a single joined query.
   - Invitee accepts/declines directly from hub.
   - Accept path inserts `round_participants` first, then updates invitation status to preserve consistency.
+
+## Scoring Module (`/lib/scoring`)
+- `lib/scoring/types.ts` — domain types (`Hole`, `Participant`, `HoleScore`, `SegmentStats`, `ScoreLookup`) plus the shared `makeScoreLookupKey` helper. No `any`.
+- `lib/scoring/stats.ts` — pure scoring math: `formatVsPar`, `segmentPlayerStats`, `getFirstIncompleteHoleIndex`, `getTotalStrokes`. No React, no Supabase.
+- Legacy `discore_pending_queue:<roundId>` `localStorage` keys are cleared from `round-session.tsx` on mount / complete / abandon so old outbox data cannot interfere.
+
+## Online-first scorer writes (Blueprint §3a)
+- `saveCurrentHoleScores` **awaits** a single batched `hole_scores` upsert (all scoring participants on the active hole) via the browser Supabase client, then merges returned rows into `holeScores`. On failure, an error is shown and stroke / OB **drafts stay** on screen for retry.
+- No `localStorage` write queue, no `pending:` client ids for persistence, and no "N pending" / background flush loop.
+- Realtime continues to merge server `hole_scores` rows for observers and multi-tab consistency.
+- `onCompleteRound` saves the current hole if needed, then updates the round to `completed`.
+- `onAbandonRound`, `onDeleteDraft`, successful `onCompleteRound`, round mount (scorer), and `completed` / `abandoned` status still clear that legacy storage key for hygiene.
 
 ## Near-Term Product Direction
 - Registered-user participation uses invite + confirm flow with pending invitations handled directly from the home hub.
 - Guest add in setup remains supported.
-- Next implementation target in Phase 3: realtime score updates during active rounds, plus scoring UX polish.
+- Next implementation target: Slice D — onboarding & course seeding. Anonymous-first guest-round flow with post-round "Claim this round", plus a documented course-import pipeline under `supabase/seeds/` and a meaningful initial course library. See `ROADMAP.md` for the full slice plan.
+- Advanced stats (Driving Accuracy via `fairway_hit`, Circle 1 / Circle 2 putting %s via per-attempt counters, derived scrambling rate) are deliberately parked. They will be reintroduced as their own slice after Slice D, gated by a per-round "Track advanced stats" toggle set during draft setup.
 
 ## Product Decision (Confirmed Sidenote)
 ### Frictionless Onboarding — Option A

@@ -30,32 +30,36 @@
 
 One registered user per round is the **Scorer** (the round creator). All other participants are **Observers**.
 
-- The **Scorer** is the sole write authority for all `hole_scores` in the round. Writes target Supabase directly with a resilient retry queue (see Section 3a below).
+- The **Scorer** is the sole write authority for all `hole_scores` in the round. Writes use **direct, online-first** Supabase calls from the client (see Section 3a below).
 - **Observers** (registered users who joined via room code) are read-only. They receive live updates via Supabase Realtime subscriptions.
 - **Guests** (unregistered players added by name) are passive entries — they have no device presence and receive no updates.
 - Each round stores a `scorer_id` (FK → `profiles`) as the enforced write authority.
 
 This one-way data flow must be reflected in RLS policies and client architecture.
 
-### 3a. Resilient Writes (Scorer device only)
+### 3a. Scorer writes (online-first)
 
-The app requires an active connection but must handle brief signal loss gracefully — disc golf courses frequently have dead spots. The solution is a lightweight optimistic UI with a `localStorage`-backed retry queue. No IndexedDB, no service worker sync.
+The app targets **reliable scoring while connected**. Disc golf courses can have brief dead spots; the model is **not** hardcore offline sync — it is **wait for the server, then proceed**, with **local draft state** kept in React so a failed save does not wipe the scorer’s inputs.
 
-**Write flow:**
-1. Scorer submits a hole score → score is immediately written to an in-memory pending queue and persisted to `localStorage` (`discore_pending_queue`).
-2. UI advances instantly (optimistic) — the player is not blocked waiting for a network response.
-3. The app attempts the Supabase write in the background.
-4. On success → entry is removed from the queue. No visible feedback needed.
-5. On failure → entry stays in the queue. A small unobtrusive indicator shows the number of unsynced scores (e.g. "2 pending"). The app retries automatically every 5 seconds and also immediately on the browser `online` event.
-6. On tab reload → the app reads `discore_pending_queue` from `localStorage` on mount and retries any pending items before rendering the scorecard.
+**Write flow**
 
-**Constraints:**
-- The retry queue covers the active round only. It is cleared entirely when the round is marked `completed` or `abandoned`.
-- Pending writes are flushed in order — never out of sequence.
-- Observers receive Realtime updates only after a write successfully lands in Supabase. Pending writes on the Scorer's device are invisible to Observers until synced.
-- This logic lives in `/lib/scoring` as a typed standalone module. It must not be entangled with UI components.
+1. Scorer saves the current hole → the client **awaits** a batched `hole_scores` **upsert** (all players on that hole) via the browser Supabase client.
+2. **Success** → UI updates from the returned rows (and/or Realtime). The scorer advances to the next hole or completes the round.
+3. **Failure** (no network, RLS, validation, etc.) → an explicit error message is shown; **strokes / OB drafts stay on screen** so the scorer can retry when connectivity returns. No background FIFO queue, no `pending:` optimistic client ids for persistence.
 
-**This is not offline-first.** The app still requires a connection to start a round, join a round, and load course data. The retry queue only covers `hole_scores` writes during an active round.
+**Legacy cleanup**
+
+- The older design used `localStorage` (`discore_pending_queue:<roundId>`). That mechanism is **removed**. The app may still **clear that key** on round mount / complete / abandon so stale data never blocks flows.
+
+**Observers**
+
+- Realtime still delivers `hole_scores` changes after rows land in Postgres (unchanged).
+
+**This is not offline-first.** Starting a round, loading layouts, and saving scores all **require** a working session and network for the write path. Brief outages are tolerated only in the sense that **work in progress remains editable** until a save succeeds.
+
+**Code placement**
+
+- Scoring math and shared helpers stay in `/lib/scoring` as typed, framework-agnostic TS where practical. The write orchestration lives in the round UI; keep **no `any`** in `/lib/scoring`.
 
 ---
 
@@ -114,8 +118,8 @@ Two strictly separate client instances are required due to Next.js App Router's 
 - RLS: a registered user can see all `round_participants` rows for rounds they are part of.
 
 **hole_scores**
-- Fields: `round_id`, `participant_id` (FK → round_participants), `hole_id` (FK → holes), `strokes`, `putts`, `ob` (integer, out-of-bounds count), `fairway_hit` (boolean).
-- These fields are captured from day one — they are the foundation for all future analytics. Do not defer them.
+- Fields: `round_id`, `participant_id` (FK → round_participants), `hole_id` (FK → holes), `strokes`, `ob` (boolean, out-of-bounds flag; `false` when none), `fairway_hit` (boolean, nullable — reserved for future advanced-stats slice).
+- `putts` was removed from MVP scoring; advanced putting / C1 / C2 stats may reintroduce richer fields later behind an explicit per-round toggle.
 - Write RLS: only the `scorer_id` of the parent round may insert or update rows in this table.
 
 ---

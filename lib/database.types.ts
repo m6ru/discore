@@ -87,9 +87,8 @@ export type Database = {
           fairway_hit: boolean | null
           hole_id: string
           id: string
-          ob: number
+          ob: boolean
           participant_id: string
-          putts: number | null
           round_id: string
           strokes: number
         }
@@ -98,9 +97,8 @@ export type Database = {
           fairway_hit?: boolean | null
           hole_id: string
           id?: string
-          ob?: number
+          ob?: boolean
           participant_id: string
-          putts?: number | null
           round_id: string
           strokes: number
         }
@@ -109,9 +107,8 @@ export type Database = {
           fairway_hit?: boolean | null
           hole_id?: string
           id?: string
-          ob?: number
+          ob?: boolean
           participant_id?: string
-          putts?: number | null
           round_id?: string
           strokes?: number
         }
