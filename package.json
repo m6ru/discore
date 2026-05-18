@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:courses": "tsx scripts/seed-courses.ts"
   },
   "dependencies": {
     "@serwist/next": "^9.5.7",
@@ -26,6 +27,7 @@
     "eslint-config-next": "16.2.4",
     "supabase": "^2.92.1",
     "tailwindcss": "^4",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }

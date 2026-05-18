@@ -1,0 +1,23 @@
+{
+  "course": {
+    "name": "Course name",
+    "location": "City, county, Estonia",
+    "slug": "course-slug",
+    "lat": null,
+    "lng": null,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null
+  },
+  "layout": {
+    "name": "Layout name",
+    "slug": "layout-slug",
+    "total_par": 0,
+    "total_distance_m": 0,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    { "hole_number": 1, "par": 3, "distance_m": 0, "notes": null, "hole_map_url": null }
+  ]
+}

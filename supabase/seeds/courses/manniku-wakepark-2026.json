@@ -1,0 +1,43 @@
+{
+  "course": {
+    "name": "Männiku Wakepark",
+    "location": "Saku, Männiku, Harjumaa, Estonia",
+    "slug": "manniku-wakepark",
+    "lat": null,
+    "lng": null,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null
+  },
+  "layout": {
+    "name": "2026",
+    "slug": "2026",
+    "total_par": 77,
+    "total_distance_m": 2292,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    { "hole_number": 1, "par": 4, "distance_m": 129, "notes": null, "hole_map_url": null },
+    { "hole_number": 2, "par": 4, "distance_m": 124, "notes": null, "hole_map_url": null },
+    { "hole_number": 3, "par": 3, "distance_m": 76, "notes": null, "hole_map_url": null },
+    { "hole_number": 4, "par": 5, "distance_m": 174, "notes": null, "hole_map_url": null },
+    { "hole_number": 5, "par": 3, "distance_m": 79, "notes": null, "hole_map_url": null },
+    { "hole_number": 6, "par": 4, "distance_m": 161, "notes": null, "hole_map_url": null },
+    { "hole_number": 7, "par": 4, "distance_m": 100, "notes": null, "hole_map_url": null },
+    { "hole_number": 8, "par": 4, "distance_m": 123, "notes": null, "hole_map_url": null },
+    { "hole_number": 9, "par": 3, "distance_m": 67, "notes": null, "hole_map_url": null },
+    { "hole_number": 10, "par": 3, "distance_m": 57, "notes": null, "hole_map_url": null },
+    { "hole_number": 11, "par": 3, "distance_m": 79, "notes": null, "hole_map_url": null },
+    { "hole_number": 12, "par": 3, "distance_m": 69, "notes": null, "hole_map_url": null },
+    { "hole_number": 13, "par": 3, "distance_m": 90, "notes": null, "hole_map_url": null },
+    { "hole_number": 14, "par": 4, "distance_m": 132, "notes": null, "hole_map_url": null },
+    { "hole_number": 15, "par": 3, "distance_m": 71, "notes": null, "hole_map_url": null },
+    { "hole_number": 16, "par": 3, "distance_m": 68, "notes": null, "hole_map_url": null },
+    { "hole_number": 17, "par": 4, "distance_m": 111, "notes": null, "hole_map_url": null },
+    { "hole_number": 18, "par": 4, "distance_m": 139, "notes": null, "hole_map_url": null },
+    { "hole_number": 19, "par": 4, "distance_m": 139, "notes": null, "hole_map_url": null },
+    { "hole_number": 20, "par": 4, "distance_m": 127, "notes": null, "hole_map_url": null },
+    { "hole_number": 21, "par": 5, "distance_m": 177, "notes": null, "hole_map_url": null }
+  ]
+}

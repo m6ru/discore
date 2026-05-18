@@ -17,7 +17,6 @@
 ## Canonical Environment Variables
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-
 Notes:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` is deprecated in this repo and should not be used.
 
@@ -49,6 +48,8 @@ In `supabase/migrations/`:
 11. `20260507093000_remove_round_join_code.sql`
 12. `20260511125000_profile_account_fields_and_avatar_storage.sql`
 13. `20260515160047_hole_scores_ob_boolean.sql`
+14. `20260518143000_seed_courses_from_json.sql` (generated from `supabase/seeds/courses/*.json`)
+15. `20260518150000_drop_legacy_jarve_pro_18.sql`
 
 ## Database Status (Verified)
 - Required tables exist:
@@ -60,10 +61,10 @@ In `supabase/migrations/`:
   - `round_participants`
   - `hole_scores`
 - RLS enabled on all required tables.
-- Seed data present:
-  - `courses = 1`
-  - `layouts = 1`
-  - `holes = 18`
+- Seed data: JSON library under `supabase/seeds/courses/` (6 layouts); `npm run
+  seed:courses` generates SQL migration, apply with `npx supabase db push` (see
+  `supabase/seeds/README.md`). Legacy `pro-18` layout removed in
+  `20260518150000_drop_legacy_jarve_pro_18.sql`.
 
 ## Important Constraints/Locks Implemented
 - `hole_scores` update allowed only while parent round status is `active`.
@@ -151,7 +152,9 @@ In `supabase/migrations/`:
 ## Near-Term Product Direction
 - Registered-user participation uses invite + confirm flow with pending invitations handled directly from the home hub.
 - Guest add in setup remains supported.
-- Next implementation target: Slice D — onboarding & course seeding. Anonymous-first guest-round flow with post-round "Claim this round", plus a documented course-import pipeline under `supabase/seeds/` and a meaningful initial course library. See `ROADMAP.md` for the full slice plan.
+- Slice D-courses complete: JSON seeds + `npm run seed:courses` migration pipeline.
+  Slice D-guest (anonymous guest round + claim on signup) is deferred; see
+  `ROADMAP.md`.
 - Advanced stats (Driving Accuracy via `fairway_hit`, Circle 1 / Circle 2 putting %s via per-attempt counters, derived scrambling rate) are deliberately parked. They will be reintroduced as their own slice after Slice D, gated by a per-round "Track advanced stats" toggle set during draft setup.
 
 ## Product Decision (Confirmed Sidenote)

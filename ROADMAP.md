@@ -118,25 +118,32 @@ Out of scope (still deferred):
   Slated for after Slice D.
 - Ratings (Phase 6).
 
-### Slice D — Onboarding & course seeding  [NEXT]
+### Slice D — Onboarding & course seeding  [IN PROGRESS]
 
 Goal: zero-friction first-use and a real course library.
 
-In scope:
+#### Slice D-courses — Course import pipeline  [COMPLETE]
+
+Delivered:
+- Hand-curated JSON per layout under `supabase/seeds/courses/` (6 layouts).
+- `npm run seed:courses` → `scripts/seed-courses.ts` validates JSON and emits
+  reviewable SQL; `--new-migration` writes a migration applied via
+  `npx supabase db push` (no service role key).
+- Idempotent upserts on `courses.slug`, `layouts (course_id, slug)`,
+  `holes (layout_id, hole_number)`. Legacy `jarve` slug renamed in SQL;
+  legacy `pro-18` layout dropped in `20260518150000_drop_legacy_jarve_pro_18.sql`.
+
+#### Slice D-guest — Anonymous guest round  [DEFERRED]
+
+Out of scope for D-courses; still planned for Slice D:
 - Guest-round flow (Option A in `PROJECT_STATE.md`): score without signing
   up, post-round "Claim this round" inserts the historical `completed` row
   on signup. Guest scoring stays **local-only** (no Supabase writes until
   claim); persistence strategy for that slice is TBD and is **not** the old
   `hole_scores` `localStorage` outbox removed in favour of online-first
   authenticated scoring.
-- Course import pipeline: a documented, repeatable script under
-  `supabase/seeds/` that ingests data sourced from discgolfirajad.ee into
-  `courses` / `layouts` / `holes`. Hand-curated initial dataset is acceptable
-  as long as the pipeline is documented and reproducible.
-- More seeded courses (at minimum, the courses the local community plays
-  regularly).
 
-Out of scope:
+Out of scope (Slice D overall):
 - Smart-ID / Mobile-ID / magic-link auth.
 - Geolocation-based "courses near me".
 

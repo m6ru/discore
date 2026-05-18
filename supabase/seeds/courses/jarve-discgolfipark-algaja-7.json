@@ -1,0 +1,29 @@
+{
+  "course": {
+    "name": "Järve discgolfipark",
+    "location": "Tallinn, Kesklinn, Harjumaa, Estonia",
+    "slug": "jarve-discgolfipark",
+    "lat": null,
+    "lng": null,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null
+  },
+  "layout": {
+    "name": "Algaja 7",
+    "slug": "algaja-7",
+    "total_par": 21,
+    "total_distance_m": 307,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    { "hole_number": 1, "par": 3, "distance_m": 55, "notes": null, "hole_map_url": null },
+    { "hole_number": 2, "par": 3, "distance_m": 43, "notes": null, "hole_map_url": null },
+    { "hole_number": 3, "par": 3, "distance_m": 46, "notes": null, "hole_map_url": null },
+    { "hole_number": 4, "par": 3, "distance_m": 33, "notes": null, "hole_map_url": null },
+    { "hole_number": 5, "par": 3, "distance_m": 41, "notes": null, "hole_map_url": null },
+    { "hole_number": 6, "par": 3, "distance_m": 39, "notes": null, "hole_map_url": null },
+    { "hole_number": 7, "par": 3, "distance_m": 50, "notes": null, "hole_map_url": null }
+  ]
+}
