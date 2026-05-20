@@ -1,0 +1,40 @@
+{
+  "course": {
+    "name": "Pirgu",
+    "location": "Pirgu, Raplamaa, Estonia",
+    "slug": "pirgu",
+    "lat": null,
+    "lng": null,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 54,
+    "total_distance_m": 1474,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    { "hole_number": 1, "par": 3, "distance_m": 96, "notes": null, "hole_map_url": null },
+    { "hole_number": 2, "par": 3, "distance_m": 91, "notes": null, "hole_map_url": null },
+    { "hole_number": 3, "par": 3, "distance_m": 71, "notes": null, "hole_map_url": null },
+    { "hole_number": 4, "par": 3, "distance_m": 78, "notes": null, "hole_map_url": null },
+    { "hole_number": 5, "par": 3, "distance_m": 66, "notes": null, "hole_map_url": null },
+    { "hole_number": 6, "par": 3, "distance_m": 82, "notes": null, "hole_map_url": null },
+    { "hole_number": 7, "par": 3, "distance_m": 75, "notes": null, "hole_map_url": null },
+    { "hole_number": 8, "par": 3, "distance_m": 88, "notes": null, "hole_map_url": null },
+    { "hole_number": 9, "par": 3, "distance_m": 84, "notes": null, "hole_map_url": null },
+    { "hole_number": 10, "par": 3, "distance_m": 73, "notes": null, "hole_map_url": null },
+    { "hole_number": 11, "par": 3, "distance_m": 76, "notes": null, "hole_map_url": null },
+    { "hole_number": 12, "par": 3, "distance_m": 64, "notes": null, "hole_map_url": null },
+    { "hole_number": 13, "par": 3, "distance_m": 47, "notes": null, "hole_map_url": null },
+    { "hole_number": 14, "par": 3, "distance_m": 134, "notes": null, "hole_map_url": null },
+    { "hole_number": 15, "par": 3, "distance_m": 79, "notes": null, "hole_map_url": null },
+    { "hole_number": 16, "par": 3, "distance_m": 83, "notes": null, "hole_map_url": null },
+    { "hole_number": 17, "par": 3, "distance_m": 84, "notes": null, "hole_map_url": null },
+    { "hole_number": 18, "par": 3, "distance_m": 103, "notes": null, "hole_map_url": null }
+  ]
+}

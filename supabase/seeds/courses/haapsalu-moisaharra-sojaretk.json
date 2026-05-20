@@ -1,0 +1,40 @@
+{
+  "course": {
+    "name": "Haapsalu",
+    "location": "Haapsalu, Läänemaa, Estonia",
+    "slug": "haapsalu",
+    "lat": null,
+    "lng": null,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null
+  },
+  "layout": {
+    "name": "Mõisahärra sõjaretk (black)",
+    "slug": "moisaharra-sojaretk",
+    "total_par": 58,
+    "total_distance_m": 1768,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    { "hole_number": 1, "par": 3, "distance_m": 70, "notes": null, "hole_map_url": null },
+    { "hole_number": 2, "par": 3, "distance_m": 68, "notes": null, "hole_map_url": null },
+    { "hole_number": 3, "par": 4, "distance_m": 180, "notes": null, "hole_map_url": null },
+    { "hole_number": 4, "par": 3, "distance_m": 90, "notes": null, "hole_map_url": null },
+    { "hole_number": 5, "par": 3, "distance_m": 93, "notes": null, "hole_map_url": null },
+    { "hole_number": 6, "par": 3, "distance_m": 84, "notes": null, "hole_map_url": null },
+    { "hole_number": 7, "par": 3, "distance_m": 104, "notes": null, "hole_map_url": null },
+    { "hole_number": 8, "par": 3, "distance_m": 84, "notes": null, "hole_map_url": null },
+    { "hole_number": 9, "par": 4, "distance_m": 128, "notes": null, "hole_map_url": null },
+    { "hole_number": 10, "par": 4, "distance_m": 131, "notes": null, "hole_map_url": null },
+    { "hole_number": 11, "par": 3, "distance_m": 70, "notes": null, "hole_map_url": null },
+    { "hole_number": 12, "par": 3, "distance_m": 77, "notes": null, "hole_map_url": null },
+    { "hole_number": 13, "par": 3, "distance_m": 80, "notes": null, "hole_map_url": null },
+    { "hole_number": 14, "par": 3, "distance_m": 98, "notes": null, "hole_map_url": null },
+    { "hole_number": 15, "par": 4, "distance_m": 181, "notes": null, "hole_map_url": null },
+    { "hole_number": 16, "par": 3, "distance_m": 85, "notes": null, "hole_map_url": null },
+    { "hole_number": 17, "par": 3, "distance_m": 72, "notes": null, "hole_map_url": null },
+    { "hole_number": 18, "par": 3, "distance_m": 73, "notes": null, "hole_map_url": null }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "course": {
+    "name": "Maardu",
+    "location": "Maardu, Harjumaa, Estonia",
+    "slug": "maardu",
+    "lat": null,
+    "lng": null,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null
+  },
+  "layout": {
+    "name": "AM 2025",
+    "slug": "am-2025",
+    "total_par": 70,
+    "total_distance_m": 1919,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    { "hole_number": 1, "par": 4, "distance_m": 108, "notes": null, "hole_map_url": null },
+    { "hole_number": 2, "par": 3, "distance_m": 95, "notes": null, "hole_map_url": null },
+    { "hole_number": 3, "par": 3, "distance_m": 70, "notes": null, "hole_map_url": null },
+    { "hole_number": 4, "par": 3, "distance_m": 83, "notes": null, "hole_map_url": null },
+    { "hole_number": 5, "par": 4, "distance_m": 127, "notes": null, "hole_map_url": null },
+    { "hole_number": 6, "par": 3, "distance_m": 75, "notes": null, "hole_map_url": null },
+    { "hole_number": 7, "par": 3, "distance_m": 94, "notes": null, "hole_map_url": null },
+    { "hole_number": 8, "par": 3, "distance_m": 97, "notes": null, "hole_map_url": null },
+    { "hole_number": 9, "par": 3, "distance_m": 83, "notes": null, "hole_map_url": null },
+    { "hole_number": 10, "par": 4, "distance_m": 120, "notes": null, "hole_map_url": null },
+    { "hole_number": 11, "par": 4, "distance_m": 93, "notes": null, "hole_map_url": null },
+    { "hole_number": 12, "par": 3, "distance_m": 93, "notes": null, "hole_map_url": null },
+    { "hole_number": 13, "par": 3, "distance_m": 91, "notes": null, "hole_map_url": null },
+    { "hole_number": 14, "par": 3, "distance_m": 76, "notes": null, "hole_map_url": null },
+    { "hole_number": 15, "par": 3, "distance_m": 60, "notes": null, "hole_map_url": null },
+    { "hole_number": 16, "par": 3, "distance_m": 86, "notes": null, "hole_map_url": null },
+    { "hole_number": 17, "par": 3, "distance_m": 75, "notes": null, "hole_map_url": null },
+    { "hole_number": 18, "par": 3, "distance_m": 96, "notes": null, "hole_map_url": null },
+    { "hole_number": 19, "par": 3, "distance_m": 91, "notes": null, "hole_map_url": null },
+    { "hole_number": 20, "par": 3, "distance_m": 85, "notes": null, "hole_map_url": null },
+    { "hole_number": 21, "par": 3, "distance_m": 76, "notes": null, "hole_map_url": null },
+    { "hole_number": 22, "par": 3, "distance_m": 45, "notes": null, "hole_map_url": null }
+  ]
+}
