@@ -89,11 +89,11 @@ function validateHole(hole: unknown, index: number, errors: ValidationIssue[]): 
   }
 
   return {
-    hole_number: holeNumber,
-    par,
-    distance_m: distanceM,
-    notes,
-    hole_map_url: holeMapUrl,
+    hole_number: holeNumber as number,
+    par: par as number,
+    distance_m: distanceM as number,
+    notes: notes as string | null,
+    hole_map_url: holeMapUrl as string | null,
   };
 }
 

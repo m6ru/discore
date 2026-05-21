@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -233,7 +233,6 @@ export type Database = {
           gender: string | null
           id: string
           last_name: string | null
-          visibility: string
         }
         Insert: {
           avatar_url?: string | null
@@ -246,7 +245,6 @@ export type Database = {
           gender?: string | null
           id: string
           last_name?: string | null
-          visibility?: string
         }
         Update: {
           avatar_url?: string | null
@@ -259,7 +257,6 @@ export type Database = {
           gender?: string | null
           id?: string
           last_name?: string | null
-          visibility?: string
         }
         Relationships: []
       }

@@ -10,8 +10,8 @@
     "difficulty_tier": null
   },
   "layout": {
-    "name": "Mõisahärra sõjaretk (black)",
-    "slug": "moisaharra-sojaretk",
+    "name": "Mõisahärra sõjaretk (must)",
+    "slug": "moisaharra-sojaretk-must",
     "total_par": 58,
     "total_distance_m": 1768,
     "map_url": null,

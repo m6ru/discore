@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { saveProfile } from "@/lib/profiles/save-profile";
 
 type Props = {
   email: string;
@@ -31,6 +32,7 @@ export function AccountPanel({
   const [birthYear, setBirthYear] = useState(initialBirthYear);
   const [city, setCity] = useState(initialCity);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [passwordStatus, setPasswordStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,33 +40,11 @@ export function AccountPanel({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  async function uploadAvatar(userId: string, file: File): Promise<string> {
-    if (!["image/jpeg", "image/jpg"].includes(file.type)) {
-      throw new Error("Only JPEG images are allowed.");
-    }
-
-    const maxSizeBytes = 1024 * 1024;
-    if (file.size > maxSizeBytes) {
-      throw new Error("Profile picture must be 1MB or smaller.");
-    }
-
-    const extension = file.name.toLowerCase().endsWith(".jpg") ? "jpg" : "jpeg";
-    const path = `${userId}/avatar.${extension}`;
-    const { error: uploadError } = await supabase.storage
-      .from("profile-pictures")
-      .upload(path, file, { upsert: true, contentType: "image/jpeg" });
-    if (uploadError) {
-      throw new Error(`Upload failed: ${uploadError.message}`);
-    }
-
-    const { data } = supabase.storage.from("profile-pictures").getPublicUrl(path);
-    return data.publicUrl;
-  }
-
   async function onSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
     setStatus(null);
+
     try {
       const {
         data: { user },
@@ -77,41 +57,33 @@ export function AccountPanel({
         return;
       }
 
-      const parsedBirthYear = birthYear.trim() ? Number(birthYear.trim()) : null;
-      if (parsedBirthYear !== null && (!Number.isInteger(parsedBirthYear) || parsedBirthYear < 1900)) {
-        setStatus("Birth year must be a valid year.");
+      const result = await saveProfile(
+        supabase,
+        user.id,
+        email,
+        {
+          firstName,
+          lastName,
+          gender,
+          birthYear,
+          city,
+          existingAvatarUrl: avatarUrl,
+        },
+        pendingAvatarFile
+      );
+
+      if (!result.ok) {
+        setStatus(result.message);
         return;
       }
 
-      let nextAvatarUrl: string | null = avatarUrl.trim() || null;
-      const formData = new FormData(event.currentTarget);
-      const avatarFile = formData.get("avatar_file");
-      if (avatarFile instanceof File && avatarFile.size > 0) {
-        nextAvatarUrl = await uploadAvatar(user.id, avatarFile);
-      }
-
-      const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          display_name: fullName || email,
-          gender: gender || null,
-          birth_year: parsedBirthYear,
-          city: city.trim() || null,
-          avatar_url: nextAvatarUrl,
-        })
-        .eq("id", user.id);
-
-      if (error) {
-        setStatus(`Save failed: ${error.message}`);
-        return;
-      }
-
-      setAvatarUrl(nextAvatarUrl ?? "");
+      setAvatarUrl(result.avatarUrl ?? "");
+      setPendingAvatarFile(null);
       setStatus("Profile updated.");
       router.refresh();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Something went wrong.";
+      setStatus(message);
     } finally {
       setIsLoading(false);
     }
@@ -245,9 +217,12 @@ export function AccountPanel({
           <span>Profile picture (JPEG, max 1MB)</span>
           <input
             type="file"
-            name="avatar_file"
             accept=".jpg,.jpeg,image/jpeg"
             className="w-full rounded border border-zinc-300 px-3 py-2"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              setPendingAvatarFile(file && file.size > 0 ? file : null);
+            }}
           />
         </label>
 

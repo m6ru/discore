@@ -1,5 +1,10 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Documentation
+
+- [BLUEPRINT.md](BLUEPRINT.md) — architecture and non-negotiable rules
+- [STATUS.md](STATUS.md) — what is built, field MVP checklist, and what is next
+
 ## Getting Started
 
 First, run the development server:

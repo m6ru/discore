@@ -50,4 +50,4 @@ npx tsx scripts/seed-courses.ts --validate-only
 
 ## Verify
 
-Sign in to the app and open `/rounds/new`. All six JSON layouts should appear in the layout dropdown.
+Sign in to the app and open `/rounds/new`. All JSON layouts should appear in the layout dropdown.

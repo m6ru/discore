@@ -22,7 +22,7 @@
 | Backend | Supabase (PostgreSQL) — Auth + Realtime |
 | Package manager | npm |
 | Local dev | Supabase CLI + `.env.example` for secret management |
-| PWA | `serwist` — service worker lifecycle only. No offline sync required. |
+| PWA | `serwist` — service worker lifecycle when Phase 4 configures it (dependency may exist before wiring). No offline sync required. |
 
 ---
 
@@ -31,7 +31,7 @@
 One registered user per round is the **Scorer** (the round creator). All other participants are **Observers**.
 
 - The **Scorer** is the sole write authority for all `hole_scores` in the round. Writes use **direct, online-first** Supabase calls from the client (see Section 3a below).
-- **Observers** (registered users who joined via room code) are read-only. They receive live updates via Supabase Realtime subscriptions.
+- **Observers** (registered users who accepted a round invitation and appear in `round_participants`) are read-only. They receive live updates via Supabase Realtime subscriptions.
 - **Guests** (unregistered players added by name) are passive entries — they have no device presence and receive no updates.
 - Each round stores a `scorer_id` (FK → `profiles`) as the enforced write authority.
 
@@ -93,7 +93,7 @@ Two strictly separate client instances are required due to Next.js App Router's 
 
 **profiles**
 - User data linked to Supabase Auth (`auth.users`).
-- Fields: display name, avatar URL, visibility (`public` / `private`).
+- Fields: display name, avatar URL, first/last name, gender, birth year, city (account fields as implemented). No per-user visibility flag — any authenticated user may read profiles for invite/search.
 
 **courses**
 - Creator-seeded, read-only to users.
@@ -126,9 +126,11 @@ Two strictly separate client instances are required due to Next.js App Router's 
 
 ## 6. Round Participation Flow
 
+Pending invites are stored in `round_invitations` (authenticated users only). Guests skip invitations and go straight into `round_participants`.
+
 1. Scorer creates a round in `draft`.
 2. Scorer invites registered users and/or adds guests in setup.
-3. Invitees accept or decline from the invites page.
+3. Invitees accept or decline from the home hub (pending invites surfaced there).
 4. Accepted users are added to `round_participants` with their `user_id`; guests are inserted with `guest_name`.
 5. Scorer starts the round only after setup is resolved (no pending invites).
 
@@ -142,7 +144,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 
 | Table | Read | Insert | Update | Delete |
 |---|---|---|---|---|
-| `profiles` | Own row always. Others only if `visibility = 'public'`. | On signup via auth trigger only. | Own row only. | Not permitted. |
+| `profiles` | Any authenticated user. | On signup via auth trigger only. | Own row only. | Not permitted. |
 | `courses` | Anyone authenticated. | Creator (service role) only. | Creator (service role) only. | Not permitted. |
 | `layouts` | Anyone authenticated. | Service role only. | Service role only. | Not permitted. |
 | `holes` | Anyone authenticated. | Service role only. | Service role only. | Not permitted. |
@@ -153,7 +155,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 ### Critical policy implementation notes
 
 - **`hole_scores` write policy must join to `rounds`** — the policy must verify `auth.uid() = (SELECT scorer_id FROM rounds WHERE id = hole_scores.round_id)`. Never trust a `scorer_id` value sent from the client.
-- **`profiles` visibility** — a `SELECT` policy must filter: `auth.uid() = id OR visibility = 'public'`. A logged-in user must never be able to read a private profile by querying the REST API directly.
+- **`profiles` read scope** — `SELECT` for `authenticated` only (`using (true)`). Unauthenticated requests must return zero rows. Users may only `UPDATE` their own row. Profile rows are discoverable for invite/search; do not store email on `profiles` (Auth only).
 - **No client-supplied roles** — there is no admin role in the MVP. No user should be able to modify any field that elevates their own permissions. If a `role` column is added in future, it must only be writable via a server-side trigger or service role, never via the client.
 - **Publishable key is public by design** — but with the above RLS policies in place, an unauthenticated request using the publishable key must return zero rows from every table.
 
@@ -174,7 +176,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 |---|---|---|
 | **1** | Infrastructure & environment | Next.js + Supabase clients + PWA skeleton |
 | **2** | Schema & seeding | All tables, RLS policies, seed local courses/layouts/holes |
-| **3** | Core scoring | Auth, create round, join via code, score holes, Realtime for Observers |
+| **3** | Core scoring | Auth, rounds, invite flow, score holes, Realtime for observers |
 | **4** | PWA & polish | Home screen install, manifest, mobile UX refinement |
 | **5** | History & stats | Round history per user, basic per-player statistics |
 | **6+** | Ratings & competitions | Weighted ratings, tournament structures — only if community adoption warrants |

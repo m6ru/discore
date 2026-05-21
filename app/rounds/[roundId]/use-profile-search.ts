@@ -1,0 +1,81 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/database.types";
+import type { ProfileSearchResult } from "./round-types";
+
+type Client = SupabaseClient<Database>;
+
+type Options = {
+  supabase: Client;
+  roundStatus: string;
+  currentUserId: string;
+  participantName: string;
+  onSearchError: (message: string) => void;
+};
+
+export function useProfileSearch({
+  supabase,
+  roundStatus,
+  currentUserId,
+  participantName,
+  onSearchError,
+}: Options) {
+  const [searchResults, setSearchResults] = useState<ProfileSearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState<ProfileSearchResult | null>(null);
+
+  useEffect(() => {
+    const query = participantName.trim();
+    if (roundStatus !== "draft" || query.length < 2) {
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setIsSearching(true);
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, display_name")
+        .ilike("display_name", `%${query}%`)
+        .neq("id", currentUserId)
+        .limit(8);
+
+      if (error) {
+        onSearchError(`Participant lookup failed: ${error.message}`);
+        setIsSearching(false);
+        return;
+      }
+
+      const matches = (data ?? []) as ProfileSearchResult[];
+      setSearchResults(matches);
+
+      if (selectedProfile && !matches.some((match) => match.id === selectedProfile.id)) {
+        setSelectedProfile(null);
+      }
+
+      setIsSearching(false);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [participantName, roundStatus, supabase, currentUserId, selectedProfile, onSearchError]);
+
+  function clearSearchSelection() {
+    setSelectedProfile(null);
+    setSearchResults([]);
+  }
+
+  function selectProfile(profile: ProfileSearchResult) {
+    setSelectedProfile(profile);
+  }
+
+  return {
+    searchResults,
+    isSearching,
+    selectedProfile,
+    setSelectedProfile,
+    clearSearchSelection,
+    selectProfile,
+  };
+}

@@ -1,35 +1,12 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
+import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
 import { RoundSession } from "./round-session";
+import type { HoleRow, HoleScoreRow } from "./round-types";
 
 type RoundPageProps = {
   params: Promise<{ roundId: string }>;
-};
-
-type InviteRow = {
-  id: string;
-  invited_user_id: string;
-  status: string;
-  created_at: string;
-  profiles: {
-    display_name: string;
-  } | null;
-};
-
-type HoleRow = {
-  id: string;
-  hole_number: number;
-  par: number;
-};
-
-type HoleScoreRow = {
-  id: string;
-  participant_id: string;
-  hole_id: string;
-  strokes: number;
-  ob: boolean;
-  fairway_hit: boolean | null;
 };
 
 export default async function RoundPage({ params }: RoundPageProps) {
@@ -182,7 +159,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
           currentUserId={user.id}
           scorerDisplayName={scorerProfile?.display_name ?? "Scorer"}
           initialParticipants={participantsForUi}
-          initialInvites={(invites ?? []) as InviteRow[]}
+          initialInvites={normalizeInviteRows(invites ?? [])}
           holes={(holes ?? []) as HoleRow[]}
           initialHoleScores={(existingScores ?? []) as HoleScoreRow[]}
         />

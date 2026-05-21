@@ -2,8 +2,9 @@
 
 # Discore — Project Context
 
-This project follows the Technical Master Blueprint (`BLUEPRINT.md`).  
+This project follows the Technical Master Blueprint (`BLUEPRINT.md`).
 Read it before making any architectural decisions, adding dependencies, or creating new files.
+For current implementation state and priorities, read `STATUS.md`.
 
 Key rules from the blueprint:
 - Application source files: `.ts` / `.tsx` only (`app/`, `lib/`, `components/`). Tooling configs are exempt.
