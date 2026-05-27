@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -18,6 +18,42 @@ type Props = {
   invites: InviteWithContext[];
 };
 
+type CourseRef = { name: string | null } | { name: string | null }[] | null;
+type LayoutRef =
+  | { name: string | null; courses: CourseRef }
+  | { name: string | null; courses: CourseRef }[]
+  | null;
+type ScorerRef =
+  | { display_name: string | null }
+  | { display_name: string | null }[]
+  | null;
+
+type RawInviteRow = {
+  id: string;
+  round_id: string;
+  created_at: string;
+  rounds:
+    | {
+        layouts: LayoutRef;
+        scorer: ScorerRef;
+      }
+    | {
+        layouts: LayoutRef;
+        scorer: ScorerRef;
+      }[]
+    | null;
+};
+
+function pickOne<T>(value: T | T[] | null | undefined): T | null {
+  if (!value) {
+    return null;
+  }
+  if (Array.isArray(value)) {
+    return value[0] ?? null;
+  }
+  return value;
+}
+
 function formatDateTime(iso: string): string {
   const d = new Date(iso);
   return d.toLocaleString(undefined, {
@@ -32,8 +68,81 @@ function formatDateTime(iso: string): string {
 export function HomeInvites({ currentUserId, invites }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const [inviteItems, setInviteItems] = useState<InviteWithContext[]>(invites);
   const [status, setStatus] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+
+  const loadPendingInvites = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("round_invitations")
+      .select(
+        "id, round_id, created_at, rounds!inner(layouts(name, courses(name)), scorer:profiles!rounds_scorer_id_fkey(display_name))"
+      )
+      .eq("invited_user_id", currentUserId)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      setStatus(`Failed to refresh invites: ${error.message}`);
+      return;
+    }
+
+    const rows = (data ?? []) as unknown as RawInviteRow[];
+    setInviteItems(
+      rows.map((row) => {
+        const round = pickOne(row.rounds);
+        const layout = pickOne(round?.layouts);
+        const course = pickOne(layout?.courses);
+        const scorer = pickOne(round?.scorer);
+        return {
+          id: row.id,
+          round_id: row.round_id,
+          created_at: row.created_at,
+          course_name: course?.name ?? null,
+          layout_name: layout?.name ?? null,
+          inviter_display_name: scorer?.display_name ?? null,
+        };
+      })
+    );
+  }, [supabase, currentUserId]);
+
+  useEffect(() => {
+    setInviteItems(invites);
+  }, [invites]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(`home-invites:${currentUserId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "round_invitations",
+          filter: `invited_user_id=eq.${currentUserId}`,
+        },
+        () => {
+          void loadPendingInvites();
+        }
+      )
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          void loadPendingInvites();
+        }
+      });
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void loadPendingInvites();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      void supabase.removeChannel(channel);
+    };
+  }, [supabase, currentUserId, loadPendingInvites]);
 
   async function onRespond(
     invite: InviteWithContext,
@@ -75,11 +184,11 @@ export function HomeInvites({ currentUserId, invites }: Props) {
       return;
     }
 
+    setInviteItems((prev) => prev.filter((item) => item.id !== invite.id));
     setBusyId(null);
-    router.refresh();
   }
 
-  if (invites.length === 0) {
+  if (inviteItems.length === 0) {
     return null;
   }
 
@@ -90,7 +199,7 @@ export function HomeInvites({ currentUserId, invites }: Props) {
         <p className="rounded border border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-700">{status}</p>
       ) : null}
       <ul className="space-y-2">
-        {invites.map((invite) => (
+        {inviteItems.map((invite) => (
           <li key={invite.id} className="rounded border border-zinc-200 p-3">
             <p className="text-sm font-medium text-zinc-900">
               {invite.course_name ?? "Unknown course"}

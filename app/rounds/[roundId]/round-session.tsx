@@ -22,6 +22,7 @@ import type {
   LeaderboardRow,
   LastSavedEvent,
   ParticipantRow,
+  RoundStatus,
   RoundSessionProps,
 } from "./round-types";
 import { useActiveScoring } from "./use-active-scoring";
@@ -46,6 +47,7 @@ export function RoundSession({
   const [participants, setParticipants] = useState<ParticipantRow[]>(initialParticipants);
   const [invites, setInvites] = useState<InviteRow[]>(initialInvites);
   const [status, setStatus] = useState<string | null>(null);
+  const [liveRoundStatus, setLiveRoundStatus] = useState<RoundStatus>(roundStatus);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [holeScores, setHoleScores] = useState<HoleScoreRow[]>(initialHoleScores);
@@ -60,6 +62,7 @@ export function RoundSession({
     setParticipants,
     setInvites,
     setHoleScores,
+    setRoundStatus: setLiveRoundStatus,
     setLastSavedEvent,
     setRenderNow,
     onLoadError,
@@ -112,7 +115,7 @@ export function RoundSession({
   } = useDraftSetup({
     supabase,
     roundId,
-    roundStatus,
+    roundStatus: liveRoundStatus,
     isScorer,
     currentUserId,
     loadParticipants,
@@ -131,7 +134,7 @@ export function RoundSession({
     selectProfile,
   } = useProfileSearch({
     supabase,
-    roundStatus,
+    roundStatus: liveRoundStatus,
     currentUserId,
     participantName,
     onSearchError: setStatus,
@@ -144,10 +147,14 @@ export function RoundSession({
   }, [roundId, isScorer]);
 
   useEffect(() => {
-    if (roundStatus === "completed" || roundStatus === "abandoned") {
+    if (liveRoundStatus === "completed" || liveRoundStatus === "abandoned") {
       clearLegacyPendingQueueStorage(roundId);
     }
-  }, [roundStatus, roundId]);
+  }, [liveRoundStatus, roundId]);
+
+  useEffect(() => {
+    setLiveRoundStatus(roundStatus);
+  }, [roundStatus]);
 
   useLayoutEffect(() => {
     queueMicrotask(() => {
@@ -170,10 +177,10 @@ export function RoundSession({
         invites,
         scorerUserId,
         scorerDisplayName,
-        roundStatus,
+        roundStatus: liveRoundStatus,
         isScorer,
       }),
-    [participants, invites, scorerUserId, scorerDisplayName, roundStatus, isScorer]
+    [participants, invites, scorerUserId, scorerDisplayName, liveRoundStatus, isScorer]
   );
 
   const hasPendingInvite = useMemo(
@@ -181,7 +188,8 @@ export function RoundSession({
     [unifiedPlayers]
   );
 
-  const canScore = roundStatus === "active" && !!activeHole && scoringParticipants.length > 0;
+  const canScore =
+    liveRoundStatus === "active" && !!activeHole && scoringParticipants.length > 0;
   const holeIds = useMemo(() => holes.map((hole) => hole.id), [holes]);
   const firstNineHoleIds = useMemo(
     () => holes.filter((hole) => hole.hole_number <= 9).map((hole) => hole.id),
@@ -211,9 +219,9 @@ export function RoundSession({
   }, [firstNineHoleIds, scoringParticipants, holeScores]);
 
   const showFinalSummary =
-    roundStatus === "completed" || (roundStatus === "active" && allScoresComplete);
+    liveRoundStatus === "completed" || (liveRoundStatus === "active" && allScoresComplete);
   const showFrontNineSummary =
-    roundStatus === "active" && !showFinalSummary && frontNineComplete;
+    liveRoundStatus === "active" && !showFinalSummary && frontNineComplete;
 
   const sortedHoles = useMemo(
     () => [...holes].sort((a, b) => a.hole_number - b.hole_number),
@@ -245,9 +253,9 @@ export function RoundSession({
           scoringParticipants.every(
             (p) => scoreLookup.get(makeScoreLookupKey(p.id, h.id)) !== undefined
           ),
-        isCurrent: roundStatus === "active" && activeHole?.id === h.id,
+        isCurrent: liveRoundStatus === "active" && activeHole?.id === h.id,
       })),
-    [sortedHoles, scoringParticipants, scoreLookup, activeHole, roundStatus]
+    [sortedHoles, scoringParticipants, scoreLookup, activeHole, liveRoundStatus]
   );
 
   const lastSavedLabel = useMemo(() => {
@@ -312,7 +320,7 @@ export function RoundSession({
         onRemovePlayer={onRemovePlayer}
       />
 
-      {roundStatus === "draft" && isScorer ? (
+      {liveRoundStatus === "draft" && isScorer ? (
         <DraftParticipantForm
           participantName={participantName}
           isSubmitting={isSubmitting}
@@ -331,12 +339,16 @@ export function RoundSession({
         />
       ) : null}
 
-      <RoundStatusBanner status={status} lastSavedLabel={lastSavedLabel} roundStatus={roundStatus} />
+      <RoundStatusBanner
+        status={status}
+        lastSavedLabel={lastSavedLabel}
+        roundStatus={liveRoundStatus}
+      />
 
       <RoundSummaries
         showFrontNineSummary={showFrontNineSummary}
         showFinalSummary={showFinalSummary}
-        roundStatus={roundStatus}
+        roundStatus={liveRoundStatus}
         isScorer={isScorer}
         isSubmitting={isSubmitting}
         isTransitioning={isTransitioning}
@@ -348,7 +360,7 @@ export function RoundSession({
         onCompleteRound={onCompleteRound}
       />
 
-      {roundStatus === "active" && !showFinalSummary ? (
+      {liveRoundStatus === "active" && !showFinalSummary ? (
         <div
           className={`rounded-2xl border shadow-sm ${
             isScorer && canScore
@@ -383,7 +395,7 @@ export function RoundSession({
       ) : null}
 
       <RoundLifecycleActions
-        roundStatus={roundStatus}
+        roundStatus={liveRoundStatus}
         isScorer={isScorer}
         isTransitioning={isTransitioning}
         hasPendingInvite={hasPendingInvite}
@@ -392,10 +404,10 @@ export function RoundSession({
         onAbandonRound={() => void onAbandonRound()}
       />
 
-      {roundStatus !== "draft" ? <Leaderboard leaderboardRows={leaderboardRows} /> : null}
+      {liveRoundStatus !== "draft" ? <Leaderboard leaderboardRows={leaderboardRows} /> : null}
 
       <ScorecardSection
-        roundStatus={roundStatus}
+        roundStatus={liveRoundStatus}
         holeSegments={holeSegments}
         sortedHoles={sortedHoles}
         scoreLookup={scoreLookup}

@@ -4,7 +4,12 @@ import { useCallback, useEffect, type Dispatch, type SetStateAction } from "reac
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { normalizeInviteRows, type InviteRow } from "@/lib/rounds/invite-rows";
 import type { Database } from "@/lib/database.types";
-import type { HoleScoreRow, LastSavedEvent, ParticipantRow } from "./round-types";
+import type {
+  HoleScoreRow,
+  LastSavedEvent,
+  ParticipantRow,
+  RoundStatus,
+} from "./round-types";
 
 type Client = SupabaseClient<Database>;
 
@@ -16,6 +21,7 @@ type Options = {
   setParticipants: SetState<ParticipantRow[]>;
   setInvites: SetState<InviteRow[]>;
   setHoleScores: SetState<HoleScoreRow[]>;
+  setRoundStatus: SetState<RoundStatus>;
   setLastSavedEvent: SetState<LastSavedEvent | null>;
   setRenderNow: SetState<number>;
   onLoadError: (message: string) => void;
@@ -27,6 +33,7 @@ export function useRoundRealtime({
   setParticipants,
   setInvites,
   setHoleScores,
+  setRoundStatus,
   setLastSavedEvent,
   setRenderNow,
   onLoadError,
@@ -63,6 +70,23 @@ export function useRoundRealtime({
     setInvites(normalizeInviteRows(data ?? []));
   }, [supabase, roundId, setInvites, onLoadError]);
 
+  const loadRoundStatus = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("rounds")
+      .select("status")
+      .eq("id", roundId)
+      .maybeSingle();
+
+    if (error) {
+      onLoadError(`Failed to refresh round status: ${error.message}`);
+      return;
+    }
+
+    if (data?.status) {
+      setRoundStatus(data.status);
+    }
+  }, [supabase, roundId, setRoundStatus, onLoadError]);
+
   const loadHoleScores = useCallback(async () => {
     const { data, error } = await supabase
       .from("hole_scores")
@@ -77,45 +101,35 @@ export function useRoundRealtime({
     setHoleScores((data ?? []) as HoleScoreRow[]);
   }, [supabase, roundId, setHoleScores, onLoadError]);
 
+  // Single refresh for low-frequency collaboration data. Called on every
+  // postgres_changes event for participants/invites/rounds, and on every
+  // resync trigger (subscription start, tab visibility).
+  const refreshRoundMeta = useCallback(async () => {
+    await Promise.all([loadParticipants(), loadInvites(), loadRoundStatus()]);
+  }, [loadParticipants, loadInvites, loadRoundStatus]);
+
   useEffect(() => {
     const channel = supabase
       .channel(`round-session:${roundId}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "round_participants", filter: `round_id=eq.${roundId}` },
-        (payload) => {
-          if (payload.eventType === "DELETE") {
-            const oldRow = payload.old as { id?: string } | null;
-            if (oldRow?.id) {
-              const deletedId = oldRow.id;
-              setParticipants((prev) => prev.filter((row) => row.id !== deletedId));
-            } else {
-              void loadParticipants();
-            }
-            return;
-          }
-          const newRow = payload.new as Partial<ParticipantRow> | null;
-          if (!newRow || !newRow.id) {
-            void loadParticipants();
-            return;
-          }
-          const row: ParticipantRow = {
-            id: newRow.id,
-            user_id: newRow.user_id ?? null,
-            guest_name: newRow.guest_name ?? null,
-            joined_at: newRow.joined_at ?? new Date().toISOString(),
-          };
-          setParticipants((prev) => {
-            const filtered = prev.filter((existing) => existing.id !== row.id);
-            return [...filtered, row].sort((a, b) => a.joined_at.localeCompare(b.joined_at));
-          });
+        () => {
+          void refreshRoundMeta();
         }
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "round_invitations", filter: `round_id=eq.${roundId}` },
         () => {
-          void loadInvites();
+          void refreshRoundMeta();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "rounds", filter: `id=eq.${roundId}` },
+        () => {
+          void refreshRoundMeta();
         }
       )
       .on(
@@ -171,19 +185,34 @@ export function useRoundRealtime({
           setRenderNow(savedAt);
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        // Close the race between page mount and subscription activation by
+        // resyncing once the channel is confirmed live.
+        if (status === "SUBSCRIBED") {
+          void refreshRoundMeta();
+          void loadHoleScores();
+        }
+      });
+
+    // Resync when the tab becomes visible again. Covers screen lock, app
+    // switch, and websocket drops on flaky LTE.
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void refreshRoundMeta();
+        void loadHoleScores();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       void supabase.removeChannel(channel);
     };
   }, [
     supabase,
     roundId,
-    loadParticipants,
-    loadInvites,
+    refreshRoundMeta,
     loadHoleScores,
-    setParticipants,
-    setInvites,
     setHoleScores,
     setLastSavedEvent,
     setRenderNow,

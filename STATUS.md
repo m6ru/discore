@@ -12,22 +12,33 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 **Done when:**
 
-- [ ] Both testers have accounts, saved profiles (first + last → `display_name`), on HTTPS deploy
-- [ ] Scorer: create draft → add guest and/or invite friend → friend accepts on hub → start round
-- [ ] Score all holes (save per hole, OB optional) → complete round
-- [ ] Round appears in history; hub shows resume while active
-- [ ] Observer sees scorecard update after scorer saves
-- [ ] Chosen layout exists in `supabase/seeds/courses/`
+- [x] Both testers have accounts, saved profiles (first + last → `display_name`), on HTTPS deploy
+- [x] Scorer: create draft → add guest and/or invite friend → friend accepts on hub → start round
+- [x] Score all holes (save per hole, OB optional) → complete round
+- [x] Round appears in history; hub shows resume while active
+- [x] Observer sees scorecard update after scorer saves (Realtime)
+- [x] Chosen layout exists in `supabase/seeds/courses/`
 
 **Prerequisites:** Remote Supabase with all migrations applied; `NEXT_PUBLIC_SUPABASE_*` on host; 2+ registered users.
+
+**Deploy (done):** Vercel production HTTPS; env vars set; Supabase Auth Site URL + redirect URLs pointed at deploy URL.
+
+**Realtime (done for field MVP):**
+
+- Supabase `supabase_realtime` publication must include: `hole_scores`, `round_invitations`, `round_participants`, `rounds` (enable via SQL Editor if dashboard toggles are greyed out).
+- **Round page** (`use-round-realtime.ts`): low-frequency tables (participants, invites, round status) use one `refreshRoundMeta()` refetch on any change; `hole_scores` stays inline-patched for speed; resync on channel `SUBSCRIBED` and tab `visibilitychange`.
+- **Hub** (`home-invites.tsx`): pending invites for current user; same resync on subscribe + visibility.
+- **Live flows verified in pre-flight:** invite arrival on hub, invite accept in round, score updates for observer, round completion for observer. Re-test after deploy if publication or code changed.
 
 **Known blockers before field test:**
 
 - Serwist service worker is not wired (`next.config.ts`) — use a normal browser tab; install-to-home-screen is weak until Phase 4.
 
-**Profile discoverability (done):** `profiles.visibility` removed; authenticated users can read all profiles for invite/search. Apply migration `20260521120000_drop_profiles_visibility.sql` on remote before field test.
+**Profile discoverability (done):** `profiles.visibility` removed; authenticated users can read all profiles for invite/search. Migration `20260521120000_drop_profiles_visibility.sql` on remote.
 
 **Out of scope for field MVP:** Anonymous guest round (D-guest), advanced stats / `fairway_hit`, full shadcn UI, rich Phase 5 stats, offline sync.
+
+**Field day:** Run full round on course with two phones (LTE, browser tab not PWA). Capture friction for Tier 2 UX (layout grouping, sticky save, replace `window.confirm`).
 
 ---
 
@@ -37,7 +48,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 |-------|--------|-------|
 | **1** Infrastructure | Done | Next.js, Supabase clients, middleware; minimal `manifest.ts`; SW not configured |
 | **2** Schema & seeding | Done | RLS, 17 migrations, 18 seeded layouts |
-| **3** Core scoring | **Done (field MVP)** | Draft/active/complete, invites, scorer writes, observer Realtime; `fairway_hit` UI deferred |
+| **3** Core scoring | **Done (field MVP)** | Draft/active/complete, invites, scorer writes, observer Realtime (consolidated refresh + visibility resync) |
 | **4** PWA & polish | Not started | Serwist, icons, mobile UX pass |
 | **5** History & stats | Partial | `/rounds` list exists; richer stats not built |
 | **6** Ratings & tournaments | Not started | By design until adoption warrants |
@@ -52,7 +63,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 - **Rounds:** create draft → invite registered users or add guests → start when no pending invites
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
 - **Active round:** OB toggle, leaderboard, front-9 / final summaries, back-hole navigation, abandon
-- **Observer:** read-only UI + Realtime scorecard / “last saved”
+- **Observer:** read-only UI + Realtime scorecard / “last saved”; round status and draft invite/participant sync via `refreshRoundMeta`
 - **History:** `app/rounds/page.tsx` for past rounds
 - **Code layout:** `lib/scoring` (pure math), `lib/rounds` + `lib/profiles` (actions), `app/rounds/[roundId]/` (orchestrator, hooks, components)
 
@@ -62,11 +73,12 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 
 ## Next (ordered)
 
-1. ~~**Profile discoverability**~~ — Done: dropped `visibility`; `profiles_select` allows any authenticated read ([`20260521120000_drop_profiles_visibility.sql`](supabase/migrations/20260521120000_drop_profiles_visibility.sql)).
-2. **Deploy** — Host on HTTPS (e.g. Vercel); confirm env vars and `npx supabase migration list` on linked project (includes migration #17).
-3. **Field test** — Run the checklist above with two phones; capture UX pain (save button, layout list, confirms).
-4. **Layout picker** — Group layouts by course on `app/rounds/new` if the flat list is painful on course.
-5. **Phase 4 lite** — After field feedback: mobile scoring UX, wire Serwist + manifest icons, optional OB markers on scorecard.
+1. ~~**Profile discoverability**~~ — Done.
+2. ~~**Deploy**~~ — Done (Vercel + Supabase Auth URLs).
+3. ~~**Pre-flight + Realtime**~~ — Done (publication + consolidated round/hub subscriptions).
+4. **Field test on course** — Two phones, LTE, browser tab; note UX friction.
+5. **Layout picker** — Group layouts by course on `app/rounds/new` if flat list hurts on course.
+6. **Phase 4 lite** — After field feedback: mobile scoring UX, Serwist + icons, optional OB markers on scorecard.
 
 ---
 
@@ -87,7 +99,7 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 |-------|--------|---------|
 | **A** Resilience & domain | Complete | `/lib/scoring`; online-first writes; legacy `localStorage` queue removed |
 | **B** Round visibility | Complete | History, resume on hub, enriched invites, scorer participant self-heal |
-| **C** Score & observer UX | Complete | OB boolean, leaderboard, last-saved, Realtime merges, hub redirects |
+| **C** Score & observer UX | Complete | OB boolean, leaderboard, last-saved, Realtime (scores + meta refresh), hub invite live |
 | **D-courses** | Complete | JSON seeds, `seed:courses` → SQL migrations |
 | **D-guest** | Deferred | See Later |
 
@@ -153,6 +165,15 @@ Do not reintroduce `utils/supabase/*`.
 
 Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds`, `round_participants`, `round_invitations`, `hole_scores`. RLS on all.
 
+**Realtime publication (remote, manual):** Add tables to `supabase_realtime` if disabled in dashboard:
+
+```sql
+alter publication supabase_realtime add table public.hole_scores;
+alter publication supabase_realtime add table public.round_invitations;
+alter publication supabase_realtime add table public.round_participants;
+alter publication supabase_realtime add table public.rounds;
+```
+
 Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 
 ### Key paths
@@ -162,7 +183,7 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Scoring math | `lib/scoring/{types,stats}.ts` |
 | Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows}.ts` |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
-| Round UI | `app/rounds/[roundId]/round-session.tsx`, hooks, `components/*`, `scorecard-segment.tsx` |
+| Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` |
 | Hub / invites | `app/page.tsx`, `app/home-invites.tsx` |
 
 ### Constraints

@@ -1,5 +1,7 @@
 import type { InviteRow } from "@/lib/rounds/invite-rows";
 
+export type RoundStatus = "draft" | "active" | "completed" | "abandoned" | string;
+
 export type ParticipantRow = {
   id: string;
   user_id: string | null;
@@ -40,7 +42,7 @@ export type HoleScoreRow = {
 
 export type RoundSessionProps = {
   roundId: string;
-  roundStatus: string;
+  roundStatus: RoundStatus;
   scorerUserId: string;
   isScorer: boolean;
   currentUserId: string;
