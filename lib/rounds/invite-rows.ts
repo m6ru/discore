@@ -1,3 +1,5 @@
+import { pickOne } from "@/lib/supabase/select-helpers";
+
 export type InviteRow = {
   id: string;
   invited_user_id: string;
@@ -21,16 +23,6 @@ type RawInviteRow = {
   created_at: string;
   profiles?: RawInviteProfile;
 };
-
-function pickOne<T>(value: T | T[] | null | undefined): T | null {
-  if (!value) {
-    return null;
-  }
-  if (Array.isArray(value)) {
-    return value[0] ?? null;
-  }
-  return value;
-}
 
 /** Normalize Supabase join shape (profiles may be object or array). */
 export function normalizeInviteRows(raw: RawInviteRow[] | null | undefined): InviteRow[] {

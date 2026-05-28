@@ -60,11 +60,12 @@ export function getTotalStrokes(
   participantId: string,
   targetHoleIds: readonly string[]
 ): number {
+  const targetSet = new Set(targetHoleIds);
   let total = 0;
   for (const score of scores) {
     if (
       score.participant_id === participantId &&
-      targetHoleIds.includes(score.hole_id)
+      targetSet.has(score.hole_id)
     ) {
       total += score.strokes;
     }

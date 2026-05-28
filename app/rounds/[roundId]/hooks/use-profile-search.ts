@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
-import type { ProfileSearchResult } from "./round-types";
+import type { RoundStatus } from "@/lib/rounds/round-status";
+import type { ProfileSearchResult } from "../round-types";
 
 type Client = SupabaseClient<Database>;
 
 type Options = {
   supabase: Client;
-  roundStatus: string;
+  roundStatus: RoundStatus;
   currentUserId: string;
   participantName: string;
   onSearchError: (message: string) => void;

@@ -16,6 +16,8 @@ export function AuthForm({ message }: Props) {
   const [mode, setMode] = useState<AuthMode>("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,7 +38,26 @@ export function AuthForm({ message }: Props) {
         return;
       }
 
-      const { error } = await supabase.auth.signUp({ email, password });
+      const trimmedFirst = firstName.trim();
+      const trimmedLast = lastName.trim();
+      if (!trimmedFirst || !trimmedLast) {
+        setStatus("First name and last name are required.");
+        return;
+      }
+
+      // First/last name are passed as user metadata. The `handle_new_user`
+      // trigger composes `profiles.display_name` from them so we never store
+      // email on the profile (BLUEPRINT §5/§7).
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: trimmedFirst,
+            last_name: trimmedLast,
+          },
+        },
+      });
       if (error) {
         setStatus(error.message);
         return;
@@ -71,6 +92,35 @@ export function AuthForm({ message }: Props) {
           </button>
         </div>
 
+        {mode === "sign-up" ? (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="block space-y-1 text-sm">
+              <span>First name</span>
+              <input
+                type="text"
+                required
+                value={firstName}
+                onChange={(event) => setFirstName(event.target.value)}
+                className="w-full rounded border border-zinc-300 px-3 py-2"
+                maxLength={80}
+                autoComplete="given-name"
+              />
+            </label>
+            <label className="block space-y-1 text-sm">
+              <span>Last name</span>
+              <input
+                type="text"
+                required
+                value={lastName}
+                onChange={(event) => setLastName(event.target.value)}
+                className="w-full rounded border border-zinc-300 px-3 py-2"
+                maxLength={80}
+                autoComplete="family-name"
+              />
+            </label>
+          </div>
+        ) : null}
+
         <label className="block space-y-1 text-sm">
           <span>Email</span>
           <input
@@ -79,6 +129,7 @@ export function AuthForm({ message }: Props) {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             className="w-full rounded border border-zinc-300 px-3 py-2"
+            autoComplete="email"
           />
         </label>
 
@@ -91,6 +142,7 @@ export function AuthForm({ message }: Props) {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             className="w-full rounded border border-zinc-300 px-3 py-2"
+            autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
           />
         </label>
 

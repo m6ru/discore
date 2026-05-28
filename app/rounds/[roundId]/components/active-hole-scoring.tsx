@@ -1,16 +1,11 @@
+import type { HoleProgressEntry } from "@/lib/scoring/progress";
 import type { HoleRow, ParticipantRow } from "../round-types";
-
-type HoleProgressDot = {
-  hole: HoleRow;
-  allScored: boolean;
-  isCurrent: boolean;
-};
 
 type Props = {
   activeHole: HoleRow;
   holesLength: number;
   sortedHoles: HoleRow[];
-  holeProgressDots: HoleProgressDot[];
+  holeProgressDots: HoleProgressEntry<HoleRow>[];
   scoringParticipants: ParticipantRow[];
   currentHoleIndex: number;
   isLastHole: boolean;

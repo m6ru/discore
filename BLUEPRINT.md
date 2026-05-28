@@ -47,10 +47,6 @@ The app targets **reliable scoring while connected**. Disc golf courses can have
 2. **Success** → UI updates from the returned rows (and/or Realtime). The scorer advances to the next hole or completes the round.
 3. **Failure** (no network, RLS, validation, etc.) → an explicit error message is shown; **strokes / OB drafts stay on screen** so the scorer can retry when connectivity returns. No background FIFO queue, no `pending:` optimistic client ids for persistence.
 
-**Legacy cleanup**
-
-- The older design used `localStorage` (`discore_pending_queue:<roundId>`). That mechanism is **removed**. The app may still **clear that key** on round mount / complete / abandon so stale data never blocks flows.
-
 **Observers**
 
 - Realtime still delivers `hole_scores` changes after rows land in Postgres (unchanged).
@@ -94,6 +90,7 @@ Two strictly separate client instances are required due to Next.js App Router's 
 **profiles**
 - User data linked to Supabase Auth (`auth.users`).
 - Fields: display name, avatar URL, first/last name, gender, birth year, city (account fields as implemented). No per-user visibility flag — any authenticated user may read profiles for invite/search.
+- **First and last name are required at signup.** The signup form collects them and forwards them via `supabase.auth.signUp({ options: { data: { first_name, last_name } } })`. The `handle_new_user` trigger reads `raw_user_meta_data` and composes `display_name` as `"<first> <last>"`. Email is never written to `profiles` — if the metadata is missing (e.g. a user created via the Supabase dashboard), `display_name` falls back to `"Player <8-char-uuid>"` and the user must fill in their name from the account screen before they appear in invite/search.
 
 **courses**
 - Creator-seeded, read-only to users.
@@ -155,7 +152,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 ### Critical policy implementation notes
 
 - **`hole_scores` write policy must join to `rounds`** — the policy must verify `auth.uid() = (SELECT scorer_id FROM rounds WHERE id = hole_scores.round_id)`. Never trust a `scorer_id` value sent from the client.
-- **`profiles` read scope** — `SELECT` for `authenticated` only (`using (true)`). Unauthenticated requests must return zero rows. Users may only `UPDATE` their own row. Profile rows are discoverable for invite/search; do not store email on `profiles` (Auth only).
+- **`profiles` read scope** — `SELECT` for `authenticated` only (`using (true)`). Unauthenticated requests must return zero rows. Users may only `UPDATE` their own row. Profile rows are discoverable for invite/search; **never store email on `profiles`** — `display_name` is composed from `first_name`/`last_name` at signup, with a non-PII `"Player <uuid>"` fallback if metadata is missing.
 - **No client-supplied roles** — there is no admin role in the MVP. No user should be able to modify any field that elevates their own permissions. If a `role` column is added in future, it must only be writable via a server-side trigger or service role, never via the client.
 - **Publishable key is public by design** — but with the above RLS policies in place, an unauthenticated request using the publishable key must return zero rows from every table.
 

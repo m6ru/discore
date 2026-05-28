@@ -1,10 +1,11 @@
 import { getTotalStrokes } from "@/lib/scoring/stats";
+import type { RoundStatus } from "@/lib/rounds/round-status";
 import type { HoleScoreRow, ParticipantRow } from "../round-types";
 
 type Props = {
   showFrontNineSummary: boolean;
   showFinalSummary: boolean;
-  roundStatus: string;
+  roundStatus: RoundStatus;
   isScorer: boolean;
   isSubmitting: boolean;
   isTransitioning: boolean;

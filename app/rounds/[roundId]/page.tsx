@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
+import { pickOne } from "@/lib/supabase/select-helpers";
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
+import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
 import { RoundSession } from "./round-session";
 import type { HoleRow, HoleScoreRow } from "./round-types";
 
@@ -43,77 +45,55 @@ export default async function RoundPage({ params }: RoundPageProps) {
     notFound();
   }
 
-  const { data: participants, error: participantsError } = await supabase
-    .from("round_participants")
-    .select("id, user_id, guest_name, joined_at")
-    .eq("round_id", round.id)
-    .order("joined_at", { ascending: true });
-  const { data: invites, error: invitesError } = await supabase
-    .from("round_invitations")
-    .select("id, invited_user_id, status, created_at, profiles!round_invitations_invited_user_id_fkey(display_name)")
-    .eq("round_id", round.id)
-    .order("created_at", { ascending: true });
+  const roundStatus: RoundStatus = isRoundStatus(round.status) ? round.status : "draft";
 
-  const layoutRow = Array.isArray(round.layouts) ? round.layouts[0] : round.layouts;
-  const courseRow = Array.isArray(layoutRow?.courses) ? layoutRow?.courses[0] : layoutRow?.courses;
-  const { count: holesCount } = await supabase
-    .from("holes")
-    .select("*", { count: "exact", head: true })
-    .eq("layout_id", round.layout_id);
-  const { data: holes, error: holesError } = await supabase
-    .from("holes")
-    .select("id, hole_number, par")
-    .eq("layout_id", round.layout_id)
-    .order("hole_number", { ascending: true });
-  const { data: existingScores, error: existingScoresError } = await supabase
-    .from("hole_scores")
-    .select("id, participant_id, hole_id, strokes, ob, fairway_hit")
-    .eq("round_id", round.id);
-  const isScorer = round.scorer_id === user.id;
-  const safeParticipants = participants ?? [];
-  const isRoundParticipant = safeParticipants.some((participant) => participant.user_id === user.id);
-
-  if (!isScorer && !isRoundParticipant) {
-    redirect("/?message=You+must+be+a+round+participant+to+view+this+round");
-  }
-
-  const { data: scorerProfile } = await supabase
-    .from("profiles")
-    .select("display_name")
-    .eq("id", round.scorer_id)
-    .maybeSingle();
-
-  // Invariant: the scorer must be in `round_participants`. The create-round
-  // form already inserts this row, but a partial failure there (or any
-  // historical row predating this invariant) could leave it missing. Self-heal
-  // here so the rest of the app can treat round_participants as authoritative
-  // and drop the old "scorer-self" synthetic injection.
-  let participantsForUi = safeParticipants;
-  const hasScorerParticipant = safeParticipants.some(
-    (participant) => participant.user_id === round.scorer_id
-  );
-  if (isScorer && !hasScorerParticipant) {
-    const { error: scorerInsertError } = await supabase
-      .from("round_participants")
-      .insert({ round_id: round.id, user_id: round.scorer_id });
-
-    if (scorerInsertError && scorerInsertError.code !== "23505") {
-      return (
-        <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
-          <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-            Failed to register you as a participant: {scorerInsertError.message}
-          </p>
-        </main>
-      );
-    }
-
-    const { data: refreshedParticipants } = await supabase
+  // All five reads below are independent given `round.id` / `round.layout_id` /
+  // `round.scorer_id`, so they fan out in parallel.
+  const [
+    { data: participants, error: participantsError },
+    { data: invites, error: invitesError },
+    { data: holes, error: holesError },
+    { data: existingScores, error: existingScoresError },
+    { data: scorerProfile },
+  ] = await Promise.all([
+    supabase
       .from("round_participants")
       .select("id, user_id, guest_name, joined_at")
       .eq("round_id", round.id)
-      .order("joined_at", { ascending: true });
+      .order("joined_at", { ascending: true }),
+    supabase
+      .from("round_invitations")
+      .select(
+        "id, invited_user_id, status, created_at, profiles!round_invitations_invited_user_id_fkey(display_name)"
+      )
+      .eq("round_id", round.id)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("holes")
+      .select("id, hole_number, par")
+      .eq("layout_id", round.layout_id)
+      .order("hole_number", { ascending: true }),
+    supabase
+      .from("hole_scores")
+      .select("id, participant_id, hole_id, strokes, ob, fairway_hit")
+      .eq("round_id", round.id),
+    supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", round.scorer_id)
+      .maybeSingle(),
+  ]);
 
-    participantsForUi = refreshedParticipants ?? safeParticipants;
+  const layoutRow = pickOne(round.layouts);
+  const courseRow = pickOne(layoutRow?.courses);
+  const safeParticipants = participants ?? [];
+  const isScorer = round.scorer_id === user.id;
+  const isRoundParticipant = safeParticipants.some(
+    (participant) => participant.user_id === user.id,
+  );
+
+  if (!isScorer && !isRoundParticipant) {
+    redirect("/?message=You+must+be+a+round+participant+to+view+this+round");
   }
 
   return (
@@ -125,7 +105,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
         <p className="text-sm text-zinc-700">{courseRow?.name ?? "Unknown course"}</p>
         <p className="text-sm text-zinc-700">{layoutRow?.name ?? "Unknown layout"}</p>
         <p className="text-sm text-zinc-600">
-          Holes <span className="font-medium">{holesCount ?? "?"}</span> - Par{" "}
+          Holes <span className="font-medium">{holes?.length ?? "?"}</span> - Par{" "}
           <span className="font-medium">{layoutRow?.total_par ?? "?"}</span>
         </p>
         <p className="text-sm text-zinc-600">
@@ -153,12 +133,12 @@ export default async function RoundPage({ params }: RoundPageProps) {
         <RoundSession
           key={round.id}
           roundId={round.id}
-          roundStatus={round.status}
+          roundStatus={roundStatus}
           scorerUserId={round.scorer_id}
           isScorer={isScorer}
           currentUserId={user.id}
           scorerDisplayName={scorerProfile?.display_name ?? "Scorer"}
-          initialParticipants={participantsForUi}
+          initialParticipants={safeParticipants}
           initialInvites={normalizeInviteRows(invites ?? [])}
           holes={(holes ?? []) as HoleRow[]}
           initialHoleScores={(existingScores ?? []) as HoleScoreRow[]}

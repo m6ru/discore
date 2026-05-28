@@ -1,30 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
-
-type CourseRef = { name: string | null } | { name: string | null }[] | null;
-type LayoutRef =
-  | { name: string | null; courses: CourseRef }
-  | { name: string | null; courses: CourseRef }[]
-  | null;
-
-type RoundRow = {
-  id: string;
-  status: string;
-  started_at: string | null;
-  completed_at: string | null;
-  layouts: LayoutRef;
-};
-
-function pickOne<T>(value: T | T[] | null | undefined): T | null {
-  if (!value) {
-    return null;
-  }
-  if (Array.isArray(value)) {
-    return value[0] ?? null;
-  }
-  return value;
-}
+import { pickOne } from "@/lib/supabase/select-helpers";
 
 function formatDate(iso: string | null): string {
   if (!iso) {
@@ -63,7 +40,7 @@ export default async function RoundsHistoryPage() {
     .in("status", ["active", "completed", "abandoned"])
     .order("started_at", { ascending: false, nullsFirst: false });
 
-  const rounds = (data ?? []) as unknown as RoundRow[];
+  const rounds = data ?? [];
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-8">

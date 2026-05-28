@@ -1,7 +1,9 @@
+import type { RoundStatus } from "@/lib/rounds/round-status";
+
 type Props = {
   status: string | null;
   lastSavedLabel: string | null;
-  roundStatus: string;
+  roundStatus: RoundStatus;
 };
 
 export function RoundStatusBanner({ status, lastSavedLabel, roundStatus }: Props) {

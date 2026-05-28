@@ -1,8 +1,9 @@
-import { ScorecardSegment } from "../scorecard-segment";
+import { ScorecardSegment } from "./scorecard-segment";
+import type { RoundStatus } from "@/lib/rounds/round-status";
 import type { HoleRow, ParticipantRow } from "../round-types";
 
 type Props = {
-  roundStatus: string;
+  roundStatus: RoundStatus;
   holeSegments: HoleRow[][];
   sortedHoles: HoleRow[];
   scoreLookup: Map<string, number>;

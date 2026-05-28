@@ -25,7 +25,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 **Realtime (done for field MVP):**
 
-- Supabase `supabase_realtime` publication must include: `hole_scores`, `round_invitations`, `round_participants`, `rounds` (enable via SQL Editor if dashboard toggles are greyed out).
+- Supabase `supabase_realtime` publication includes `hole_scores`, `round_invitations`, `round_participants`, `rounds`. Membership is enforced by migration `20260527190100_realtime_publication_membership.sql`.
 - **Round page** (`use-round-realtime.ts`): low-frequency tables (participants, invites, round status) use one `refreshRoundMeta()` refetch on any change; `hole_scores` stays inline-patched for speed; resync on channel `SUBSCRIBED` and tab `visibilitychange`.
 - **Hub** (`home-invites.tsx`): pending invites for current user; same resync on subscribe + visibility.
 - **Live flows verified in pre-flight:** invite arrival on hub, invite accept in round, score updates for observer, round completion for observer. Re-test after deploy if publication or code changed.
@@ -107,7 +107,7 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 
 ## Cross-cutting risks
 
-- **`auth.users → profiles` trigger** — must set `display_name` on signup (email fallback).
+- **`auth.users → profiles` trigger** — composes `display_name` from `first_name`/`last_name` in `raw_user_meta_data`. Non-PII `"Player <uuid>"` fallback if metadata is missing (e.g. dashboard-created users). Never falls back to email.
 - **Single scorer model** — “pass the phone” not supported; future `round_scorers` table possible.
 - **`tournament_id` on `rounds`** — reserved; no action needed.
 - **Profile data exposure** — any signed-in user can read `profiles` fields (name, city, birth year, gender, avatar). Email stays in Auth only. Accepted for community MVP.
@@ -143,7 +143,7 @@ Do not reintroduce `utils/supabase/*`.
 - Project ref: `uxvrnvsgqyctpxjiziyp`
 - Per machine: `supabase login`, `supabase link --project-ref uxvrnvsgqyctpxjiziyp`
 
-### Migrations (17)
+### Migrations (20)
 
 1. `20260420185000_initial_schema.sql`
 2. `20260420185100_rls_policies.sql`
@@ -162,17 +162,13 @@ Do not reintroduce `utils/supabase/*`.
 15. `20260518150000_drop_legacy_jarve_pro_18.sql`
 16. `20260520100345_seed_courses_from_json.sql`
 17. `20260521120000_drop_profiles_visibility.sql`
+18. `20260527190000_ensure_scorer_participant_trigger.sql`
+19. `20260527190100_realtime_publication_membership.sql`
+20. `20260527190200_signup_requires_first_last_name.sql`
 
 Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds`, `round_participants`, `round_invitations`, `hole_scores`. RLS on all.
 
-**Realtime publication (remote, manual):** Add tables to `supabase_realtime` if disabled in dashboard:
-
-```sql
-alter publication supabase_realtime add table public.hole_scores;
-alter publication supabase_realtime add table public.round_invitations;
-alter publication supabase_realtime add table public.round_participants;
-alter publication supabase_realtime add table public.rounds;
-```
+**Realtime publication:** Enforced by `20260527190100_realtime_publication_membership.sql` (idempotent — adds any of `hole_scores`, `round_invitations`, `round_participants`, `rounds` that are not already in the publication).
 
 Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 

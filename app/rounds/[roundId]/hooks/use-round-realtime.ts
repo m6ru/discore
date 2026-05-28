@@ -3,13 +3,13 @@
 import { useCallback, useEffect, type Dispatch, type SetStateAction } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { normalizeInviteRows, type InviteRow } from "@/lib/rounds/invite-rows";
+import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
 import type { Database } from "@/lib/database.types";
 import type {
   HoleScoreRow,
   LastSavedEvent,
   ParticipantRow,
-  RoundStatus,
-} from "./round-types";
+} from "../round-types";
 
 type Client = SupabaseClient<Database>;
 
@@ -82,7 +82,7 @@ export function useRoundRealtime({
       return;
     }
 
-    if (data?.status) {
+    if (data?.status && isRoundStatus(data.status)) {
       setRoundStatus(data.status);
     }
   }, [supabase, roundId, setRoundStatus, onLoadError]);

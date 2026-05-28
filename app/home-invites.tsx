@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { pickOne } from "@/lib/supabase/select-helpers";
 
 export type InviteWithContext = {
   id: string;
@@ -17,42 +18,6 @@ type Props = {
   currentUserId: string;
   invites: InviteWithContext[];
 };
-
-type CourseRef = { name: string | null } | { name: string | null }[] | null;
-type LayoutRef =
-  | { name: string | null; courses: CourseRef }
-  | { name: string | null; courses: CourseRef }[]
-  | null;
-type ScorerRef =
-  | { display_name: string | null }
-  | { display_name: string | null }[]
-  | null;
-
-type RawInviteRow = {
-  id: string;
-  round_id: string;
-  created_at: string;
-  rounds:
-    | {
-        layouts: LayoutRef;
-        scorer: ScorerRef;
-      }
-    | {
-        layouts: LayoutRef;
-        scorer: ScorerRef;
-      }[]
-    | null;
-};
-
-function pickOne<T>(value: T | T[] | null | undefined): T | null {
-  if (!value) {
-    return null;
-  }
-  if (Array.isArray(value)) {
-    return value[0] ?? null;
-  }
-  return value;
-}
 
 function formatDateTime(iso: string): string {
   const d = new Date(iso);
@@ -87,9 +52,8 @@ export function HomeInvites({ currentUserId, invites }: Props) {
       return;
     }
 
-    const rows = (data ?? []) as unknown as RawInviteRow[];
     setInviteItems(
-      rows.map((row) => {
+      (data ?? []).map((row) => {
         const round = pickOne(row.rounds);
         const layout = pickOne(round?.layouts);
         const course = pickOne(layout?.courses);
@@ -106,7 +70,11 @@ export function HomeInvites({ currentUserId, invites }: Props) {
     );
   }, [supabase, currentUserId]);
 
+  // Re-seed local state when the server-rendered prop changes (e.g. after
+  // `router.refresh()`). The component mutates `inviteItems` from realtime
+  // events too, so the mirror is intentional.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync server prop into client state
     setInviteItems(invites);
   }, [invites]);
 

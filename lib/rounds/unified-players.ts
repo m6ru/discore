@@ -1,5 +1,6 @@
 import type { ParticipantRow, UnifiedPlayer } from "@/app/rounds/[roundId]/round-types";
 import type { InviteRow } from "@/lib/rounds/invite-rows";
+import type { RoundStatus } from "@/lib/rounds/round-status";
 
 export function buildInviteNameByUserId(invites: InviteRow[]): Map<string, string> {
   const map = new Map<string, string>();
@@ -16,7 +17,7 @@ export type BuildUnifiedPlayersInput = {
   invites: InviteRow[];
   scorerUserId: string;
   scorerDisplayName: string;
-  roundStatus: string;
+  roundStatus: RoundStatus;
   isScorer: boolean;
 };
 

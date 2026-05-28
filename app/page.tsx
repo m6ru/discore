@@ -1,55 +1,7 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase/server";
+import { pickOne } from "@/lib/supabase/select-helpers";
 import { HomeInvites, type InviteWithContext } from "./home-invites";
-
-type CourseRef = { name: string | null } | { name: string | null }[] | null;
-type LayoutRef =
-  | { name: string | null; courses: CourseRef }
-  | { name: string | null; courses: CourseRef }[]
-  | null;
-type ScorerRef =
-  | { display_name: string | null }
-  | { display_name: string | null }[]
-  | null;
-
-type ActiveRoundRow = {
-  id: string;
-  scorer_id: string;
-  started_at: string | null;
-  layouts: LayoutRef;
-};
-
-type RawInviteRow = {
-  id: string;
-  round_id: string;
-  created_at: string;
-  rounds:
-    | {
-        id: string;
-        started_at: string | null;
-        scorer_id: string;
-        layouts: LayoutRef;
-        scorer: ScorerRef;
-      }
-    | {
-        id: string;
-        started_at: string | null;
-        scorer_id: string;
-        layouts: LayoutRef;
-        scorer: ScorerRef;
-      }[]
-    | null;
-};
-
-function pickOne<T>(value: T | T[] | null | undefined): T | null {
-  if (!value) {
-    return null;
-  }
-  if (Array.isArray(value)) {
-    return value[0] ?? null;
-  }
-  return value;
-}
 
 function formatDateTime(iso: string | null): string {
   if (!iso) {
@@ -95,8 +47,8 @@ export default async function HomePage() {
         { data: null, error: null },
       ];
 
-  const activeRounds = (activeRoundsResult.data ?? []) as unknown as ActiveRoundRow[];
-  const rawInvites = (invitesResult.data ?? []) as unknown as RawInviteRow[];
+  const activeRounds = activeRoundsResult.data ?? [];
+  const rawInvites = invitesResult.data ?? [];
 
   const invites: InviteWithContext[] = rawInvites.map((row) => {
     const round = pickOne(row.rounds);

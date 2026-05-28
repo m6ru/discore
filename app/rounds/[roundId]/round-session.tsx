@@ -2,9 +2,11 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { segmentPlayerStats } from "@/lib/scoring/stats";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
-import { clearLegacyPendingQueueStorage } from "@/lib/rounds/hole-scores";
+import { isSegmentComplete } from "@/lib/scoring/segments";
+import { buildLeaderboard } from "@/lib/scoring/leaderboard";
+import { buildHoleProgress } from "@/lib/scoring/progress";
+import { formatRelativeTime } from "@/lib/format/relative-time";
 import { getParticipantLabel as labelForParticipant } from "@/lib/rounds/participant-labels";
 import { buildUnifiedPlayers } from "@/lib/rounds/unified-players";
 import type { InviteRow } from "@/lib/rounds/invite-rows";
@@ -19,17 +21,16 @@ import { RoundSummaries } from "./components/round-summaries";
 import { ScorecardSection } from "./components/scorecard-section";
 import type {
   HoleScoreRow,
-  LeaderboardRow,
   LastSavedEvent,
   ParticipantRow,
   RoundStatus,
   RoundSessionProps,
 } from "./round-types";
-import { useActiveScoring } from "./use-active-scoring";
-import { useDraftSetup } from "./use-draft-setup";
-import { useProfileSearch } from "./use-profile-search";
-import { useRoundLifecycle } from "./use-round-lifecycle";
-import { useRoundRealtime } from "./use-round-realtime";
+import { useActiveScoring } from "./hooks/use-active-scoring";
+import { useDraftSetup } from "./hooks/use-draft-setup";
+import { useProfileSearch } from "./hooks/use-profile-search";
+import { useRoundLifecycle } from "./hooks/use-round-lifecycle";
+import { useRoundRealtime } from "./hooks/use-round-realtime";
 
 export function RoundSession({
   roundId,
@@ -52,6 +53,10 @@ export function RoundSession({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [holeScores, setHoleScores] = useState<HoleScoreRow[]>(initialHoleScores);
   const [lastSavedEvent, setLastSavedEvent] = useState<LastSavedEvent | null>(null);
+  // `renderNow` is the clock value the relative-time label reads. We start at
+  // 0 to keep SSR output stable (no Date.now() during render), then bump it
+  // post-mount via the useLayoutEffect below and every 15s while a save event
+  // is on-screen.
   const [renderNow, setRenderNow] = useState(0);
 
   const onLoadError = useCallback((message: string) => setStatus(message), []);
@@ -140,19 +145,10 @@ export function RoundSession({
     onSearchError: setStatus,
   });
 
+  // Pick up server-rendered status changes after `router.refresh()`. Realtime
+  // events also write to `liveRoundStatus`, so the mirror is intentional.
   useEffect(() => {
-    if (isScorer) {
-      clearLegacyPendingQueueStorage(roundId);
-    }
-  }, [roundId, isScorer]);
-
-  useEffect(() => {
-    if (liveRoundStatus === "completed" || liveRoundStatus === "abandoned") {
-      clearLegacyPendingQueueStorage(roundId);
-    }
-  }, [liveRoundStatus, roundId]);
-
-  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync server prop into client state
     setLiveRoundStatus(roundStatus);
   }, [roundStatus]);
 
@@ -190,42 +186,16 @@ export function RoundSession({
 
   const canScore =
     liveRoundStatus === "active" && !!activeHole && scoringParticipants.length > 0;
-  const holeIds = useMemo(() => holes.map((hole) => hole.id), [holes]);
-  const firstNineHoleIds = useMemo(
-    () => holes.filter((hole) => hole.hole_number <= 9).map((hole) => hole.id),
-    [holes]
-  );
-
-  const allScoresComplete = useMemo(() => {
-    if (holeIds.length === 0 || scoringParticipants.length === 0) return false;
-    return holeIds.every((holeId) =>
-      scoringParticipants.every((participant) =>
-        holeScores.some(
-          (score) => score.hole_id === holeId && score.participant_id === participant.id
-        )
-      )
-    );
-  }, [holeIds, scoringParticipants, holeScores]);
-
-  const frontNineComplete = useMemo(() => {
-    if (firstNineHoleIds.length === 0 || scoringParticipants.length === 0) return false;
-    return firstNineHoleIds.every((holeId) =>
-      scoringParticipants.every((participant) =>
-        holeScores.some(
-          (score) => score.hole_id === holeId && score.participant_id === participant.id
-        )
-      )
-    );
-  }, [firstNineHoleIds, scoringParticipants, holeScores]);
-
-  const showFinalSummary =
-    liveRoundStatus === "completed" || (liveRoundStatus === "active" && allScoresComplete);
-  const showFrontNineSummary =
-    liveRoundStatus === "active" && !showFinalSummary && frontNineComplete;
 
   const sortedHoles = useMemo(
     () => [...holes].sort((a, b) => a.hole_number - b.hole_number),
     [holes]
+  );
+
+  const holeIds = useMemo(() => sortedHoles.map((hole) => hole.id), [sortedHoles]);
+  const firstNineHoleIds = useMemo(
+    () => sortedHoles.filter((hole) => hole.hole_number <= 9).map((hole) => hole.id),
+    [sortedHoles]
   );
 
   const scoreLookup = useMemo(() => {
@@ -236,6 +206,20 @@ export function RoundSession({
     return map;
   }, [holeScores]);
 
+  const allScoresComplete = useMemo(
+    () => isSegmentComplete(holeIds, scoringParticipants, scoreLookup),
+    [holeIds, scoringParticipants, scoreLookup]
+  );
+  const frontNineComplete = useMemo(
+    () => isSegmentComplete(firstNineHoleIds, scoringParticipants, scoreLookup),
+    [firstNineHoleIds, scoringParticipants, scoreLookup]
+  );
+
+  const showFinalSummary =
+    liveRoundStatus === "completed" || (liveRoundStatus === "active" && allScoresComplete);
+  const showFrontNineSummary =
+    liveRoundStatus === "active" && !showFinalSummary && frontNineComplete;
+
   const holeSegments = useMemo(() => {
     const segments: typeof sortedHoles[] = [];
     for (let i = 0; i < sortedHoles.length; i += 9) {
@@ -244,17 +228,23 @@ export function RoundSession({
     return segments;
   }, [sortedHoles]);
 
+  const labelByParticipantId = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const participant of participants) {
+      map.set(participant.id, labelForParticipant(participant, unifiedPlayers));
+    }
+    return map;
+  }, [participants, unifiedPlayers]);
+
   const holeProgressDots = useMemo(
     () =>
-      sortedHoles.map((h) => ({
-        hole: h,
-        allScored:
-          scoringParticipants.length > 0 &&
-          scoringParticipants.every(
-            (p) => scoreLookup.get(makeScoreLookupKey(p.id, h.id)) !== undefined
-          ),
-        isCurrent: liveRoundStatus === "active" && activeHole?.id === h.id,
-      })),
+      buildHoleProgress(
+        sortedHoles,
+        scoringParticipants,
+        scoreLookup,
+        activeHole?.id ?? null,
+        liveRoundStatus === "active",
+      ),
     [sortedHoles, scoringParticipants, scoreLookup, activeHole, liveRoundStatus]
   );
 
@@ -262,51 +252,26 @@ export function RoundSession({
     if (!lastSavedEvent || renderNow === 0) return null;
     const hole = sortedHoles.find((h) => h.id === lastSavedEvent.holeId);
     if (!hole) return null;
-    const participant = participants.find((p) => p.id === lastSavedEvent.participantId);
-    const participantLabel = participant
-      ? (unifiedPlayers.find((item) => item.participantId === participant.id)?.label ??
-        participant.guest_name ??
-        "Player")
-      : "Player";
-    const cleanLabel = participantLabel.replace(" (pending)", "");
-    const diffMs = Math.max(0, renderNow - lastSavedEvent.savedAt);
-    let relative: string;
-    if (diffMs < 10_000) relative = "just now";
-    else if (diffMs < 60_000) relative = `${Math.floor(diffMs / 1000)}s ago`;
-    else if (diffMs < 3_600_000) relative = `${Math.floor(diffMs / 60_000)}m ago`;
-    else relative = `${Math.floor(diffMs / 3_600_000)}h ago`;
-    return `Hole ${hole.hole_number} saved by ${cleanLabel} · ${relative}`;
-  }, [lastSavedEvent, renderNow, sortedHoles, participants, unifiedPlayers]);
+    const participantLabel = labelByParticipantId.get(lastSavedEvent.participantId) ?? "Player";
+    const relative = formatRelativeTime(renderNow - lastSavedEvent.savedAt);
+    return `Hole ${hole.hole_number} saved by ${participantLabel} · ${relative}`;
+  }, [lastSavedEvent, renderNow, sortedHoles, labelByParticipantId]);
 
-  const leaderboardRows = useMemo((): LeaderboardRow[] => {
-    const rows = scoringParticipants.map((participant) => {
-      const stats = segmentPlayerStats(participant.id, sortedHoles, scoreLookup);
-      const label =
-        unifiedPlayers.find((item) => item.participantId === participant.id)?.label ??
-        participant.guest_name ??
-        "Player";
-      return {
-        participantId: participant.id,
-        label: label.replace(" (pending)", ""),
-        totalStrokes: stats.totalStrokes,
-        vsPar: stats.vsPar,
-        thru: stats.thru,
-      };
-    });
-    rows.sort((a, b) => {
-      if (a.thru === 0 && b.thru === 0) return a.label.localeCompare(b.label);
-      if (a.thru === 0) return 1;
-      if (b.thru === 0) return -1;
-      if (a.vsPar !== b.vsPar) return a.vsPar - b.vsPar;
-      if (a.totalStrokes !== b.totalStrokes) return a.totalStrokes - b.totalStrokes;
-      return a.label.localeCompare(b.label);
-    });
-    return rows;
-  }, [scoringParticipants, sortedHoles, scoreLookup, unifiedPlayers]);
+  const leaderboardRows = useMemo(
+    () =>
+      buildLeaderboard(
+        scoringParticipants,
+        sortedHoles,
+        scoreLookup,
+        (id) => labelByParticipantId.get(id) ?? "Player",
+      ),
+    [scoringParticipants, sortedHoles, scoreLookup, labelByParticipantId]
+  );
 
   const getParticipantLabel = useCallback(
-    (participant: ParticipantRow) => labelForParticipant(participant, unifiedPlayers),
-    [unifiedPlayers]
+    (participant: ParticipantRow) =>
+      labelByParticipantId.get(participant.id) ?? "Player",
+    [labelByParticipantId]
   );
 
   return (

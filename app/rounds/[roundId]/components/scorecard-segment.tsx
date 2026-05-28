@@ -1,6 +1,7 @@
 import { formatVsPar, segmentPlayerStats } from "@/lib/scoring/stats";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
-import type { HoleRow, ParticipantRow } from "./round-types";
+import type { RoundStatus } from "@/lib/rounds/round-status";
+import type { HoleRow, ParticipantRow } from "../round-types";
 
 function segmentHoleTitle(segmentHoles: HoleRow[]): string {
   if (segmentHoles.length === 0) {
@@ -18,7 +19,7 @@ export type ScorecardSegmentProps = {
   scoringParticipants: ParticipantRow[];
   getParticipantLabel: (participant: ParticipantRow) => string;
   activeHole: HoleRow | null;
-  roundStatus: string;
+  roundStatus: RoundStatus;
 };
 
 export function ScorecardSegment({

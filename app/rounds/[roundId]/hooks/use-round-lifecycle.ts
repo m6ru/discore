@@ -3,7 +3,6 @@
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { clearLegacyPendingQueueStorage } from "@/lib/rounds/hole-scores";
 import { abandonRound, completeRound } from "@/lib/rounds/round-active-actions";
 import type { Database } from "@/lib/database.types";
 
@@ -39,7 +38,6 @@ export function useRoundLifecycle({
       setIsTransitioning(false);
       return;
     }
-    clearLegacyPendingQueueStorage(roundId);
     router.push("/");
     router.refresh();
   }, [isScorer, supabase, roundId, setStatus, setIsTransitioning, router]);
@@ -56,7 +54,6 @@ export function useRoundLifecycle({
       setIsTransitioning(false);
       return;
     }
-    clearLegacyPendingQueueStorage(roundId);
     router.push("/");
     router.refresh();
   }, [saveCurrentHoleScores, supabase, roundId, setStatus, setIsTransitioning, router]);

@@ -3,14 +3,14 @@
 import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getFirstIncompleteHoleIndex } from "@/lib/scoring/stats";
-import { clearLegacyPendingQueueStorage, mergeHoleScoresByCell } from "@/lib/rounds/hole-scores";
+import { mergeHoleScoresByCell } from "@/lib/rounds/hole-scores";
 import {
   parseUpsertedHoleScores,
   upsertHoleScores,
   type HoleScoreUpsertRow,
 } from "@/lib/rounds/round-active-actions";
 import type { Database } from "@/lib/database.types";
-import type { HoleRow, HoleScoreRow, LastSavedEvent, ParticipantRow } from "./round-types";
+import type { HoleRow, HoleScoreRow, LastSavedEvent, ParticipantRow } from "../round-types";
 
 type Client = SupabaseClient<Database>;
 
@@ -246,6 +246,5 @@ export function useActiveScoring({
     saveCurrentHoleScores,
     onSaveAndAdvanceHole,
     onPreviousHole,
-    clearLegacyOnTerminal: () => clearLegacyPendingQueueStorage(roundId),
   };
 }

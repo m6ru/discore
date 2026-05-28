@@ -3,7 +3,6 @@
 import { FormEvent, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { clearLegacyPendingQueueStorage } from "@/lib/rounds/hole-scores";
 import {
   addGuestParticipant,
   cancelInvitesForUser,
@@ -14,14 +13,15 @@ import {
   startRound,
 } from "@/lib/rounds/round-draft-actions";
 import type { Database } from "@/lib/database.types";
-import type { ProfileSearchResult, UnifiedPlayer } from "./round-types";
+import type { RoundStatus } from "@/lib/rounds/round-status";
+import type { ProfileSearchResult, UnifiedPlayer } from "../round-types";
 
 type Client = SupabaseClient<Database>;
 
 type Options = {
   supabase: Client;
   roundId: string;
-  roundStatus: string;
+  roundStatus: RoundStatus;
   isScorer: boolean;
   currentUserId: string;
   loadParticipants: () => Promise<void>;
@@ -188,7 +188,6 @@ export function useDraftSetup({
       setIsTransitioning(false);
       return;
     }
-    clearLegacyPendingQueueStorage(roundId);
     router.push("/");
     router.refresh();
   }, [isScorer, supabase, roundId, setStatus, setIsTransitioning, router]);

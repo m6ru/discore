@@ -80,17 +80,8 @@ export function CreateRoundForm({ layouts }: Props) {
         return;
       }
 
-      const { error: scorerParticipantError } = await supabase
-        .from("round_participants")
-        .insert({
-          round_id: roundId,
-          user_id: user.id,
-        });
-
-      if (scorerParticipantError && scorerParticipantError.code !== "23505") {
-        setError(`Round created, but failed to add you as participant: ${scorerParticipantError.message}`);
-        return;
-      }
+      // The scorer is enrolled into `round_participants` automatically by the
+      // `ensure_scorer_participant_trigger` Postgres trigger on insert.
 
       router.push(`/rounds/${roundId}`);
       router.refresh();

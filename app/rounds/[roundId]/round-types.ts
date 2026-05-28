@@ -1,6 +1,9 @@
 import type { InviteRow } from "@/lib/rounds/invite-rows";
+import type { RoundStatus } from "@/lib/rounds/round-status";
 
-export type RoundStatus = "draft" | "active" | "completed" | "abandoned" | string;
+export type { RoundStatus };
+export type { LeaderboardEntry as LeaderboardRow } from "@/lib/scoring/leaderboard";
+export type { HoleProgressEntry } from "@/lib/scoring/progress";
 
 export type ParticipantRow = {
   id: string;
@@ -57,12 +60,4 @@ export type LastSavedEvent = {
   holeId: string;
   participantId: string;
   savedAt: number;
-};
-
-export type LeaderboardRow = {
-  participantId: string;
-  label: string;
-  totalStrokes: number;
-  vsPar: number;
-  thru: number;
 };

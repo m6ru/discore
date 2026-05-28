@@ -1,5 +1,7 @@
+import type { RoundStatus } from "@/lib/rounds/round-status";
+
 type Props = {
-  roundStatus: string;
+  roundStatus: RoundStatus;
   isScorer: boolean;
   isTransitioning: boolean;
   hasPendingInvite: boolean;
