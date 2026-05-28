@@ -1,6 +1,6 @@
 # Discore — Status
 
-> Read [BLUEPRINT.md](BLUEPRINT.md) first for non-negotiable rules, then this file for what is built and what is next.
+> Read [BLUEPRINT.md](BLUEPRINT.md) first for non-negotiable rules, then this file for what is built and what is next. When working on the Phase 4 UX/UI overhaul, also read [SPRINT-PHASE-4.md](SPRINT-PHASE-4.md) — it is the single source of truth for that effort.
 
 Update this file when behaviour or priorities change. Do not duplicate operational detail in the Blueprint.
 
@@ -49,7 +49,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 | **1** Infrastructure | Done | Next.js, Supabase clients, middleware; minimal `manifest.ts`; SW not configured |
 | **2** Schema & seeding | Done | RLS, 17 migrations, 18 seeded layouts |
 | **3** Core scoring | **Done (field MVP)** | Draft/active/complete, invites, scorer writes, observer Realtime (consolidated refresh + visibility resync) |
-| **4** PWA & polish | Not started | Serwist, icons, mobile UX pass |
+| **4** PWA & polish | **In progress** | shadcn/ui primitives + emerald theme rolling out screen by screen; Serwist + icons pending |
 | **5** History & stats | Partial | `/rounds` list exists; richer stats not built |
 | **6** Ratings & tournaments | Not started | By design until adoption warrants |
 
@@ -76,15 +76,14 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 1. ~~**Profile discoverability**~~ — Done.
 2. ~~**Deploy**~~ — Done (Vercel + Supabase Auth URLs).
 3. ~~**Pre-flight + Realtime**~~ — Done (publication + consolidated round/hub subscriptions).
-4. **Field test on course** — Two phones, LTE, browser tab; note UX friction.
-5. **Layout picker** — Group layouts by course on `app/rounds/new` if flat list hurts on course.
-6. **Phase 4 lite** — After field feedback: mobile scoring UX, Serwist + icons, optional OB markers on scorecard.
+4. ~~**Backbone refactor**~~ — Done (typed Supabase factories, strict `RoundStatus`, `/lib/scoring` extracted + tested, scorer-as-participant trigger, signup-name trigger).
+5. **UX/UI overhaul (Phase 4)** — Multi-chat frontend project, **not** a quick sprint. Step-by-step plan, per-step decision points, and reusable agent role prompt all live in [`SPRINT-PHASE-4.md`](SPRINT-PHASE-4.md). One chat per step; user drives every design decision.
+6. **Field test on course (post-Phase 4)** — Re-run on course after polish lands; capture any remaining friction.
 
 ---
 
 ## Later / deferred
 
-- **UI direction:** shadcn smoke test (Tailwind v4 + Next 16); thin primitives; keep bespoke scorecard table; mobile patterns (stepper, sticky save, replace `window.confirm`).
 - **Slice D-guest:** Anonymous round local-only → claim on signup (Option A below).
 - **Advanced stats:** `fairway_hit`, C1/C2 counters, scrambling — per-round opt-in toggle after D-guest.
 - **Phase 5:** Richer per-player stats and comparisons.

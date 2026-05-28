@@ -23,6 +23,8 @@
 | Package manager | npm |
 | Local dev | Supabase CLI + `.env.example` for secret management |
 | PWA | `serwist` — service worker lifecycle when Phase 4 configures it (dependency may exist before wiring). No offline sync required. |
+| UI primitives | `shadcn/ui` (Radix UI + Tailwind, code copied into `components/ui/`). Theme via CSS variables in `app/globals.css`. The scorecard table stays bespoke. |
+| Icons | `lucide-react` |
 
 ---
 
@@ -174,7 +176,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 | **1** | Infrastructure & environment | Next.js + Supabase clients + PWA skeleton |
 | **2** | Schema & seeding | All tables, RLS policies, seed local courses/layouts/holes |
 | **3** | Core scoring | Auth, rounds, invite flow, score holes, Realtime for observers |
-| **4** | PWA & polish | Home screen install, manifest, mobile UX refinement |
+| **4** | PWA & polish | shadcn/ui primitives + emerald theme; `AlertDialog` replaces `window.confirm`; Sonner for transient feedback; mobile UX pass on round screen (sticky save, 44 px touch targets, `Switch` for OB); Serwist + icons + manifest; install-to-home-screen verified |
 | **5** | History & stats | Round history per user, basic per-player statistics |
 | **6+** | Ratings & competitions | Weighted ratings, tournament structures — only if community adoption warrants |
 
