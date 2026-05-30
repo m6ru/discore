@@ -1,5 +1,9 @@
 import type { FormEvent } from "react";
 import type { ProfileSearchResult } from "../round-types";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 type Props = {
   participantName: string;
@@ -24,29 +28,30 @@ export function DraftParticipantForm({
 }: Props) {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-end">
-      <label className="flex-1 space-y-1 text-sm">
-        <span>Player name</span>
-        <input
+      <div className="flex-1 space-y-2">
+        <Label htmlFor="participant-name">Player name</Label>
+        <Input
+          id="participant-name"
           value={participantName}
           onChange={(event) => onParticipantNameChange(event.target.value)}
-          className="w-full rounded border border-zinc-300 px-3 py-2"
-          placeholder="Type player name or email"
+          placeholder="Type player name"
           maxLength={80}
         />
         {participantName.trim().length >= 2 ? (
-          <div className="mt-2 rounded border border-zinc-200 bg-white">
+          <div className="rounded-lg border bg-card">
             {isSearching ? (
-              <p className="px-3 py-2 text-xs text-zinc-500">Searching...</p>
+              <p className="px-3 py-2 text-xs text-muted-foreground">Searching...</p>
             ) : searchResults.length > 0 ? (
               <ul className="max-h-40 overflow-auto">
                 {searchResults.map((profile) => (
-                  <li key={profile.id}>
+                  <li key={profile.id} className="border-b last:border-b-0">
                     <button
                       type="button"
                       onClick={() => onSelectProfile(profile)}
-                      className={`w-full px-3 py-2 text-left text-sm hover:bg-zinc-50 ${
-                        selectedProfile?.id === profile.id ? "bg-zinc-100" : ""
-                      }`}
+                      className={cn(
+                        "w-full px-3 py-2 text-left text-sm hover:bg-muted/50",
+                        selectedProfile?.id === profile.id && "bg-muted"
+                      )}
                     >
                       {profile.display_name}
                     </button>
@@ -54,18 +59,16 @@ export function DraftParticipantForm({
                 ))}
               </ul>
             ) : (
-              <p className="px-3 py-2 text-xs text-zinc-500">No registered match, will add as guest.</p>
+              <p className="px-3 py-2 text-xs text-muted-foreground">
+                No registered match, will add as guest.
+              </p>
             )}
           </div>
         ) : null}
-      </label>
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-      >
+      </div>
+      <Button type="submit" disabled={isSubmitting} className="shrink-0">
         {isSubmitting ? "Adding..." : "Add player"}
-      </button>
+      </Button>
     </form>
   );
 }

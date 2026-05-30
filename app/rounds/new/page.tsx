@@ -1,9 +1,21 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
+import { pickOne } from "@/lib/supabase/select-helpers";
+import { findInProgressRoundId } from "@/lib/rounds/create-draft-round";
 import { CreateRoundForm } from "./create-round-form";
 
-export default async function NewRoundPage() {
+type PageProps = {
+  searchParams: Promise<{ layoutId?: string }>;
+};
+
+export default async function NewRoundPage({ searchParams }: PageProps) {
+  const { layoutId } = await searchParams;
+
+  if (!layoutId) {
+    redirect("/courses");
+  }
+
   const supabase = await createServerClient();
   const {
     data: { user },
@@ -13,53 +25,50 @@ export default async function NewRoundPage() {
     redirect("/auth?message=Please+sign+in+to+continue");
   }
 
-  const { data: existingInProgressRound } = await supabase
-    .from("rounds")
-    .select("id, status")
-    .eq("scorer_id", user.id)
-    .in("status", ["draft", "active"])
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (existingInProgressRound) {
-    redirect(`/rounds/${existingInProgressRound.id}`);
+  const existingId = await findInProgressRoundId(supabase, user.id);
+  if (existingId) {
+    redirect(`/rounds/${existingId}`);
   }
 
-  const { data: layouts, error: layoutsError } = await supabase
+  const { data: layout, error: layoutError } = await supabase
     .from("layouts")
-    .select("id, name, total_par, total_distance_m")
-    .order("name", { ascending: true });
+    .select("id, name, total_par, total_distance_m, courses(name, slug)")
+    .eq("id", layoutId)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (layoutError || !layout) {
+    redirect("/courses");
+  }
+
+  const course = pickOne(layout.courses);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-8">
       <header className="space-y-2">
         <h1 className="text-2xl font-bold">Create round</h1>
-        <p className="text-sm text-zinc-600">
-          Signed in as <span className="font-medium">{user.email}</span>
+        <p className="text-sm text-muted-foreground">
+          {course?.name ?? "Course"} · {layout.name} (Par {layout.total_par},{" "}
+          {layout.total_distance_m} m)
         </p>
       </header>
 
-      {layoutsError ? (
-        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-          Failed to load layouts: {layoutsError.message}
-        </p>
-      ) : null}
+      <CreateRoundForm layoutId={layout.id} />
 
-      {layouts && layouts.length > 0 ? (
-        <CreateRoundForm layouts={layouts} />
-      ) : (
-        <p className="rounded-md border border-zinc-300 bg-zinc-50 p-3 text-sm text-zinc-700">
-          No layouts available. Seed course data first.
-        </p>
-      )}
-
-      <div className="flex gap-4 text-sm">
-        <Link href="/" className="underline text-zinc-600">
-          Back home
+      <div className="flex flex-wrap gap-4 text-sm">
+        {course?.slug ? (
+          <Link
+            href={`/courses/${course.slug}`}
+            className="text-muted-foreground underline underline-offset-4"
+          >
+            Back to course
+          </Link>
+        ) : null}
+        <Link href="/courses" className="text-muted-foreground underline underline-offset-4">
+          All courses
         </Link>
-        <Link href="/auth" className="underline text-zinc-600">
-          Manage auth
+        <Link href="/" className="text-muted-foreground underline underline-offset-4">
+          Back home
         </Link>
       </div>
     </main>

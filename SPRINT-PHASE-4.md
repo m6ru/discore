@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 3b — Round creation + draft setup
-- **Last completed:** Step 3a — Auth + account screens
+- **Current step:** Step 3c — Hub + history list
+- **Last completed:** Step 3b — Course-first discovery + draft participant shadcn (Step 7 absorbed)
 - **Open blockers:** none
 
 ---
@@ -270,41 +270,39 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ---
 
-## Step 3b — Round creation + draft setup
+## Step 3b — Course-first discovery + draft setup
 
-**Scope:** `/rounds/new` and draft-round participant management.
+**Scope:** Replaced layout-first `/rounds/new` with course-first navigation (Model A, GPS deferred). Draft participant UI on shadcn primitives. **Step 7 absorbed** into this step.
 
-**Files in scope:**
-- `app/rounds/new/create-round-form.tsx`
-- `app/rounds/[roundId]/components/draft-participant-form.tsx`
-- `app/rounds/[roundId]/components/draft-participants-list.tsx` (if exists)
+**Files touched:**
+- `lib/rounds/create-draft-round.ts` (new)
+- `app/courses/page.tsx`, `app/courses/courses-list.tsx`, `app/courses/[slug]/page.tsx`, `app/courses/start-round-button.tsx`
+- `app/home-course-search.tsx`, `app/page.tsx` (hub search + links)
+- `app/rounds/new/page.tsx`, `app/rounds/new/create-round-form.tsx` (`layoutId` deep link only)
+- `app/rounds/[roundId]/components/draft-participant-form.tsx`, `participants-list.tsx`
 
-**Out of scope:**
-- Layout-grouping logic on `/rounds/new` — that's Step 7.
-
-**Decision points:**
-- D1. Layout dropdown: shadcn `Select` (simple) or `Command` combobox with search (good for many layouts)?
-- D2. Profile search results in `draft-participant-form`: `Command` palette, inline list, or `Popover` + search input?
-- D3. Guest add: same form as profile search, or visually separated section?
-- D4. Empty states: when no participants yet — placeholder text, illustration, or nothing?
-
-**Sub-tasks:**
-1. Walk decisions with user.
-2. Convert create-round-form per D1.
-3. Convert draft-participant-form per D2 + D3.
-4. Phone-test add/remove participant + invite flow end-to-end.
-5. Four checks. Commit.
+**Decision points (locked during planning):**
+- Structure **A**: `/courses` + `/courses/[slug]`; Start round → `/courses`.
+- GPS **deferred** — name sort only; `lat`/`lng` reserved for later.
+- Draft form: inline search results, combined guest/invite field, muted empty state (carried from pre-plan 3b discussion).
 
 **Done when:**
-- Both forms use shadcn primitives.
-- Invite flow + guest add still works (round_invitations + round_participants both insert correctly).
-- Phone-tested.
+- Hub search + All courses + Start round funnel to course browse.
+- Course detail lists layouts; Start round creates draft via shared helper.
+- `/rounds/new` redirects to `/courses` unless `?layoutId=` set.
+- Draft participant form + list on shadcn primitives; invite/guest logic unchanged.
 
 **Notes:**
 
-(empty)
+- **Course flow:** `/courses` lists courses (active layout count) with client filter on name + location. `/courses/[slug]` shows course metadata + layout rows; each layout has `StartRoundButton` calling `createDraftRound`. Active draft/active round redirects to existing round (server on `/rounds/new`, client on course page).
+- **Hub:** `HomeCourseSearch` debounced `ilike` on `courses.name` (≥2 chars) → links to course detail. Nav uses shadcn `Button`; Start round → `/courses`, new **All courses** outline button.
+- **`/rounds/new`:** No `layoutId` → redirect `/courses`. With `layoutId` → confirm layout + one-click `CreateRoundForm` (deep link / legacy).
+- **Draft UI:** `draft-participant-form` → `Input`/`Label`/`Button` + inline results list (theme tokens). `participants-list` → hairline rows + outline Remove. Placeholder: "No players yet."
+- **Surprised:** ESLint `react-hooks/set-state-in-effect` flagged clearing search results in `useEffect`; fixed by clearing in `onChange` when query &lt; 2 chars.
+- **Step 3c overlap:** Hub primary nav + course search landed here; `home-invites.tsx` and `/rounds` history shadcn still Step 3c.
+- **Not done by agent:** phone-test course browse + draft add/remove flows on device.
 
-- [ ] **Step 3b complete**
+- [x] **Step 3b complete**
 
 ---
 
@@ -551,37 +549,13 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Step 7 — Layout picker grouping
 
-**Scope:** `/rounds/new` currently lists all 18 layouts flat. Group by course.
-
-**Files in scope:**
-- `app/rounds/new/page.tsx` (server fetch — group on server)
-- `app/rounds/new/create-round-form.tsx`
-
-**Out of scope:**
-- Any other change on `/rounds/new`.
-
-**Decision points:**
-- D1. Pattern: shadcn `Select` with grouped headings (single dropdown) / two-step picker (course → layout) / `Command` palette with grouped sections / search-first input?
-- D2. Sort order within each course: by layout name alphabetical, by total par, by total distance?
-- D3. Course sort order: alphabetical, by user's prior usage frequency, by proximity (future)?
-
-**Sub-tasks:**
-1. Walk decisions.
-2. Group the server-side fetch by course.
-3. Implement chosen pattern (D1).
-4. Phone-test on a real device — thumb reach matters here.
-5. Four checks. Commit.
-
-**Done when:**
-- Layouts grouped by course.
-- Selection still posts the correct `layout_id`.
-- Phone-tested.
+**Status:** **Absorbed by Step 3b** (course-first discovery). Layout selection now happens on `/courses/[slug]` after picking a course; flat `/rounds/new` layout dropdown removed.
 
 **Notes:**
 
-(empty)
+- GPS proximity sort remains a **future** small step on `/courses` (schema has `lat`/`lng`; browse ships alphabetical).
 
-- [ ] **Step 7 complete**
+- [x] **Step 7 complete (absorbed)**
 
 ---
 

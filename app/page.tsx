@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createServerClient } from "@/lib/supabase/server";
 import { pickOne } from "@/lib/supabase/select-helpers";
 import { HomeInvites, type InviteWithContext } from "./home-invites";
+import { HomeCourseSearch } from "./home-course-search";
+import { Button } from "@/components/ui/button";
 
 function formatDateTime(iso: string | null): string {
   if (!iso) {
@@ -69,19 +71,21 @@ export default async function HomePage() {
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-8">
       <header className="space-y-2">
         <h1 className="text-3xl font-bold">Discore</h1>
-        <p className="text-sm text-zinc-600">Start a round or continue where you left off.</p>
+        <p className="text-sm text-muted-foreground">Start a round or continue where you left off.</p>
       </header>
 
-      <section className="rounded-lg border border-zinc-200 p-4">
+      <section className="rounded-lg border p-4">
         <p className="font-medium">{user ? "Signed in" : "Signed out"}</p>
         {user ? (
-          <p className="mt-1 break-all text-sm text-zinc-600">{user.email}</p>
+          <p className="mt-1 break-all text-sm text-muted-foreground">{user.email}</p>
         ) : (
-          <p className="mt-1 text-sm text-zinc-600">
+          <p className="mt-1 text-sm text-muted-foreground">
             Sign in to save true-history rounds. Guest round flow comes next.
           </p>
         )}
       </section>
+
+      {user ? <HomeCourseSearch enabled /> : null}
 
       {user && activeRounds.length > 0 ? (
         <section className="space-y-3 rounded-lg border border-emerald-200 bg-emerald-50/60 p-4">
@@ -120,26 +124,24 @@ export default async function HomePage() {
       {user ? <HomeInvites currentUserId={user.id} invites={invites} /> : null}
 
       <nav className="flex flex-wrap gap-3" aria-label="Primary actions">
-        <Link
-          href="/rounds/new"
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white"
-        >
-          Start round
-        </Link>
-        {user ? (
-          <Link
-            href="/rounds"
-            className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium"
-          >
-            Round history
+        <Button asChild>
+          <Link href={user ? "/courses" : "/auth?message=Please+sign+in+to+continue"}>
+            Start round
           </Link>
+        </Button>
+        {user ? (
+          <>
+            <Button variant="outline" asChild>
+              <Link href="/courses">All courses</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/rounds">Round history</Link>
+            </Button>
+          </>
         ) : null}
-        <Link
-          href="/auth"
-          className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium"
-        >
-          {user ? "Account" : "Sign in"}
-        </Link>
+        <Button variant="outline" asChild>
+          <Link href="/auth">{user ? "Account" : "Sign in"}</Link>
+        </Button>
       </nav>
     </main>
   );

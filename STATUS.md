@@ -59,7 +59,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 - **Hub** (`app/page.tsx`): resume active rounds, pending invites, start round / history / account
 - **Auth & profile** (`app/auth`, `lib/profiles`): sign-in, save profile, `display_name` = first + last (Option A for labels)
-- **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`)
+- **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); **course-first browse** at `/courses` and `/courses/[slug]` (hub search + Start round funnel); GPS nearby-sort deferred
 - **Rounds:** create draft → invite registered users or add guests → start when no pending invites
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
 - **Active round:** OB toggle, leaderboard, front-9 / final summaries, back-hole navigation, abandon
@@ -88,7 +88,8 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 - **Advanced stats:** `fairway_hit`, C1/C2 counters, scrambling — per-round opt-in toggle after D-guest.
 - **Phase 5:** Richer per-player stats and comparisons.
 - **Phase 6:** Ratings, tournaments (`tournament_id` column reserved).
-- Smart-ID / magic-link auth; geolocation “courses near me”.
+- Smart-ID / magic-link auth.
+- **Geolocation “courses near me”:** after course browse ships — sort `/courses` by distance when browser geolocation allowed (`courses.lat`/`lng` already seeded).
 
 ---
 
@@ -179,7 +180,8 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows}.ts` |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
 | Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` |
-| Hub / invites | `app/page.tsx`, `app/home-invites.tsx` |
+| Hub / invites | `app/page.tsx`, `app/home-invites.tsx`, `app/home-course-search.tsx` |
+| Courses browse | `app/courses/page.tsx`, `app/courses/[slug]/page.tsx`, `lib/rounds/create-draft-round.ts` |
 
 ### Constraints
 

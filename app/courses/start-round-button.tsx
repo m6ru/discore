@@ -8,15 +8,17 @@ import { Button } from "@/components/ui/button";
 
 type Props = {
   layoutId: string;
+  label?: string;
+  className?: string;
 };
 
-export function CreateRoundForm({ layoutId }: Props) {
+export function StartRoundButton({ layoutId, label = "Start round", className }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function onCreate() {
+  async function onStart() {
     setIsSubmitting(true);
     setError(null);
 
@@ -32,7 +34,7 @@ export function CreateRoundForm({ layoutId }: Props) {
       }
 
       if (!user) {
-        setError("No authenticated session in browser. Please sign in again.");
+        router.push("/auth?message=Please+sign+in+to+continue");
         return;
       }
 
@@ -56,14 +58,13 @@ export function CreateRoundForm({ layoutId }: Props) {
   }
 
   return (
-    <>
-      {error ? (
-        <p className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">{error}</p>
-      ) : null}
-
-      <Button type="button" disabled={isSubmitting} onClick={() => void onCreate()}>
-        {isSubmitting ? "Creating..." : "Create draft round"}
+    <div className={className}>
+      <Button type="button" disabled={isSubmitting} onClick={() => void onStart()}>
+        {isSubmitting ? "Creating..." : label}
       </Button>
-    </>
+      {error ? (
+        <p className="mt-2 rounded-md border bg-muted p-2 text-xs text-muted-foreground">{error}</p>
+      ) : null}
+    </div>
   );
 }
