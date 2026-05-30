@@ -4,6 +4,17 @@ import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { saveProfile } from "@/lib/profiles/save-profile";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Props = {
   email: string;
@@ -135,155 +146,142 @@ export function AccountPanel({
 
   return (
     <>
-      <section className="rounded-lg border border-zinc-200 p-4">
-        <p className="text-sm text-zinc-600">Signed in as</p>
-        <p className="mt-1 break-all text-sm font-medium">{email}</p>
-      </section>
+      <div className="space-y-1">
+        <p className="text-sm text-muted-foreground">Signed in as</p>
+        <p className="break-all text-sm font-medium">{email}</p>
+      </div>
 
-      <form onSubmit={onSave} className="space-y-4 rounded-lg border border-zinc-200 p-4">
-        <label className="block space-y-1 text-sm">
-          <span>First name</span>
-          <input
+      <Separator />
+
+      <form onSubmit={onSave} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="first-name">First name</Label>
+          <Input
+            id="first-name"
             type="text"
             required
             value={firstName}
             onChange={(event) => setFirstName(event.target.value)}
-            className="w-full rounded border border-zinc-300 px-3 py-2"
             maxLength={80}
           />
-        </label>
+        </div>
 
-        <label className="block space-y-1 text-sm">
-          <span>Last name</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="last-name">Last name</Label>
+          <Input
+            id="last-name"
             type="text"
             required
             value={lastName}
             onChange={(event) => setLastName(event.target.value)}
-            className="w-full rounded border border-zinc-300 px-3 py-2"
             maxLength={80}
           />
-        </label>
+        </div>
 
-        <label className="block space-y-1 text-sm">
-          <span>Email</span>
-          <input
-            type="email"
-            value={email}
-            disabled
-            className="w-full rounded border border-zinc-300 bg-zinc-100 px-3 py-2 text-zinc-600"
-          />
-        </label>
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" value={email} disabled />
+        </div>
 
-        <label className="block space-y-1 text-sm">
-          <span>Gender</span>
-          <select
-            value={gender}
-            onChange={(event) => setGender(event.target.value)}
-            className="w-full rounded border border-zinc-300 px-3 py-2"
-          >
-            <option value="">Select gender</option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-          </select>
-        </label>
+        <div className="space-y-2">
+          <Label htmlFor="gender">Gender</Label>
+          <Select value={gender} onValueChange={setGender}>
+            <SelectTrigger id="gender" className="w-full">
+              <SelectValue placeholder="Select gender" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="female">Female</SelectItem>
+              <SelectItem value="male">Male</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-        <label className="block space-y-1 text-sm">
-          <span>Year of birth</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="birth-year">Year of birth</Label>
+          <Input
+            id="birth-year"
             type="number"
             inputMode="numeric"
             min={1900}
             max={3000}
             value={birthYear}
             onChange={(event) => setBirthYear(event.target.value)}
-            className="w-full rounded border border-zinc-300 px-3 py-2"
             placeholder="e.g. 1994"
           />
-        </label>
+        </div>
 
-        <label className="block space-y-1 text-sm">
-          <span>City</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="city">City</Label>
+          <Input
+            id="city"
             type="text"
             value={city}
             onChange={(event) => setCity(event.target.value)}
-            className="w-full rounded border border-zinc-300 px-3 py-2"
             maxLength={120}
           />
-        </label>
+        </div>
 
-        <label className="block space-y-1 text-sm">
-          <span>Profile picture (JPEG, max 1MB)</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="avatar">Profile picture (JPEG, max 1MB)</Label>
+          <Input
+            id="avatar"
             type="file"
             accept=".jpg,.jpeg,image/jpeg"
-            className="w-full rounded border border-zinc-300 px-3 py-2"
+            className="py-1.5"
             onChange={(event) => {
               const file = event.target.files?.[0];
               setPendingAvatarFile(file && file.size > 0 ? file : null);
             }}
           />
-        </label>
+        </div>
 
         <div className="flex flex-wrap gap-2">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-          >
+          <Button type="submit" disabled={isLoading}>
             {isLoading ? "Please wait..." : "Save profile"}
-          </button>
-          <button
-            type="button"
-            onClick={() => void onSignOut()}
-            disabled={isLoading}
-            className="rounded border border-zinc-300 px-4 py-2 text-sm"
-          >
+          </Button>
+          <Button type="button" variant="outline" onClick={() => void onSignOut()} disabled={isLoading}>
             Sign out
-          </button>
+          </Button>
         </div>
       </form>
 
       {status ? (
-        <p className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-700">{status}</p>
+        <p className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">{status}</p>
       ) : null}
 
-      <form onSubmit={onChangePassword} className="space-y-4 rounded-lg border border-zinc-200 p-4">
-        <h3 className="text-sm font-semibold text-zinc-800">Change password</h3>
-        <label className="block space-y-1 text-sm">
-          <span>New password</span>
-          <input
+      <Separator />
+
+      <form onSubmit={onChangePassword} className="space-y-4">
+        <h3 className="text-sm font-semibold">Change password</h3>
+        <div className="space-y-2">
+          <Label htmlFor="new-password">New password</Label>
+          <Input
+            id="new-password"
             type="password"
             required
             minLength={6}
             value={newPassword}
             onChange={(event) => setNewPassword(event.target.value)}
-            className="w-full rounded border border-zinc-300 px-3 py-2"
           />
-        </label>
-        <label className="block space-y-1 text-sm">
-          <span>Confirm new password</span>
-          <input
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="confirm-password">Confirm new password</Label>
+          <Input
+            id="confirm-password"
             type="password"
             required
             minLength={6}
             value={confirmPassword}
             onChange={(event) => setConfirmPassword(event.target.value)}
-            className="w-full rounded border border-zinc-300 px-3 py-2"
           />
-        </label>
-        <button
-          type="submit"
-          disabled={isChangingPassword}
-          className="rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-        >
+        </div>
+        <Button type="submit" disabled={isChangingPassword}>
           {isChangingPassword ? "Please wait..." : "Change password"}
-        </button>
+        </Button>
       </form>
 
       {passwordStatus ? (
-        <p className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-700">{passwordStatus}</p>
+        <p className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">{passwordStatus}</p>
       ) : null}
     </>
   );

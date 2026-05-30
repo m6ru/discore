@@ -26,7 +26,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-8">
       <header className="space-y-2">
         <h1 className="text-2xl font-bold">{user ? "Account" : "Sign in"}</h1>
-        <p className="text-sm text-zinc-600">{user ? "Manage your profile and session." : "Sign in or create an account."}</p>
+        <p className="text-sm text-muted-foreground">{user ? "Manage your profile and session." : "Sign in or create an account."}</p>
       </header>
 
       {user ? (
@@ -43,7 +43,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
         <AuthForm message={message ?? null} />
       )}
 
-      <Link href="/" className="text-sm text-zinc-600 underline">
+      <Link href="/" className="text-sm text-muted-foreground underline">
         Back home
       </Link>
     </main>

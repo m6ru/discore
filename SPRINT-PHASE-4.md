@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 3a — Auth + account screens
-- **Last completed:** Step 2 — Install theme + primitives layer
+- **Current step:** Step 3b — Round creation + draft setup
+- **Last completed:** Step 3a — Auth + account screens
 - **Open blockers:** none
 
 ---
@@ -255,9 +255,18 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 **Notes:**
 
-(empty)
+- **Decided (D1):** Mode toggle is now a **single form + text link** below the submit button ("Need an account? Sign up" / "Already have an account? Sign in"). Dropped the two custom toggle buttons. The link is a plain `<button type="button">` styled with `text-primary underline-offset-4 hover:underline` (not the shadcn `Button` link variant — avoids the variant's default padding inside an inline sentence). Switching modes clears the status message.
+- **Decided (D2):** Required fields rely on the **`required` attribute only** — no asterisk, no helper text. All previous `required`/`minLength`/`autoComplete`/`maxLength` attributes preserved verbatim.
+- **Decided (D3):** Account panel is a **single flat column** with `<Separator />` between the three logical sections (signed-in identity → profile form → password form). Removed all the bordered boxes. The parent `main` already supplies `gap-6`, so each separator reads as a deliberate divider with breathing room.
+- **Decided (D4):** Status messages stay **inline**, restyled from `zinc-*` to theme tokens (`border bg-muted text-muted-foreground`). Toast migration is explicitly Step 5.
+- **Gender control:** Now a shadcn `Select` (`female`/`male` items, "Select gender" placeholder). Note: Radix Select disallows an empty-string `SelectItem`, so the old explicit "Select gender" clear-option is gone — an unset value just shows the placeholder. Logic (`saveProfile`) untouched; `gender` is still a plain string.
+- **Token alignment:** `page.tsx` header subtitle and "Back home" link swapped `text-zinc-600` → `text-muted-foreground` so the auth screen is fully on-theme. No layout/structure change.
+- **Surprised:** The pre-existing amber redirect-message banner (`message` prop) was **left as-is** — the light-only theme has no warning/amber token, and inventing one is a color decision out of scope for D4. Flagged for whoever owns a future "alert" primitive.
+- **No logic touched:** every Supabase call, validation branch, and handler is byte-for-byte the same as before; this was a pure presentation swap. Sign-up still trims + requires first/last name and forwards them to `signUp` metadata (→ `display_name`).
+- **Ask next (Step 3b):** D1–D4 for round creation + draft setup (layout `Select` vs `Command` combobox, profile-search result presentation, guest-add separation, empty states). Also: do we want a reusable inline-status component before Step 5 turns these into toasts, or leave the duplicated `bg-muted` blocks until then?
+- **Not done by agent:** sub-task 4 (phone eyeball — focus rings, keyboard, autofill, password-manager) needs a manual check on a real device.
 
-- [ ] **Step 3a complete**
+- [x] **Step 3a complete**
 
 ---
 

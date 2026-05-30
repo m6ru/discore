@@ -3,6 +3,9 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type AuthMode = "sign-in" | "sign-up";
 
@@ -68,95 +71,90 @@ export function AuthForm({ message }: Props) {
     }
   }
 
+  function toggleMode() {
+    setMode((current) => (current === "sign-in" ? "sign-up" : "sign-in"));
+    setStatus(null);
+  }
+
   return (
     <>
       {message ? (
         <p className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{message}</p>
       ) : null}
 
-      <form onSubmit={onSubmit} className="space-y-4 rounded-lg border border-zinc-200 p-4">
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setMode("sign-in")}
-            className={`rounded px-3 py-1 text-sm ${mode === "sign-in" ? "bg-zinc-900 text-white" : "bg-zinc-100"}`}
-          >
-            Sign in
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode("sign-up")}
-            className={`rounded px-3 py-1 text-sm ${mode === "sign-up" ? "bg-zinc-900 text-white" : "bg-zinc-100"}`}
-          >
-            Sign up
-          </button>
-        </div>
-
+      <form onSubmit={onSubmit} className="space-y-4 rounded-lg border p-4">
         {mode === "sign-up" ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="block space-y-1 text-sm">
-              <span>First name</span>
-              <input
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="first-name">First name</Label>
+              <Input
+                id="first-name"
                 type="text"
                 required
                 value={firstName}
                 onChange={(event) => setFirstName(event.target.value)}
-                className="w-full rounded border border-zinc-300 px-3 py-2"
                 maxLength={80}
                 autoComplete="given-name"
               />
-            </label>
-            <label className="block space-y-1 text-sm">
-              <span>Last name</span>
-              <input
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="last-name">Last name</Label>
+              <Input
+                id="last-name"
                 type="text"
                 required
                 value={lastName}
                 onChange={(event) => setLastName(event.target.value)}
-                className="w-full rounded border border-zinc-300 px-3 py-2"
                 maxLength={80}
                 autoComplete="family-name"
               />
-            </label>
+            </div>
           </div>
         ) : null}
 
-        <label className="block space-y-1 text-sm">
-          <span>Email</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
             type="email"
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded border border-zinc-300 px-3 py-2"
             autoComplete="email"
           />
-        </label>
+        </div>
 
-        <label className="block space-y-1 text-sm">
-          <span>Password</span>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
             type="password"
             required
             minLength={6}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="w-full rounded border border-zinc-300 px-3 py-2"
             autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
           />
-        </label>
+        </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full rounded bg-zinc-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-        >
+        <Button type="submit" disabled={isLoading} className="w-full">
           {isLoading ? "Please wait..." : mode === "sign-in" ? "Sign in" : "Create account"}
-        </button>
+        </Button>
       </form>
 
+      <p className="text-center text-sm text-muted-foreground">
+        {mode === "sign-in" ? "Need an account? " : "Already have an account? "}
+        <button
+          type="button"
+          onClick={toggleMode}
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
+          {mode === "sign-in" ? "Sign up" : "Sign in"}
+        </button>
+      </p>
+
       {status ? (
-        <p className="rounded-md border border-zinc-200 bg-zinc-50 p-3 text-sm text-zinc-700">{status}</p>
+        <p className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">{status}</p>
       ) : null}
     </>
   );
