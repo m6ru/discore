@@ -1,4 +1,5 @@
 import type { RoundStatus } from "@/lib/rounds/round-status";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   roundStatus: RoundStatus;
@@ -24,14 +25,13 @@ export function RoundLifecycleActions({
       <div className="flex flex-wrap gap-2 pt-2">
         {roundStatus === "draft" && isScorer ? (
           <>
-            <button
+            <Button
               type="button"
               onClick={onStartRound}
               disabled={isTransitioning || hasPendingInvite}
-              className="rounded bg-emerald-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
             >
               {isTransitioning ? "Working..." : "Start round"}
-            </button>
+            </Button>
             <button
               type="button"
               onClick={onDeleteDraft}

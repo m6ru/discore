@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 1 — shadcn smoke test (one button)
-- **Last completed:** Step 0 — Design foundations
+- **Current step:** Step 2 — Install theme + primitives layer
+- **Last completed:** Step 1 — shadcn smoke test (one button)
 - **Open blockers:** none
 
 ---
@@ -161,9 +161,13 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 **Notes:**
 
-(empty)
+- **Decided:** Base color = **stone** (per §0.2 "shadcn themes preset"). Theme written **light-only** — tokens in `:root` only, no `.dark` block — but kept `@custom-variant dark (&:is(.dark *))` so the Button's `dark:` utility classes stay inert instead of firing on OS dark-mode via Tailwind v4's default media query. Button uses the **default** shadcn variant (stone `--primary`) for the smoke test; the **emerald `--primary`** override is deferred to Step 2 (Step 0 follow-up #1). Aliases = standard (`@/components`, `@/components/ui`, `@/lib/utils`, `@/lib`, `@/hooks`). Fonts done now (user opted in): **Manrope** (body+display via `--font-manrope`→`--font-sans`) + **JetBrains Mono** (`--font-jetbrains-mono`→`--font-mono`); Geist removed; Arial body override gone.
+- **Surprised:** The `shadcn@4.8.3` CLI is the new BaseUI/registries era — there is **no `--base-color` flag**, `init` is interactive (prompts to overwrite `components.json`, ignored our `-y`), and `add` **skips initialization** when `components.json` already exists (it created `button.tsx` and added `radix-ui`, but did **not** write `lib/utils.ts`, the theme tokens, or install `cva`/`clsx`/`tailwind-merge`). Net: initialized **manually** — deps via `npm install class-variance-authority clsx tailwind-merge radix-ui`, and `components.json` + `lib/utils.ts` + stone tokens authored by hand (exact oklch values pulled from `ui.shadcn.com/r/colors/stone.json`). Button imports the **unified `radix-ui`** package (`Slot`) and ships extra size variants (`xs`, `icon-*`). `npx` was very slow/flaky on this machine (multiple multi-minute hangs).
+- **Deferred to Step 2:** `lucide-react` + `tw-animate-css` (button needs neither); set emerald `--primary` on top of stone; confirm the primitive batch + Sonner placement before installing.
+- **Ask next:** Step 2 — exact emerald token value for `--primary`/`--primary-foreground`, and whether to keep stone or swap accent-adjacent tokens (`ring`, `sidebar-*`) to match.
+- **Not done by agent:** sub-task 5 (phone verify over LAN) — needs a manual check on a real device by the user.
 
-- [ ] **Step 1 complete**
+- [x] **Step 1 complete**
 
 ---
 
