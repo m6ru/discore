@@ -1,58 +1,30 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useMemo, useState } from "react";
+import { filterCoursesByQuery } from "@/lib/courses/filter-courses";
+import type { CourseSummary } from "@/lib/courses/types";
+import { CourseSearchDropdown } from "@/components/courses/course-search-dropdown";
 import { Input } from "@/components/ui/input";
 
-type CourseSearchResult = {
-  id: string;
-  name: string;
-  slug: string;
-  location: string;
-};
+const MIN_QUERY_LENGTH = 2;
+const HUB_RESULT_LIMIT = 8;
 
 type Props = {
-  enabled: boolean;
+  courses: CourseSummary[];
 };
 
-export function HomeCourseSearch({ enabled }: Props) {
-  const supabase = useMemo(() => createClient(), []);
+export function HomeCourseSearch({ courses }: Props) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<CourseSearchResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
 
   const trimmed = query.trim();
-  const showDropdown = enabled && trimmed.length >= 2;
+  const showDropdown = trimmed.length >= MIN_QUERY_LENGTH;
 
-  useEffect(() => {
-    if (!enabled || trimmed.length < 2) {
-      return;
+  const results = useMemo(() => {
+    if (!showDropdown) {
+      return [];
     }
-
-    const timeoutId = setTimeout(async () => {
-      setIsSearching(true);
-      const { data, error } = await supabase
-        .from("courses")
-        .select("id, name, slug, location")
-        .ilike("name", `%${trimmed}%`)
-        .order("name", { ascending: true })
-        .limit(8);
-
-      if (!error) {
-        setResults((data ?? []) as CourseSearchResult[]);
-      } else {
-        setResults([]);
-      }
-      setIsSearching(false);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [trimmed, enabled, supabase]);
-
-  if (!enabled) {
-    return null;
-  }
+    return filterCoursesByQuery(courses, trimmed, { limit: HUB_RESULT_LIMIT });
+  }, [courses, showDropdown, trimmed]);
 
   return (
     <div className="space-y-2">
@@ -63,40 +35,13 @@ export function HomeCourseSearch({ enabled }: Props) {
         id="home-course-search"
         type="search"
         value={query}
-        onChange={(event) => {
-          const next = event.target.value;
-          setQuery(next);
-          if (next.trim().length < 2) {
-            setResults([]);
-            setIsSearching(false);
-          }
-        }}
-        placeholder="Type a course name"
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder="Search by course or location"
         autoComplete="off"
       />
       {showDropdown ? (
         <div className="rounded-lg border bg-card">
-          {isSearching ? (
-            <p className="px-3 py-2 text-xs text-muted-foreground">Searching...</p>
-          ) : results.length > 0 ? (
-            <ul className="max-h-48 overflow-auto">
-              {results.map((course) => (
-                <li key={course.id} className="border-b last:border-b-0">
-                  <Link
-                    href={`/courses/${course.slug}`}
-                    className="block px-3 py-2 text-sm hover:bg-muted/50"
-                  >
-                    <span className="font-medium">{course.name}</span>
-                    <span className="mt-0.5 block text-xs text-muted-foreground">
-                      {course.location}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="px-3 py-2 text-xs text-muted-foreground">No courses found.</p>
-          )}
+          <CourseSearchDropdown courses={results} />
         </div>
       ) : null}
     </div>

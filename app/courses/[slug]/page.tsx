@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
-import { StartRoundButton } from "../start-round-button";
+import { StartRoundButton } from "@/components/rounds/start-round-button";
 
 type PageProps = {
   params: Promise<{ slug: string }>;

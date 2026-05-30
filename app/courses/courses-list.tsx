@@ -2,33 +2,18 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { filterCoursesByQuery } from "@/lib/courses/filter-courses";
+import type { CourseSummary } from "@/lib/courses/types";
 import { Input } from "@/components/ui/input";
 
-export type CourseListItem = {
-  id: string;
-  name: string;
-  slug: string;
-  location: string;
-  layoutCount: number;
-};
-
 type Props = {
-  courses: CourseListItem[];
+  courses: CourseSummary[];
 };
 
 export function CoursesList({ courses }: Props) {
   const [query, setQuery] = useState("");
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) {
-      return courses;
-    }
-    return courses.filter(
-      (course) =>
-        course.name.toLowerCase().includes(q) || course.location.toLowerCase().includes(q)
-    );
-  }, [courses, query]);
+  const filtered = useMemo(() => filterCoursesByQuery(courses, query), [courses, query]);
 
   return (
     <div className="space-y-4">
@@ -55,9 +40,7 @@ export function CoursesList({ courses }: Props) {
                 <p className="font-medium">{course.name}</p>
                 <p className="text-sm text-muted-foreground">{course.location}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {course.layoutCount === 1
-                    ? "1 layout"
-                    : `${course.layoutCount} layouts`}
+                  {course.layoutCount === 1 ? "1 layout" : `${course.layoutCount} layouts`}
                 </p>
               </Link>
             </li>

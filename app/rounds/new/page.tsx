@@ -2,8 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import { pickOne } from "@/lib/supabase/select-helpers";
-import { findInProgressRoundId } from "@/lib/rounds/create-draft-round";
-import { CreateRoundForm } from "./create-round-form";
+import { findInProgressRoundId } from "@/lib/rounds/round-draft-actions";
+import { StartRoundButton } from "@/components/rounds/start-round-button";
 
 type PageProps = {
   searchParams: Promise<{ layoutId?: string }>;
@@ -53,7 +53,11 @@ export default async function NewRoundPage({ searchParams }: PageProps) {
         </p>
       </header>
 
-      <CreateRoundForm layoutId={layout.id} />
+      <StartRoundButton
+        layoutId={layout.id}
+        label="Create draft round"
+        errorClassName="p-3 text-sm"
+      />
 
       <div className="flex flex-wrap gap-4 text-sm">
         {course?.slug ? (

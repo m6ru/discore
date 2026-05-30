@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
-import { CoursesList, type CourseListItem } from "./courses-list";
+import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
+import { CoursesList } from "./courses-list";
 
 export default async function CoursesPage() {
   const supabase = await createServerClient();
@@ -13,18 +14,7 @@ export default async function CoursesPage() {
     redirect("/auth?message=Please+sign+in+to+continue");
   }
 
-  const { data: courses, error: coursesError } = await supabase
-    .from("courses")
-    .select("id, name, slug, location, layouts(id, is_active)")
-    .order("name", { ascending: true });
-
-  const listItems: CourseListItem[] = (courses ?? []).map((course) => ({
-    id: course.id,
-    name: course.name,
-    slug: course.slug,
-    location: course.location,
-    layoutCount: (course.layouts ?? []).filter((layout) => layout.is_active).length,
-  }));
+  const { courses, error: coursesError } = await loadCourseSummaries(supabase);
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-8">
@@ -40,7 +30,7 @@ export default async function CoursesPage() {
           Failed to load courses: {coursesError.message}
         </p>
       ) : (
-        <CoursesList courses={listItems} />
+        <CoursesList courses={courses ?? []} />
       )}
 
       <Link href="/" className="text-sm text-muted-foreground underline underline-offset-4">

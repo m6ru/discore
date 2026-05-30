@@ -101,11 +101,11 @@ export default async function RoundsHistoryPage() {
       ) : null}
 
       <div className="flex gap-4 text-sm">
-        <Link href="/" className="underline text-zinc-600">
+        <Link href="/" className="text-muted-foreground underline underline-offset-4">
           Back home
         </Link>
-        <Link href="/rounds/new" className="underline text-zinc-600">
-          New round
+        <Link href="/courses" className="text-muted-foreground underline underline-offset-4">
+          Browse courses
         </Link>
       </div>
     </main>

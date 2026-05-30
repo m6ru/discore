@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase/server";
 import { pickOne } from "@/lib/supabase/select-helpers";
+import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
 import { HomeInvites, type InviteWithContext } from "./home-invites";
 import { HomeCourseSearch } from "./home-course-search";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ export default async function HomePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [activeRoundsResult, invitesResult] = user
+  const [activeRoundsResult, invitesResult, coursesResult] = user
     ? await Promise.all([
         supabase
           .from("rounds")
@@ -43,14 +44,17 @@ export default async function HomePage() {
           .eq("invited_user_id", user.id)
           .eq("status", "pending")
           .order("created_at", { ascending: false }),
+        loadCourseSummaries(supabase),
       ])
     : [
         { data: null, error: null },
         { data: null, error: null },
+        { courses: [], error: null },
       ];
 
   const activeRounds = activeRoundsResult.data ?? [];
   const rawInvites = invitesResult.data ?? [];
+  const hubCourses = coursesResult.courses ?? [];
 
   const invites: InviteWithContext[] = rawInvites.map((row) => {
     const round = pickOne(row.rounds);
@@ -85,7 +89,7 @@ export default async function HomePage() {
         )}
       </section>
 
-      {user ? <HomeCourseSearch enabled /> : null}
+      {user && hubCourses.length > 0 ? <HomeCourseSearch courses={hubCourses} /> : null}
 
       {user && activeRounds.length > 0 ? (
         <section className="space-y-3 rounded-lg border border-emerald-200 bg-emerald-50/60 p-4">

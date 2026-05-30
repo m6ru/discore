@@ -181,7 +181,8 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
 | Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` |
 | Hub / invites | `app/page.tsx`, `app/home-invites.tsx`, `app/home-course-search.tsx` |
-| Courses browse | `app/courses/page.tsx`, `app/courses/[slug]/page.tsx`, `lib/rounds/create-draft-round.ts` |
+| Courses browse | `app/courses/`, `lib/courses/`, `components/courses/course-search-dropdown.tsx` |
+| Draft round create | `lib/rounds/round-draft-actions.ts` (`createDraftRound`), `components/rounds/start-round-button.tsx` |
 
 ### Constraints
 
