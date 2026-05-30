@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 0 — Design foundations
-- **Last completed:** (none)
+- **Current step:** Step 1 — shadcn smoke test (one button)
+- **Last completed:** Step 0 — Design foundations
 - **Open blockers:** none
 
 ---
@@ -66,7 +66,7 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 **Decision points (work through these as a conversation):**
 
 ### 0.1 Brand identity
-- **App display name** (currently "Discore" — keep, or rename?)
+- **App display name** (currently "Discore")
 - **One-line tagline?** Used on PWA splash, sign-in screen, hub. Or skip entirely?
 - **Logo direction:** text wordmark only / monogram (e.g. "DS") / illustrated mark (disc, basket, flight path) / commission later, ship without for v1?
 
@@ -107,14 +107,20 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 **Notes (filled in by agent at end of chat):**
 
-- [ ] 0.1 Brand identity: _(empty)_
-- [ ] 0.2 Palette: _(empty)_
-- [ ] 0.3 Typography: _(empty)_
-- [ ] 0.4 Density / voice: _(empty)_
-- [ ] 0.5 Layout patterns: _(empty)_
-- [ ] 0.6 Component architecture: _(empty)_
+- [x] 0.1 Brand identity: Name stays **"Discore"**. **No tagline** for v1 (may add later). **No logo** for v1 — ship without; commission/design a mark later.
+- [x] 0.2 Palette: Primary = **emerald** (keep current accent). Dark mode = **never** (light only — tokens live in `:root` only, no `.dark`). Palette source = **shadcn themes preset** (ui.shadcn.com/themes). NB: shadcn presets are grayscale neutral bases; the emerald accent must be set as an explicit `--primary` token on top of the chosen neutral base in Step 2.
+- [x] 0.3 Typography: Body = **Manrope** (drop the `Arial` body override). Display/headers = **same as body** (Manrope, bold weights). Scorecard digits = **JetBrains Mono** (dedicated mono). Net: load Manrope + JetBrains Mono via `next/font`; **remove Geist Sans + Geist Mono** in Step 1/2.
+- [x] 0.4 Density / voice: Density = **breathy** (mobile-generous spacing). Tone = **warm / friendly local club**. Iconography = **functional only** (icons only where they aid an action or navigation).
+- [x] 0.5 Layout patterns: Mobile nav = **bottom tab bar**. Card style = **hairline border**. Round screen primary action = **bottom-sticky save bar**.
+- [x] 0.6 Component architecture: Primitives in **`components/ui/`** (shadcn default). Use primitives **raw** (no app-specific wrappers). Shared layout primitives (page wrapper, section wrapper, mobile frame) in **`components/layout/`**.
 
-- [ ] **Step 0 complete**
+**Open follow-ups flagged for later steps:**
+1. **Step 2** — shadcn preset gives a neutral grayscale base; set emerald as an explicit `--primary`/accent token rather than expecting the preset to be green.
+2. **Step 1/2** — `layout.tsx` + `globals.css` currently load Geist Sans/Mono and override body to Arial. Replace with Manrope (body + display) and JetBrains Mono (digits); delete the Arial override.
+3. **Step 3c** — bottom tab bar needs its destinations decided (likely Home / New round / History / Account). Tab icons count as "functional".
+4. **Bottom-edge contention** — bottom tab bar (0.5), bottom-sticky save bar (Step 6a), and Sonner toast placement (Step 2 D2) all target the bottom edge. Coordinate stacking + safe-area insets across those steps.
+
+- [x] **Step 0 complete**
 
 ---
 
