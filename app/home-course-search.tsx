@@ -11,9 +11,10 @@ const HUB_RESULT_LIMIT = 8;
 
 type Props = {
   courses: CourseSummary[];
+  hideLabel?: boolean;
 };
 
-export function HomeCourseSearch({ courses }: Props) {
+export function HomeCourseSearch({ courses, hideLabel = false }: Props) {
   const [query, setQuery] = useState("");
 
   const trimmed = query.trim();
@@ -28,9 +29,11 @@ export function HomeCourseSearch({ courses }: Props) {
 
   return (
     <div className="space-y-2">
-      <label htmlFor="home-course-search" className="text-sm font-medium">
-        Find a course
-      </label>
+      {hideLabel ? null : (
+        <label htmlFor="home-course-search" className="text-sm font-medium">
+          Find a course
+        </label>
+      )}
       <Input
         id="home-course-search"
         type="search"

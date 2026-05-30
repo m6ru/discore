@@ -5,6 +5,15 @@ import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
 import { HomeInvites, type InviteWithContext } from "./home-invites";
 import { HomeCourseSearch } from "./home-course-search";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 function formatDateTime(iso: string | null): string {
   if (!iso) {
@@ -72,81 +81,80 @@ export default async function HomePage() {
   });
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-8">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-bold">Discore</h1>
-        <p className="text-sm text-muted-foreground">Start a round or continue where you left off.</p>
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
+      <header className="space-y-4">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">Discore</h1>
+          <p className="text-sm text-muted-foreground">
+            {user
+              ? "Start a round or continue where you left off."
+              : "Sign in to save rounds and play with friends."}
+          </p>
+        </div>
+        {user ? (
+          <Button asChild size="lg" className="min-h-11 w-full">
+            <Link href="/courses">Start round</Link>
+          </Button>
+        ) : (
+          <Button asChild size="lg" className="min-h-11 w-full">
+            <Link href="/auth">Sign in</Link>
+          </Button>
+        )}
       </header>
 
-      <section className="rounded-lg border p-4">
-        <p className="font-medium">{user ? "Signed in" : "Signed out"}</p>
-        {user ? (
-          <p className="mt-1 break-all text-sm text-muted-foreground">{user.email}</p>
-        ) : (
-          <p className="mt-1 text-sm text-muted-foreground">
-            Sign in to save true-history rounds. Guest round flow comes next.
-          </p>
-        )}
-      </section>
-
-      {user && hubCourses.length > 0 ? <HomeCourseSearch courses={hubCourses} /> : null}
-
-      {user && activeRounds.length > 0 ? (
-        <section className="space-y-3 rounded-lg border border-emerald-200 bg-emerald-50/60 p-4">
-          <h2 className="text-lg font-semibold text-emerald-900">Resume your round</h2>
-          <ul className="space-y-2">
-            {activeRounds.map((round) => {
-              const layout = pickOne(round.layouts);
-              const course = pickOne(layout?.courses);
-              const isScorer = round.scorer_id === user.id;
-              return (
-                <li key={round.id}>
-                  <Link
-                    href={`/rounds/${round.id}`}
-                    className="flex items-center justify-between gap-3 rounded-md border border-emerald-200 bg-white p-3 transition hover:bg-emerald-50"
-                  >
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-zinc-900">
-                        {course?.name ?? "Unknown course"}
-                      </p>
-                      <p className="truncate text-xs text-zinc-600">
-                        {layout?.name ?? "Unknown layout"} · started{" "}
-                        {formatDateTime(round.started_at)}
-                      </p>
-                    </div>
-                    <span className="shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800">
-                      {isScorer ? "Scorer" : "Observer"}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
+      {!user ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Welcome</CardTitle>
+            <CardDescription>
+              Create an account to track rounds, accept invites, and see your history.
+            </CardDescription>
+          </CardHeader>
+        </Card>
       ) : null}
 
-      {user ? <HomeInvites currentUserId={user.id} invites={invites} /> : null}
+      {user && hubCourses.length > 0 ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Find a course</CardTitle>
+            <CardDescription>Search by course name or location.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <HomeCourseSearch courses={hubCourses} hideLabel />
+          </CardContent>
+        </Card>
+      ) : null}
 
-      <nav className="flex flex-wrap gap-3" aria-label="Primary actions">
-        <Button asChild>
-          <Link href={user ? "/courses" : "/auth?message=Please+sign+in+to+continue"}>
-            Start round
-          </Link>
-        </Button>
-        {user ? (
-          <>
-            <Button variant="outline" asChild>
-              <Link href="/courses">All courses</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/rounds">Round history</Link>
-            </Button>
-          </>
-        ) : null}
-        <Button variant="outline" asChild>
-          <Link href="/auth">{user ? "Account" : "Sign in"}</Link>
-        </Button>
-      </nav>
+      {user && activeRounds.length > 0
+        ? activeRounds.map((round) => {
+            const layout = pickOne(round.layouts);
+            const course = pickOne(layout?.courses);
+            const isScorer = round.scorer_id === user.id;
+            return (
+              <Card key={round.id} className="border-primary/30 bg-primary/5 py-4 shadow-none">
+                <CardHeader className="gap-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <CardTitle className="text-lg">Resume your round</CardTitle>
+                    <Badge variant={isScorer ? "default" : "secondary"}>
+                      {isScorer ? "Scorer" : "Observer"}
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    {course?.name ?? "Unknown course"} · {layout?.name ?? "Unknown layout"}
+                    {" · "}started {formatDateTime(round.started_at)}
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter className="pt-0">
+                  <Button asChild size="lg" className="min-h-11 w-full">
+                    <Link href={`/rounds/${round.id}`}>Continue round</Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          })
+        : null}
+
+      {user ? <HomeInvites currentUserId={user.id} invites={invites} /> : null}
     </main>
   );
 }

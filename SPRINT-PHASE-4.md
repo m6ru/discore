@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 3c — Hub + history list
-- **Last completed:** Step 3b — Course-first discovery + draft participant shadcn (Step 7 absorbed)
+- **Current step:** Step 3d — Round screen chrome
+- **Last completed:** Step 3c — Hub + history list + bottom tab bar
 - **Open blockers:** none
 
 ---
@@ -340,9 +340,18 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 **Notes:**
 
-(empty)
+- **Decided (D1):** Hub uses **hero + cards** — bold header with full-width primary CTA, then shadcn `Card` sections below (search, resume, invites). Removed the old signed-in email box and bottom inline nav row (replaced by tab bar).
+- **Decided (D2):** Resume is a **prominent CTA card** per active round — primary-tinted `Card`, `Badge` for Scorer/Observer role, full-width `Continue round` button (`size="lg"`, `min-h-11`).
+- **Decided (D3):** Invites use **50/50 side-by-side Buttons** — Accept = `default`, Decline = `outline`, both `size="lg"` + `min-h-11`. Wrapped in a parent `Card`; each invite is a hairline-bordered sub-block.
+- **Decided (D4):** History uses **one Card per round** — tappable `Link` wrapping `Card` with hover state; empty state is a single Card.
+- **Decided (D5):** Status = **Badge text only** — `default` (Active), `secondary` (Completed), `outline` (Abandoned); labels title-cased, no colored dots.
+- **Bottom tab bar (this step):** New `components/layout/{bottom-tab-bar,app-chrome}.tsx`. Tabs: **Home** (`/`), **Courses** (`/courses` + `/courses/*`), **Start round** (`/courses`, emphasized icon), **Account** (`/auth`). Hidden on `/rounds/[roundId]` (active scoring). Content gets `pb-[calc(4.5rem+safe-area)]`; Sonner `offset` lifted to match. Safe-area on the bar itself.
+- **Account note:** `/auth` subtitle flags that profile/history/stats will consolidate here later; interim **View round history** link added (`/rounds` not in tab bar). Removed redundant "Back home" links from courses/auth.
+- **Surprised:** Start round and Courses share `/courses` but use different active rules — Start round highlights only on exact `/courses`, Courses on list + detail. Works without duplicate routes.
+- **Ask next (Step 3d):** D1–D3 for round header layout, lifecycle action grouping, destructive button treatment.
+- **Not done by agent:** sub-task 5 (phone-test hub + tab bar + invite Realtime on device).
 
-- [ ] **Step 3c complete**
+- [x] **Step 3c complete**
 
 ---
 

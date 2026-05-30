@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
@@ -17,7 +16,7 @@ export default async function CoursesPage() {
   const { courses, error: coursesError } = await loadCourseSummaries(supabase);
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-8">
+    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
       <header className="space-y-2">
         <h1 className="text-2xl font-bold">Courses</h1>
         <p className="text-sm text-muted-foreground">
@@ -32,10 +31,6 @@ export default async function CoursesPage() {
       ) : (
         <CoursesList courses={courses ?? []} />
       )}
-
-      <Link href="/" className="text-sm text-muted-foreground underline underline-offset-4">
-        Back home
-      </Link>
     </main>
   );
 }

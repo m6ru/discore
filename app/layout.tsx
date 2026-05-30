@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, JetBrains_Mono } from "next/font/google";
+import { AppChrome } from "@/components/layout/app-chrome";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -29,9 +30,13 @@ export default function RootLayout({
       lang="en"
       className={`${manrope.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        {children}
-        <Toaster position="bottom-center" theme="light" />
+      <body className="flex min-h-full flex-col">
+        <AppChrome>{children}</AppChrome>
+        <Toaster
+          position="bottom-center"
+          theme="light"
+          offset="calc(4.5rem + env(safe-area-inset-bottom, 0px))"
+        />
       </body>
     </html>
   );
