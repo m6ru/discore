@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 2 — Install theme + primitives layer
-- **Last completed:** Step 1 — shadcn smoke test (one button)
+- **Current step:** Step 3a — Auth + account screens
+- **Last completed:** Step 2 — Install theme + primitives layer
 - **Open blockers:** none
 
 ---
@@ -206,9 +206,18 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 **Notes:**
 
-(empty)
+- **Decided (palette):** `--primary` + `--primary-foreground` swapped from stone to **emerald-700** (`oklch(0.508 0.118 165.612)` / light foreground unchanged). `--ring` also set to emerald-700 so focus rings match the brand. `--accent`, `--sidebar-*`, and the rest stay **stone** (user chose "emerald on --primary + --ring" only — most contained). `@theme inline` + `.dark` handling untouched from Step 1; still light-only.
+- **Decided (primitives):** installed the **full** proposed set — `input`, `label`, `card`, `dialog`, `alert-dialog`, `sonner`, `select`, `switch`, `badge`, `separator`, `dropdown-menu`, `form`, `command`. 13 files created in `components/ui/`; `button.tsx` left intact.
+- **Decided (toast):** `<Toaster position="bottom-center" theme="light" />` mounted in `app/layout.tsx`. User picked bottom-center despite the noted bottom-edge contention — see follow-up #1.
+- **Decided (icons):** confirmed **lucide-react** (matches §0.4 + `components.json`); installed.
+- **Surprised:** the `shadcn add` CLI ran cleanly this time (~20s, no hangs) and auto-installed transitive deps via npm: `sonner`, `cmdk`, `react-hook-form`, `@hookform/resolvers`, `zod`, **and `next-themes`**. It did **not** install `lucide-react` even though `sonner.tsx` imports from it — installed that separately. The generated `sonner.tsx` reads `useTheme()` from `next-themes` (defaults to `"system"`), which would follow OS dark mode and produce dark toasts on a light-only app; overrode by passing `theme="light"` at the mount point rather than editing the standard shadcn file.
+- **Ask next (Step 3a):** with the emerald primary live, confirm whether form-screen accents (links, focused inputs) should lean on `--primary` (emerald) or stay neutral. Also decide Step 3a D1–D4 (sign-in/up pattern, required-field treatment, account layout, inline-vs-toast status).
 
-- [ ] **Step 2 complete**
+**Open follow-ups flagged for later steps:**
+1. **Step 6a / Step 3c** — bottom-center toasts will overlap the planned sticky save bar (Step 6a) and bottom tab bar (Step 3c). Coordinate stacking / `offset` / safe-area when those land; may need to lift toast offset or move it conditionally on the round screen.
+2. **`next-themes`** is now an indirect dependency (pulled by the sonner primitive). It is unused beyond the forced-light Toaster. Leave installed (standard shadcn surface); revisit only if a future step wants a real theme provider — which §0.2 says it won't (dark mode never).
+
+- [x] **Step 2 complete**
 
 ---
 
