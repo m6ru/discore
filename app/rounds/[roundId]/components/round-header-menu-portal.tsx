@@ -67,13 +67,13 @@ export function RoundHeaderMenuPortal({
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             size="icon"
-            className="size-9 shrink-0"
+            className="size-9 shrink-0 text-foreground"
             aria-label="Round menu"
             disabled={disabled}
           >
-            <Menu className="size-4" aria-hidden />
+            <Menu className="size-5" strokeWidth={2} aria-hidden />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
