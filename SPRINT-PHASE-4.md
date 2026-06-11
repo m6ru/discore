@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 5 — Toast layer
-- **Last completed:** Step 4 — AlertDialog for destructive actions
+- **Current step:** Step 6a — Round screen mobile UX (active hole scoring)
+- **Last completed:** Step 5 — Toast layer
 - **Open blockers:** none
 
 ---
@@ -487,9 +487,17 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 **Notes:**
 
-(empty)
+- **Decided (D1):** **error** — failures, validation, auth errors. **success** — profile/password updated, sign-up OK, final hole saved. **info** — neutral guardrails (e.g. "participants only editable in draft"). No `warning` variant used.
+- **Decided (D2):** Sonner **default duration** for all except save failures → **`duration: Infinity`** (tap to dismiss) so spotty course network doesn't hide the error before retry.
+- **Decided (D3):** Save failures **dedup** via fixed toast `id` (`save-scores-error`); successful save calls `toast.dismiss` on that id.
+- **Helper:** `lib/ui/toast-notify.ts` — thin wrappers around `sonner` for consistent imports.
+- **Round screen:** Removed `status` state from `round-session`; hooks call toasts directly. `RoundStatusBanner` now **only** renders `lastSavedLabel` (persistent inline).
+- **Draft create:** `StartRoundButton` / `useStartDraftRound` — inline error `<p>` removed; errors toast instead.
+- **Left inline:** Auth redirect `message` amber banner (no theme warning token — same as Step 3a). Server-rendered course list errors on `/courses` (out of sprint list).
+- **Ask next (Step 6a):** D1–D6 for sticky save bar, stroke input, OB control, hole progress, summaries placement, hole nav.
+- **Not done by agent:** sub-task 4 (phone-test with network throttling).
 
-- [ ] **Step 5 complete**
+- [x] **Step 5 complete**
 
 ---
 
