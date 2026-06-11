@@ -33,9 +33,9 @@ const stickyShadow = "shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)]";
 
 /** Fixed column widths — `left` offsets must match these exactly. */
 const STICKY_COL = {
-  player: { width: "w-[6.5rem]", left: "left-0" },
-  par: { width: "w-10", left: "left-[6.5rem]" },
-  total: { width: "w-11", left: "left-[9rem]" },
+  player: { width: "w-[5rem]", left: "left-0" },
+  par: { width: "w-8", left: "left-[5rem]" },
+  total: { width: "w-9", left: "left-[7rem]" },
 } as const;
 
 function stickyCol(
@@ -75,7 +75,7 @@ export function ScorecardSection({
                 rowSpan={2}
                 className={cn(
                   stickyCol("player", "header"),
-                  "px-2 py-2 text-left text-xs font-medium text-muted-foreground"
+                  "px-1 py-1 text-left text-[11px] font-medium text-muted-foreground"
                 )}
               >
                 Player
@@ -84,7 +84,7 @@ export function ScorecardSection({
                 rowSpan={2}
                 className={cn(
                   stickyCol("par", "header"),
-                  "px-1.5 py-2 text-center text-xs font-medium text-muted-foreground"
+                  "px-0.5 py-1 text-center text-[11px] font-medium text-muted-foreground"
                 )}
                 title="Versus par"
               >
@@ -94,7 +94,7 @@ export function ScorecardSection({
                 rowSpan={2}
                 className={cn(
                   stickyCol("total", "header"),
-                  "px-1.5 py-2 text-center text-xs font-medium text-muted-foreground"
+                  "px-0.5 py-1 text-center text-[11px] font-medium text-muted-foreground"
                 )}
                 title="Total strokes"
               >
@@ -106,7 +106,7 @@ export function ScorecardSection({
                   <th
                     key={hole.id}
                     className={cn(
-                      "relative z-0 min-w-[2.25rem] border-b px-0.5 py-1.5 text-center text-xs font-semibold tabular-nums",
+                      "relative z-0 min-w-[1.75rem] border-b px-0 py-1 text-center text-[11px] font-semibold tabular-nums",
                       isCurrent ? "bg-primary/15 text-foreground" : "bg-muted/40 text-foreground"
                     )}
                   >
@@ -122,7 +122,7 @@ export function ScorecardSection({
                   <th
                     key={`par-${hole.id}`}
                     className={cn(
-                      "relative z-0 border-b px-0.5 py-0.5 text-center text-[10px] font-medium tabular-nums text-muted-foreground",
+                      "relative z-0 border-b px-0 py-0 text-center text-[10px] font-medium tabular-nums text-muted-foreground",
                       isCurrent ? "bg-primary/10" : "bg-muted/30"
                     )}
                   >
@@ -152,7 +152,7 @@ export function ScorecardSection({
                     <td
                       className={cn(
                         stickyCol("player", "body"),
-                        "max-w-[6.5rem] truncate px-2 py-1.5 text-xs font-medium text-foreground"
+                        "max-w-[5rem] truncate px-1 py-1 text-[11px] font-medium text-foreground"
                       )}
                     >
                       {rank !== null ? (
@@ -167,7 +167,7 @@ export function ScorecardSection({
                     <td
                       className={cn(
                         stickyCol("par", "body"),
-                        "px-1.5 py-1.5 text-center font-mono text-xs font-semibold tabular-nums text-foreground"
+                        "px-0.5 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground"
                       )}
                     >
                       {full.thru > 0 ? formatVsPar(full.vsPar) : "—"}
@@ -175,7 +175,7 @@ export function ScorecardSection({
                     <td
                       className={cn(
                         stickyCol("total", "body"),
-                        "px-1.5 py-1.5 text-center font-mono text-xs font-semibold tabular-nums text-foreground"
+                        "px-0.5 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground"
                       )}
                     >
                       {full.thru > 0 ? full.totalStrokes : "—"}
@@ -192,7 +192,7 @@ export function ScorecardSection({
                         <td
                           key={hole.id}
                           className={cn(
-                            "relative z-0 overflow-hidden border-b px-0.5 py-1.5 text-center font-mono text-xs tabular-nums text-foreground",
+                            "relative z-0 overflow-hidden border-b px-0 py-1 text-center font-mono text-[11px] tabular-nums text-foreground",
                             isCurrent && !cellToneClass(tone) && "bg-primary/5",
                             cellToneClass(tone),
                             ob && "shadow-[inset_0_2px_0_0_var(--destructive)]",

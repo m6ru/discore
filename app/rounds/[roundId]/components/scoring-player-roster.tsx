@@ -1,4 +1,3 @@
-import { Check } from "lucide-react";
 import { formatVsPar } from "@/lib/scoring/stats";
 import { cn } from "@/lib/utils";
 import type { LeaderboardRow, ParticipantRow } from "../round-types";
@@ -29,7 +28,7 @@ export function ScoringPlayerRoster({
   const statsById = new Map(leaderboardRows.map((row) => [row.participantId, row]));
 
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-1.5">
       {scoringParticipants.map((participant) => {
         const label = getParticipantLabel(participant);
         const stats = statsById.get(participant.id);
@@ -47,7 +46,7 @@ export function ScoringPlayerRoster({
               disabled={disabled}
               onClick={() => onSelectParticipant(participant.id)}
               className={cn(
-                "flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
+                "flex w-full items-center gap-2 rounded-lg border px-2 py-2 text-left text-sm transition-colors",
                 isSelected
                   ? "border-primary bg-primary/5"
                   : "border-border bg-background hover:bg-muted/50",
@@ -55,20 +54,12 @@ export function ScoringPlayerRoster({
               )}
               aria-pressed={isSelected}
             >
-              <span className="flex min-w-0 flex-1 items-center gap-2 truncate">
-                {hasHoleScore ? (
-                  <Check className="size-4 shrink-0 text-primary" aria-hidden />
-                ) : (
-                  <span className="size-4 shrink-0" aria-hidden />
-                )}
-                <span className="truncate font-medium">
-                  <span className="text-muted-foreground tabular-nums">{teePosition}.</span>{" "}
-                  {label}
-                </span>
+              <span className="min-w-0 flex-1 truncate font-medium">
+                <span className="text-muted-foreground tabular-nums">{teePosition}.</span> {label}
               </span>
               <span
                 className={cn(
-                  "relative inline-flex min-h-8 min-w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border-2 px-2 font-mono text-sm font-semibold tabular-nums",
+                  "relative inline-flex min-h-7 min-w-9 shrink-0 items-center justify-center overflow-hidden rounded-md border-2 px-1.5 font-mono text-sm font-semibold tabular-nums",
                   obOnHole && "shadow-[inset_0_2px_0_0_var(--destructive)]",
                   hasHoleScore
                     ? "border-border text-foreground"
@@ -84,7 +75,7 @@ export function ScoringPlayerRoster({
               >
                 {hasHoleScore ? holeRaw : "—"}
               </span>
-              <span className="w-14 shrink-0 text-right font-mono text-sm font-semibold tabular-nums">
+              <span className="w-10 shrink-0 text-right font-mono text-sm font-semibold tabular-nums">
                 {stats && stats.thru > 0 ? stats.totalStrokes : "—"}
               </span>
               <span

@@ -54,7 +54,7 @@ export function buildUnifiedPlayers(input: BuildUnifiedPlayersInput): UnifiedPla
     if (participant.user_id === scorerUserId) {
       rows.push({
         key: `user-${participant.id}`,
-        label: `${scorerDisplayName} (scorer)`,
+        label: scorerDisplayName,
         isPending: false,
         canRemove: false,
         source: "participant",
