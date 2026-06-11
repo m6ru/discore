@@ -68,6 +68,16 @@ const holeColClass =
 const summaryColClass =
   "border-b px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
 
+/** Trailing Par / Total — fixed width with vertical borders like other summary columns. */
+const endParHeaderClass =
+  "w-8 min-w-[2rem] border-b border-l border-r bg-muted px-0 py-1 text-center text-[11px] font-medium text-muted-foreground";
+const endTotalHeaderClass =
+  "w-8 min-w-[2rem] border-b border-r bg-muted px-0 py-1 text-center text-[11px] font-medium text-muted-foreground";
+const endParCellClass =
+  "w-8 min-w-[2rem] border-b border-l border-r bg-background px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
+const endTotalCellClass =
+  "w-8 min-w-[2rem] border-b border-r bg-background px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
+
 export function ScorecardSection({
   roundStatus,
   sortedHoles,
@@ -129,18 +139,10 @@ export function ScorecardSection({
                   </th>
                 );
               })}
-              <th
-                rowSpan={2}
-                className={cn(summaryHeaderClass, "min-w-[2.25rem] border-b bg-muted/40")}
-                title="Versus par"
-              >
+              <th rowSpan={2} className={endParHeaderClass} title="Versus par">
                 Par
               </th>
-              <th
-                rowSpan={2}
-                className={cn(summaryHeaderClass, "min-w-[2.25rem] border-b bg-muted/40")}
-                title="Total strokes"
-              >
+              <th rowSpan={2} className={endTotalHeaderClass} title="Total strokes">
                 Total
               </th>
             </tr>
@@ -224,8 +226,8 @@ export function ScorecardSection({
                         </td>
                       );
                     })}
-                    <td className={summaryColClass}>{vsParLabel}</td>
-                    <td className={summaryColClass}>{totalLabel}</td>
+                    <td className={endParCellClass}>{vsParLabel}</td>
+                    <td className={endTotalCellClass}>{totalLabel}</td>
                   </tr>
                 );
               })
