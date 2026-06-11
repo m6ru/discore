@@ -1,17 +1,16 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { LeaderboardRow, HoleRow, ParticipantRow } from "../round-types";
-import { ConfirmActionDialog } from "./confirm-action-dialog";
 import { ScoringPlayerRoster } from "./scoring-player-roster";
 
 const STROKE_MIN = 1;
 const STROKE_MAX = 25;
 
-/** Bottom inset for fixed save bar (abandon link + button + padding + safe area). */
+/** Scroll padding so content clears the fixed bottom scoring deck. */
 export const ACTIVE_SCORING_BOTTOM_INSET =
-  "calc(7rem + env(safe-area-inset-bottom, 0px))";
+  "calc(12rem + env(safe-area-inset-bottom, 0px))";
 
 type Props = {
   activeHole: HoleRow;
@@ -21,16 +20,15 @@ type Props = {
   currentHoleIndex: number;
   isLastHole: boolean;
   isSubmitting: boolean;
-  isTransitioning: boolean;
   getParticipantLabel: (participant: ParticipantRow) => string;
+  teePositionByParticipantId: ReadonlyMap<string, number>;
   getStrokeInputValue: (participantId: string) => string;
   isObChecked: (participantId: string) => boolean;
   onStrokeChange: (participantId: string, value: string) => void;
   onObToggle: (participantId: string, checked: boolean) => void;
   onPreviousHole: () => void;
-  onNextHole: () => void;
   onSaveAndAdvanceHole: () => void;
-  onAbandonRound: () => void;
+  scorecardSlot: ReactNode;
 };
 
 function parseStrokeValue(raw: string): number | null {
@@ -66,20 +64,23 @@ type CompactStepperProps = {
 
 function CompactStepper({ par, value, disabled, onStrokeChange }: CompactStepperProps) {
   const parsed = parseStrokeValue(value);
+  const isImplicitPar = parsed === null;
   const displayValue = parsed ?? par;
 
   const handleDecrement = () => {
-    const next = parsed === null ? Math.max(STROKE_MIN, par - 1) : Math.max(STROKE_MIN, parsed - 1);
+    const next = isImplicitPar
+      ? Math.max(STROKE_MIN, par - 1)
+      : Math.max(STROKE_MIN, parsed - 1);
     onStrokeChange(String(next));
   };
 
   const handleIncrement = () => {
-    const next = parsed === null ? Math.min(STROKE_MAX, par + 1) : Math.min(STROKE_MAX, parsed + 1);
+    const next = isImplicitPar ? par : Math.min(STROKE_MAX, parsed + 1);
     onStrokeChange(String(next));
   };
 
-  const canDecrement = !disabled && displayValue > STROKE_MIN;
-  const canIncrement = !disabled && displayValue < STROKE_MAX;
+  const canDecrement = !disabled && (isImplicitPar ? par > STROKE_MIN : parsed > STROKE_MIN);
+  const canIncrement = !disabled && (isImplicitPar ? par < STROKE_MAX : parsed < STROKE_MAX);
 
   return (
     <div className="grid grid-cols-3 gap-2">
@@ -96,10 +97,14 @@ function CompactStepper({ par, value, disabled, onStrokeChange }: CompactStepper
       <div
         className={cn(
           "flex min-h-14 items-center justify-center rounded-xl border-2 bg-background",
-          "font-mono text-4xl font-semibold tabular-nums tracking-tight text-foreground"
+          "font-mono text-4xl font-semibold tabular-nums tracking-tight",
+          isImplicitPar ? "text-muted-foreground/35" : "text-foreground"
         )}
         aria-live="polite"
         aria-atomic="true"
+        aria-label={
+          isImplicitPar ? `Suggested par ${par}, tap + or − to set score` : `Score ${displayValue}`
+        }
       >
         {displayValue}
       </div>
@@ -125,16 +130,15 @@ export function ActiveHoleScoring({
   currentHoleIndex,
   isLastHole,
   isSubmitting,
-  isTransitioning,
   getParticipantLabel,
+  teePositionByParticipantId,
   getStrokeInputValue,
   isObChecked,
   onStrokeChange,
   onObToggle,
   onPreviousHole,
-  onNextHole,
   onSaveAndAdvanceHole,
-  onAbandonRound,
+  scorecardSlot,
 }: Props) {
   const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(
     () => firstParticipantWithoutHoleScore(scoringParticipants, getStrokeInputValue)
@@ -146,11 +150,6 @@ export function ActiveHoleScoring({
     null;
 
   const canGoBack = currentHoleIndex > 0;
-  const canGoForward = currentHoleIndex < holesLength - 1;
-
-  const selectParticipant = (participantId: string) => {
-    setSelectedParticipantId(participantId);
-  };
 
   if (!selectedParticipant) {
     return (
@@ -160,63 +159,47 @@ export function ActiveHoleScoring({
 
   const selectedLabel = getParticipantLabel(selectedParticipant);
   const obChecked = isObChecked(selectedParticipant.id);
+  const allHoleScoresEntered = scoringParticipants.every(
+    (participant) => getStrokeInputValue(participant.id).trim().length > 0
+  );
 
   return (
     <>
       <div className="space-y-5">
+        <div className="text-center">
+          <p className="font-mono text-4xl font-semibold tabular-nums tracking-tight text-foreground">
+            {activeHole.hole_number}
+            <span className="text-xl font-normal text-muted-foreground">
+              {" "}
+              / {holesLength}
+            </span>
+          </p>
+          <p className="mt-1 text-base text-muted-foreground">
+            Par{" "}
+            <span className="font-semibold text-foreground">{activeHole.par}</span>
+          </p>
+        </div>
+
         <ScoringPlayerRoster
           scoringParticipants={scoringParticipants}
           leaderboardRows={leaderboardRows}
           selectedParticipantId={selectedParticipant.id}
           getParticipantLabel={getParticipantLabel}
+          teePositionByParticipantId={teePositionByParticipantId}
           getStrokeInputValue={getStrokeInputValue}
-          onSelectParticipant={selectParticipant}
+          isObChecked={isObChecked}
+          onSelectParticipant={setSelectedParticipantId}
           disabled={isSubmitting}
         />
 
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="icon-lg"
-              className="min-h-11 min-w-11 shrink-0 rounded-xl"
-              aria-label="Previous hole"
-              disabled={!canGoBack || isSubmitting}
-              onClick={onPreviousHole}
-            >
-              <ChevronLeft className="size-5" aria-hidden />
-            </Button>
+        {scorecardSlot}
+      </div>
 
-            <div className="min-w-0 flex-1 px-1">
-              <p className="font-mono text-4xl font-semibold tabular-nums tracking-tight text-foreground">
-                {activeHole.hole_number}
-                <span className="text-xl font-normal text-muted-foreground">
-                  {" "}
-                  / {holesLength}
-                </span>
-              </p>
-              <p className="mt-1 text-base text-muted-foreground">
-                Par{" "}
-                <span className="font-semibold text-foreground">{activeHole.par}</span>
-              </p>
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="icon-lg"
-              className="min-h-11 min-w-11 shrink-0 rounded-xl"
-              aria-label="Next hole"
-              disabled={!canGoForward || isSubmitting}
-              onClick={onNextHole}
-            >
-              <ChevronRight className="size-5" aria-hidden />
-            </Button>
-          </div>
-        </div>
-
-        <div className="space-y-3">
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-3 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
+      >
+        <div className="mx-auto w-full max-w-3xl space-y-3">
           <p className="text-center text-sm font-medium text-foreground">{selectedLabel}</p>
           <CompactStepper
             par={activeHole.par}
@@ -224,11 +207,21 @@ export function ActiveHoleScoring({
             disabled={isSubmitting}
             onStrokeChange={(value) => onStrokeChange(selectedParticipant.id, value)}
           />
-          <div className="flex justify-center">
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="min-h-11 rounded-xl"
+              aria-label="Previous hole"
+              disabled={!canGoBack || isSubmitting}
+              onClick={onPreviousHole}
+            >
+              <ChevronLeft className="size-5" aria-hidden />
+            </Button>
             <Button
               type="button"
               variant={obChecked ? "destructive" : "outline"}
-              className="min-h-11 min-w-[5.5rem] rounded-xl text-sm font-semibold uppercase tracking-wide"
+              className="min-h-11 rounded-xl text-sm font-semibold uppercase tracking-wide"
               aria-pressed={obChecked}
               aria-label={`Toggle OB for ${selectedLabel}`}
               disabled={isSubmitting}
@@ -236,43 +229,21 @@ export function ActiveHoleScoring({
             >
               OB
             </Button>
+            <Button
+              type="button"
+              variant="default"
+              className="min-h-11 rounded-xl"
+              aria-label={isLastHole ? "Save scores" : "Save and go to next hole"}
+              disabled={isSubmitting || !allHoleScoresEntered}
+              onClick={() => void onSaveAndAdvanceHole()}
+            >
+              {isSubmitting ? (
+                <span className="text-sm">…</span>
+              ) : (
+                <ChevronRight className="size-5" aria-hidden />
+              )}
+            </Button>
           </div>
-        </div>
-      </div>
-
-      <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-2 backdrop-blur supports-[backdrop-filter]:bg-background/80"
-        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
-      >
-        <div className="mx-auto w-full max-w-3xl space-y-2">
-          <div className="text-center">
-            <ConfirmActionDialog
-              title="Abandon this round?"
-              description="Scores won't be saved to history. You can always start a new round later."
-              confirmLabel="Abandon round"
-              onConfirm={onAbandonRound}
-              disabled={isSubmitting || isTransitioning}
-              trigger={
-                <Button
-                  type="button"
-                  variant="link"
-                  className="h-auto p-0 text-xs text-muted-foreground"
-                  disabled={isSubmitting || isTransitioning}
-                >
-                  {isTransitioning ? "Working..." : "Abandon round"}
-                </Button>
-              }
-            />
-          </div>
-          <Button
-            type="button"
-            size="lg"
-            className="min-h-11 w-full"
-            disabled={isSubmitting}
-            onClick={() => void onSaveAndAdvanceHole()}
-          >
-            {isSubmitting ? "Saving…" : isLastHole ? "Save scores" : "Save & next hole"}
-          </Button>
         </div>
       </div>
     </>

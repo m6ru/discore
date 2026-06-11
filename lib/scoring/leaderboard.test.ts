@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildLeaderboard } from "./leaderboard";
+import { buildFinishRankMap, buildLeaderboard } from "./leaderboard";
 import { makeScoreLookupKey, type Hole, type Participant } from "./types";
 
 const HOLES: Hole[] = [
@@ -72,5 +72,19 @@ describe("buildLeaderboard", () => {
     const rows = buildLeaderboard(participants, HOLES, lookup, (id) => id);
     // Both at vsPar=0; y has more strokes (7), so x (3) ranks first.
     expect(rows.map((r) => r.participantId)).toEqual(["x", "y"]);
+  });
+});
+
+describe("buildFinishRankMap", () => {
+  it("assigns ranks by competitive order regardless of join order", () => {
+    const lookup = mkLookup([
+      ["p-alice", "h1", 4],
+      ["p-bob", "h1", 3],
+      ["p-carol", "h1", 5],
+    ]);
+    const ranks = buildFinishRankMap(PARTICIPANTS, HOLES, lookup, labelFor);
+    expect(ranks.get("p-bob")).toBe(1);
+    expect(ranks.get("p-alice")).toBe(2);
+    expect(ranks.get("p-carol")).toBe(3);
   });
 });

@@ -1,57 +1,215 @@
-import { ScorecardSegment } from "./scorecard-segment";
+import { formatVsPar, segmentPlayerStats } from "@/lib/scoring/stats";
+import { holeScoreTone } from "@/lib/scoring/scorecard-display";
+import { makeScoreLookupKey } from "@/lib/scoring/types";
+import { cn } from "@/lib/utils";
 import type { RoundStatus } from "@/lib/rounds/round-status";
-import type { HoleRow, ParticipantRow } from "../round-types";
+import type { HoleRow, LeaderboardRow } from "../round-types";
 
 type Props = {
   roundStatus: RoundStatus;
-  holeSegments: HoleRow[][];
   sortedHoles: HoleRow[];
   scoreLookup: Map<string, number>;
-  scoringParticipants: ParticipantRow[];
-  getParticipantLabel: (participant: ParticipantRow) => string;
+  obLookup: Map<string, boolean>;
+  leaderboardRows: LeaderboardRow[];
   activeHole: HoleRow | null;
 };
 
+function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
+  switch (tone) {
+    case "ace":
+      return "bg-amber-300/70";
+    case "eagle":
+      return "bg-blue-500/35";
+    case "birdie":
+      return "bg-primary/20";
+    case "bogey":
+      return "bg-destructive/15";
+    default:
+      return "";
+  }
+}
+
+const stickyShadow = "shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)]";
+
+/** Fixed column widths — `left` offsets must match these exactly. */
+const STICKY_COL = {
+  player: { width: "w-[6.5rem]", left: "left-0" },
+  par: { width: "w-10", left: "left-[6.5rem]" },
+  total: { width: "w-11", left: "left-[9rem]" },
+} as const;
+
+function stickyCol(
+  column: keyof typeof STICKY_COL,
+  variant: "header" | "body"
+): string {
+  const { width, left } = STICKY_COL[column];
+  return cn(
+    "sticky border-r border-b",
+    left,
+    width,
+    variant === "header" ? "z-30 bg-muted" : "z-20 bg-background",
+    column === "total" && stickyShadow
+  );
+}
+
 export function ScorecardSection({
   roundStatus,
-  holeSegments,
   sortedHoles,
   scoreLookup,
-  scoringParticipants,
-  getParticipantLabel,
+  obLookup,
+  leaderboardRows,
   activeHole,
 }: Props) {
-  if (holeSegments.length > 0) {
-    return (
-      <div className="space-y-10 border-t border-zinc-200 pt-8">
-        <div>
-          <h3 className="text-base font-semibold tracking-tight text-zinc-900">Scorecard</h3>
-          <p className="mt-1 max-w-2xl text-xs leading-relaxed text-zinc-500">
-            Up to nine holes per table. <span className="font-medium text-zinc-600">Strokes</span> and the
-            first <span className="font-medium text-zinc-600">+/−</span> are for the full round;{" "}
-            <span className="font-medium text-emerald-800">Block</span> columns count only that section.
-            Scroll sideways on narrow screens.
-          </p>
-        </div>
-        {holeSegments.map((segment, idx) => (
-          <ScorecardSegment
-            key={`seg-${idx}-${segment[0]?.id ?? idx}`}
-            segmentHoles={segment}
-            allHoles={sortedHoles}
-            scoreLookup={scoreLookup}
-            scoringParticipants={scoringParticipants}
-            getParticipantLabel={getParticipantLabel}
-            activeHole={activeHole}
-            roundStatus={roundStatus}
-          />
-        ))}
-      </div>
-    );
-  }
-
   if (sortedHoles.length === 0) {
-    return <p className="text-sm text-zinc-500">No holes loaded for this layout.</p>;
+    return <p className="text-sm text-muted-foreground">No holes loaded for this layout.</p>;
   }
 
-  return null;
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold tracking-tight">Scorecard</h3>
+      <div className="overflow-x-auto rounded-lg border">
+        <table className="w-max min-w-full border-separate border-spacing-0 text-left text-sm">
+          <thead>
+            <tr className="bg-muted/40">
+              <th
+                rowSpan={2}
+                className={cn(
+                  stickyCol("player", "header"),
+                  "px-2 py-2 text-left text-xs font-medium text-muted-foreground"
+                )}
+              >
+                Player
+              </th>
+              <th
+                rowSpan={2}
+                className={cn(
+                  stickyCol("par", "header"),
+                  "px-1.5 py-2 text-center text-xs font-medium text-muted-foreground"
+                )}
+                title="Versus par"
+              >
+                Par
+              </th>
+              <th
+                rowSpan={2}
+                className={cn(
+                  stickyCol("total", "header"),
+                  "px-1.5 py-2 text-center text-xs font-medium text-muted-foreground"
+                )}
+                title="Total strokes"
+              >
+                Total
+              </th>
+              {sortedHoles.map((hole) => {
+                const isCurrent = roundStatus === "active" && activeHole?.id === hole.id;
+                return (
+                  <th
+                    key={hole.id}
+                    className={cn(
+                      "relative z-0 min-w-[2.25rem] border-b px-0.5 py-1.5 text-center text-xs font-semibold tabular-nums",
+                      isCurrent ? "bg-primary/15 text-foreground" : "bg-muted/40 text-foreground"
+                    )}
+                  >
+                    {hole.hole_number}
+                  </th>
+                );
+              })}
+            </tr>
+            <tr className="bg-muted/30">
+              {sortedHoles.map((hole) => {
+                const isCurrent = roundStatus === "active" && activeHole?.id === hole.id;
+                return (
+                  <th
+                    key={`par-${hole.id}`}
+                    className={cn(
+                      "relative z-0 border-b px-0.5 py-0.5 text-center text-[10px] font-medium tabular-nums text-muted-foreground",
+                      isCurrent ? "bg-primary/10" : "bg-muted/30"
+                    )}
+                  >
+                    {hole.par}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {leaderboardRows.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={sortedHoles.length + 3}
+                  className="px-3 py-4 text-center text-sm text-muted-foreground"
+                >
+                  No scoring players yet.
+                </td>
+              </tr>
+            ) : (
+              leaderboardRows.map((row, index) => {
+                const full = segmentPlayerStats(row.participantId, sortedHoles, scoreLookup);
+                const rank = row.thru > 0 ? index + 1 : null;
+
+                return (
+                  <tr key={row.participantId}>
+                    <td
+                      className={cn(
+                        stickyCol("player", "body"),
+                        "max-w-[6.5rem] truncate px-2 py-1.5 text-xs font-medium text-foreground"
+                      )}
+                    >
+                      {rank !== null ? (
+                        <>
+                          <span className="text-muted-foreground tabular-nums">{rank}.</span>{" "}
+                          {row.label}
+                        </>
+                      ) : (
+                        row.label
+                      )}
+                    </td>
+                    <td
+                      className={cn(
+                        stickyCol("par", "body"),
+                        "px-1.5 py-1.5 text-center font-mono text-xs font-semibold tabular-nums text-foreground"
+                      )}
+                    >
+                      {full.thru > 0 ? formatVsPar(full.vsPar) : "—"}
+                    </td>
+                    <td
+                      className={cn(
+                        stickyCol("total", "body"),
+                        "px-1.5 py-1.5 text-center font-mono text-xs font-semibold tabular-nums text-foreground"
+                      )}
+                    >
+                      {full.thru > 0 ? full.totalStrokes : "—"}
+                    </td>
+                    {sortedHoles.map((hole) => {
+                      const key = makeScoreLookupKey(row.participantId, hole.id);
+                      const strokes = scoreLookup.get(key);
+                      const ob = obLookup.get(key) ?? false;
+                      const isCurrent = roundStatus === "active" && activeHole?.id === hole.id;
+                      const tone = holeScoreTone(strokes, hole.par);
+                      const isEmpty = strokes === undefined;
+
+                      return (
+                        <td
+                          key={hole.id}
+                          className={cn(
+                            "relative z-0 overflow-hidden border-b px-0.5 py-1.5 text-center font-mono text-xs tabular-nums text-foreground",
+                            isCurrent && !cellToneClass(tone) && "bg-primary/5",
+                            cellToneClass(tone),
+                            ob && "shadow-[inset_0_2px_0_0_var(--destructive)]",
+                            isEmpty && "text-muted-foreground"
+                          )}
+                        >
+                          {strokes !== undefined ? strokes : "—"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }

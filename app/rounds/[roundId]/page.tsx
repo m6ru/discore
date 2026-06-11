@@ -9,6 +9,7 @@ import {
 } from "@/lib/rounds/format-round-status";
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
 import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
+import { ROUND_HEADER_ACTIONS_ID } from "./components/round-header-actions-slot";
 import { RoundSession } from "./round-session";
 import type { HoleRow, HoleScoreRow } from "./round-types";
 
@@ -110,9 +111,14 @@ export default async function RoundPage({ params }: RoundPageProps) {
             <span className="font-normal text-muted-foreground"> · </span>
             {layoutRow?.name ?? "Unknown layout"}
           </h1>
-          <Badge variant={statusBadgeVariant(round.status)} className="shrink-0">
-            {formatStatusLabel(round.status)}
-          </Badge>
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            {roundStatus !== "active" && roundStatus !== "draft" ? (
+              <Badge variant={statusBadgeVariant(round.status)}>
+                {formatStatusLabel(round.status)}
+              </Badge>
+            ) : null}
+            <div id={ROUND_HEADER_ACTIONS_ID} />
+          </div>
         </div>
         <p className="text-sm text-muted-foreground">
           {holes?.length ?? "?"} holes · Par {layoutRow?.total_par ?? "?"}
@@ -151,14 +157,16 @@ export default async function RoundPage({ params }: RoundPageProps) {
         />
       )}
 
-      <div className="flex gap-4 text-sm">
-        <Link href="/" className="text-muted-foreground underline underline-offset-4">
-          Back home
-        </Link>
-        <Link href="/courses" className="text-muted-foreground underline underline-offset-4">
-          Browse courses
-        </Link>
-      </div>
+      {roundStatus !== "active" ? (
+        <div className="flex gap-4 text-sm">
+          <Link href="/" className="text-muted-foreground underline underline-offset-4">
+            Back home
+          </Link>
+          <Link href="/courses" className="text-muted-foreground underline underline-offset-4">
+            Browse courses
+          </Link>
+        </div>
+      ) : null}
     </main>
   );
 }

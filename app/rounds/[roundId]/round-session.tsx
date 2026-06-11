@@ -1,11 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { createClient } from "@/lib/supabase/client";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
 import { isSegmentComplete } from "@/lib/scoring/segments";
 import { buildLeaderboard } from "@/lib/scoring/leaderboard";
-import { formatRelativeTime } from "@/lib/format/relative-time";
+import { buildTeePositionMap } from "@/lib/scoring/tee-order";
 import { getParticipantLabel as labelForParticipant } from "@/lib/rounds/participant-labels";
 import { buildUnifiedPlayers } from "@/lib/rounds/unified-players";
 import type { InviteRow } from "@/lib/rounds/invite-rows";
@@ -14,13 +21,17 @@ import {
   ActiveHoleScoring,
 } from "./components/active-hole-scoring";
 import { DraftParticipantForm } from "./components/draft-participant-form";
-import { Leaderboard } from "./components/leaderboard";
+import { RoundResults } from "./components/round-results";
 import { ObserverActiveHint } from "./components/observer-active-hint";
 import { ParticipantsList } from "./components/participants-list";
 import { RoundLifecycleActions } from "./components/round-lifecycle-actions";
-import { RoundStatusBanner } from "./components/round-status-banner";
+import {
+  ROUND_COMPLETE_BOTTOM_INSET,
+  RoundCompleteActions,
+} from "./components/round-complete-actions";
 import { RoundSummaries } from "./components/round-summaries";
 import { ScorecardSection } from "./components/scorecard-section";
+import { RoundHeaderAbandonPortal } from "./components/round-header-abandon-portal";
 import { Button } from "@/components/ui/button";
 import type {
   HoleScoreRow,
@@ -55,9 +66,11 @@ export function RoundSession({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [holeScores, setHoleScores] = useState<HoleScoreRow[]>(initialHoleScores);
-  const [lastSavedEvent, setLastSavedEvent] = useState<LastSavedEvent | null>(null);
   const [scorecardExpanded, setScorecardExpanded] = useState(false);
-  const [renderNow, setRenderNow] = useState(0);
+  const [isEditingScores, setIsEditingScores] = useState(false);
+  const ignoreRenderNow: Dispatch<SetStateAction<number>> = useCallback(() => {}, []);
+  const ignoreLastSavedEvent: Dispatch<SetStateAction<LastSavedEvent | null>> =
+    useCallback(() => {}, []);
 
   const { loadParticipants, loadInvites } = useRoundRealtime({
     supabase,
@@ -66,8 +79,8 @@ export function RoundSession({
     setInvites,
     setHoleScores,
     setRoundStatus: setLiveRoundStatus,
-    setLastSavedEvent,
-    setRenderNow,
+    setLastSavedEvent: ignoreLastSavedEvent,
+    setRenderNow: ignoreRenderNow,
   });
 
   const scoringParticipants = participants;
@@ -83,7 +96,6 @@ export function RoundSession({
     saveCurrentHoleScores,
     onSaveAndAdvanceHole,
     onPreviousHole,
-    onNextHole,
   } = useActiveScoring({
     supabase,
     roundId,
@@ -93,9 +105,10 @@ export function RoundSession({
     scoringParticipants,
     holeScores,
     setHoleScores,
-    setLastSavedEvent,
-    setRenderNow,
+    setLastSavedEvent: ignoreLastSavedEvent,
+    setRenderNow: ignoreRenderNow,
     setIsSubmitting,
+    onFinalHoleSaved: () => setIsEditingScores(false),
   });
 
   const { onAbandonRound, onCompleteRound } = useRoundLifecycle({
@@ -143,25 +156,6 @@ export function RoundSession({
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sync server prop into client state
     setLiveRoundStatus(roundStatus);
   }, [roundStatus]);
-
-  useLayoutEffect(() => {
-    queueMicrotask(() => {
-      setRenderNow(Date.now());
-    });
-  }, [roundId]);
-
-  useEffect(() => {
-    if (!lastSavedEvent) {
-      return;
-    }
-    const interval = setInterval(() => setRenderNow(Date.now()), 15000);
-    return () => clearInterval(interval);
-  }, [lastSavedEvent]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- collapse scorecard when advancing holes
-    setScorecardExpanded(false);
-  }, [activeHole?.id]);
 
   const unifiedPlayers = useMemo(
     () =>
@@ -212,18 +206,27 @@ export function RoundSession({
     [firstNineHoleIds, scoringParticipants, scoreLookup]
   );
 
-  const showFinalSummary =
-    liveRoundStatus === "completed" || (liveRoundStatus === "active" && allScoresComplete);
+  const showCompletionUI =
+    liveRoundStatus === "active" && isScorer && allScoresComplete && !isEditingScores;
+  const showScoringUI =
+    liveRoundStatus === "active" && (!allScoresComplete || isEditingScores);
   const showFrontNineSummary =
-    liveRoundStatus === "active" && !showFinalSummary && frontNineComplete;
+    liveRoundStatus === "active" && !allScoresComplete && frontNineComplete;
 
-  const holeSegments = useMemo(() => {
-    const segments: typeof sortedHoles[] = [];
-    for (let i = 0; i < sortedHoles.length; i += 9) {
-      segments.push(sortedHoles.slice(i, i + 9));
+  useEffect(() => {
+    if (!allScoresComplete) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- exit review when scores become incomplete
+      setIsEditingScores(false);
     }
-    return segments;
-  }, [sortedHoles]);
+  }, [allScoresComplete]);
+
+  const obLookup = useMemo(() => {
+    const map = new Map<string, boolean>();
+    for (const row of holeScores) {
+      map.set(makeScoreLookupKey(row.participant_id, row.hole_id), row.ob);
+    }
+    return map;
+  }, [holeScores]);
 
   const labelByParticipantId = useMemo(() => {
     const map = new Map<string, string>();
@@ -234,19 +237,26 @@ export function RoundSession({
   }, [participants, unifiedPlayers]);
 
   const showStickySaveBar =
-    liveRoundStatus === "active" && isScorer && canScore && !showFinalSummary;
+    liveRoundStatus === "active" && isScorer && canScore && showScoringUI;
 
-  const showScorecard =
-    !showStickySaveBar || scorecardExpanded;
+  const showScorecardAtBottom = !showStickySaveBar;
+  const isActiveFlatLayout = liveRoundStatus === "active";
 
-  const lastSavedLabel = useMemo(() => {
-    if (!lastSavedEvent || renderNow === 0) return null;
-    const hole = sortedHoles.find((h) => h.id === lastSavedEvent.holeId);
-    if (!hole) return null;
-    const participantLabel = labelByParticipantId.get(lastSavedEvent.participantId) ?? "Player";
-    const relative = formatRelativeTime(renderNow - lastSavedEvent.savedAt);
-    return `Hole ${hole.hole_number} saved by ${participantLabel} · ${relative}`;
-  }, [lastSavedEvent, renderNow, sortedHoles, labelByParticipantId]);
+  const teePositionByParticipantId = useMemo(
+    () =>
+      buildTeePositionMap(
+        sortedHoles,
+        currentHoleIndex,
+        scoringParticipants,
+        scoreLookup
+      ),
+    [sortedHoles, currentHoleIndex, scoringParticipants, scoreLookup]
+  );
+
+  const labelForParticipantId = useCallback(
+    (id: string) => labelByParticipantId.get(id) ?? "Player",
+    [labelByParticipantId]
+  );
 
   const leaderboardRows = useMemo(
     () =>
@@ -254,10 +264,18 @@ export function RoundSession({
         scoringParticipants,
         sortedHoles,
         scoreLookup,
-        (id) => labelByParticipantId.get(id) ?? "Player",
+        labelForParticipantId
       ),
-    [scoringParticipants, sortedHoles, scoreLookup, labelByParticipantId]
+    [scoringParticipants, sortedHoles, scoreLookup, labelForParticipantId]
   );
+
+  const leaderboardByParticipantId = useMemo(() => {
+    const map = new Map<string, (typeof leaderboardRows)[number]>();
+    for (const row of leaderboardRows) {
+      map.set(row.participantId, row);
+    }
+    return map;
+  }, [leaderboardRows]);
 
   const getParticipantLabel = useCallback(
     (participant: ParticipantRow) =>
@@ -265,14 +283,37 @@ export function RoundSession({
     [labelByParticipantId]
   );
 
+  const scorecardSection = (
+    <ScorecardSection
+      roundStatus={liveRoundStatus}
+      sortedHoles={sortedHoles}
+      scoreLookup={scoreLookup}
+      obLookup={obLookup}
+      leaderboardRows={leaderboardRows}
+      activeHole={activeHole}
+    />
+  );
+
   return (
     <section
       className={cn(
         "space-y-4",
-        !showStickySaveBar && "rounded-lg border p-4"
+        !isActiveFlatLayout && "rounded-lg border p-4"
       )}
-      style={showStickySaveBar ? { paddingBottom: ACTIVE_SCORING_BOTTOM_INSET } : undefined}
+      style={
+        showStickySaveBar
+          ? { paddingBottom: ACTIVE_SCORING_BOTTOM_INSET }
+          : showCompletionUI
+            ? { paddingBottom: ROUND_COMPLETE_BOTTOM_INSET }
+            : undefined
+      }
     >
+      <RoundHeaderAbandonPortal
+        show={showStickySaveBar || showCompletionUI}
+        isSubmitting={isSubmitting}
+        isTransitioning={isTransitioning}
+        onAbandonRound={() => void onAbandonRound()}
+      />
       {liveRoundStatus === "draft" ? (
         <>
           <h3 className="text-base font-semibold">Participants</h3>
@@ -315,29 +356,33 @@ export function RoundSession({
         </>
       ) : null}
 
-      <RoundStatusBanner lastSavedLabel={lastSavedLabel} roundStatus={liveRoundStatus} />
-
       <RoundSummaries
         showFrontNineSummary={showFrontNineSummary}
-        showFinalSummary={showFinalSummary}
-        roundStatus={liveRoundStatus}
-        isScorer={isScorer}
-        isSubmitting={isSubmitting}
-        isTransitioning={isTransitioning}
         scoringParticipants={scoringParticipants}
         holeScores={holeScores}
         firstNineHoleIds={firstNineHoleIds}
-        holeIds={holeIds}
         getParticipantLabel={getParticipantLabel}
-        onCompleteRound={onCompleteRound}
       />
 
-      {liveRoundStatus === "active" && !showFinalSummary ? (
+      {showScoringUI ? (
         <>
           {!canScore ? (
             <p className="text-sm text-muted-foreground">No participants available for scoring.</p>
           ) : isScorer && activeHole ? (
-            <ActiveHoleScoring
+            <>
+              {isEditingScores && allScoresComplete ? (
+                <div className="text-center">
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="h-auto p-0 text-sm"
+                    onClick={() => setIsEditingScores(false)}
+                  >
+                    Done editing
+                  </Button>
+                </div>
+              ) : null}
+              <ActiveHoleScoring
               key={activeHole.id}
               activeHole={activeHole}
               holesLength={holes.length}
@@ -346,64 +391,53 @@ export function RoundSession({
               currentHoleIndex={currentHoleIndex}
               isLastHole={isLastHole}
               isSubmitting={isSubmitting}
-              isTransitioning={isTransitioning}
               getParticipantLabel={getParticipantLabel}
+              teePositionByParticipantId={teePositionByParticipantId}
               getStrokeInputValue={getStrokeInputValue}
               isObChecked={isObChecked}
               onStrokeChange={setStrokeDraft}
               onObToggle={setObDraft}
               onPreviousHole={onPreviousHole}
-              onNextHole={onNextHole}
               onSaveAndAdvanceHole={onSaveAndAdvanceHole}
-              onAbandonRound={() => void onAbandonRound()}
+              scorecardSlot={
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="h-auto p-0 text-sm"
+                      onClick={() => setScorecardExpanded((open) => !open)}
+                    >
+                      {scorecardExpanded ? "Hide scorecard" : "View scorecard"}
+                    </Button>
+                  </div>
+                  {scorecardExpanded ? scorecardSection : null}
+                </div>
+              }
             />
+            </>
           ) : (
-            <div className="rounded-lg border bg-muted/40 p-4">
-              <ObserverActiveHint activeHole={activeHole} holesLength={holes.length} />
-            </div>
+            <ObserverActiveHint activeHole={activeHole} holesLength={holes.length} />
           )}
         </>
       ) : null}
 
-      {showStickySaveBar ? (
-        <div className="text-center">
-          <Button
-            type="button"
-            variant="link"
-            className="h-auto p-0 text-sm"
-            onClick={() => setScorecardExpanded((open) => !open)}
-          >
-            {scorecardExpanded ? "Hide scorecard" : "View scorecard"}
-          </Button>
-        </div>
-      ) : null}
-
-      {!showStickySaveBar && liveRoundStatus === "active" ? (
-        <RoundLifecycleActions
-          placement="footer"
-          roundStatus={liveRoundStatus}
-          isScorer={isScorer}
-          isTransitioning={isTransitioning}
-          hasPendingInvite={hasPendingInvite}
-          onStartRound={() => void onStartRound()}
-          onDeleteDraft={() => void onDeleteDraft()}
-          onAbandonRound={() => void onAbandonRound()}
+      {(showCompletionUI || (liveRoundStatus !== "draft" && !showStickySaveBar)) ? (
+        <RoundResults
+          scoringParticipants={scoringParticipants}
+          leaderboardByParticipantId={leaderboardByParticipantId}
+          getParticipantLabel={getParticipantLabel}
         />
       ) : null}
 
-      {!showStickySaveBar && liveRoundStatus !== "draft" ? (
-        <Leaderboard leaderboardRows={leaderboardRows} />
-      ) : null}
+      {showScorecardAtBottom ? scorecardSection : null}
 
-      {showScorecard ? (
-        <ScorecardSection
-          roundStatus={liveRoundStatus}
-          holeSegments={holeSegments}
-          sortedHoles={sortedHoles}
-          scoreLookup={scoreLookup}
-          scoringParticipants={scoringParticipants}
-          getParticipantLabel={getParticipantLabel}
-          activeHole={activeHole}
+      {showCompletionUI ? (
+        <RoundCompleteActions
+          isSubmitting={isSubmitting}
+          isTransitioning={isTransitioning}
+          onEditScores={() => setIsEditingScores(true)}
+          onCompleteRound={onCompleteRound}
         />
       ) : null}
     </section>

@@ -49,3 +49,18 @@ export function buildLeaderboard(
 
   return rows;
 }
+
+/** 1-based finish position per participant; null when no saved holes. */
+export function buildFinishRankMap(
+  participants: readonly Participant[],
+  sortedHoles: readonly Hole[],
+  scoreLookup: ScoreLookup,
+  labelFor: (id: string) => string
+): ReadonlyMap<string, number | null> {
+  const rows = buildLeaderboard(participants, sortedHoles, scoreLookup, labelFor);
+  const ranks = new Map<string, number | null>();
+  for (const [index, row] of rows.entries()) {
+    ranks.set(row.participantId, row.thru > 0 ? index + 1 : null);
+  }
+  return ranks;
+}

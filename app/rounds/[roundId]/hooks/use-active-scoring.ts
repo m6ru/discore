@@ -15,7 +15,6 @@ import {
   SAVE_SCORES_TOAST_ID,
   toastError,
   toastSaveError,
-  toastSuccess,
 } from "@/lib/ui/toast-notify";
 import type { HoleRow, HoleScoreRow, LastSavedEvent, ParticipantRow } from "../round-types";
 
@@ -33,6 +32,7 @@ type Options = {
   setLastSavedEvent: Dispatch<SetStateAction<LastSavedEvent | null>>;
   setRenderNow: Dispatch<SetStateAction<number>>;
   setIsSubmitting: (value: boolean) => void;
+  onFinalHoleSaved?: () => void;
 };
 
 export function useActiveScoring({
@@ -47,6 +47,7 @@ export function useActiveScoring({
   setLastSavedEvent,
   setRenderNow,
   setIsSubmitting,
+  onFinalHoleSaved,
 }: Options) {
   const [currentHoleIndex, setCurrentHoleIndex] = useState(() =>
     getFirstIncompleteHoleIndex(holes, scoringParticipants, initialHoleScores)
@@ -131,8 +132,14 @@ export function useActiveScoring({
 
     for (const participant of scoringParticipants) {
       const rawValue = getStrokeInputValue(participant.id).trim();
-      const strokes = rawValue.length > 0 ? Number(rawValue) : activeHole.par;
+      if (rawValue.length === 0) {
+        toastError(
+          `Enter a score for every player on hole ${activeHole.hole_number} before continuing.`
+        );
+        return false;
+      }
 
+      const strokes = Number(rawValue);
       if (!Number.isInteger(strokes) || strokes < 1 || strokes > 25) {
         toastError(
           `Enter valid strokes (1-25) for every player on hole ${activeHole.hole_number}.`
@@ -227,12 +234,12 @@ export function useActiveScoring({
     }
 
     if (isLastHole) {
-      toastSuccess("Final hole saved. Review summary and end the round.");
+      onFinalHoleSaved?.();
       return;
     }
 
     setCurrentHoleIndex((index) => Math.min(index + 1, holes.length - 1));
-  }, [saveCurrentHoleScores, activeHole, isLastHole, holes.length]);
+  }, [saveCurrentHoleScores, activeHole, isLastHole, holes.length, onFinalHoleSaved]);
 
   const onPreviousHole = useCallback(() => {
     setCurrentHoleIndex((index) => Math.max(index - 1, 0));
