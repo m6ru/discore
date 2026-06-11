@@ -33,9 +33,9 @@ const stickyShadow = "shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)]";
 
 /** Fixed column widths — `left` offsets must match these exactly. */
 const STICKY_COL = {
-  player: { width: "w-[10rem]", left: "left-0" },
-  vsPar: { width: "w-9", left: "left-[10rem]" },
-  thr: { width: "w-8", left: "left-[12.25rem]" },
+  player: { width: "w-[8.5rem]", left: "left-0" },
+  vsPar: { width: "w-8", left: "left-[8.5rem]" },
+  thr: { width: "w-7", left: "left-[10.5rem]" },
 } as const;
 
 function stickyCol(
@@ -66,7 +66,7 @@ const holeColClass =
   "relative z-0 w-[1.375rem] min-w-[1.375rem] max-w-[1.375rem] border-b px-0 py-0.5 text-center font-mono text-[11px] tabular-nums";
 
 const summaryColClass =
-  "border-b px-0.5 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
+  "border-b px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
 
 export function ScorecardSection({
   roundStatus,
@@ -82,7 +82,7 @@ export function ScorecardSection({
 
   const holeCount = sortedHoles.length;
   const summaryHeaderClass =
-    "px-0.5 py-1 text-center text-[11px] font-medium text-muted-foreground";
+    "px-0 py-1 text-center text-[11px] font-medium text-muted-foreground";
 
   return (
     <div className="space-y-3">
@@ -95,7 +95,7 @@ export function ScorecardSection({
                 rowSpan={2}
                 className={cn(
                   stickyCol("player", "header"),
-                  "px-2.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
+                  "px-2 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
                 )}
               >
                 Player
@@ -184,7 +184,7 @@ export function ScorecardSection({
                     <td
                       className={cn(
                         stickyCol("player", "body"),
-                        "whitespace-nowrap px-2.5 py-1 text-[11px] font-medium text-foreground"
+                        "whitespace-nowrap px-2 py-1 text-[11px] font-medium text-foreground"
                       )}
                     >
                       {rank !== null ? (
