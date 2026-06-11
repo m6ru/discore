@@ -10,6 +10,13 @@ import {
   type HoleScoreUpsertRow,
 } from "@/lib/rounds/round-active-actions";
 import type { Database } from "@/lib/database.types";
+import { toast } from "sonner";
+import {
+  SAVE_SCORES_TOAST_ID,
+  toastError,
+  toastSaveError,
+  toastSuccess,
+} from "@/lib/ui/toast-notify";
 import type { HoleRow, HoleScoreRow, LastSavedEvent, ParticipantRow } from "../round-types";
 
 type Client = SupabaseClient<Database>;
@@ -25,7 +32,6 @@ type Options = {
   setHoleScores: Dispatch<SetStateAction<HoleScoreRow[]>>;
   setLastSavedEvent: Dispatch<SetStateAction<LastSavedEvent | null>>;
   setRenderNow: Dispatch<SetStateAction<number>>;
-  setStatus: (message: string | null) => void;
   setIsSubmitting: (value: boolean) => void;
 };
 
@@ -40,7 +46,6 @@ export function useActiveScoring({
   setHoleScores,
   setLastSavedEvent,
   setRenderNow,
-  setStatus,
   setIsSubmitting,
 }: Options) {
   const [currentHoleIndex, setCurrentHoleIndex] = useState(() =>
@@ -129,7 +134,7 @@ export function useActiveScoring({
       const strokes = Number(rawValue);
 
       if (!Number.isInteger(strokes) || strokes < 1 || strokes > 25) {
-        setStatus(
+        toastError(
           `Enter valid strokes (1-25) for every player on hole ${activeHole.hole_number}.`
         );
         return false;
@@ -152,14 +157,13 @@ export function useActiveScoring({
     }));
 
     setIsSubmitting(true);
-    setStatus(null);
 
     const { data, error } = await upsertHoleScores(supabase, payload);
 
     setIsSubmitting(false);
 
     if (error) {
-      setStatus(`Could not save scores: ${error.message}`);
+      toastSaveError(`Could not save scores: ${error.message}`);
       return false;
     }
 
@@ -190,6 +194,8 @@ export function useActiveScoring({
       return next;
     });
 
+    toast.dismiss(SAVE_SCORES_TOAST_ID);
+
     queueMicrotask(() => {
       const savedAt = Date.now();
       setLastSavedEvent({
@@ -209,7 +215,6 @@ export function useActiveScoring({
     roundId,
     supabase,
     setHoleScores,
-    setStatus,
     setIsSubmitting,
     setLastSavedEvent,
     setRenderNow,
@@ -222,18 +227,16 @@ export function useActiveScoring({
     }
 
     if (isLastHole) {
-      setStatus("Final hole saved. Review summary and end the round.");
+      toastSuccess("Final hole saved. Review summary and end the round.");
       return;
     }
 
     setCurrentHoleIndex((index) => Math.min(index + 1, holes.length - 1));
-    setStatus(null);
-  }, [saveCurrentHoleScores, activeHole, isLastHole, holes.length, setStatus]);
+  }, [saveCurrentHoleScores, activeHole, isLastHole, holes.length]);
 
   const onPreviousHole = useCallback(() => {
-    setStatus(null);
     setCurrentHoleIndex((index) => Math.max(index - 1, 0));
-  }, [setStatus]);
+  }, []);
 
   return {
     currentHoleIndex,

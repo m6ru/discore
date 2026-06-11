@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { pickOne } from "@/lib/supabase/select-helpers";
+import { toastError } from "@/lib/ui/toast-notify";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,7 +43,6 @@ export function HomeInvites({ currentUserId, invites }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const [inviteItems, setInviteItems] = useState<InviteWithContext[]>(invites);
-  const [status, setStatus] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const loadPendingInvites = useCallback(async () => {
@@ -56,7 +56,7 @@ export function HomeInvites({ currentUserId, invites }: Props) {
       .order("created_at", { ascending: false });
 
     if (error) {
-      setStatus(`Failed to refresh invites: ${error.message}`);
+      toastError(`Failed to refresh invites: ${error.message}`);
       return;
     }
 
@@ -122,7 +122,6 @@ export function HomeInvites({ currentUserId, invites }: Props) {
     nextStatus: "accepted" | "declined"
   ) {
     setBusyId(invite.id);
-    setStatus(null);
 
     if (nextStatus === "accepted") {
       const { error: participantError } = await supabase.from("round_participants").insert({
@@ -131,7 +130,7 @@ export function HomeInvites({ currentUserId, invites }: Props) {
       });
 
       if (participantError && participantError.code !== "23505") {
-        setStatus(`Invite acceptance failed: ${participantError.message}`);
+        toastError(`Invite acceptance failed: ${participantError.message}`);
         setBusyId(null);
         return;
       }
@@ -146,7 +145,7 @@ export function HomeInvites({ currentUserId, invites }: Props) {
       .eq("id", invite.id);
 
     if (updateError) {
-      setStatus(`Failed to update invite: ${updateError.message}`);
+      toastError(`Failed to update invite: ${updateError.message}`);
       setBusyId(null);
       return;
     }
@@ -172,11 +171,6 @@ export function HomeInvites({ currentUserId, invites }: Props) {
         <CardDescription>Accept to join the round setup.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        {status ? (
-          <p className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">
-            {status}
-          </p>
-        ) : null}
         <ul className="space-y-3">
           {inviteItems.map((invite) => (
             <li key={invite.id} className="rounded-lg border p-4">

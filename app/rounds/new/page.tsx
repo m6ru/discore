@@ -53,11 +53,7 @@ export default async function NewRoundPage({ searchParams }: PageProps) {
         </p>
       </header>
 
-      <StartRoundButton
-        layoutId={layout.id}
-        label="Create draft round"
-        errorClassName="p-3 text-sm"
-      />
+      <StartRoundButton layoutId={layout.id} label="Create draft round" />
 
       <div className="flex flex-wrap gap-4 text-sm">
         {course?.slug ? (

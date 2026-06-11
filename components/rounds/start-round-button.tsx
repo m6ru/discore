@@ -8,32 +8,20 @@ type Props = {
   layoutId: string;
   label?: string;
   className?: string;
-  errorClassName?: string;
 };
 
 export function StartRoundButton({
   layoutId,
   label = "Start round",
   className,
-  errorClassName,
 }: Props) {
-  const { startDraftRound, isSubmitting, error } = useStartDraftRound(layoutId);
+  const { startDraftRound, isSubmitting } = useStartDraftRound(layoutId);
 
   return (
-    <div className={className}>
+    <div className={cn(className)}>
       <Button type="button" disabled={isSubmitting} onClick={() => void startDraftRound()}>
         {isSubmitting ? "Creating..." : label}
       </Button>
-      {error ? (
-        <p
-          className={cn(
-            "mt-2 rounded-md border bg-muted p-2 text-xs text-muted-foreground",
-            errorClassName
-          )}
-        >
-          {error}
-        </p>
-      ) : null}
     </div>
   );
 }

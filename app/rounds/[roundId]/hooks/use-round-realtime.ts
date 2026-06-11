@@ -5,6 +5,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { normalizeInviteRows, type InviteRow } from "@/lib/rounds/invite-rows";
 import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
 import type { Database } from "@/lib/database.types";
+import { toastError } from "@/lib/ui/toast-notify";
 import type {
   HoleScoreRow,
   LastSavedEvent,
@@ -24,7 +25,6 @@ type Options = {
   setRoundStatus: SetState<RoundStatus>;
   setLastSavedEvent: SetState<LastSavedEvent | null>;
   setRenderNow: SetState<number>;
-  onLoadError: (message: string) => void;
 };
 
 export function useRoundRealtime({
@@ -36,7 +36,6 @@ export function useRoundRealtime({
   setRoundStatus,
   setLastSavedEvent,
   setRenderNow,
-  onLoadError,
 }: Options) {
   const loadParticipants = useCallback(async () => {
     const { data, error } = await supabase
@@ -46,12 +45,12 @@ export function useRoundRealtime({
       .order("joined_at", { ascending: true });
 
     if (error) {
-      onLoadError(`Failed to refresh participants: ${error.message}`);
+      toastError(`Failed to refresh participants: ${error.message}`);
       return;
     }
 
     setParticipants((data ?? []) as ParticipantRow[]);
-  }, [supabase, roundId, setParticipants, onLoadError]);
+  }, [supabase, roundId, setParticipants]);
 
   const loadInvites = useCallback(async () => {
     const { data, error } = await supabase
@@ -63,12 +62,12 @@ export function useRoundRealtime({
       .order("created_at", { ascending: true });
 
     if (error) {
-      onLoadError(`Failed to refresh invitations: ${error.message}`);
+      toastError(`Failed to refresh invitations: ${error.message}`);
       return;
     }
 
     setInvites(normalizeInviteRows(data ?? []));
-  }, [supabase, roundId, setInvites, onLoadError]);
+  }, [supabase, roundId, setInvites]);
 
   const loadRoundStatus = useCallback(async () => {
     const { data, error } = await supabase
@@ -78,14 +77,14 @@ export function useRoundRealtime({
       .maybeSingle();
 
     if (error) {
-      onLoadError(`Failed to refresh round status: ${error.message}`);
+      toastError(`Failed to refresh round status: ${error.message}`);
       return;
     }
 
     if (data?.status && isRoundStatus(data.status)) {
       setRoundStatus(data.status);
     }
-  }, [supabase, roundId, setRoundStatus, onLoadError]);
+  }, [supabase, roundId, setRoundStatus]);
 
   const loadHoleScores = useCallback(async () => {
     const { data, error } = await supabase
@@ -94,12 +93,12 @@ export function useRoundRealtime({
       .eq("round_id", roundId);
 
     if (error) {
-      onLoadError(`Failed to refresh scores: ${error.message}`);
+      toastError(`Failed to refresh scores: ${error.message}`);
       return;
     }
 
     setHoleScores((data ?? []) as HoleScoreRow[]);
-  }, [supabase, roundId, setHoleScores, onLoadError]);
+  }, [supabase, roundId, setHoleScores]);
 
   // Single refresh for low-frequency collaboration data. Called on every
   // postgres_changes event for participants/invites/rounds, and on every

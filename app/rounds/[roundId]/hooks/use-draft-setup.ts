@@ -14,6 +14,7 @@ import {
 } from "@/lib/rounds/round-draft-actions";
 import type { Database } from "@/lib/database.types";
 import type { RoundStatus } from "@/lib/rounds/round-status";
+import { toastError, toastInfo } from "@/lib/ui/toast-notify";
 import type { ProfileSearchResult, UnifiedPlayer } from "../round-types";
 
 type Client = SupabaseClient<Database>;
@@ -26,7 +27,6 @@ type Options = {
   currentUserId: string;
   loadParticipants: () => Promise<void>;
   loadInvites: () => Promise<void>;
-  setStatus: (message: string | null) => void;
   setIsSubmitting: (value: boolean) => void;
   setIsTransitioning: (value: boolean) => void;
 };
@@ -39,7 +39,6 @@ export function useDraftSetup({
   currentUserId,
   loadParticipants,
   loadInvites,
-  setStatus,
   setIsSubmitting,
   setIsTransitioning,
 }: Options) {
@@ -54,18 +53,17 @@ export function useDraftSetup({
     ) => {
       event.preventDefault();
       if (!isScorer || roundStatus !== "draft") {
-        setStatus("Participants can only be changed while the round is in draft.");
+        toastInfo("Participants can only be changed while the round is in draft.");
         return;
       }
 
       const trimmedName = participantName.trim();
       if (!trimmedName) {
-        setStatus("Participant name is required.");
+        toastError("Participant name is required.");
         return;
       }
 
       setIsSubmitting(true);
-      setStatus(null);
 
       if (selectedProfile) {
         const { error: inviteError } = await sendRoundInvite(
@@ -75,7 +73,7 @@ export function useDraftSetup({
           currentUserId
         );
         if (inviteError) {
-          setStatus(`Invite failed: ${inviteError.message}`);
+          toastError(`Invite failed: ${inviteError.message}`);
           setIsSubmitting(false);
           return;
         }
@@ -88,7 +86,7 @@ export function useDraftSetup({
 
       const { error: guestInsertError } = await addGuestParticipant(supabase, roundId, trimmedName);
       if (guestInsertError) {
-        setStatus(
+        toastError(
           [
             `Participant add failed: ${guestInsertError.message}`,
             `code=${guestInsertError.code ?? "n/a"}`,
@@ -113,7 +111,6 @@ export function useDraftSetup({
       currentUserId,
       loadInvites,
       loadParticipants,
-      setStatus,
       setIsSubmitting,
     ]
   );
@@ -121,13 +118,12 @@ export function useDraftSetup({
   const onRemovePlayer = useCallback(
     async (player: UnifiedPlayer) => {
       if (!isScorer || roundStatus !== "draft" || !player.canRemove) return;
-      setStatus(null);
       setIsSubmitting(true);
 
       if (player.source === "invite" && player.inviteId) {
         const { error } = await cancelRoundInvitation(supabase, player.inviteId);
         if (error) {
-          setStatus(`Remove failed: ${error.message}`);
+          toastError(`Remove failed: ${error.message}`);
           setIsSubmitting(false);
           return;
         }
@@ -139,7 +135,7 @@ export function useDraftSetup({
       if (player.source === "participant" && player.participantId) {
         const { error: deleteError } = await removeRoundParticipant(supabase, player.participantId);
         if (deleteError) {
-          setStatus(`Remove failed: ${deleteError.message}`);
+          toastError(`Remove failed: ${deleteError.message}`);
           setIsSubmitting(false);
           return;
         }
@@ -158,7 +154,6 @@ export function useDraftSetup({
       roundId,
       loadInvites,
       loadParticipants,
-      setStatus,
       setIsSubmitting,
     ]
   );
@@ -166,30 +161,28 @@ export function useDraftSetup({
   const onStartRound = useCallback(async () => {
     if (!isScorer) return;
     setIsTransitioning(true);
-    setStatus(null);
     const { error } = await startRound(supabase, roundId);
     if (error) {
-      setStatus(`Start failed: ${error.message}`);
+      toastError(`Start failed: ${error.message}`);
       setIsTransitioning(false);
       return;
     }
     setIsTransitioning(false);
     router.refresh();
-  }, [isScorer, supabase, roundId, setStatus, setIsTransitioning, router]);
+  }, [isScorer, supabase, roundId, setIsTransitioning, router]);
 
   const onDeleteDraft = useCallback(async () => {
     if (!isScorer) return;
     setIsTransitioning(true);
-    setStatus(null);
     const { error } = await deleteDraftRound(supabase, roundId);
     if (error) {
-      setStatus(`Delete failed: ${error.message}`);
+      toastError(`Delete failed: ${error.message}`);
       setIsTransitioning(false);
       return;
     }
     router.push("/");
     router.refresh();
-  }, [isScorer, supabase, roundId, setStatus, setIsTransitioning, router]);
+  }, [isScorer, supabase, roundId, setIsTransitioning, router]);
 
   return {
     participantName,

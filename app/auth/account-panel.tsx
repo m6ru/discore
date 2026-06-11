@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { saveProfile } from "@/lib/profiles/save-profile";
+import { toastError, toastSuccess } from "@/lib/ui/toast-notify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,8 +45,6 @@ export function AccountPanel({
   const [city, setCity] = useState(initialCity);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
-  const [passwordStatus, setPasswordStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -54,7 +53,6 @@ export function AccountPanel({
   async function onSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
-    setStatus(null);
 
     try {
       const {
@@ -62,7 +60,7 @@ export function AccountPanel({
       } = await supabase.auth.getUser();
 
       if (!user) {
-        setStatus("Session expired. Please sign in again.");
+        toastError("Session expired. Please sign in again.");
         router.push("/auth");
         router.refresh();
         return;
@@ -84,17 +82,17 @@ export function AccountPanel({
       );
 
       if (!result.ok) {
-        setStatus(result.message);
+        toastError(result.message);
         return;
       }
 
       setAvatarUrl(result.avatarUrl ?? "");
       setPendingAvatarFile(null);
-      setStatus("Profile updated.");
+      toastSuccess("Profile updated.");
       router.refresh();
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong.";
-      setStatus(message);
+      toastError(message);
     } finally {
       setIsLoading(false);
     }
@@ -102,14 +100,13 @@ export function AccountPanel({
 
   async function onChangePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setPasswordStatus(null);
 
     if (newPassword.length < 6) {
-      setPasswordStatus("New password must be at least 6 characters.");
+      toastError("New password must be at least 6 characters.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordStatus("Passwords do not match.");
+      toastError("Passwords do not match.");
       return;
     }
 
@@ -117,12 +114,12 @@ export function AccountPanel({
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) {
-        setPasswordStatus(`Password change failed: ${error.message}`);
+        toastError(`Password change failed: ${error.message}`);
         return;
       }
       setNewPassword("");
       setConfirmPassword("");
-      setPasswordStatus("Password updated.");
+      toastSuccess("Password updated.");
     } finally {
       setIsChangingPassword(false);
     }
@@ -130,11 +127,10 @@ export function AccountPanel({
 
   async function onSignOut() {
     setIsLoading(true);
-    setStatus(null);
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
-        setStatus(error.message);
+        toastError(error.message);
         return;
       }
       router.push("/");
@@ -245,10 +241,6 @@ export function AccountPanel({
         </div>
       </form>
 
-      {status ? (
-        <p className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">{status}</p>
-      ) : null}
-
       <Separator />
 
       <form onSubmit={onChangePassword} className="space-y-4">
@@ -279,10 +271,6 @@ export function AccountPanel({
           {isChangingPassword ? "Please wait..." : "Change password"}
         </Button>
       </form>
-
-      {passwordStatus ? (
-        <p className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">{passwordStatus}</p>
-      ) : null}
     </>
   );
 }

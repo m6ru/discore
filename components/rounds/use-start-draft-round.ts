@@ -4,16 +4,15 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { createDraftRound } from "@/lib/rounds/round-draft-actions";
+import { toastError } from "@/lib/ui/toast-notify";
 
 export function useStartDraftRound(layoutId: string) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const startDraftRound = useCallback(async () => {
     setIsSubmitting(true);
-    setError(null);
 
     try {
       const {
@@ -22,7 +21,7 @@ export function useStartDraftRound(layoutId: string) {
       } = await supabase.auth.getUser();
 
       if (userError) {
-        setError(`Session check failed: ${userError.message}`);
+        toastError(`Session check failed: ${userError.message}`);
         return;
       }
 
@@ -39,7 +38,7 @@ export function useStartDraftRound(layoutId: string) {
           router.refresh();
           return;
         }
-        setError(result.message);
+        toastError(result.message);
         return;
       }
 
@@ -50,5 +49,5 @@ export function useStartDraftRound(layoutId: string) {
     }
   }, [layoutId, router, supabase]);
 
-  return { startDraftRound, isSubmitting, error };
+  return { startDraftRound, isSubmitting };
 }

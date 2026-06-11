@@ -47,7 +47,6 @@ export function RoundSession({
   const supabase = useMemo(() => createClient(), []);
   const [participants, setParticipants] = useState<ParticipantRow[]>(initialParticipants);
   const [invites, setInvites] = useState<InviteRow[]>(initialInvites);
-  const [status, setStatus] = useState<string | null>(null);
   const [liveRoundStatus, setLiveRoundStatus] = useState<RoundStatus>(roundStatus);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -59,8 +58,6 @@ export function RoundSession({
   // is on-screen.
   const [renderNow, setRenderNow] = useState(0);
 
-  const onLoadError = useCallback((message: string) => setStatus(message), []);
-
   const { loadParticipants, loadInvites } = useRoundRealtime({
     supabase,
     roundId,
@@ -70,7 +67,6 @@ export function RoundSession({
     setRoundStatus: setLiveRoundStatus,
     setLastSavedEvent,
     setRenderNow,
-    onLoadError,
   });
 
   const scoringParticipants = participants;
@@ -97,7 +93,6 @@ export function RoundSession({
     setHoleScores,
     setLastSavedEvent,
     setRenderNow,
-    setStatus,
     setIsSubmitting,
   });
 
@@ -106,7 +101,6 @@ export function RoundSession({
     roundId,
     isScorer,
     saveCurrentHoleScores,
-    setStatus,
     setIsTransitioning,
   });
 
@@ -125,7 +119,6 @@ export function RoundSession({
     currentUserId,
     loadParticipants,
     loadInvites,
-    setStatus,
     setIsSubmitting,
     setIsTransitioning,
   });
@@ -142,7 +135,6 @@ export function RoundSession({
     roundStatus: liveRoundStatus,
     currentUserId,
     participantName,
-    onSearchError: setStatus,
   });
 
   // Pick up server-rendered status changes after `router.refresh()`. Realtime
@@ -315,11 +307,7 @@ export function RoundSession({
         </>
       ) : null}
 
-      <RoundStatusBanner
-        status={status}
-        lastSavedLabel={lastSavedLabel}
-        roundStatus={liveRoundStatus}
-      />
+      <RoundStatusBanner lastSavedLabel={lastSavedLabel} roundStatus={liveRoundStatus} />
 
       <RoundSummaries
         showFrontNineSummary={showFrontNineSummary}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import type { RoundStatus } from "@/lib/rounds/round-status";
+import { toastError } from "@/lib/ui/toast-notify";
 import type { ProfileSearchResult } from "../round-types";
 
 type Client = SupabaseClient<Database>;
@@ -13,7 +14,6 @@ type Options = {
   roundStatus: RoundStatus;
   currentUserId: string;
   participantName: string;
-  onSearchError: (message: string) => void;
 };
 
 export function useProfileSearch({
@@ -21,7 +21,6 @@ export function useProfileSearch({
   roundStatus,
   currentUserId,
   participantName,
-  onSearchError,
 }: Options) {
   const [searchResults, setSearchResults] = useState<ProfileSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -44,7 +43,7 @@ export function useProfileSearch({
         .limit(8);
 
       if (error) {
-        onSearchError(`Participant lookup failed: ${error.message}`);
+        toastError(`Participant lookup failed: ${error.message}`);
         setIsSearching(false);
         return;
       }
@@ -60,7 +59,7 @@ export function useProfileSearch({
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [participantName, roundStatus, supabase, currentUserId, selectedProfile, onSearchError]);
+  }, [participantName, roundStatus, supabase, currentUserId, selectedProfile]);
 
   function clearSearchSelection() {
     setSelectedProfile(null);

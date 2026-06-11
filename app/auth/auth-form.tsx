@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { toastError, toastSuccess } from "@/lib/ui/toast-notify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,19 +22,17 @@ export function AuthForm({ message }: Props) {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [status, setStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
-    setStatus(null);
 
     try {
       if (mode === "sign-in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
-          setStatus(error.message);
+          toastError(error.message);
           return;
         }
         router.push("/");
@@ -44,7 +43,7 @@ export function AuthForm({ message }: Props) {
       const trimmedFirst = firstName.trim();
       const trimmedLast = lastName.trim();
       if (!trimmedFirst || !trimmedLast) {
-        setStatus("First name and last name are required.");
+        toastError("First name and last name are required.");
         return;
       }
 
@@ -62,10 +61,10 @@ export function AuthForm({ message }: Props) {
         },
       });
       if (error) {
-        setStatus(error.message);
+        toastError(error.message);
         return;
       }
-      setStatus("Sign-up successful. Check your email if confirmation is required.");
+      toastSuccess("Sign-up successful. Check your email if confirmation is required.");
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +72,6 @@ export function AuthForm({ message }: Props) {
 
   function toggleMode() {
     setMode((current) => (current === "sign-in" ? "sign-up" : "sign-in"));
-    setStatus(null);
   }
 
   return (
@@ -152,10 +150,6 @@ export function AuthForm({ message }: Props) {
           {mode === "sign-in" ? "Sign up" : "Sign in"}
         </button>
       </p>
-
-      {status ? (
-        <p className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">{status}</p>
-      ) : null}
     </>
   );
 }
