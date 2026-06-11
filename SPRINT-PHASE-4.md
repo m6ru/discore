@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 3d — Round screen chrome
-- **Last completed:** Step 3c — Hub + history list + bottom tab bar
+- **Current step:** Step 4 — AlertDialog for destructive actions
+- **Last completed:** Step 3d — Round screen chrome
 - **Open blockers:** none
 
 ---
@@ -390,9 +390,17 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 **Notes:**
 
-(empty)
+- **Decided (D1):** Course + layout are the **main title** (`Course · Layout` as `h1`). Dropped contextual "Round setup" / "Active round" h1. Status is a **Badge** top-right (same variants as history). Holes/par as one muted line below.
+- **Decided (D2):** **Minimal lifecycle UX** — draft setup shows only a full-width **Start round** button (hub pattern: `size="lg"`, `min-h-11`) right after the participant form; active round shows a single **Abandon round** `outline` button at the footer (below scorecard area). No button row, no dropdown. **Delete draft removed from UI** per user — hook still exists for Step 4 to wire with AlertDialog; needs a home (text link? menu?) when that step lands.
+- **Decided (D3):** No per-button micro-decisions — destructive actions use the same **`outline` Button** as elsewhere (e.g. Remove player, Decline invite). Primary actions use `default`.
+- **Status banner:** Inline messages → theme tokens (`bg-muted`, `text-muted-foreground`); last-saved dot → `bg-primary`.
+- **Shared helper:** `lib/rounds/format-round-status.ts` extracted from history page for badge label/variant consistency.
+- **Session chrome:** Removed redundant "Round" `h2`; section border uses default theme border token.
+- **Surprised:** Nothing major — placement split (`setup` vs `footer`) needed a small `round-session.tsx` touch beyond the three scoped files.
+- **Ask next (Step 4):** Where should **Delete draft** live now that it's hidden? Also confirm abandon placement at page footer vs elsewhere after phone test.
+- **Not done by agent:** sub-task 5 (phone eyeball on round header + start/abandon flows).
 
-- [ ] **Step 3d complete**
+- [x] **Step 3d complete**
 
 ---
 
