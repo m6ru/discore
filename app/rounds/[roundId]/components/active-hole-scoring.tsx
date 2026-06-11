@@ -1,11 +1,18 @@
-import type { HoleProgressEntry } from "@/lib/scoring/progress";
+import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { HoleRow, ParticipantRow } from "../round-types";
+
+const STROKE_MIN = 1;
+const STROKE_MAX = 25;
+
+/** Bottom inset for fixed save bar (button + padding + safe area). */
+export const ACTIVE_SCORING_BOTTOM_INSET =
+  "calc(5.5rem + env(safe-area-inset-bottom, 0px))";
 
 type Props = {
   activeHole: HoleRow;
   holesLength: number;
-  sortedHoles: HoleRow[];
-  holeProgressDots: HoleProgressEntry<HoleRow>[];
   scoringParticipants: ParticipantRow[];
   currentHoleIndex: number;
   isLastHole: boolean;
@@ -16,14 +23,99 @@ type Props = {
   onStrokeChange: (participantId: string, value: string) => void;
   onObToggle: (participantId: string, checked: boolean) => void;
   onPreviousHole: () => void;
+  onNextHole: () => void;
   onSaveAndAdvanceHole: () => void;
 };
+
+function parseStrokeValue(raw: string): number | null {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const strokes = Number(trimmed);
+  if (!Number.isInteger(strokes)) {
+    return null;
+  }
+  return strokes;
+}
+
+type StrokeStepperProps = {
+  participantId: string;
+  par: number;
+  value: string;
+  disabled: boolean;
+  onStrokeChange: (participantId: string, value: string) => void;
+};
+
+function StrokeStepper({
+  participantId,
+  par,
+  value,
+  disabled,
+  onStrokeChange,
+}: StrokeStepperProps) {
+  const parsed = parseStrokeValue(value);
+  const canDecrement = !disabled && parsed !== null && parsed > STROKE_MIN;
+  const canIncrement = !disabled && (parsed === null || parsed < STROKE_MAX);
+
+  const handleDecrement = () => {
+    if (parsed === null || parsed <= STROKE_MIN) {
+      return;
+    }
+    onStrokeChange(participantId, String(parsed - 1));
+  };
+
+  const handleIncrement = () => {
+    if (parsed === null) {
+      onStrokeChange(participantId, String(par));
+      return;
+    }
+    if (parsed < STROKE_MAX) {
+      onStrokeChange(participantId, String(parsed + 1));
+    }
+  };
+
+  return (
+    <div className="flex min-h-11 flex-1 items-stretch gap-1">
+      <Button
+        type="button"
+        variant="outline"
+        size="icon-lg"
+        className="min-h-11 min-w-11 shrink-0 rounded-xl"
+        aria-label="Decrease strokes"
+        disabled={!canDecrement}
+        onClick={handleDecrement}
+      >
+        <Minus className="size-5" aria-hidden />
+      </Button>
+      <div
+        className={cn(
+          "flex min-h-11 flex-1 items-center justify-center rounded-xl border-2 bg-background px-2",
+          "font-mono text-3xl font-semibold tabular-nums tracking-tight text-foreground"
+        )}
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {parsed !== null ? parsed : "—"}
+      </div>
+      <Button
+        type="button"
+        variant="outline"
+        size="icon-lg"
+        className="min-h-11 min-w-11 shrink-0 rounded-xl"
+        aria-label="Increase strokes"
+        disabled={!canIncrement}
+        onClick={handleIncrement}
+      >
+        <Plus className="size-5" aria-hidden />
+      </Button>
+    </div>
+  );
+}
 
 export function ActiveHoleScoring({
   activeHole,
   holesLength,
-  sortedHoles,
-  holeProgressDots,
   scoringParticipants,
   currentHoleIndex,
   isLastHole,
@@ -34,106 +126,111 @@ export function ActiveHoleScoring({
   onStrokeChange,
   onObToggle,
   onPreviousHole,
+  onNextHole,
   onSaveAndAdvanceHole,
 }: Props) {
+  const canGoBack = currentHoleIndex > 0;
+  const canGoForward = currentHoleIndex < holesLength - 1;
+
   return (
-    <div className="space-y-6">
-      <div className="text-center sm:text-left">
-        <div className="flex items-center justify-center gap-2 sm:justify-start">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-400">Enter scores</p>
-        </div>
-        <div className="mt-2 flex flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-3">
-          <p className="text-4xl font-semibold tabular-nums tracking-tight text-zinc-900">
-            {activeHole.hole_number}
-            <span className="text-xl font-normal text-zinc-400"> / {holesLength}</span>
+    <>
+      <div className="space-y-6">
+        <div className="text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Enter scores
           </p>
-          <span className="hidden h-6 w-px bg-zinc-200 sm:inline-block" aria-hidden />
-          <p className="text-base text-zinc-500">
-            Par <span className="font-semibold text-zinc-800">{activeHole.par}</span>
-          </p>
-        </div>
-      </div>
 
-      {sortedHoles.length > 0 ? (
-        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:justify-start" aria-hidden>
-          {holeProgressDots.map(({ hole, allScored, isCurrent }) => (
-            <span
-              key={hole.id}
-              title={`Hole ${hole.hole_number}${allScored ? " — saved" : ""}${isCurrent ? " — current" : ""}`}
-              className={`h-2.5 w-2.5 shrink-0 rounded-full transition-colors ${
-                isCurrent
-                  ? "bg-amber-400 ring-2 ring-amber-300/80 ring-offset-2 ring-offset-white"
-                  : allScored
-                    ? "bg-emerald-500"
-                    : "bg-zinc-300"
-              }`}
-            />
-          ))}
-        </div>
-      ) : null}
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-lg"
+              className="min-h-11 min-w-11 shrink-0 rounded-xl"
+              aria-label="Previous hole"
+              disabled={!canGoBack || isSubmitting}
+              onClick={onPreviousHole}
+            >
+              <ChevronLeft className="size-5" aria-hidden />
+            </Button>
 
-      <div className="space-y-4">
-        {scoringParticipants.map((participant) => {
-          const obChecked = isObChecked(participant.id);
-          return (
-            <div key={participant.id} className="space-y-2">
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-medium text-zinc-500">
-                  {getParticipantLabel(participant)}
+            <div className="min-w-0 flex-1 px-1">
+              <p className="font-mono text-4xl font-semibold tabular-nums tracking-tight text-foreground">
+                {activeHole.hole_number}
+                <span className="text-xl font-normal text-muted-foreground">
+                  {" "}
+                  / {holesLength}
                 </span>
+              </p>
+              <p className="mt-1 text-base text-muted-foreground">
+                Par{" "}
+                <span className="font-semibold text-foreground">{activeHole.par}</span>
+              </p>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-lg"
+              className="min-h-11 min-w-11 shrink-0 rounded-xl"
+              aria-label="Next hole"
+              disabled={!canGoForward || isSubmitting}
+              onClick={onNextHole}
+            >
+              <ChevronRight className="size-5" aria-hidden />
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-5">
+          {scoringParticipants.map((participant) => {
+            const obChecked = isObChecked(participant.id);
+            const label = getParticipantLabel(participant);
+
+            return (
+              <div key={participant.id} className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground">{label}</p>
                 <div className="flex items-stretch gap-2">
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    min={1}
-                    max={25}
+                  <StrokeStepper
+                    participantId={participant.id}
+                    par={activeHole.par}
                     value={getStrokeInputValue(participant.id)}
-                    onChange={(event) => onStrokeChange(participant.id, event.target.value)}
-                    className="h-14 flex-1 rounded-xl border-2 border-zinc-200 bg-white px-4 text-center text-2xl font-semibold tabular-nums text-zinc-900 shadow-inner outline-none transition-colors placeholder:text-zinc-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/15"
-                    placeholder="—"
-                    autoComplete="off"
+                    disabled={isSubmitting}
+                    onStrokeChange={onStrokeChange}
                   />
-                  <button
+                  <Button
                     type="button"
-                    role="switch"
-                    aria-checked={obChecked}
-                    aria-label={`Toggle OB for ${getParticipantLabel(participant)}`}
+                    variant={obChecked ? "destructive" : "outline"}
+                    className="h-auto min-h-11 w-16 shrink-0 rounded-xl text-sm font-semibold uppercase tracking-wide"
+                    aria-pressed={obChecked}
+                    aria-label={`Toggle OB for ${label}`}
+                    disabled={isSubmitting}
                     onClick={() => onObToggle(participant.id, !obChecked)}
-                    className={`h-14 w-16 shrink-0 rounded-xl border-2 text-sm font-semibold uppercase tracking-wide transition-colors ${
-                      obChecked
-                        ? "border-rose-500 bg-rose-500 text-white shadow-sm"
-                        : "border-zinc-200 bg-white text-zinc-500 hover:border-rose-200 hover:text-rose-600"
-                    }`}
                   >
                     OB
-                  </button>
+                  </Button>
                 </div>
-              </label>
-            </div>
-          );
-        })}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:flex-wrap sm:justify-end">
-        {currentHoleIndex > 0 ? (
-          <button
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-3 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
+      >
+        <div className="mx-auto w-full max-w-3xl">
+          <Button
             type="button"
-            onClick={onPreviousHole}
+            size="lg"
+            className="min-h-11 w-full"
             disabled={isSubmitting}
-            className="rounded-xl border border-zinc-200 bg-white px-5 py-3 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 disabled:opacity-60"
+            onClick={() => void onSaveAndAdvanceHole()}
           >
-            Back
-          </button>
-        ) : null}
-        <button
-          type="button"
-          onClick={() => void onSaveAndAdvanceHole()}
-          disabled={isSubmitting}
-          className="rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-emerald-700 disabled:opacity-60"
-        >
-          {isSubmitting ? "Saving…" : isLastHole ? "Save scores" : "Save & next hole"}
-        </button>
+            {isSubmitting ? "Saving…" : isLastHole ? "Save scores" : "Save & next hole"}
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

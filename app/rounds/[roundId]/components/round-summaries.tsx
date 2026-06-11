@@ -3,6 +3,7 @@
 import { getTotalStrokes } from "@/lib/scoring/stats";
 import type { RoundStatus } from "@/lib/rounds/round-status";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { HoleScoreRow, ParticipantRow } from "../round-types";
 import { ConfirmActionDialog } from "./confirm-action-dialog";
 
@@ -38,57 +39,73 @@ export function RoundSummaries({
   return (
     <>
       {showFrontNineSummary ? (
-        <div className="space-y-2 rounded-md border border-zinc-200 bg-zinc-50 p-3">
-          <h3 className="text-sm font-semibold text-zinc-800">Front 9 summary</h3>
-          <ul className="space-y-1 text-sm text-zinc-700">
-            {scoringParticipants.map((participant) => (
-              <li key={`front9-${participant.id}`} className="flex items-center justify-between">
-                <span>{getParticipantLabel(participant)}</span>
-                <span className="font-medium">
-                  {getTotalStrokes(holeScores, participant.id, firstNineHoleIds)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Card className="gap-3 py-4 shadow-none">
+          <CardHeader className="px-4 pb-0">
+            <CardTitle className="text-sm">Front 9 summary</CardTitle>
+          </CardHeader>
+          <CardContent className="px-4">
+            <ul className="space-y-2 text-sm">
+              {scoringParticipants.map((participant) => (
+                <li
+                  key={`front9-${participant.id}`}
+                  className="flex items-center justify-between text-foreground"
+                >
+                  <span>{getParticipantLabel(participant)}</span>
+                  <span className="font-mono font-medium tabular-nums">
+                    {getTotalStrokes(holeScores, participant.id, firstNineHoleIds)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       ) : null}
 
       {showFinalSummary ? (
-        <div className="space-y-3 rounded-md border border-zinc-200 bg-zinc-50 p-3">
-          <h3 className="text-sm font-semibold text-zinc-800">Round summary</h3>
-          <ul className="space-y-1 text-sm text-zinc-700">
-            {scoringParticipants.map((participant) => (
-              <li key={`final-${participant.id}`} className="flex items-center justify-between">
-                <span>{getParticipantLabel(participant)}</span>
-                <span className="font-medium">
-                  {getTotalStrokes(holeScores, participant.id, holeIds)}
-                </span>
-              </li>
-            ))}
-          </ul>
-          {roundStatus === "active" && isScorer ? (
-            <ConfirmActionDialog
-              title="End this round?"
-              description="Final scores will be saved for everyone. You'll find this round in your history."
-              confirmLabel="Complete round"
-              confirmVariant="default"
-              onConfirm={onCompleteRound}
-              disabled={isSubmitting || isTransitioning}
-              trigger={
-                <Button
-                  type="button"
-                  size="lg"
-                  className="min-h-11"
-                  disabled={isSubmitting || isTransitioning}
+        <Card className="gap-4 py-4 shadow-none">
+          <CardHeader className="px-4 pb-0">
+            <CardTitle className="text-sm">Round summary</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 px-4">
+            <ul className="space-y-2 text-sm">
+              {scoringParticipants.map((participant) => (
+                <li
+                  key={`final-${participant.id}`}
+                  className="flex items-center justify-between text-foreground"
                 >
-                  {isTransitioning ? "Working..." : "Confirm and end round"}
-                </Button>
-              }
-            />
-          ) : (
-            <p className="text-xs text-zinc-500">Round is completed. Scores are now read-only.</p>
-          )}
-        </div>
+                  <span>{getParticipantLabel(participant)}</span>
+                  <span className="font-mono font-medium tabular-nums">
+                    {getTotalStrokes(holeScores, participant.id, holeIds)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {roundStatus === "active" && isScorer ? (
+              <ConfirmActionDialog
+                title="End this round?"
+                description="Final scores will be saved for everyone. You'll find this round in your history."
+                confirmLabel="Complete round"
+                confirmVariant="default"
+                onConfirm={onCompleteRound}
+                disabled={isSubmitting || isTransitioning}
+                trigger={
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="min-h-11 w-full"
+                    disabled={isSubmitting || isTransitioning}
+                  >
+                    {isTransitioning ? "Working..." : "Confirm and end round"}
+                  </Button>
+                }
+              />
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Round is completed. Scores are now read-only.
+              </p>
+            )}
+          </CardContent>
+        </Card>
       ) : null}
     </>
   );

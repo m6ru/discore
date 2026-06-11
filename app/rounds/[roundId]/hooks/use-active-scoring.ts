@@ -238,6 +238,10 @@ export function useActiveScoring({
     setCurrentHoleIndex((index) => Math.max(index - 1, 0));
   }, []);
 
+  const onNextHole = useCallback(() => {
+    setCurrentHoleIndex((index) => Math.min(index + 1, holes.length - 1));
+  }, [holes.length]);
+
   return {
     currentHoleIndex,
     activeHole,
@@ -249,5 +253,6 @@ export function useActiveScoring({
     saveCurrentHoleScores,
     onSaveAndAdvanceHole,
     onPreviousHole,
+    onNextHole,
   };
 }

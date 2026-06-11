@@ -5,12 +5,14 @@ import { createClient } from "@/lib/supabase/client";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
 import { isSegmentComplete } from "@/lib/scoring/segments";
 import { buildLeaderboard } from "@/lib/scoring/leaderboard";
-import { buildHoleProgress } from "@/lib/scoring/progress";
 import { formatRelativeTime } from "@/lib/format/relative-time";
 import { getParticipantLabel as labelForParticipant } from "@/lib/rounds/participant-labels";
 import { buildUnifiedPlayers } from "@/lib/rounds/unified-players";
 import type { InviteRow } from "@/lib/rounds/invite-rows";
-import { ActiveHoleScoring } from "./components/active-hole-scoring";
+import {
+  ACTIVE_SCORING_BOTTOM_INSET,
+  ActiveHoleScoring,
+} from "./components/active-hole-scoring";
 import { DraftParticipantForm } from "./components/draft-participant-form";
 import { Leaderboard } from "./components/leaderboard";
 import { ObserverActiveHint } from "./components/observer-active-hint";
@@ -31,6 +33,7 @@ import { useDraftSetup } from "./hooks/use-draft-setup";
 import { useProfileSearch } from "./hooks/use-profile-search";
 import { useRoundLifecycle } from "./hooks/use-round-lifecycle";
 import { useRoundRealtime } from "./hooks/use-round-realtime";
+import { cn } from "@/lib/utils";
 
 export function RoundSession({
   roundId,
@@ -82,6 +85,7 @@ export function RoundSession({
     saveCurrentHoleScores,
     onSaveAndAdvanceHole,
     onPreviousHole,
+    onNextHole,
   } = useActiveScoring({
     supabase,
     roundId,
@@ -228,17 +232,8 @@ export function RoundSession({
     return map;
   }, [participants, unifiedPlayers]);
 
-  const holeProgressDots = useMemo(
-    () =>
-      buildHoleProgress(
-        sortedHoles,
-        scoringParticipants,
-        scoreLookup,
-        activeHole?.id ?? null,
-        liveRoundStatus === "active",
-      ),
-    [sortedHoles, scoringParticipants, scoreLookup, activeHole, liveRoundStatus]
-  );
+  const showStickySaveBar =
+    liveRoundStatus === "active" && isScorer && canScore && !showFinalSummary;
 
   const lastSavedLabel = useMemo(() => {
     if (!lastSavedEvent || renderNow === 0) return null;
@@ -267,7 +262,10 @@ export function RoundSession({
   );
 
   return (
-    <section className="space-y-5 rounded-lg border p-4">
+    <section
+      className="space-y-5 rounded-lg border p-4"
+      style={showStickySaveBar ? { paddingBottom: ACTIVE_SCORING_BOTTOM_INSET } : undefined}
+    >
       <h3 className="text-base font-semibold">Participants</h3>
 
       <ParticipantsList
@@ -326,20 +324,17 @@ export function RoundSession({
 
       {liveRoundStatus === "active" && !showFinalSummary ? (
         <div
-          className={`rounded-2xl border shadow-sm ${
-            isScorer && canScore
-              ? "border-zinc-200/90 bg-gradient-to-b from-white to-zinc-50 p-5 sm:p-6"
-              : "border-zinc-200 bg-zinc-50/40 p-4"
-          }`}
+          className={cn(
+            "rounded-2xl border bg-card shadow-sm",
+            isScorer && canScore ? "p-5 sm:p-6" : "bg-muted/40 p-4"
+          )}
         >
           {!canScore ? (
-            <p className="text-sm text-zinc-500">No participants available for scoring.</p>
+            <p className="text-sm text-muted-foreground">No participants available for scoring.</p>
           ) : isScorer && activeHole ? (
             <ActiveHoleScoring
               activeHole={activeHole}
               holesLength={holes.length}
-              sortedHoles={sortedHoles}
-              holeProgressDots={holeProgressDots}
               scoringParticipants={scoringParticipants}
               currentHoleIndex={currentHoleIndex}
               isLastHole={isLastHole}
@@ -350,6 +345,7 @@ export function RoundSession({
               onStrokeChange={setStrokeDraft}
               onObToggle={setObDraft}
               onPreviousHole={onPreviousHole}
+              onNextHole={onNextHole}
               onSaveAndAdvanceHole={onSaveAndAdvanceHole}
             />
           ) : (

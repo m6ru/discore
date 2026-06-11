@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 6a — Round screen mobile UX (active hole scoring)
-- **Last completed:** Step 5 — Toast layer
+- **Current step:** Step 6b — Scorecard token swap
+- **Last completed:** Step 6a — Round screen mobile UX (active hole scoring)
 - **Open blockers:** none
 
 ---
@@ -539,9 +539,17 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 **Notes:**
 
-(empty)
+- **Decided (D1):** **`position: fixed`** save bar at viewport bottom — full-width primary `Button` (`size="lg"`, `min-h-11`), `z-40`, safe-area padding, backdrop blur. Exported `ACTIVE_SCORING_BOTTOM_INSET` for session-level `paddingBottom` so abandon/scorecard content clears the bar.
+- **Decided (D2):** **Large − / value / + stepper** per player — `min-h-11 min-w-11` icon buttons; center value in `font-mono` `text-3xl`; empty shows "—"; first `+` sets **par**; range 1–25 unchanged.
+- **Decided (D3):** **OB toggle button** — shadcn `Button`: `destructive` when on, `outline` when off; `min-h-11 w-16`, uppercase "OB".
+- **Decided (D4):** **Minimal hole header** — dropped progress dots; large `Hole N / 18` + par; **chevron Back/Forward** flanking the hole number (`onNextHole` added to hook — navigates without saving, drafts keyed per hole).
+- **Decided (D5):** **Summaries in 6a** — `round-summaries.tsx` restyled with shadcn `Card` + theme tokens; totals use `font-mono tabular-nums`.
+- **Decided (D6):** **Visible buttons only** — hole nav = chevrons in header; save = fixed bar; no swipe gestures.
+- **Surprised:** Tailwind can't JIT a dynamic `pb-[calc(...)]` from a TS constant — used inline `style={{ paddingBottom }}` on the session section instead.
+- **Ask next (Step 6b):** approve zinc→token mapping table for scorecard; eagle/birdie ring treatment vs badge chips (D2).
+- **Not done by agent:** sub-task 7 (full simulated round phone-test on device).
 
-- [ ] **Step 6a complete**
+- [x] **Step 6a complete**
 
 ---
 
