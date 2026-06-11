@@ -131,7 +131,7 @@ export function useActiveScoring({
 
     for (const participant of scoringParticipants) {
       const rawValue = getStrokeInputValue(participant.id).trim();
-      const strokes = Number(rawValue);
+      const strokes = rawValue.length > 0 ? Number(rawValue) : activeHole.par;
 
       if (!Number.isInteger(strokes) || strokes < 1 || strokes > 25) {
         toastError(

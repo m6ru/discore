@@ -549,6 +549,15 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 - **Ask next (Step 6b):** approve zinc→token mapping table for scorecard; eagle/birdie ring treatment vs badge chips (D2).
 - **Not done by agent:** sub-task 7 (full simulated round phone-test on device).
 
+**6a rework (post phone-test feedback):**
+
+- **Layout:** Flat scorer view — no session border card, no inner scoring card; `p-4 sm:p-8` on round page. `ParticipantsList` only in draft; active scoring uses `ScoringPlayerRoster` instead.
+- **Roster:** Selectable rows with name, this-hole score (or —), total strokes, vs par; checkmark when hole has a draft/saved value.
+- **Single-player entry:** One compact 3-column stepper (`grid-cols-3`, `min-h-14`) for selected player; implicit **par** display when empty; `−`/`+` work immediately (`par−1` / `par+1` from empty). Save resolves empty drafts to par in hook.
+- **Scorecard:** Hidden by default for scorer while scoring; **View scorecard** / **Hide scorecard** link; collapses on hole change. Leaderboard hidden during scorer scoring (roster covers totals).
+- **Abandon:** Muted link above fixed save bar (footer lifecycle hidden while sticky save bar active).
+- **Ask next (6b):** zinc→token mapping for scorecard when expanded.
+
 - [x] **Step 6a complete**
 
 ---

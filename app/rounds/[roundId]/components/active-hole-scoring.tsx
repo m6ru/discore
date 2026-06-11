@@ -1,22 +1,27 @@
+import { useState } from "react";
 import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { HoleRow, ParticipantRow } from "../round-types";
+import type { LeaderboardRow, HoleRow, ParticipantRow } from "../round-types";
+import { ConfirmActionDialog } from "./confirm-action-dialog";
+import { ScoringPlayerRoster } from "./scoring-player-roster";
 
 const STROKE_MIN = 1;
 const STROKE_MAX = 25;
 
-/** Bottom inset for fixed save bar (button + padding + safe area). */
+/** Bottom inset for fixed save bar (abandon link + button + padding + safe area). */
 export const ACTIVE_SCORING_BOTTOM_INSET =
-  "calc(5.5rem + env(safe-area-inset-bottom, 0px))";
+  "calc(7rem + env(safe-area-inset-bottom, 0px))";
 
 type Props = {
   activeHole: HoleRow;
   holesLength: number;
   scoringParticipants: ParticipantRow[];
+  leaderboardRows: LeaderboardRow[];
   currentHoleIndex: number;
   isLastHole: boolean;
   isSubmitting: boolean;
+  isTransitioning: boolean;
   getParticipantLabel: (participant: ParticipantRow) => string;
   getStrokeInputValue: (participantId: string) => string;
   isObChecked: (participantId: string) => boolean;
@@ -25,6 +30,7 @@ type Props = {
   onPreviousHole: () => void;
   onNextHole: () => void;
   onSaveAndAdvanceHole: () => void;
+  onAbandonRound: () => void;
 };
 
 function parseStrokeValue(raw: string): number | null {
@@ -39,75 +45,73 @@ function parseStrokeValue(raw: string): number | null {
   return strokes;
 }
 
-type StrokeStepperProps = {
-  participantId: string;
+function firstParticipantWithoutHoleScore(
+  participants: ParticipantRow[],
+  getStrokeInputValue: (id: string) => string
+): string | null {
+  for (const participant of participants) {
+    if (!getStrokeInputValue(participant.id).trim()) {
+      return participant.id;
+    }
+  }
+  return participants[0]?.id ?? null;
+}
+
+type CompactStepperProps = {
   par: number;
   value: string;
   disabled: boolean;
-  onStrokeChange: (participantId: string, value: string) => void;
+  onStrokeChange: (value: string) => void;
 };
 
-function StrokeStepper({
-  participantId,
-  par,
-  value,
-  disabled,
-  onStrokeChange,
-}: StrokeStepperProps) {
+function CompactStepper({ par, value, disabled, onStrokeChange }: CompactStepperProps) {
   const parsed = parseStrokeValue(value);
-  const canDecrement = !disabled && parsed !== null && parsed > STROKE_MIN;
-  const canIncrement = !disabled && (parsed === null || parsed < STROKE_MAX);
+  const displayValue = parsed ?? par;
 
   const handleDecrement = () => {
-    if (parsed === null || parsed <= STROKE_MIN) {
-      return;
-    }
-    onStrokeChange(participantId, String(parsed - 1));
+    const next = parsed === null ? Math.max(STROKE_MIN, par - 1) : Math.max(STROKE_MIN, parsed - 1);
+    onStrokeChange(String(next));
   };
 
   const handleIncrement = () => {
-    if (parsed === null) {
-      onStrokeChange(participantId, String(par));
-      return;
-    }
-    if (parsed < STROKE_MAX) {
-      onStrokeChange(participantId, String(parsed + 1));
-    }
+    const next = parsed === null ? Math.min(STROKE_MAX, par + 1) : Math.min(STROKE_MAX, parsed + 1);
+    onStrokeChange(String(next));
   };
 
+  const canDecrement = !disabled && displayValue > STROKE_MIN;
+  const canIncrement = !disabled && displayValue < STROKE_MAX;
+
   return (
-    <div className="flex min-h-11 flex-1 items-stretch gap-1">
+    <div className="grid grid-cols-3 gap-2">
       <Button
         type="button"
         variant="outline"
-        size="icon-lg"
-        className="min-h-11 min-w-11 shrink-0 rounded-xl"
+        className="min-h-14 rounded-xl text-lg"
         aria-label="Decrease strokes"
         disabled={!canDecrement}
         onClick={handleDecrement}
       >
-        <Minus className="size-5" aria-hidden />
+        <Minus className="size-6" aria-hidden />
       </Button>
       <div
         className={cn(
-          "flex min-h-11 flex-1 items-center justify-center rounded-xl border-2 bg-background px-2",
-          "font-mono text-3xl font-semibold tabular-nums tracking-tight text-foreground"
+          "flex min-h-14 items-center justify-center rounded-xl border-2 bg-background",
+          "font-mono text-4xl font-semibold tabular-nums tracking-tight text-foreground"
         )}
         aria-live="polite"
         aria-atomic="true"
       >
-        {parsed !== null ? parsed : "—"}
+        {displayValue}
       </div>
       <Button
         type="button"
         variant="outline"
-        size="icon-lg"
-        className="min-h-11 min-w-11 shrink-0 rounded-xl"
+        className="min-h-14 rounded-xl text-lg"
         aria-label="Increase strokes"
         disabled={!canIncrement}
         onClick={handleIncrement}
       >
-        <Plus className="size-5" aria-hidden />
+        <Plus className="size-6" aria-hidden />
       </Button>
     </div>
   );
@@ -117,9 +121,11 @@ export function ActiveHoleScoring({
   activeHole,
   holesLength,
   scoringParticipants,
+  leaderboardRows,
   currentHoleIndex,
   isLastHole,
   isSubmitting,
+  isTransitioning,
   getParticipantLabel,
   getStrokeInputValue,
   isObChecked,
@@ -128,19 +134,48 @@ export function ActiveHoleScoring({
   onPreviousHole,
   onNextHole,
   onSaveAndAdvanceHole,
+  onAbandonRound,
 }: Props) {
+  const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(
+    () => firstParticipantWithoutHoleScore(scoringParticipants, getStrokeInputValue)
+  );
+
+  const selectedParticipant =
+    scoringParticipants.find((p) => p.id === selectedParticipantId) ??
+    scoringParticipants[0] ??
+    null;
+
   const canGoBack = currentHoleIndex > 0;
   const canGoForward = currentHoleIndex < holesLength - 1;
 
+  const selectParticipant = (participantId: string) => {
+    setSelectedParticipantId(participantId);
+  };
+
+  if (!selectedParticipant) {
+    return (
+      <p className="text-sm text-muted-foreground">No participants available for scoring.</p>
+    );
+  }
+
+  const selectedLabel = getParticipantLabel(selectedParticipant);
+  const obChecked = isObChecked(selectedParticipant.id);
+
   return (
     <>
-      <div className="space-y-6">
-        <div className="text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Enter scores
-          </p>
+      <div className="space-y-5">
+        <ScoringPlayerRoster
+          scoringParticipants={scoringParticipants}
+          leaderboardRows={leaderboardRows}
+          selectedParticipantId={selectedParticipant.id}
+          getParticipantLabel={getParticipantLabel}
+          getStrokeInputValue={getStrokeInputValue}
+          onSelectParticipant={selectParticipant}
+          disabled={isSubmitting}
+        />
 
-          <div className="mt-3 flex items-center justify-center gap-2">
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-2">
             <Button
               type="button"
               variant="outline"
@@ -181,45 +216,54 @@ export function ActiveHoleScoring({
           </div>
         </div>
 
-        <div className="space-y-5">
-          {scoringParticipants.map((participant) => {
-            const obChecked = isObChecked(participant.id);
-            const label = getParticipantLabel(participant);
-
-            return (
-              <div key={participant.id} className="space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">{label}</p>
-                <div className="flex items-stretch gap-2">
-                  <StrokeStepper
-                    participantId={participant.id}
-                    par={activeHole.par}
-                    value={getStrokeInputValue(participant.id)}
-                    disabled={isSubmitting}
-                    onStrokeChange={onStrokeChange}
-                  />
-                  <Button
-                    type="button"
-                    variant={obChecked ? "destructive" : "outline"}
-                    className="h-auto min-h-11 w-16 shrink-0 rounded-xl text-sm font-semibold uppercase tracking-wide"
-                    aria-pressed={obChecked}
-                    aria-label={`Toggle OB for ${label}`}
-                    disabled={isSubmitting}
-                    onClick={() => onObToggle(participant.id, !obChecked)}
-                  >
-                    OB
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
+        <div className="space-y-3">
+          <p className="text-center text-sm font-medium text-foreground">{selectedLabel}</p>
+          <CompactStepper
+            par={activeHole.par}
+            value={getStrokeInputValue(selectedParticipant.id)}
+            disabled={isSubmitting}
+            onStrokeChange={(value) => onStrokeChange(selectedParticipant.id, value)}
+          />
+          <div className="flex justify-center">
+            <Button
+              type="button"
+              variant={obChecked ? "destructive" : "outline"}
+              className="min-h-11 min-w-[5.5rem] rounded-xl text-sm font-semibold uppercase tracking-wide"
+              aria-pressed={obChecked}
+              aria-label={`Toggle OB for ${selectedLabel}`}
+              disabled={isSubmitting}
+              onClick={() => onObToggle(selectedParticipant.id, !obChecked)}
+            >
+              OB
+            </Button>
+          </div>
         </div>
       </div>
 
       <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-3 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-2 backdrop-blur supports-[backdrop-filter]:bg-background/80"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
       >
-        <div className="mx-auto w-full max-w-3xl">
+        <div className="mx-auto w-full max-w-3xl space-y-2">
+          <div className="text-center">
+            <ConfirmActionDialog
+              title="Abandon this round?"
+              description="Scores won't be saved to history. You can always start a new round later."
+              confirmLabel="Abandon round"
+              onConfirm={onAbandonRound}
+              disabled={isSubmitting || isTransitioning}
+              trigger={
+                <Button
+                  type="button"
+                  variant="link"
+                  className="h-auto p-0 text-xs text-muted-foreground"
+                  disabled={isSubmitting || isTransitioning}
+                >
+                  {isTransitioning ? "Working..." : "Abandon round"}
+                </Button>
+              }
+            />
+          </div>
           <Button
             type="button"
             size="lg"
