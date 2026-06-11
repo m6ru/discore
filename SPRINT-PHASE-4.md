@@ -53,8 +53,8 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 ## Sprint state
 
-- **Current step:** Step 4 — AlertDialog for destructive actions
-- **Last completed:** Step 3d — Round screen chrome
+- **Current step:** Step 5 — Toast layer
+- **Last completed:** Step 4 — AlertDialog for destructive actions
 - **Open blockers:** none
 
 ---
@@ -436,9 +436,17 @@ In `SPRINT-PHASE-4.md`, find the first step whose checkbox is unchecked. That is
 
 **Notes:**
 
-(empty)
+- **Decided (D1):** Warm/friendly copy (§0.4) — **Delete:** title "Delete this draft?", description explains invited players are removed. **Abandon:** title "Abandon this round?", description clarifies scores won't hit history. **Complete:** title "End this round?", description says scores save to history.
+- **Decided (D2):** `window.confirm` **removed from hooks entirely** — `onDeleteDraft`, `onAbandonRound`, `onCompleteRound` are bare async actions; confirmation lives in UI only.
+- **Decided (D3):** **Action-specific** confirm labels: "Delete draft", "Abandon round", "Complete round" (trigger button for complete stays "Confirm and end round").
+- **Delete draft home:** Muted **link under Start round** (Step 3d placement preserved); opens AlertDialog before calling hook.
+- **Shared primitive:** `confirm-action-dialog.tsx` wraps shadcn AlertDialog (destructive variant for delete/abandon, default for complete). Cancel label = "Cancel".
+- **Complete round button:** Swapped legacy emerald `<button>` to shadcn `Button` while wiring the dialog (same file, incidental token alignment).
+- **Surprised:** Nothing — Radix `AlertDialogTrigger asChild` + `Button variant="link"` for delete works cleanly without a separate menu.
+- **Ask next (Step 5):** D1–D3 for toast variants/duration/dedup on save failures.
+- **Not done by agent:** sub-task 4 (phone-test all three flows).
 
-- [ ] **Step 4 complete**
+- [x] **Step 4 complete**
 
 ---
 
