@@ -33,9 +33,9 @@ const stickyShadow = "shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)]";
 
 /** Fixed column widths — `left` offsets must match these exactly. */
 const STICKY_COL = {
-  player: { width: "w-[5rem]", left: "left-0" },
-  par: { width: "w-8", left: "left-[5rem]" },
-  total: { width: "w-9", left: "left-[7rem]" },
+  player: { width: "w-[10rem]", left: "left-0" },
+  vsPar: { width: "w-9", left: "left-[10rem]" },
+  thr: { width: "w-8", left: "left-[12.25rem]" },
 } as const;
 
 function stickyCol(
@@ -48,9 +48,25 @@ function stickyCol(
     left,
     width,
     variant === "header" ? "z-30 bg-muted" : "z-20 bg-background",
-    column === "total" && stickyShadow
+    column === "thr" && stickyShadow
   );
 }
+
+function formatThru(thru: number, holeCount: number): string {
+  if (thru === 0) {
+    return "—";
+  }
+  if (thru >= holeCount) {
+    return "F";
+  }
+  return String(thru);
+}
+
+const holeColClass =
+  "relative z-0 w-[1.375rem] min-w-[1.375rem] max-w-[1.375rem] border-b px-0 py-0.5 text-center font-mono text-[11px] tabular-nums";
+
+const summaryColClass =
+  "border-b px-0.5 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
 
 export function ScorecardSection({
   roundStatus,
@@ -64,6 +80,10 @@ export function ScorecardSection({
     return <p className="text-sm text-muted-foreground">No holes loaded for this layout.</p>;
   }
 
+  const holeCount = sortedHoles.length;
+  const summaryHeaderClass =
+    "px-0.5 py-1 text-center text-[11px] font-medium text-muted-foreground";
+
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold tracking-tight">Scorecard</h3>
@@ -75,30 +95,24 @@ export function ScorecardSection({
                 rowSpan={2}
                 className={cn(
                   stickyCol("player", "header"),
-                  "px-1 py-1 text-left text-[11px] font-medium text-muted-foreground"
+                  "px-2.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
                 )}
               >
                 Player
               </th>
               <th
                 rowSpan={2}
-                className={cn(
-                  stickyCol("par", "header"),
-                  "px-0.5 py-1 text-center text-[11px] font-medium text-muted-foreground"
-                )}
+                className={cn(stickyCol("vsPar", "header"), summaryHeaderClass)}
                 title="Versus par"
               >
                 Par
               </th>
               <th
                 rowSpan={2}
-                className={cn(
-                  stickyCol("total", "header"),
-                  "px-0.5 py-1 text-center text-[11px] font-medium text-muted-foreground"
-                )}
-                title="Total strokes"
+                className={cn(stickyCol("thr", "header"), summaryHeaderClass)}
+                title="Holes completed"
               >
-                Total
+                Thr
               </th>
               {sortedHoles.map((hole) => {
                 const isCurrent = roundStatus === "active" && activeHole?.id === hole.id;
@@ -106,7 +120,8 @@ export function ScorecardSection({
                   <th
                     key={hole.id}
                     className={cn(
-                      "relative z-0 min-w-[1.75rem] border-b px-0 py-1 text-center text-[11px] font-semibold tabular-nums",
+                      holeColClass,
+                      "font-semibold",
                       isCurrent ? "bg-primary/15 text-foreground" : "bg-muted/40 text-foreground"
                     )}
                   >
@@ -114,6 +129,20 @@ export function ScorecardSection({
                   </th>
                 );
               })}
+              <th
+                rowSpan={2}
+                className={cn(summaryHeaderClass, "min-w-[2.25rem] border-b bg-muted/40")}
+                title="Versus par"
+              >
+                Par
+              </th>
+              <th
+                rowSpan={2}
+                className={cn(summaryHeaderClass, "min-w-[2.25rem] border-b bg-muted/40")}
+                title="Total strokes"
+              >
+                Total
+              </th>
             </tr>
             <tr className="bg-muted/30">
               {sortedHoles.map((hole) => {
@@ -122,7 +151,7 @@ export function ScorecardSection({
                   <th
                     key={`par-${hole.id}`}
                     className={cn(
-                      "relative z-0 border-b px-0 py-0 text-center text-[10px] font-medium tabular-nums text-muted-foreground",
+                      "relative z-0 w-[1.375rem] min-w-[1.375rem] max-w-[1.375rem] border-b px-0 py-0 text-center text-[10px] font-medium tabular-nums text-muted-foreground",
                       isCurrent ? "bg-primary/10" : "bg-muted/30"
                     )}
                   >
@@ -136,7 +165,7 @@ export function ScorecardSection({
             {leaderboardRows.length === 0 ? (
               <tr>
                 <td
-                  colSpan={sortedHoles.length + 3}
+                  colSpan={sortedHoles.length + 5}
                   className="px-3 py-4 text-center text-sm text-muted-foreground"
                 >
                   No scoring players yet.
@@ -146,13 +175,16 @@ export function ScorecardSection({
               leaderboardRows.map((row, index) => {
                 const full = segmentPlayerStats(row.participantId, sortedHoles, scoreLookup);
                 const rank = row.thru > 0 ? index + 1 : null;
+                const vsParLabel = full.thru > 0 ? formatVsPar(full.vsPar) : "—";
+                const thrLabel = formatThru(full.thru, holeCount);
+                const totalLabel = full.thru > 0 ? full.totalStrokes : "—";
 
                 return (
                   <tr key={row.participantId}>
                     <td
                       className={cn(
                         stickyCol("player", "body"),
-                        "max-w-[5rem] truncate px-1 py-1 text-[11px] font-medium text-foreground"
+                        "whitespace-nowrap px-2.5 py-1 text-[11px] font-medium text-foreground"
                       )}
                     >
                       {rank !== null ? (
@@ -164,22 +196,10 @@ export function ScorecardSection({
                         row.label
                       )}
                     </td>
-                    <td
-                      className={cn(
-                        stickyCol("par", "body"),
-                        "px-0.5 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground"
-                      )}
-                    >
-                      {full.thru > 0 ? formatVsPar(full.vsPar) : "—"}
+                    <td className={cn(stickyCol("vsPar", "body"), summaryColClass)}>
+                      {vsParLabel}
                     </td>
-                    <td
-                      className={cn(
-                        stickyCol("total", "body"),
-                        "px-0.5 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground"
-                      )}
-                    >
-                      {full.thru > 0 ? full.totalStrokes : "—"}
-                    </td>
+                    <td className={cn(stickyCol("thr", "body"), summaryColClass)}>{thrLabel}</td>
                     {sortedHoles.map((hole) => {
                       const key = makeScoreLookupKey(row.participantId, hole.id);
                       const strokes = scoreLookup.get(key);
@@ -192,7 +212,8 @@ export function ScorecardSection({
                         <td
                           key={hole.id}
                           className={cn(
-                            "relative z-0 overflow-hidden border-b px-0 py-1 text-center font-mono text-[11px] tabular-nums text-foreground",
+                            holeColClass,
+                            "overflow-hidden text-foreground",
                             isCurrent && !cellToneClass(tone) && "bg-primary/5",
                             cellToneClass(tone),
                             ob && "shadow-[inset_0_2px_0_0_var(--destructive)]",
@@ -203,6 +224,8 @@ export function ScorecardSection({
                         </td>
                       );
                     })}
+                    <td className={summaryColClass}>{vsParLabel}</td>
+                    <td className={summaryColClass}>{totalLabel}</td>
                   </tr>
                 );
               })
