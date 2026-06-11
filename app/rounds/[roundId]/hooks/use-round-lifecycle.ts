@@ -29,7 +29,6 @@ export function useRoundLifecycle({
 
   const onAbandonRound = useCallback(async () => {
     if (!isScorer) return;
-    if (!window.confirm("Abandon this round?")) return;
     setIsTransitioning(true);
     setStatus(null);
     const { error } = await abandonRound(supabase, roundId);
@@ -43,7 +42,6 @@ export function useRoundLifecycle({
   }, [isScorer, supabase, roundId, setStatus, setIsTransitioning, router]);
 
   const onCompleteRound = useCallback(async () => {
-    if (!window.confirm("Complete this round?")) return;
     const saved = await saveCurrentHoleScores();
     if (!saved) return;
     setIsTransitioning(true);

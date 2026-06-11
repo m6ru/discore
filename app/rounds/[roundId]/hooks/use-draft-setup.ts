@@ -179,7 +179,6 @@ export function useDraftSetup({
 
   const onDeleteDraft = useCallback(async () => {
     if (!isScorer) return;
-    if (!window.confirm("Delete this draft round?")) return;
     setIsTransitioning(true);
     setStatus(null);
     const { error } = await deleteDraftRound(supabase, roundId);

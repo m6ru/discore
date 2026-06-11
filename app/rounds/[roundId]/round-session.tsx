@@ -116,6 +116,7 @@ export function RoundSession({
     onAddParticipant,
     onRemovePlayer,
     onStartRound,
+    onDeleteDraft,
   } = useDraftSetup({
     supabase,
     roundId,
@@ -308,6 +309,7 @@ export function RoundSession({
             isTransitioning={isTransitioning}
             hasPendingInvite={hasPendingInvite}
             onStartRound={() => void onStartRound()}
+            onDeleteDraft={() => void onDeleteDraft()}
             onAbandonRound={() => void onAbandonRound()}
           />
         </>
@@ -375,6 +377,7 @@ export function RoundSession({
         isTransitioning={isTransitioning}
         hasPendingInvite={hasPendingInvite}
         onStartRound={() => void onStartRound()}
+        onDeleteDraft={() => void onDeleteDraft()}
         onAbandonRound={() => void onAbandonRound()}
       />
 

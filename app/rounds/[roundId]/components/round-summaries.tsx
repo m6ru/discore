@@ -1,6 +1,10 @@
+"use client";
+
 import { getTotalStrokes } from "@/lib/scoring/stats";
 import type { RoundStatus } from "@/lib/rounds/round-status";
+import { Button } from "@/components/ui/button";
 import type { HoleScoreRow, ParticipantRow } from "../round-types";
+import { ConfirmActionDialog } from "./confirm-action-dialog";
 
 type Props = {
   showFrontNineSummary: boolean;
@@ -63,16 +67,24 @@ export function RoundSummaries({
             ))}
           </ul>
           {roundStatus === "active" && isScorer ? (
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => void onCompleteRound()}
-                disabled={isSubmitting || isTransitioning}
-                className="rounded bg-emerald-700 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-              >
-                {isTransitioning ? "Working..." : "Confirm and end round"}
-              </button>
-            </div>
+            <ConfirmActionDialog
+              title="End this round?"
+              description="Final scores will be saved for everyone. You'll find this round in your history."
+              confirmLabel="Complete round"
+              confirmVariant="default"
+              onConfirm={onCompleteRound}
+              disabled={isSubmitting || isTransitioning}
+              trigger={
+                <Button
+                  type="button"
+                  size="lg"
+                  className="min-h-11"
+                  disabled={isSubmitting || isTransitioning}
+                >
+                  {isTransitioning ? "Working..." : "Confirm and end round"}
+                </Button>
+              }
+            />
           ) : (
             <p className="text-xs text-zinc-500">Round is completed. Scores are now read-only.</p>
           )}
