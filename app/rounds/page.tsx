@@ -9,6 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  formatStatusLabel,
+  statusBadgeVariant,
+} from "@/lib/rounds/format-round-status";
 
 function formatDate(iso: string | null): string {
   if (!iso) {
@@ -20,31 +24,6 @@ function formatDate(iso: string | null): string {
     month: "short",
     day: "numeric",
   });
-}
-
-function statusBadgeVariant(
-  status: string
-): "default" | "secondary" | "outline" {
-  if (status === "active") {
-    return "default";
-  }
-  if (status === "abandoned") {
-    return "outline";
-  }
-  return "secondary";
-}
-
-function formatStatusLabel(status: string): string {
-  if (status === "active") {
-    return "Active";
-  }
-  if (status === "completed") {
-    return "Completed";
-  }
-  if (status === "abandoned") {
-    return "Abandoned";
-  }
-  return status;
 }
 
 export default async function RoundsHistoryPage() {

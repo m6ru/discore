@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 import { createServerClient } from "@/lib/supabase/server";
 import { pickOne } from "@/lib/supabase/select-helpers";
+import {
+  formatStatusLabel,
+  statusBadgeVariant,
+} from "@/lib/rounds/format-round-status";
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
 import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
 import { RoundSession } from "./round-session";
@@ -99,17 +104,18 @@ export default async function RoundPage({ params }: RoundPageProps) {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-8">
       <header className="space-y-2">
-        <h1 className="text-2xl font-bold">
-          {round.status === "draft" ? "Round setup" : "Active round"}
-        </h1>
-        <p className="text-sm text-zinc-700">{courseRow?.name ?? "Unknown course"}</p>
-        <p className="text-sm text-zinc-700">{layoutRow?.name ?? "Unknown layout"}</p>
-        <p className="text-sm text-zinc-600">
-          Holes <span className="font-medium">{holes?.length ?? "?"}</span> - Par{" "}
-          <span className="font-medium">{layoutRow?.total_par ?? "?"}</span>
-        </p>
-        <p className="text-sm text-zinc-600">
-          Status <span className="font-medium">{round.status}</span>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-2xl font-bold tracking-tight">
+            {courseRow?.name ?? "Unknown course"}
+            <span className="font-normal text-muted-foreground"> · </span>
+            {layoutRow?.name ?? "Unknown layout"}
+          </h1>
+          <Badge variant={statusBadgeVariant(round.status)} className="shrink-0">
+            {formatStatusLabel(round.status)}
+          </Badge>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          {holes?.length ?? "?"} holes · Par {layoutRow?.total_par ?? "?"}
         </p>
       </header>
 

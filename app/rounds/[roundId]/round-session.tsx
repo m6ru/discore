@@ -116,7 +116,6 @@ export function RoundSession({
     onAddParticipant,
     onRemovePlayer,
     onStartRound,
-    onDeleteDraft,
   } = useDraftSetup({
     supabase,
     roundId,
@@ -275,9 +274,8 @@ export function RoundSession({
   );
 
   return (
-    <section className="space-y-5 rounded-lg border border-zinc-200 p-4">
-      <h2 className="text-lg font-semibold">Round</h2>
-      <h3 className="text-base font-semibold text-zinc-800">Participants</h3>
+    <section className="space-y-5 rounded-lg border p-4">
+      <h3 className="text-base font-semibold">Participants</h3>
 
       <ParticipantsList
         unifiedPlayers={unifiedPlayers}
@@ -286,22 +284,33 @@ export function RoundSession({
       />
 
       {liveRoundStatus === "draft" && isScorer ? (
-        <DraftParticipantForm
-          participantName={participantName}
-          isSubmitting={isSubmitting}
-          isSearching={isSearching}
-          searchResults={searchResults}
-          selectedProfile={selectedProfile}
-          onParticipantNameChange={(value) => {
-            setParticipantName(value);
-            setSelectedProfile(null);
-          }}
-          onSelectProfile={(profile) => {
-            selectProfile(profile);
-            setParticipantName(profile.display_name);
-          }}
-          onSubmit={(event) => void onAddParticipant(event, selectedProfile, clearSearchSelection)}
-        />
+        <>
+          <DraftParticipantForm
+            participantName={participantName}
+            isSubmitting={isSubmitting}
+            isSearching={isSearching}
+            searchResults={searchResults}
+            selectedProfile={selectedProfile}
+            onParticipantNameChange={(value) => {
+              setParticipantName(value);
+              setSelectedProfile(null);
+            }}
+            onSelectProfile={(profile) => {
+              selectProfile(profile);
+              setParticipantName(profile.display_name);
+            }}
+            onSubmit={(event) => void onAddParticipant(event, selectedProfile, clearSearchSelection)}
+          />
+          <RoundLifecycleActions
+            placement="setup"
+            roundStatus={liveRoundStatus}
+            isScorer={isScorer}
+            isTransitioning={isTransitioning}
+            hasPendingInvite={hasPendingInvite}
+            onStartRound={() => void onStartRound()}
+            onAbandonRound={() => void onAbandonRound()}
+          />
+        </>
       ) : null}
 
       <RoundStatusBanner
@@ -360,12 +369,12 @@ export function RoundSession({
       ) : null}
 
       <RoundLifecycleActions
+        placement="footer"
         roundStatus={liveRoundStatus}
         isScorer={isScorer}
         isTransitioning={isTransitioning}
         hasPendingInvite={hasPendingInvite}
         onStartRound={() => void onStartRound()}
-        onDeleteDraft={() => void onDeleteDraft()}
         onAbandonRound={() => void onAbandonRound()}
       />
 
