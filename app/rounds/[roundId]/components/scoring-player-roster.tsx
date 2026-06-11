@@ -46,7 +46,7 @@ export function ScoringPlayerRoster({
               disabled={disabled}
               onClick={() => onSelectParticipant(participant.id)}
               className={cn(
-                "flex w-full items-center gap-2 rounded-lg border px-2 py-2 text-left text-sm transition-colors",
+                "flex w-full items-center gap-2 rounded-lg border py-2 pl-3 pr-4 text-left text-sm transition-colors",
                 isSelected
                   ? "border-primary bg-primary/5"
                   : "border-border bg-background hover:bg-muted/50",

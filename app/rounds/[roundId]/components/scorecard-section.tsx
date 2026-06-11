@@ -13,6 +13,8 @@ type Props = {
   leaderboardRows: LeaderboardRow[];
   activeHole: HoleRow | null;
   showTitle?: boolean;
+  /** Drop outer card chrome — for full-width scorecard overlay. */
+  embedded?: boolean;
 };
 
 function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
@@ -87,6 +89,7 @@ export function ScorecardSection({
   leaderboardRows,
   activeHole,
   showTitle = true,
+  embedded = false,
 }: Props) {
   if (sortedHoles.length === 0) {
     return <p className="text-sm text-muted-foreground">No holes loaded for this layout.</p>;
@@ -97,9 +100,11 @@ export function ScorecardSection({
     "px-0 py-1 text-center text-[11px] font-medium text-muted-foreground";
 
   return (
-    <div className="space-y-3">
-      {showTitle ? <h3 className="text-sm font-semibold tracking-tight">Scorecard</h3> : null}
-      <div className="overflow-x-auto rounded-lg border">
+    <div className={embedded ? "min-h-0" : "space-y-3"}>
+      {showTitle && !embedded ? (
+        <h3 className="text-sm font-semibold tracking-tight">Scorecard</h3>
+      ) : null}
+      <div className={cn("overflow-x-auto", !embedded && "rounded-lg border")}>
         <table className="w-max min-w-full border-separate border-spacing-0 text-left text-sm">
           <thead>
             <tr className="bg-muted/40">

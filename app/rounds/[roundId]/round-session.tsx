@@ -297,7 +297,7 @@ export function RoundSession({
     [labelByParticipantId]
   );
 
-  const renderScorecard = (showTitle: boolean) => (
+  const renderScorecard = (options: { showTitle: boolean; embedded?: boolean }) => (
     <ScorecardSection
       roundStatus={liveRoundStatus}
       sortedHoles={sortedHoles}
@@ -305,7 +305,8 @@ export function RoundSession({
       obLookup={obLookup}
       leaderboardRows={leaderboardRows}
       activeHole={activeHole}
-      showTitle={showTitle}
+      showTitle={options.showTitle}
+      embedded={options.embedded}
     />
   );
 
@@ -334,7 +335,7 @@ export function RoundSession({
         onViewInfo={() => setRoundInfoOpen(true)}
         scorecardDialog={
           <RoundScorecardDialog open={scorecardOpen} onOpenChange={setScorecardOpen}>
-            {renderScorecard(false)}
+            {renderScorecard({ showTitle: false, embedded: true })}
           </RoundScorecardDialog>
         }
         infoDialog={
@@ -458,7 +459,7 @@ export function RoundSession({
         />
       ) : null}
 
-      {showScorecardAtBottom ? renderScorecard(true) : null}
+      {showScorecardAtBottom ? renderScorecard({ showTitle: true }) : null}
 
       {showCompletionUI ? (
         <RoundCompleteActions
