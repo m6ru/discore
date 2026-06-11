@@ -32,6 +32,7 @@ export type HoleRow = {
   id: string;
   hole_number: number;
   par: number;
+  distance_m: number;
 };
 
 export type HoleScoreRow = {
@@ -45,11 +46,15 @@ export type HoleScoreRow = {
 
 export type RoundSessionProps = {
   roundId: string;
+  roundName: string | null;
   roundStatus: RoundStatus;
   scorerUserId: string;
   isScorer: boolean;
   currentUserId: string;
   scorerDisplayName: string;
+  courseName: string;
+  layoutName: string;
+  layoutTotalPar: number;
   initialParticipants: ParticipantRow[];
   initialInvites: InviteRow[];
   holes: HoleRow[];

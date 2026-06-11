@@ -11,7 +11,7 @@ export function useStartDraftRound(layoutId: string) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const startDraftRound = useCallback(async () => {
+  const startDraftRound = useCallback(async (roundName?: string) => {
     setIsSubmitting(true);
 
     try {
@@ -30,7 +30,7 @@ export function useStartDraftRound(layoutId: string) {
         return;
       }
 
-      const result = await createDraftRound(supabase, layoutId, user.id);
+      const result = await createDraftRound(supabase, layoutId, user.id, roundName);
 
       if (!result.ok) {
         if (result.existingRoundId) {

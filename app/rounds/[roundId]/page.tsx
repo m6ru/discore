@@ -8,6 +8,7 @@ import {
   statusBadgeVariant,
 } from "@/lib/rounds/format-round-status";
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
+import { formatRoundDisplayName } from "@/lib/rounds/round-display-name";
 import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
 import { ROUND_HEADER_ACTIONS_ID } from "./components/round-header-actions-slot";
 import { RoundSession } from "./round-session";
@@ -32,7 +33,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
   const { data: round, error: roundError } = await supabase
     .from("rounds")
     .select(
-      "id, status, started_at, scorer_id, layout_id, layouts(name, total_par, total_distance_m, courses(name))"
+      "id, name, status, started_at, scorer_id, layout_id, layouts(name, total_par, total_distance_m, courses(name))"
     )
     .eq("id", roundId)
     .maybeSingle();
@@ -76,7 +77,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
       .order("created_at", { ascending: true }),
     supabase
       .from("holes")
-      .select("id, hole_number, par")
+      .select("id, hole_number, par, distance_m")
       .eq("layout_id", round.layout_id)
       .order("hole_number", { ascending: true }),
     supabase
@@ -104,13 +105,18 @@ export default async function RoundPage({ params }: RoundPageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
-      <header className="space-y-2">
+      <header className="space-y-1">
         <div className="flex items-start justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-tight">
-            {courseRow?.name ?? "Unknown course"}
-            <span className="font-normal text-muted-foreground"> · </span>
-            {layoutRow?.name ?? "Unknown layout"}
-          </h1>
+          <div className="min-w-0 space-y-1">
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
+              {formatRoundDisplayName(round.name)}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {courseRow?.name ?? "Unknown course"}
+              <span> · </span>
+              {layoutRow?.name ?? "Unknown layout"}
+            </p>
+          </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
             {roundStatus !== "active" && roundStatus !== "draft" ? (
               <Badge variant={statusBadgeVariant(round.status)}>
@@ -120,9 +126,6 @@ export default async function RoundPage({ params }: RoundPageProps) {
             <div id={ROUND_HEADER_ACTIONS_ID} />
           </div>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {holes?.length ?? "?"} holes · Par {layoutRow?.total_par ?? "?"}
-        </p>
       </header>
 
       {participantsError ? (
@@ -145,11 +148,15 @@ export default async function RoundPage({ params }: RoundPageProps) {
         <RoundSession
           key={round.id}
           roundId={round.id}
+          roundName={round.name}
           roundStatus={roundStatus}
           scorerUserId={round.scorer_id}
           isScorer={isScorer}
           currentUserId={user.id}
           scorerDisplayName={scorerProfile?.display_name ?? "Scorer"}
+          courseName={courseRow?.name ?? "Unknown course"}
+          layoutName={layoutRow?.name ?? "Unknown layout"}
+          layoutTotalPar={layoutRow?.total_par ?? 0}
           initialParticipants={safeParticipants}
           initialInvites={normalizeInviteRows(invites ?? [])}
           holes={(holes ?? []) as HoleRow[]}

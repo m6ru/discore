@@ -360,6 +360,7 @@ export type Database = {
           created_at: string
           id: string
           layout_id: string
+          name: string | null
           scorer_id: string
           started_at: string
           starting_hole: number
@@ -371,6 +372,7 @@ export type Database = {
           created_at?: string
           id?: string
           layout_id: string
+          name?: string | null
           scorer_id: string
           started_at?: string
           starting_hole?: number
@@ -382,6 +384,7 @@ export type Database = {
           created_at?: string
           id?: string
           layout_id?: string
+          name?: string | null
           scorer_id?: string
           started_at?: string
           starting_hole?: number

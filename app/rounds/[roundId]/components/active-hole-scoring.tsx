@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,7 +28,6 @@ type Props = {
   onObToggle: (participantId: string, checked: boolean) => void;
   onPreviousHole: () => void;
   onSaveAndAdvanceHole: () => void;
-  scorecardSlot: ReactNode;
 };
 
 function parseStrokeValue(raw: string): number | null {
@@ -138,7 +137,6 @@ export function ActiveHoleScoring({
   onObToggle,
   onPreviousHole,
   onSaveAndAdvanceHole,
-  scorecardSlot,
 }: Props) {
   const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(
     () => firstParticipantWithoutHoleScore(scoringParticipants, getStrokeInputValue)
@@ -165,20 +163,18 @@ export function ActiveHoleScoring({
 
   return (
     <>
-      <div className="space-y-5">
-        <div className="text-center">
-          <p className="font-mono text-4xl font-semibold tabular-nums tracking-tight text-foreground">
-            {activeHole.hole_number}
-            <span className="text-xl font-normal text-muted-foreground">
-              {" "}
-              / {holesLength}
-            </span>
-          </p>
-          <p className="mt-1 text-base text-muted-foreground">
-            Par{" "}
-            <span className="font-semibold text-foreground">{activeHole.par}</span>
-          </p>
-        </div>
+      <div className="space-y-4">
+        <p className="text-center text-base font-medium tabular-nums text-foreground">
+          <span className="text-muted-foreground">Hole </span>
+          <span className="font-mono text-lg font-semibold">{activeHole.hole_number}</span>
+          <span className="text-muted-foreground"> / {holesLength}</span>
+          <span className="mx-2 text-muted-foreground">·</span>
+          <span className="text-muted-foreground">Par </span>
+          <span className="font-mono font-semibold">{activeHole.par}</span>
+          <span className="mx-2 text-muted-foreground">·</span>
+          <span className="font-mono font-semibold">{activeHole.distance_m}</span>
+          <span className="text-muted-foreground"> m</span>
+        </p>
 
         <ScoringPlayerRoster
           scoringParticipants={scoringParticipants}
@@ -191,8 +187,6 @@ export function ActiveHoleScoring({
           onSelectParticipant={setSelectedParticipantId}
           disabled={isSubmitting}
         />
-
-        {scorecardSlot}
       </div>
 
       <div

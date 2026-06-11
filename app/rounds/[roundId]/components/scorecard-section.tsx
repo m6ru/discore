@@ -12,6 +12,7 @@ type Props = {
   obLookup: Map<string, boolean>;
   leaderboardRows: LeaderboardRow[];
   activeHole: HoleRow | null;
+  showTitle?: boolean;
 };
 
 function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
@@ -85,6 +86,7 @@ export function ScorecardSection({
   obLookup,
   leaderboardRows,
   activeHole,
+  showTitle = true,
 }: Props) {
   if (sortedHoles.length === 0) {
     return <p className="text-sm text-muted-foreground">No holes loaded for this layout.</p>;
@@ -96,7 +98,7 @@ export function ScorecardSection({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-semibold tracking-tight">Scorecard</h3>
+      {showTitle ? <h3 className="text-sm font-semibold tracking-tight">Scorecard</h3> : null}
       <div className="overflow-x-auto rounded-lg border">
         <table className="w-max min-w-full border-separate border-spacing-0 text-left text-sm">
           <thead>

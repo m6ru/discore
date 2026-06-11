@@ -31,7 +31,10 @@ import {
 } from "./components/round-complete-actions";
 import { RoundSummaries } from "./components/round-summaries";
 import { ScorecardSection } from "./components/scorecard-section";
-import { RoundHeaderAbandonPortal } from "./components/round-header-abandon-portal";
+import { DraftRoundNameField } from "./components/draft-round-name-field";
+import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
+import { RoundInfoDialog } from "./components/round-info-dialog";
+import { RoundScorecardDialog } from "./components/round-scorecard-dialog";
 import { Button } from "@/components/ui/button";
 import type {
   HoleScoreRow,
@@ -49,11 +52,15 @@ import { cn } from "@/lib/utils";
 
 export function RoundSession({
   roundId,
+  roundName: initialRoundName,
   roundStatus,
   scorerUserId,
   isScorer,
   currentUserId,
   scorerDisplayName,
+  courseName,
+  layoutName,
+  layoutTotalPar,
   initialParticipants,
   initialInvites,
   holes,
@@ -66,7 +73,9 @@ export function RoundSession({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [holeScores, setHoleScores] = useState<HoleScoreRow[]>(initialHoleScores);
-  const [scorecardExpanded, setScorecardExpanded] = useState(false);
+  const [roundName, setRoundName] = useState<string | null>(initialRoundName);
+  const [scorecardOpen, setScorecardOpen] = useState(false);
+  const [roundInfoOpen, setRoundInfoOpen] = useState(false);
   const [isEditingScores, setIsEditingScores] = useState(false);
   const ignoreRenderNow: Dispatch<SetStateAction<number>> = useCallback(() => {}, []);
   const ignoreLastSavedEvent: Dispatch<SetStateAction<LastSavedEvent | null>> =
@@ -156,6 +165,11 @@ export function RoundSession({
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sync server prop into client state
     setLiveRoundStatus(roundStatus);
   }, [roundStatus]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync server prop into client state
+    setRoundName(initialRoundName);
+  }, [initialRoundName]);
 
   const unifiedPlayers = useMemo(
     () =>
@@ -283,7 +297,7 @@ export function RoundSession({
     [labelByParticipantId]
   );
 
-  const scorecardSection = (
+  const renderScorecard = (showTitle: boolean) => (
     <ScorecardSection
       roundStatus={liveRoundStatus}
       sortedHoles={sortedHoles}
@@ -291,8 +305,11 @@ export function RoundSession({
       obLookup={obLookup}
       leaderboardRows={leaderboardRows}
       activeHole={activeHole}
+      showTitle={showTitle}
     />
   );
+
+  const showHeaderMenu = isScorer && (showStickySaveBar || showCompletionUI);
 
   return (
     <section
@@ -308,11 +325,30 @@ export function RoundSession({
             : undefined
       }
     >
-      <RoundHeaderAbandonPortal
-        show={showStickySaveBar || showCompletionUI}
+      <RoundHeaderMenuPortal
+        show={showHeaderMenu}
         isSubmitting={isSubmitting}
         isTransitioning={isTransitioning}
         onAbandonRound={() => void onAbandonRound()}
+        onViewScorecard={() => setScorecardOpen(true)}
+        onViewInfo={() => setRoundInfoOpen(true)}
+        scorecardDialog={
+          <RoundScorecardDialog open={scorecardOpen} onOpenChange={setScorecardOpen}>
+            {renderScorecard(false)}
+          </RoundScorecardDialog>
+        }
+        infoDialog={
+          <RoundInfoDialog
+            open={roundInfoOpen}
+            onOpenChange={setRoundInfoOpen}
+            roundName={roundName}
+            courseName={courseName}
+            layoutName={layoutName}
+            holeCount={holes.length}
+            layoutTotalPar={layoutTotalPar}
+            roundStatus={liveRoundStatus}
+          />
+        }
       />
       {liveRoundStatus === "draft" ? (
         <>
@@ -327,6 +363,13 @@ export function RoundSession({
 
       {liveRoundStatus === "draft" && isScorer ? (
         <>
+          <DraftRoundNameField
+            supabase={supabase}
+            roundId={roundId}
+            initialName={roundName}
+            disabled={isSubmitting || isTransitioning}
+            onNameChange={setRoundName}
+          />
           <DraftParticipantForm
             participantName={participantName}
             isSubmitting={isSubmitting}
@@ -399,21 +442,6 @@ export function RoundSession({
               onObToggle={setObDraft}
               onPreviousHole={onPreviousHole}
               onSaveAndAdvanceHole={onSaveAndAdvanceHole}
-              scorecardSlot={
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="h-auto p-0 text-sm"
-                      onClick={() => setScorecardExpanded((open) => !open)}
-                    >
-                      {scorecardExpanded ? "Hide scorecard" : "View scorecard"}
-                    </Button>
-                  </div>
-                  {scorecardExpanded ? scorecardSection : null}
-                </div>
-              }
             />
             </>
           ) : (
@@ -430,7 +458,7 @@ export function RoundSession({
         />
       ) : null}
 
-      {showScorecardAtBottom ? scorecardSection : null}
+      {showScorecardAtBottom ? renderScorecard(true) : null}
 
       {showCompletionUI ? (
         <RoundCompleteActions

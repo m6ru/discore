@@ -85,10 +85,23 @@ export async function findInProgressRoundId(
   return data?.id ?? null;
 }
 
+export async function updateRoundName(
+  supabase: Client,
+  roundId: string,
+  name: string | null
+) {
+  const trimmed = name?.trim() ?? "";
+  return supabase
+    .from("rounds")
+    .update({ name: trimmed.length > 0 ? trimmed : null })
+    .eq("id", roundId);
+}
+
 export async function createDraftRound(
   supabase: Client,
   layoutId: string,
-  scorerId: string
+  scorerId: string,
+  name?: string | null
 ): Promise<CreateDraftRoundResult> {
   if (!layoutId) {
     return { ok: false, message: "Missing layout selection" };
@@ -103,12 +116,14 @@ export async function createDraftRound(
     };
   }
 
+  const trimmedName = name?.trim() ?? "";
   const roundId = crypto.randomUUID();
   const { error: insertError } = await supabase.from("rounds").insert({
     id: roundId,
     layout_id: layoutId,
     scorer_id: scorerId,
     status: "draft",
+    name: trimmedName.length > 0 ? trimmedName : null,
   });
 
   if (insertError) {
