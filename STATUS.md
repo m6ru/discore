@@ -1,6 +1,6 @@
 # Discore — Status
 
-> Read [BLUEPRINT.md](BLUEPRINT.md) first for non-negotiable rules, then this file for what is built and what is next. When working on the Phase 4 UX/UI overhaul, also read [SPRINT-PHASE-4.md](SPRINT-PHASE-4.md) — it is the single source of truth for that effort.
+> Read [BLUEPRINT.md](BLUEPRINT.md) first, then this file. For UI/UX work, also read [UI-ROADMAP.md](UI-ROADMAP.md) and [DESIGN-PATTERNS.md](DESIGN-PATTERNS.md) when touching screens.
 
 Update this file when behaviour or priorities change. Do not duplicate operational detail in the Blueprint.
 
@@ -32,7 +32,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 **Known blockers before field test:**
 
-- Serwist service worker is not wired (`next.config.ts`) — use a normal browser tab; install-to-home-screen is weak until Phase 4.
+- PWA install optional for now — browser tab is fine for field tests.
 
 **Profile discoverability (done):** `profiles.visibility` removed; authenticated users can read all profiles for invite/search. Migration `20260521120000_drop_profiles_visibility.sql` on remote.
 
@@ -49,7 +49,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 | **1** Infrastructure | Done | Next.js, Supabase clients, middleware; minimal `manifest.ts`; SW not configured |
 | **2** Schema & seeding | Done | RLS, 17 migrations, 18 seeded layouts |
 | **3** Core scoring | **Done (field MVP)** | Draft/active/complete, invites, scorer writes, observer Realtime (consolidated refresh + visibility resync) |
-| **4** PWA & polish | **In progress** | shadcn/ui primitives + emerald theme rolling out screen by screen; Serwist + icons pending |
+| **4** UI bootstrap | **Done** | shadcn, theme, scorer round UX. Ongoing UI consistency → [UI-ROADMAP.md](UI-ROADMAP.md). PWA install deferred. |
 | **5** History & stats | Partial | `/rounds` list exists; richer stats not built |
 | **6** Ratings & tournaments | Not started | By design until adoption warrants |
 
@@ -62,7 +62,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 - **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); **course-first browse** at `/courses` and `/courses/[slug]` (hub search + Start round funnel); GPS nearby-sort deferred
 - **Rounds:** create draft → invite registered users or add guests → start when no pending invites
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
-- **Active round:** OB toggle, leaderboard, front-9 / final summaries, back-hole navigation, abandon
+- **Active round:** Single-player stepper + selectable roster (hole / total / vs par), OB toggle, header menu (scorecard dialog, round info, abandon), optional **round name** (default "Practice round"), results pool view, end-of-round confirm deck, front-9 / final summaries, hole navigation
 - **Observer:** read-only UI + Realtime scorecard / “last saved”; round status and draft invite/participant sync via `refreshRoundMeta`
 - **History:** `app/rounds/page.tsx` for past rounds
 - **Code layout:** `lib/scoring` (pure math), `lib/rounds` + `lib/profiles` (actions), `app/rounds/[roundId]/` (orchestrator, hooks, components)
@@ -77,13 +77,14 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 2. ~~**Deploy**~~ — Done (Vercel + Supabase Auth URLs).
 3. ~~**Pre-flight + Realtime**~~ — Done (publication + consolidated round/hub subscriptions).
 4. ~~**Backbone refactor**~~ — Done (typed Supabase factories, strict `RoundStatus`, `/lib/scoring` extracted + tested, scorer-as-participant trigger, signup-name trigger).
-5. **UX/UI overhaul (Phase 4)** — Multi-chat frontend project, **not** a quick sprint. Step-by-step plan, per-step decision points, and reusable agent role prompt all live in [`SPRINT-PHASE-4.md`](SPRINT-PHASE-4.md). One chat per step; user drives every design decision.
-6. **Field test on course (post-Phase 4)** — Re-run on course after polish lands; capture any remaining friction.
+5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). Scorer round is the visual reference; other screens on demand.
+6. **Field test on course** — Re-run when ready; capture friction on course.
 
 ---
 
 ## Later / deferred
 
+- **PWA:** Serwist + icons when install-to-homescreen matters.
 - **Slice D-guest:** Anonymous round local-only → claim on signup (Option A below).
 - **Advanced stats:** `fairway_hit`, C1/C2 counters, scrambling — per-round opt-in toggle after D-guest.
 - **Phase 5:** Richer per-player stats and comparisons.
@@ -143,7 +144,7 @@ Do not reintroduce `utils/supabase/*`.
 - Project ref: `uxvrnvsgqyctpxjiziyp`
 - Per machine: `supabase login`, `supabase link --project-ref uxvrnvsgqyctpxjiziyp`
 
-### Migrations (20)
+### Migrations (21)
 
 1. `20260420185000_initial_schema.sql`
 2. `20260420185100_rls_policies.sql`
@@ -165,8 +166,9 @@ Do not reintroduce `utils/supabase/*`.
 18. `20260527190000_ensure_scorer_participant_trigger.sql`
 19. `20260527190100_realtime_publication_membership.sql`
 20. `20260527190200_signup_requires_first_last_name.sql`
+21. `20260611180000_rounds_name.sql`
 
-Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds`, `round_participants`, `round_invitations`, `hole_scores`. RLS on all.
+Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds` (incl. optional `name`), `round_participants`, `round_invitations`, `hole_scores`. RLS on all.
 
 **Realtime publication:** Enforced by `20260527190100_realtime_publication_membership.sql` (idempotent — adds any of `hole_scores`, `round_invitations`, `round_participants`, `rounds` that are not already in the publication).
 
@@ -179,7 +181,8 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Scoring math | `lib/scoring/{types,stats}.ts` |
 | Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows}.ts` |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
-| Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` |
+| Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` (scorecard dialog, header menu, results, completion actions) |
+| Round display name | `lib/rounds/round-display-name.ts`, `draft-round-name-field.tsx`, `create-round-form.tsx` |
 | Hub / invites | `app/page.tsx`, `app/home-invites.tsx`, `app/home-course-search.tsx` |
 | Courses browse | `app/courses/`, `lib/courses/`, `components/courses/course-search-dropdown.tsx` |
 | Draft round create | `lib/rounds/round-draft-actions.ts` (`createDraftRound`), `components/rounds/start-round-button.tsx` |
