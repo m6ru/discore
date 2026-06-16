@@ -18,7 +18,7 @@
     "is_active": true
   },
   "holes": [
-    { "hole_number": 1, "par": 4, "distance_m": 163, "notes": null, "hole_map_url": null },
+    { "hole_number": 1, "par": 4, "distance_m": 163, "notes": "OB vasakul, paremal ja korvi taga - Tavaline OB reegel. Lisandub +1 vise tulemusele.", "hole_map_url": null },
     { "hole_number": 2, "par": 3, "distance_m": 88, "notes": null, "hole_map_url": null },
     { "hole_number": 3, "par": 4, "distance_m": 145, "notes": null, "hole_map_url": null },
     { "hole_number": 4, "par": 3, "distance_m": 99, "notes": null, "hole_map_url": null },
