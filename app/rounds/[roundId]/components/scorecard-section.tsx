@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { formatVsPar, segmentPlayerStats } from "@/lib/scoring/stats";
 import { holeScoreTone } from "@/lib/scoring/scorecard-display";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
@@ -96,6 +99,8 @@ export function ScorecardSection({
   showTitle = true,
   showBorder = true,
 }: Props) {
+  const [expandedParticipantId, setExpandedParticipantId] = useState<string | null>(null);
+
   if (sortedHoles.length === 0) {
     return <p className="text-sm text-muted-foreground">No holes loaded for this layout.</p>;
   }
@@ -194,6 +199,16 @@ export function ScorecardSection({
                 const vsParLabel = full.thru > 0 ? formatVsPar(full.vsPar) : "—";
                 const thrLabel = formatThru(full.thru, holeCount);
                 const totalLabel = full.thru > 0 ? full.totalStrokes : "—";
+                const isNameExpanded = expandedParticipantId === row.participantId;
+                const nameLabel =
+                  rank !== null ? (
+                    <>
+                      <span className="text-muted-foreground tabular-nums">{rank}.</span>{" "}
+                      {row.label}
+                    </>
+                  ) : (
+                    row.label
+                  );
 
                 return (
                   <tr
@@ -202,18 +217,35 @@ export function ScorecardSection({
                     <td
                       className={cn(
                         stickyCol("player", "body"),
-                        "min-w-[7rem] max-w-[7rem] px-1.5 py-1 text-[11px] font-medium leading-snug whitespace-normal break-words text-foreground"
+                        "relative max-w-[7rem] min-w-[7rem] px-1.5 py-1 text-[11px] font-medium text-foreground",
+                        isNameExpanded && "z-30"
                       )}
-                      title={row.label}
                     >
-                      {rank !== null ? (
-                        <>
-                          <span className="text-muted-foreground tabular-nums">{rank}.</span>{" "}
-                          {row.label}
-                        </>
-                      ) : (
-                        row.label
-                      )}
+                      <button
+                        type="button"
+                        className={cn(
+                          "w-full min-w-0 text-left",
+                          isNameExpanded ? "invisible" : "truncate"
+                        )}
+                        aria-expanded={isNameExpanded}
+                        onClick={() =>
+                          setExpandedParticipantId((current) =>
+                            current === row.participantId ? null : row.participantId
+                          )
+                        }
+                      >
+                        {nameLabel}
+                      </button>
+                      {isNameExpanded ? (
+                        <button
+                          type="button"
+                          className="absolute inset-y-0 left-0 z-40 flex w-max max-w-[min(14rem,70vw)] items-center border border-border bg-background px-1.5 text-left text-[11px] font-medium whitespace-nowrap shadow-sm"
+                          aria-expanded
+                          onClick={() => setExpandedParticipantId(null)}
+                        >
+                          {nameLabel}
+                        </button>
+                      ) : null}
                     </td>
                     <td className={cn(stickyCol("vsPar", "body"), summaryColClass)}>
                       {vsParLabel}
