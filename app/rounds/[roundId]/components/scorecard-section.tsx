@@ -14,8 +14,6 @@ type Props = {
   leaderboardRows: LeaderboardRow[];
   activeHole: HoleRow | null;
   showTitle?: boolean;
-  /** Drop outer card chrome — for full-width scorecard overlay. */
-  embedded?: boolean;
 };
 
 function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
@@ -38,12 +36,13 @@ function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
 const stickyShadow = "shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)]";
 
 const holeColWidth = "w-[1.25rem] min-w-[1.25rem] max-w-[1.25rem]";
+const stickySummaryColWidth = "w-[1.3125rem] min-w-[1.3125rem] max-w-[1.3125rem]";
 
 /** Fixed column widths — `left` offsets must match these exactly. */
 const STICKY_COL = {
   player: { width: "w-[7rem]", left: "left-0" },
-  vsPar: { width: holeColWidth, left: "left-[7rem]" },
-  thr: { width: holeColWidth, left: "left-[8.25rem]" },
+  vsPar: { width: stickySummaryColWidth, left: "left-[7rem]" },
+  thr: { width: stickySummaryColWidth, left: "left-[8.3125rem]" },
 } as const;
 
 function stickyCol(
@@ -94,7 +93,6 @@ export function ScorecardSection({
   leaderboardRows,
   activeHole,
   showTitle = true,
-  embedded = false,
 }: Props) {
   if (sortedHoles.length === 0) {
     return <p className="text-sm text-muted-foreground">No holes loaded for this layout.</p>;
@@ -105,11 +103,11 @@ export function ScorecardSection({
     "px-0 py-1 text-center text-[11px] font-medium text-muted-foreground";
 
   return (
-    <div className={embedded ? "min-h-0" : "space-y-3"}>
-      {showTitle && !embedded ? (
+    <div className="space-y-3">
+      {showTitle ? (
         <h3 className={sectionHeadingClassName}>Scorecard</h3>
       ) : null}
-      <div className={cn("overflow-x-auto", !embedded && "rounded-lg border")}>
+      <div className="overflow-x-auto rounded-lg border">
         <table className="w-max min-w-full border-separate border-spacing-0 text-left text-sm">
           <thead>
             <tr className="bg-muted/40">
