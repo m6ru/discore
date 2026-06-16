@@ -14,6 +14,7 @@ type Props = {
   leaderboardRows: LeaderboardRow[];
   activeHole: HoleRow | null;
   showTitle?: boolean;
+  showBorder?: boolean;
 };
 
 function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
@@ -70,7 +71,7 @@ function formatThru(thru: number, holeCount: number): string {
 }
 
 const holeColClass =
-  `relative z-0 ${holeColWidth} border-b px-0 py-0.5 text-center font-mono text-[11px] tabular-nums`;
+  `relative z-0 ${holeColWidth} border-b px-0 py-0.5 text-center font-mono text-[12px] tabular-nums`;
 
 const summaryColClass =
   "border-b px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
@@ -93,6 +94,7 @@ export function ScorecardSection({
   leaderboardRows,
   activeHole,
   showTitle = true,
+  showBorder = true,
 }: Props) {
   if (sortedHoles.length === 0) {
     return <p className="text-sm text-muted-foreground">No holes loaded for this layout.</p>;
@@ -107,7 +109,7 @@ export function ScorecardSection({
       {showTitle ? (
         <h3 className={sectionHeadingClassName}>Scorecard</h3>
       ) : null}
-      <div className="overflow-x-auto rounded-lg border">
+      <div className={cn("overflow-x-auto", showBorder && "rounded-lg border")}>
         <table className="w-max min-w-full border-separate border-spacing-0 text-left text-sm">
           <thead>
             <tr className="bg-muted/40">
@@ -165,7 +167,7 @@ export function ScorecardSection({
                     className={cn(
                       "relative z-0",
                       holeColWidth,
-                      "border-b px-0 py-0 text-center text-[10px] font-medium tabular-nums text-muted-foreground",
+                      "border-b px-0 py-0 text-center text-[12px] font-medium tabular-nums text-muted-foreground",
                       isCurrent ? "bg-primary/10" : "bg-muted/30"
                     )}
                   >

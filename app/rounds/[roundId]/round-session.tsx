@@ -405,7 +405,7 @@ export function RoundSession({
     isObChecked,
   ]);
 
-  const renderScorecard = (options: { showTitle: boolean }) => {
+  const renderScorecard = (options: { showTitle: boolean; showBorder?: boolean }) => {
     const displayScoreLookup = buildDisplayScoreLookup();
     const displayLeaderboardRows = buildLeaderboard(
       scoringParticipants,
@@ -423,6 +423,7 @@ export function RoundSession({
         leaderboardRows={displayLeaderboardRows}
         activeHole={scorecardActiveHole}
         showTitle={options.showTitle}
+        showBorder={options.showBorder}
       />
     );
   };
@@ -468,7 +469,7 @@ export function RoundSession({
         onViewInfo={() => setRoundInfoOpen(true)}
         scorecardDialog={
           <RoundScorecardDialog open={scorecardOpen} onOpenChange={setScorecardOpen}>
-            {renderScorecard({ showTitle: false })}
+            {renderScorecard({ showTitle: false, showBorder: false })}
           </RoundScorecardDialog>
         }
         infoDialog={
