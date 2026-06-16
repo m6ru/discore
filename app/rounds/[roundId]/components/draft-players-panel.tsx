@@ -103,7 +103,7 @@ export function DraftPlayersPanel({
               className="min-h-11 rounded-none border-0 bg-transparent px-3 shadow-none focus-visible:ring-0"
               aria-label="Player name"
             />
-            {showSearchHints ? (
+            {showSearchHints && !selectedProfile ? (
               <div className="border-t">
                 {isSearching ? (
                   <p className="px-3 py-2 text-xs text-muted-foreground">Searching...</p>
@@ -114,10 +114,7 @@ export function DraftPlayersPanel({
                         <button
                           type="button"
                           onClick={() => onSelectProfile(profile)}
-                          className={cn(
-                            "w-full px-3 py-2 text-left text-sm hover:bg-muted/50",
-                            selectedProfile?.id === profile.id && "bg-muted"
-                          )}
+                          className="w-full px-3 py-2 text-left text-sm hover:bg-muted/50"
                         >
                           {profile.display_name}
                         </button>
@@ -130,6 +127,10 @@ export function DraftPlayersPanel({
                   </p>
                 )}
               </div>
+            ) : selectedProfile ? (
+              <p className="border-t px-3 py-2 text-xs text-muted-foreground">
+                Registered player selected.
+              </p>
             ) : null}
           </div>
         </div>
@@ -176,7 +177,7 @@ export function DraftPlayersPanel({
           onClick={onShowAddForm}
           disabled={isSubmitting}
         >
-          Add another player
+          + Add another player
         </button>
       ) : null}
       </div>

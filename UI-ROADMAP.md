@@ -23,9 +23,9 @@ Record decisions that change behaviour in **STATUS.md**. Optional one-liner unde
 
 Work outward from the round you like:
 
-0. Active scorer round — **reference, don't break**
-1. Draft → start (same route) — **done:** flat roster, add-player toggle, starting-hole picker, optional collapsed name, fixed bottom Start deck
-2. Observer during round
+0. Active scorer round — **reference, don't break**; scorecard polish done (live Par/Thr/Total, double-bogey tone, tighter columns, `sectionHeadingClassName`)
+1. Draft → start (same route) — **done:** unified Players panel, + add flow, starting-hole picker, editable header title, X delete draft, fixed Start deck; no draft scorecard
+2. Observer during round — **partial:** `ActiveHoleStatus` header + live scorecard; full observer UX not shaped yet
 3. End of round / completed
 4. Home
 5. Courses

@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionDialog } from "./confirm-action-dialog";
 import { ROUND_HEADER_ACTIONS_ID } from "./round-header-actions-slot";
@@ -42,11 +43,12 @@ export function DraftHeaderActionsPortal({
         <Button
           type="button"
           variant="ghost"
-          size="sm"
-          className="h-8 px-2 text-xs text-muted-foreground"
+          size="icon"
+          className="size-9 shrink-0 text-muted-foreground"
           disabled={isTransitioning}
+          aria-label="Delete draft"
         >
-          Delete draft
+          <X className="size-5" strokeWidth={2} aria-hidden />
         </Button>
       }
     />,

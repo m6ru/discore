@@ -60,10 +60,10 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 - **Hub** (`app/page.tsx`): resume active rounds, pending invites, start round / history / account
 - **Auth & profile** (`app/auth`, `lib/profiles`): sign-in, save profile, `display_name` = first + last (Option A for labels)
 - **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); **course-first browse** at `/courses` and `/courses/[slug]` (hub search + Start round funnel); GPS nearby-sort deferred
-- **Rounds:** create draft → invite registered users or add guests → start when no pending invites
+- **Rounds:** create draft → invite registered users or add guests → start when no pending invites; **draft setup UI** at `/rounds/[id]` (unified roster, starting-hole picker, editable title, invite/guest add)
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
-- **Active round:** Single-player stepper + selectable roster (hole / total / vs par), OB toggle, header menu (scorecard dialog, round info, abandon), optional **round name** (default "Practice round"), configurable **starting hole** (play order wraps through full layout), results pool view, end-of-round confirm deck, front-9 / final summaries, hole navigation
-- **Observer:** read-only UI + Realtime scorecard / “last saved”; round status and draft invite/participant sync via `refreshRoundMeta`
+- **Active round:** Single-player stepper + selectable roster (hole / total / vs par), OB toggle, header menu (scorecard dialog, round info, abandon), optional **round name** (default "Practice round"), configurable **starting hole** (play order wraps through full layout), live scorecard (Par/Thr/Total + draft strokes for scorer), results pool view, end-of-round confirm deck, front-9 / final summaries, hole navigation
+- **Observer:** read-only UI + Realtime scorecard; `ActiveHoleStatus` (hole / par / distance); score-derived current hole on scorecard; round status and draft invite/participant sync via `refreshRoundMeta`
 - **History:** `app/rounds/page.tsx` for past rounds
 - **Code layout:** `lib/scoring` (pure math), `lib/rounds` + `lib/profiles` (actions), `app/rounds/[roundId]/` (orchestrator, hooks, components)
 
@@ -77,7 +77,7 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 2. ~~**Deploy**~~ — Done (Vercel + Supabase Auth URLs).
 3. ~~**Pre-flight + Realtime**~~ — Done (publication + consolidated round/hub subscriptions).
 4. ~~**Backbone refactor**~~ — Done (typed Supabase factories, strict `RoundStatus`, `/lib/scoring` extracted + tested, scorer-as-participant trigger, signup-name trigger).
-5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). Scorer round is the visual reference; other screens on demand.
+5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). Draft setup + active scorecard polish done; next: observer or end-of-round.
 6. **Field test on course** — Re-run when ready; capture friction on course.
 
 ---
@@ -181,8 +181,10 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Scoring math | `lib/scoring/{types,stats}.ts` |
 | Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows}.ts` |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
-| Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` (scorecard dialog, header menu, results, completion actions) |
-| Round display name | `lib/rounds/round-display-name.ts`, `draft-round-name-field.tsx`, `create-round-form.tsx` |
+| Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` (scorecard, draft setup deck, active scoring, results, completion) |
+| Round display name | `lib/rounds/round-display-name.ts`, `draft-round-title-portal.tsx`, `create-round-form.tsx` |
+| Draft setup UI | `draft-players-panel.tsx`, `draft-setup-deck.tsx`, `draft-starting-hole-field.tsx`, `lib/scoring/hole-order.ts` |
+| Section headings | `lib/ui/section-heading.ts` |
 | Hub / invites | `app/page.tsx`, `app/home-invites.tsx`, `app/home-course-search.tsx` |
 | Courses browse | `app/courses/`, `lib/courses/`, `components/courses/course-search-dropdown.tsx` |
 | Draft round create | `lib/rounds/round-draft-actions.ts` (`createDraftRound`), `components/rounds/start-round-button.tsx` |
