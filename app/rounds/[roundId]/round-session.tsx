@@ -80,6 +80,7 @@ export function RoundSession({
   const [roundName, setRoundName] = useState<string | null>(initialRoundName);
   const [startingHole, setStartingHole] = useState(initialStartingHole);
   const [showAddPlayerForm, setShowAddPlayerForm] = useState(false);
+  const [scoresHidden, setScoresHidden] = useState(false);
   const [scorecardOpen, setScorecardOpen] = useState(false);
   const [roundInfoOpen, setRoundInfoOpen] = useState(false);
   const [isEditingScores, setIsEditingScores] = useState(false);
@@ -445,6 +446,8 @@ export function RoundSession({
         show={showHeaderMenu}
         isSubmitting={isSubmitting}
         isTransitioning={isTransitioning}
+        scoresHidden={scoresHidden}
+        onToggleScoresHidden={() => setScoresHidden((hidden) => !hidden)}
         onAbandonRound={() => void onAbandonRound()}
         onViewScorecard={() => setScorecardOpen(true)}
         onViewInfo={() => setRoundInfoOpen(true)}
@@ -559,6 +562,7 @@ export function RoundSession({
               onObToggle={setObDraft}
               onPreviousHole={onPreviousHole}
               onSaveAndAdvanceHole={onSaveAndAdvanceHole}
+              hideRunningScores={scoresHidden}
             />
             </>
           ) : (

@@ -31,6 +31,8 @@ type Props = {
   show: boolean;
   isSubmitting: boolean;
   isTransitioning: boolean;
+  scoresHidden: boolean;
+  onToggleScoresHidden: () => void;
   onAbandonRound: () => void;
   onViewScorecard: () => void;
   onViewInfo: () => void;
@@ -42,6 +44,8 @@ export function RoundHeaderMenuPortal({
   show,
   isSubmitting,
   isTransitioning,
+  scoresHidden,
+  onToggleScoresHidden,
   onAbandonRound,
   onViewScorecard,
   onViewInfo,
@@ -78,6 +82,9 @@ export function RoundHeaderMenuPortal({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem onClick={onViewScorecard}>View scorecard</DropdownMenuItem>
+          <DropdownMenuItem onClick={onToggleScoresHidden}>
+            {scoresHidden ? "Show scores" : "Hide scores"}
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={onViewInfo}>See info</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem

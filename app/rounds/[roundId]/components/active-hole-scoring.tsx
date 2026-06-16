@@ -29,6 +29,7 @@ type Props = {
   onObToggle: (participantId: string, checked: boolean) => void;
   onPreviousHole: () => void;
   onSaveAndAdvanceHole: () => void;
+  hideRunningScores?: boolean;
 };
 
 function parseStrokeValue(raw: string): number | null {
@@ -138,6 +139,7 @@ export function ActiveHoleScoring({
   onObToggle,
   onPreviousHole,
   onSaveAndAdvanceHole,
+  hideRunningScores = false,
 }: Props) {
   const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(
     () => firstParticipantWithoutHoleScore(scoringParticipants, getStrokeInputValue)
@@ -176,6 +178,7 @@ export function ActiveHoleScoring({
           isObChecked={isObChecked}
           onSelectParticipant={setSelectedParticipantId}
           disabled={isSubmitting}
+          hideRunningScores={hideRunningScores}
         />
       </div>
 

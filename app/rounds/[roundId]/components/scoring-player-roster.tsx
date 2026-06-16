@@ -12,6 +12,7 @@ type Props = {
   isObChecked: (participantId: string) => boolean;
   onSelectParticipant: (participantId: string) => void;
   disabled?: boolean;
+  hideRunningScores?: boolean;
 };
 
 export function ScoringPlayerRoster({
@@ -24,6 +25,7 @@ export function ScoringPlayerRoster({
   isObChecked,
   onSelectParticipant,
   disabled = false,
+  hideRunningScores = false,
 }: Props) {
   const statsById = new Map(leaderboardRows.map((row) => [row.participantId, row]));
 
@@ -75,19 +77,23 @@ export function ScoringPlayerRoster({
               >
                 {hasHoleScore ? holeRaw : "—"}
               </span>
-              <span className="w-10 shrink-0 text-right font-mono text-sm font-semibold tabular-nums">
-                {stats && stats.thru > 0 ? stats.totalStrokes : "—"}
-              </span>
-              <span
-                className={cn(
-                  "w-10 shrink-0 text-right font-mono text-sm font-semibold tabular-nums",
-                  stats && stats.thru > 0 && stats.vsPar < 0 && "text-primary",
-                  stats && stats.thru > 0 && stats.vsPar > 0 && "text-destructive",
-                  stats && stats.thru > 0 && stats.vsPar === 0 && "text-muted-foreground"
-                )}
-              >
-                {vsParLabel}
-              </span>
+              {!hideRunningScores ? (
+                <>
+                  <span className="w-10 shrink-0 text-right font-mono text-sm font-semibold tabular-nums">
+                    {stats && stats.thru > 0 ? stats.totalStrokes : "—"}
+                  </span>
+                  <span
+                    className={cn(
+                      "w-10 shrink-0 text-right font-mono text-sm font-semibold tabular-nums",
+                      stats && stats.thru > 0 && stats.vsPar < 0 && "text-primary",
+                      stats && stats.thru > 0 && stats.vsPar > 0 && "text-destructive",
+                      stats && stats.thru > 0 && stats.vsPar === 0 && "text-muted-foreground"
+                    )}
+                  >
+                    {vsParLabel}
+                  </span>
+                </>
+              ) : null}
             </button>
           </li>
         );
