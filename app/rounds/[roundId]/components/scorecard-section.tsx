@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ChevronRight } from "lucide-react";
 import { formatVsPar, segmentPlayerStats } from "@/lib/scoring/stats";
 import { holeScoreTone } from "@/lib/scoring/scorecard-display";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
@@ -42,18 +43,20 @@ const stickyShadow = "shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)]";
 const holeColWidth = "w-[1.25rem] min-w-[1.25rem] max-w-[1.25rem]";
 const stickySummaryColWidth = "w-[1.3125rem] min-w-[1.3125rem] max-w-[1.3125rem]";
 
-/** Fixed column widths — `left` offsets must match these exactly. */
-const STICKY_COL = {
-  player: { width: "w-[7rem]", left: "left-0" },
-  vsPar: { width: stickySummaryColWidth, left: "left-[7rem]" },
-  thr: { width: stickySummaryColWidth, left: "left-[8.3125rem]" },
-} as const;
-
 function stickyCol(
-  column: keyof typeof STICKY_COL,
-  variant: "header" | "body"
+  column: "player" | "vsPar" | "thr",
+  variant: "header" | "body",
+  playerColumnExpanded: boolean
 ): string {
-  const { width, left } = STICKY_COL[column];
+  const playerWidth = playerColumnExpanded ? "w-[12rem]" : "w-[7rem]";
+  const vsParLeft = playerColumnExpanded ? "left-[12rem]" : "left-[7rem]";
+  const thrLeft = playerColumnExpanded ? "left-[13.3125rem]" : "left-[8.3125rem]";
+
+  const width =
+    column === "player" ? playerWidth : stickySummaryColWidth;
+  const left =
+    column === "player" ? "left-0" : column === "vsPar" ? vsParLeft : thrLeft;
+
   return cn(
     "sticky border-r border-b",
     left,
@@ -61,6 +64,12 @@ function stickyCol(
     variant === "header" ? "z-30 bg-muted" : "z-20 bg-background",
     column === "thr" && stickyShadow
   );
+}
+
+function playerColSize(playerColumnExpanded: boolean): string {
+  return playerColumnExpanded
+    ? "min-w-[12rem] max-w-[12rem]"
+    : "min-w-[7rem] max-w-[7rem]";
 }
 
 function formatThru(thru: number, holeCount: number): string {
@@ -99,7 +108,55 @@ export function ScorecardSection({
   showTitle = true,
   showBorder = true,
 }: Props) {
-  const [expandedParticipantId, setExpandedParticipantId] = useState<string | null>(null);
+  const [playerColumnExpanded, setPlayerColumnExpanded] = useState(false);
+  const [hasTruncatedNames, setHasTruncatedNames] = useState(false);
+  const tbodyRef = useRef<HTMLTableSectionElement>(null);
+
+  useLayoutEffect(() => {
+    if (playerColumnExpanded) {
+      return;
+    }
+
+    const measure = () => {
+      const cells = tbodyRef.current?.querySelectorAll("[data-scorecard-player-name]");
+      if (!cells?.length) {
+        setHasTruncatedNames(false);
+        return;
+      }
+      let truncated = false;
+      for (const cell of cells) {
+        if (cell.scrollWidth > cell.clientWidth + 1) {
+          truncated = true;
+          break;
+        }
+      }
+      setHasTruncatedNames(truncated);
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [playerColumnExpanded, leaderboardRows]);
+
+  useEffect(() => {
+    if (!playerColumnExpanded) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+      if (target.closest("[data-scorecard-player-column]")) {
+        return;
+      }
+      setPlayerColumnExpanded(false);
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [playerColumnExpanded]);
 
   if (sortedHoles.length === 0) {
     return <p className="text-sm text-muted-foreground">No holes loaded for this layout.</p>;
@@ -120,23 +177,51 @@ export function ScorecardSection({
             <tr className="bg-muted/40">
               <th
                 rowSpan={2}
+                data-scorecard-player-column
                 className={cn(
-                  stickyCol("player", "header"),
-                  "min-w-[7rem] max-w-[7rem] px-1.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
+                  stickyCol("player", "header", playerColumnExpanded),
+                  playerColSize(playerColumnExpanded),
+                  "px-1.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
                 )}
               >
-                Player
+                <button
+                  type="button"
+                  className="flex w-full min-w-0 items-center justify-between gap-2 text-left"
+                  aria-expanded={playerColumnExpanded}
+                  aria-label={
+                    playerColumnExpanded ? "Collapse player names" : "Expand player names"
+                  }
+                  onClick={() => setPlayerColumnExpanded((expanded) => !expanded)}
+                >
+                  <span>Player</span>
+                  <ChevronRight
+                    className={cn(
+                      "size-4 shrink-0 transition-transform",
+                      playerColumnExpanded && "rotate-90",
+                      hasTruncatedNames && !playerColumnExpanded
+                        ? "text-foreground"
+                        : "text-muted-foreground"
+                    )}
+                    aria-hidden
+                  />
+                </button>
               </th>
               <th
                 rowSpan={2}
-                className={cn(stickyCol("vsPar", "header"), summaryHeaderClass)}
+                className={cn(
+                  stickyCol("vsPar", "header", playerColumnExpanded),
+                  summaryHeaderClass
+                )}
                 title="Versus par"
               >
                 Par
               </th>
               <th
                 rowSpan={2}
-                className={cn(stickyCol("thr", "header"), summaryHeaderClass)}
+                className={cn(
+                  stickyCol("thr", "header", playerColumnExpanded),
+                  summaryHeaderClass
+                )}
                 title="Holes completed"
               >
                 Thr
@@ -182,7 +267,7 @@ export function ScorecardSection({
               })}
             </tr>
           </thead>
-          <tbody>
+          <tbody ref={tbodyRef}>
             {leaderboardRows.length === 0 ? (
               <tr>
                 <td
@@ -199,58 +284,46 @@ export function ScorecardSection({
                 const vsParLabel = full.thru > 0 ? formatVsPar(full.vsPar) : "—";
                 const thrLabel = formatThru(full.thru, holeCount);
                 const totalLabel = full.thru > 0 ? full.totalStrokes : "—";
-                const isNameExpanded = expandedParticipantId === row.participantId;
-                const nameLabel =
-                  rank !== null ? (
-                    <>
-                      <span className="text-muted-foreground tabular-nums">{rank}.</span>{" "}
-                      {row.label}
-                    </>
-                  ) : (
-                    row.label
-                  );
 
                 return (
                   <tr
                     key={`${row.participantId}-${full.thru}-${full.vsPar}-${full.totalStrokes}`}
                   >
                     <td
+                      data-scorecard-player-column
+                      data-scorecard-player-name
                       className={cn(
-                        stickyCol("player", "body"),
-                        "relative max-w-[7rem] min-w-[7rem] px-1.5 py-1 text-[11px] font-medium text-foreground",
-                        isNameExpanded && "z-30"
+                        stickyCol("player", "body", playerColumnExpanded),
+                        playerColSize(playerColumnExpanded),
+                        "px-1.5 py-1 text-[11px] font-medium text-foreground",
+                        playerColumnExpanded ? "whitespace-nowrap" : "truncate"
                       )}
                     >
-                      <button
-                        type="button"
-                        className={cn(
-                          "w-full min-w-0 text-left",
-                          isNameExpanded ? "invisible" : "truncate"
-                        )}
-                        aria-expanded={isNameExpanded}
-                        onClick={() =>
-                          setExpandedParticipantId((current) =>
-                            current === row.participantId ? null : row.participantId
-                          )
-                        }
-                      >
-                        {nameLabel}
-                      </button>
-                      {isNameExpanded ? (
-                        <button
-                          type="button"
-                          className="absolute inset-y-0 left-0 z-40 flex w-max max-w-[min(14rem,70vw)] items-center border border-border bg-background px-1.5 text-left text-[11px] font-medium whitespace-nowrap shadow-sm"
-                          aria-expanded
-                          onClick={() => setExpandedParticipantId(null)}
-                        >
-                          {nameLabel}
-                        </button>
-                      ) : null}
+                      {rank !== null ? (
+                        <>
+                          <span className="text-muted-foreground tabular-nums">{rank}.</span>{" "}
+                          {row.label}
+                        </>
+                      ) : (
+                        row.label
+                      )}
                     </td>
-                    <td className={cn(stickyCol("vsPar", "body"), summaryColClass)}>
+                    <td
+                      className={cn(
+                        stickyCol("vsPar", "body", playerColumnExpanded),
+                        summaryColClass
+                      )}
+                    >
                       {vsParLabel}
                     </td>
-                    <td className={cn(stickyCol("thr", "body"), summaryColClass)}>{thrLabel}</td>
+                    <td
+                      className={cn(
+                        stickyCol("thr", "body", playerColumnExpanded),
+                        summaryColClass
+                      )}
+                    >
+                      {thrLabel}
+                    </td>
                     {sortedHoles.map((hole) => {
                       const key = makeScoreLookupKey(row.participantId, hole.id);
                       const strokes = scoreLookup.get(key);
