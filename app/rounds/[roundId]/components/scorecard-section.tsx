@@ -108,6 +108,17 @@ const endParCellClass =
 const endTotalCellClass =
   "w-7 min-w-[1.75rem] border-b border-r bg-background px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
 
+function scrollActiveHoleIntoView(
+  container: HTMLElement,
+  activeCell: HTMLElement
+): void {
+  const containerRect = container.getBoundingClientRect();
+  const cellLeft =
+    activeCell.getBoundingClientRect().left - containerRect.left + container.scrollLeft;
+  const cellRight = cellLeft + activeCell.offsetWidth;
+  container.scrollLeft = Math.max(0, cellRight - container.clientWidth);
+}
+
 export function ScorecardSection({
   roundStatus,
   sortedHoles,
@@ -125,6 +136,8 @@ export function ScorecardSection({
   );
   const tbodyRef = useRef<HTMLTableSectionElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const activeHoleHeaderRef = useRef<HTMLTableCellElement>(null);
 
   const togglePlayerColumn = () => setPlayerColumnExpanded((expanded) => !expanded);
 
@@ -204,6 +217,25 @@ export function ScorecardSection({
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [playerColumnExpanded]);
 
+  useLayoutEffect(() => {
+    if (roundStatus !== "active" || !activeHole) {
+      return;
+    }
+
+    const scrollActiveHole = () => {
+      const container = scrollContainerRef.current;
+      const cell = activeHoleHeaderRef.current;
+      if (!container || !cell) {
+        return;
+      }
+      scrollActiveHoleIntoView(container, cell);
+    };
+
+    scrollActiveHole();
+    window.addEventListener("resize", scrollActiveHole);
+    return () => window.removeEventListener("resize", scrollActiveHole);
+  }, [roundStatus, activeHole?.id, playerWidthPx, sortedHoles.length]);
+
   if (sortedHoles.length === 0) {
     return <p className="text-sm text-muted-foreground">No holes loaded for this layout.</p>;
   }
@@ -239,7 +271,10 @@ export function ScorecardSection({
           );
         })}
       </div>
-      <div className={cn("overflow-x-auto", showBorder && "rounded-lg border")}>
+      <div
+        ref={scrollContainerRef}
+        className={cn("overflow-x-auto", showBorder && "rounded-lg border")}
+      >
         <table className="w-max min-w-full border-separate border-spacing-0 text-left text-sm">
           <thead>
             <tr className="bg-muted/40">
@@ -315,6 +350,7 @@ export function ScorecardSection({
                 return (
                   <th
                     key={hole.id}
+                    ref={isCurrent ? activeHoleHeaderRef : undefined}
                     className={cn(
                       holeColClass,
                       "font-semibold",

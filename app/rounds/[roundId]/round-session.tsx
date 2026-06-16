@@ -33,7 +33,6 @@ import {
   ROUND_COMPLETE_BOTTOM_INSET,
   RoundCompleteActions,
 } from "./components/round-complete-actions";
-import { RoundSummaries } from "./components/round-summaries";
 import { ScorecardSection } from "./components/scorecard-section";
 import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
 import { RoundInfoDialog } from "./components/round-info-dialog";
@@ -222,10 +221,6 @@ export function RoundSession({
     liveRoundStatus === "active" && !!activeHole && scoringParticipants.length > 0;
 
   const holeIds = useMemo(() => sortedHoles.map((hole) => hole.id), [sortedHoles]);
-  const firstNineHoleIds = useMemo(
-    () => sortedHoles.filter((hole) => hole.hole_number <= 9).map((hole) => hole.id),
-    [sortedHoles]
-  );
 
   const scoreLookup = useMemo(() => {
     const map = new Map<string, number>();
@@ -239,17 +234,11 @@ export function RoundSession({
     () => isSegmentComplete(holeIds, scoringParticipants, scoreLookup),
     [holeIds, scoringParticipants, scoreLookup]
   );
-  const frontNineComplete = useMemo(
-    () => isSegmentComplete(firstNineHoleIds, scoringParticipants, scoreLookup),
-    [firstNineHoleIds, scoringParticipants, scoreLookup]
-  );
 
   const showCompletionUI =
     liveRoundStatus === "active" && isScorer && allScoresComplete && !isEditingScores;
   const showScoringUI =
     liveRoundStatus === "active" && (!allScoresComplete || isEditingScores);
-  const showFrontNineSummary =
-    liveRoundStatus === "active" && !allScoresComplete && frontNineComplete;
 
   useEffect(() => {
     if (!allScoresComplete) {
@@ -534,14 +523,6 @@ export function RoundSession({
           )}
         </div>
       ) : null}
-
-      <RoundSummaries
-        showFrontNineSummary={showFrontNineSummary}
-        scoringParticipants={scoringParticipants}
-        holeScores={holeScores}
-        firstNineHoleIds={firstNineHoleIds}
-        getParticipantLabel={getParticipantLabel}
-      />
 
       {showScoringUI ? (
         <>
