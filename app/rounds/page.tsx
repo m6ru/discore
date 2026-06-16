@@ -13,17 +13,10 @@ import {
   formatStatusLabel,
   statusBadgeVariant,
 } from "@/lib/rounds/format-round-status";
+import { formatRoundDate } from "@/lib/format/round-date";
 
 function formatDate(iso: string | null): string {
-  if (!iso) {
-    return "—";
-  }
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return formatRoundDate(iso) ?? "—";
 }
 
 export default async function RoundsHistoryPage() {

@@ -9,6 +9,7 @@ import {
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
 import { formatRoundDisplayName } from "@/lib/rounds/round-display-name";
 import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
+import { formatRoundDate } from "@/lib/format/round-date";
 import { ROUND_HEADER_ACTIONS_ID, ROUND_HEADER_TITLE_ID } from "./components/round-header-actions-slot";
 import { RoundSession } from "./round-session";
 import type { HoleRow, HoleScoreRow } from "./round-types";
@@ -32,7 +33,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
   const { data: round, error: roundError } = await supabase
     .from("rounds")
     .select(
-      "id, name, status, started_at, scorer_id, layout_id, starting_hole, layouts(name, total_par, total_distance_m, courses(name))"
+      "id, name, status, started_at, completed_at, scorer_id, layout_id, starting_hole, layouts(name, total_par, total_distance_m, courses(name))"
     )
     .eq("id", roundId)
     .maybeSingle();
@@ -92,6 +93,10 @@ export default async function RoundPage({ params }: RoundPageProps) {
 
   const layoutRow = pickOne(round.layouts);
   const courseRow = pickOne(layoutRow?.courses);
+  const completedDateLabel =
+    roundStatus === "completed"
+      ? formatRoundDate(round.completed_at ?? round.started_at)
+      : null;
   const safeParticipants = participants ?? [];
   const isScorer = round.scorer_id === user.id;
   const isRoundParticipant = safeParticipants.some(
@@ -127,6 +132,9 @@ export default async function RoundPage({ params }: RoundPageProps) {
           <span> · </span>
           {layoutRow?.name ?? "Unknown layout"}
         </p>
+        {completedDateLabel ? (
+          <p className="text-sm text-muted-foreground">{completedDateLabel}</p>
+        ) : null}
       </header>
 
       {participantsError ? (

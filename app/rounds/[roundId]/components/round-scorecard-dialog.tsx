@@ -46,7 +46,9 @@ export function RoundScorecardDialog({ open, onOpenChange, children }: Props) {
             </DialogClose>
           </div>
         </header>
-        <div className="min-h-0 flex-1 overflow-auto overscroll-contain">{children}</div>
+        <div className="min-h-0 flex-1 overflow-auto overscroll-contain px-4 pb-4 sm:px-8 sm:pb-6">
+          {children}
+        </div>
       </DialogContent>
     </Dialog>
   );
