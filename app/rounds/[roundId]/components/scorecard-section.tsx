@@ -37,11 +37,13 @@ function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
 
 const stickyShadow = "shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)]";
 
+const holeColWidth = "w-[1.25rem] min-w-[1.25rem] max-w-[1.25rem]";
+
 /** Fixed column widths — `left` offsets must match these exactly. */
 const STICKY_COL = {
-  player: { width: "w-[5.25rem]", left: "left-0" },
-  vsPar: { width: "w-7", left: "left-[5.25rem]" },
-  thr: { width: "w-6", left: "left-[7rem]" },
+  player: { width: "w-[7rem]", left: "left-0" },
+  vsPar: { width: holeColWidth, left: "left-[7rem]" },
+  thr: { width: holeColWidth, left: "left-[8.25rem]" },
 } as const;
 
 function stickyCol(
@@ -69,7 +71,7 @@ function formatThru(thru: number, holeCount: number): string {
 }
 
 const holeColClass =
-  "relative z-0 w-[1.375rem] min-w-[1.375rem] max-w-[1.375rem] border-b px-0 py-0.5 text-center font-mono text-[11px] tabular-nums";
+  `relative z-0 ${holeColWidth} border-b px-0 py-0.5 text-center font-mono text-[11px] tabular-nums`;
 
 const summaryColClass =
   "border-b px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
@@ -115,7 +117,7 @@ export function ScorecardSection({
                 rowSpan={2}
                 className={cn(
                   stickyCol("player", "header"),
-                  "max-w-[5.25rem] px-1.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
+                  "min-w-[7rem] max-w-[7rem] px-1.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
                 )}
               >
                 Player
@@ -163,7 +165,9 @@ export function ScorecardSection({
                   <th
                     key={`par-${hole.id}`}
                     className={cn(
-                      "relative z-0 w-[1.375rem] min-w-[1.375rem] max-w-[1.375rem] border-b px-0 py-0 text-center text-[10px] font-medium tabular-nums text-muted-foreground",
+                      "relative z-0",
+                      holeColWidth,
+                      "border-b px-0 py-0 text-center text-[10px] font-medium tabular-nums text-muted-foreground",
                       isCurrent ? "bg-primary/10" : "bg-muted/30"
                     )}
                   >
@@ -198,8 +202,9 @@ export function ScorecardSection({
                     <td
                       className={cn(
                         stickyCol("player", "body"),
-                        "max-w-[5.25rem] truncate px-1.5 py-1 text-[11px] font-medium text-foreground"
+                        "min-w-[7rem] max-w-[7rem] px-1.5 py-1 text-[11px] font-medium leading-snug whitespace-normal break-words text-foreground"
                       )}
+                      title={row.label}
                     >
                       {rank !== null ? (
                         <>
