@@ -9,3 +9,11 @@ export function formatRoundDate(iso: string | null | undefined): string | null {
     day: "numeric",
   });
 }
+
+/** Prefer completion time; fall back to when the round started. */
+export function formatRoundDisplayDate(
+  completedAt: string | null | undefined,
+  startedAt: string | null | undefined
+): string | null {
+  return formatRoundDate(completedAt ?? startedAt);
+}

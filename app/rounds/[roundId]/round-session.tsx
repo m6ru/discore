@@ -39,6 +39,7 @@ import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
 import { RoundInfoDialog } from "./components/round-info-dialog";
 import { RoundScorecardDialog } from "./components/round-scorecard-dialog";
 import { Button } from "@/components/ui/button";
+import { isFinishedRoundStatus } from "@/lib/rounds/round-status";
 import type {
   HoleScoreRow,
   LastSavedEvent,
@@ -52,7 +53,6 @@ import { useProfileSearch } from "./hooks/use-profile-search";
 import { useRoundLifecycle } from "./hooks/use-round-lifecycle";
 import { useRoundRealtime } from "./hooks/use-round-realtime";
 import { useTabBarVisibilityOverride } from "@/components/layout/tab-bar-visibility";
-import { cn } from "@/lib/utils";
 
 export function RoundSession({
   roundId,
@@ -278,19 +278,14 @@ export function RoundSession({
     liveRoundStatus === "active" && isScorer && canScore && showScoringUI;
 
   const showScorecardAtBottom = !showStickySaveBar && liveRoundStatus !== "draft";
-  const isFlatLayout =
-    liveRoundStatus === "active" ||
-    liveRoundStatus === "draft" ||
-    liveRoundStatus === "completed";
+  const isFinishedRound = isFinishedRoundStatus(liveRoundStatus);
   const showPoolResults =
+    isFinishedRound ||
     (liveRoundStatus === "active" &&
       isScorer &&
-      (showCompletionUI || !showStickySaveBar)) ||
-    liveRoundStatus === "completed";
-  const showAbandonedResults =
-    liveRoundStatus === "abandoned" && !showStickySaveBar;
+      (showCompletionUI || !showStickySaveBar));
 
-  useTabBarVisibilityOverride(!isScorer || liveRoundStatus === "completed");
+  useTabBarVisibilityOverride(!isScorer || isFinishedRound);
 
   const teePositionByParticipantId = useMemo(
     () =>
@@ -446,10 +441,7 @@ export function RoundSession({
         onDeleteDraft={() => void onDeleteDraft()}
       />
     <section
-      className={cn(
-        "space-y-4",
-        !isFlatLayout && "rounded-lg border p-4"
-      )}
+      className="space-y-4"
       style={
         showStickySaveBar
           ? { paddingBottom: ACTIVE_SCORING_BOTTOM_INSET }
@@ -594,7 +586,7 @@ export function RoundSession({
         </>
       ) : null}
 
-      {showPoolResults || showAbandonedResults ? (
+      {showPoolResults ? (
         <RoundResults
           scoringParticipants={scoringParticipants}
           leaderboardByParticipantId={leaderboardByParticipantId}

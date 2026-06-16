@@ -128,6 +128,8 @@ export function ScorecardSection({
 
   const togglePlayerColumn = () => setPlayerColumnExpanded((expanded) => !expanded);
 
+  const playerColumnExpandable = hasTruncatedNames || playerColumnExpanded;
+
   const playerWidthPx = playerColumnExpanded
     ? expandedPlayerWidthPx
     : COLLAPSED_PLAYER_WIDTH_PX;
@@ -244,41 +246,46 @@ export function ScorecardSection({
               <th
                 rowSpan={2}
                 data-scorecard-player-column
-                role="button"
-                tabIndex={0}
-                aria-expanded={playerColumnExpanded}
+                role={playerColumnExpandable ? "button" : undefined}
+                tabIndex={playerColumnExpandable ? 0 : undefined}
+                aria-expanded={playerColumnExpandable ? playerColumnExpanded : undefined}
                 aria-label={
-                  playerColumnExpanded ? "Collapse player names" : "Expand player names"
+                  playerColumnExpandable
+                    ? playerColumnExpanded
+                      ? "Collapse player names"
+                      : "Expand player names"
+                    : undefined
                 }
                 style={stickyColStyle("player", playerWidthPx)}
                 className={cn(
                   stickyColClasses("player", "header"),
-                  "cursor-pointer select-none px-1.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
+                  "px-1.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground",
+                  playerColumnExpandable && "cursor-pointer select-none"
                 )}
-                onClick={togglePlayerColumn}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    togglePlayerColumn();
-                  }
-                }}
+                onClick={playerColumnExpandable ? togglePlayerColumn : undefined}
+                onKeyDown={
+                  playerColumnExpandable
+                    ? (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          togglePlayerColumn();
+                        }
+                      }
+                    : undefined
+                }
               >
                 <span className="flex w-full min-w-0 items-center justify-between gap-2">
                   <span>Player</span>
-                  {playerColumnExpanded ? (
-                    <ChevronLeft
-                      className="size-4 shrink-0 text-foreground"
-                      aria-hidden
-                    />
-                  ) : (
-                    <ChevronRight
-                      className={cn(
-                        "size-4 shrink-0",
-                        hasTruncatedNames ? "text-foreground" : "text-muted-foreground"
-                      )}
-                      aria-hidden
-                    />
-                  )}
+                  {playerColumnExpandable ? (
+                    playerColumnExpanded ? (
+                      <ChevronLeft
+                        className="size-4 shrink-0 text-foreground"
+                        aria-hidden
+                      />
+                    ) : (
+                      <ChevronRight className="size-4 shrink-0 text-foreground" aria-hidden />
+                    )
+                  ) : null}
                 </span>
               </th>
               <th
@@ -372,10 +379,11 @@ export function ScorecardSection({
                       style={stickyColStyle("player", playerWidthPx)}
                       className={cn(
                         stickyColClasses("player", "body"),
-                        "cursor-pointer select-none px-1.5 py-1 text-[11px] font-medium text-foreground",
+                        "px-1.5 py-1 text-[11px] font-medium text-foreground",
+                        playerColumnExpandable && "cursor-pointer select-none",
                         playerColumnExpanded ? "whitespace-nowrap" : "truncate"
                       )}
-                      onClick={togglePlayerColumn}
+                      onClick={playerColumnExpandable ? togglePlayerColumn : undefined}
                     >
                       {rank !== null ? (
                         <>

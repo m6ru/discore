@@ -33,7 +33,7 @@ export function TabBarVisibilityProvider({ children }: { children: ReactNode }) 
   );
 }
 
-/** Round pages call this to show the tab bar for observers and completed rounds. */
+/** Round pages call this to show the tab bar for observers and finished rounds. */
 export function useTabBarVisibilityOverride(show: boolean) {
   const ctx = useContext(TabBarVisibilityContext);
 

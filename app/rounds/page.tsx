@@ -13,11 +13,8 @@ import {
   formatStatusLabel,
   statusBadgeVariant,
 } from "@/lib/rounds/format-round-status";
-import { formatRoundDate } from "@/lib/format/round-date";
-
-function formatDate(iso: string | null): string {
-  return formatRoundDate(iso) ?? "—";
-}
+import { formatRoundDisplayDate } from "@/lib/format/round-date";
+import { HISTORY_ROUND_STATUSES } from "@/lib/rounds/round-status";
 
 export default async function RoundsHistoryPage() {
   const supabase = await createServerClient();
@@ -35,7 +32,7 @@ export default async function RoundsHistoryPage() {
       "id, status, started_at, completed_at, layouts(name, courses(name)), round_participants!inner(user_id)"
     )
     .eq("round_participants.user_id", user.id)
-    .in("status", ["active", "completed", "abandoned"])
+    .in("status", HISTORY_ROUND_STATUSES)
     .order("started_at", { ascending: false, nullsFirst: false });
 
   const rounds = data ?? [];
@@ -69,7 +66,8 @@ export default async function RoundsHistoryPage() {
           {rounds.map((round) => {
             const layout = pickOne(round.layouts);
             const course = pickOne(layout?.courses);
-            const dateLabel = formatDate(round.completed_at ?? round.started_at);
+            const dateLabel =
+              formatRoundDisplayDate(round.completed_at, round.started_at) ?? "—";
 
             return (
               <li key={round.id}>

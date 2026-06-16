@@ -8,8 +8,12 @@ import {
 } from "@/lib/rounds/format-round-status";
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
 import { formatRoundDisplayName } from "@/lib/rounds/round-display-name";
-import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
-import { formatRoundDate } from "@/lib/format/round-date";
+import {
+  isFinishedRoundStatus,
+  isRoundStatus,
+  type RoundStatus,
+} from "@/lib/rounds/round-status";
+import { formatRoundDisplayDate } from "@/lib/format/round-date";
 import { ROUND_HEADER_ACTIONS_ID, ROUND_HEADER_TITLE_ID } from "./components/round-header-actions-slot";
 import { RoundSession } from "./round-session";
 import type { HoleRow, HoleScoreRow } from "./round-types";
@@ -93,10 +97,9 @@ export default async function RoundPage({ params }: RoundPageProps) {
 
   const layoutRow = pickOne(round.layouts);
   const courseRow = pickOne(layoutRow?.courses);
-  const completedDateLabel =
-    roundStatus === "completed"
-      ? formatRoundDate(round.completed_at ?? round.started_at)
-      : null;
+  const finishedDateLabel = isFinishedRoundStatus(roundStatus)
+    ? formatRoundDisplayDate(round.completed_at, round.started_at)
+    : null;
   const safeParticipants = participants ?? [];
   const isScorer = round.scorer_id === user.id;
   const isRoundParticipant = safeParticipants.some(
@@ -119,7 +122,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
             </h1>
           )}
           <div className="flex shrink-0 items-center gap-2">
-            {roundStatus !== "active" && roundStatus !== "draft" ? (
+            {isFinishedRoundStatus(roundStatus) ? (
               <Badge variant={statusBadgeVariant(round.status)}>
                 {formatStatusLabel(round.status)}
               </Badge>
@@ -132,8 +135,8 @@ export default async function RoundPage({ params }: RoundPageProps) {
           <span> · </span>
           {layoutRow?.name ?? "Unknown layout"}
         </p>
-        {completedDateLabel ? (
-          <p className="text-sm text-muted-foreground">{completedDateLabel}</p>
+        {finishedDateLabel ? (
+          <p className="text-sm text-muted-foreground">{finishedDateLabel}</p>
         ) : null}
       </header>
 
