@@ -63,7 +63,8 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 - **Rounds:** create draft → invite registered users or add guests → start when no pending invites; **draft setup UI** at `/rounds/[id]` (unified roster, starting-hole picker, editable title, invite/guest add)
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
 - **Active round:** Single-player stepper + selectable roster (hole / total / vs par), OB toggle, header menu (scorecard dialog, round info, abandon), optional **round name** (default "Practice round"), configurable **starting hole** (play order wraps through full layout), live scorecard (Par/Thr/Total + draft strokes for scorer), results pool view, end-of-round confirm deck, front-9 / final summaries, hole navigation
-- **Observer:** read-only UI + Realtime scorecard; `ActiveHoleStatus` (hole / par / distance); score-derived current hole on scorecard; round status and draft invite/participant sync via `refreshRoundMeta`
+- **Observer:** read-only UI + Realtime scorecard; scorecard-first (no pool list during active); `ActiveHoleStatus`; score-derived current hole; draft “waiting to start” copy
+- **Completed round:** Results of the pool + scorecard on same route; scorer stays on page after confirm; bottom tab bar (no footer links)
 - **History:** `app/rounds/page.tsx` for past rounds
 - **Code layout:** `lib/scoring` (pure math), `lib/rounds` + `lib/profiles` (actions), `app/rounds/[roundId]/` (orchestrator, hooks, components)
 
@@ -77,7 +78,7 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 2. ~~**Deploy**~~ — Done (Vercel + Supabase Auth URLs).
 3. ~~**Pre-flight + Realtime**~~ — Done (publication + consolidated round/hub subscriptions).
 4. ~~**Backbone refactor**~~ — Done (typed Supabase factories, strict `RoundStatus`, `/lib/scoring` extracted + tested, scorer-as-participant trigger, signup-name trigger).
-5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). Draft setup + active scorecard polish done; next: observer or end-of-round.
+5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). Draft setup + active scorecard + observer + completed round done; next: home, courses, or history.
 6. **Field test on course** — Re-run when ready; capture friction on course.
 
 ---

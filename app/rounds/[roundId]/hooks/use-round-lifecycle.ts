@@ -49,8 +49,8 @@ export function useRoundLifecycle({
       setIsTransitioning(false);
       return;
     }
-    router.push("/");
     router.refresh();
+    setIsTransitioning(false);
   }, [saveCurrentHoleScores, supabase, roundId, setIsTransitioning, router]);
 
   return { onAbandonRound, onCompleteRound };

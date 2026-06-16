@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { createServerClient } from "@/lib/supabase/server";
@@ -166,17 +165,6 @@ export default async function RoundPage({ params }: RoundPageProps) {
           initialHoleScores={(existingScores ?? []) as HoleScoreRow[]}
         />
       )}
-
-      {roundStatus !== "active" && roundStatus !== "draft" ? (
-        <div className="flex gap-4 text-sm">
-          <Link href="/" className="text-muted-foreground underline underline-offset-4">
-            Back home
-          </Link>
-          <Link href="/courses" className="text-muted-foreground underline underline-offset-4">
-            Browse courses
-          </Link>
-        </div>
-      ) : null}
     </main>
   );
 }

@@ -7,7 +7,7 @@ North star: **active scorer round** (`app/rounds/[roundId]/`). Match these when 
 - Emerald primary, light only, Manrope + JetBrains Mono for scores
 - Breathable padding, warm copy, icons only for actions
 - shadcn primitives in `components/ui/`, no wrapper layer
-- Bottom tab bar except on live round pages
+- Bottom tab bar except scorer live round pages (draft/active); shown for observers throughout and scorer after complete
 
 ## Layout
 

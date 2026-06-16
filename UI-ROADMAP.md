@@ -25,8 +25,8 @@ Work outward from the round you like:
 
 0. Active scorer round — **reference, don't break**; scorecard polish done (live Par/Thr/Total, double-bogey tone, tighter columns, `sectionHeadingClassName`)
 1. Draft → start (same route) — **done:** unified Players panel, + add flow, starting-hole picker, editable header title, X delete draft, fixed Start deck; no draft scorecard
-2. Observer during round — **partial:** `ActiveHoleStatus` header + live scorecard; full observer UX not shaped yet
-3. End of round / completed
+2. Observer during round — **done:** scorecard-first; `ActiveHoleStatus`; no pool list while active; draft waiting copy
+3. End of round / completed — **done:** pool results + scorecard; scorer stays on page; tab bar replaces footer links
 4. Home
 5. Courses
 6. History (`/rounds`)

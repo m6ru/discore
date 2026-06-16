@@ -51,6 +51,7 @@ import { useDraftSetup } from "./hooks/use-draft-setup";
 import { useProfileSearch } from "./hooks/use-profile-search";
 import { useRoundLifecycle } from "./hooks/use-round-lifecycle";
 import { useRoundRealtime } from "./hooks/use-round-realtime";
+import { useTabBarVisibilityOverride } from "@/components/layout/tab-bar-visibility";
 import { cn } from "@/lib/utils";
 
 export function RoundSession({
@@ -277,7 +278,19 @@ export function RoundSession({
     liveRoundStatus === "active" && isScorer && canScore && showScoringUI;
 
   const showScorecardAtBottom = !showStickySaveBar && liveRoundStatus !== "draft";
-  const isFlatLayout = liveRoundStatus === "active" || liveRoundStatus === "draft";
+  const isFlatLayout =
+    liveRoundStatus === "active" ||
+    liveRoundStatus === "draft" ||
+    liveRoundStatus === "completed";
+  const showPoolResults =
+    (liveRoundStatus === "active" &&
+      isScorer &&
+      (showCompletionUI || !showStickySaveBar)) ||
+    liveRoundStatus === "completed";
+  const showAbandonedResults =
+    liveRoundStatus === "abandoned" && !showStickySaveBar;
+
+  useTabBarVisibilityOverride(!isScorer || liveRoundStatus === "completed");
 
   const teePositionByParticipantId = useMemo(
     () =>
@@ -522,7 +535,11 @@ export function RoundSession({
               disabled={isSubmitting || isTransitioning}
               onStartingHoleChange={setStartingHole}
             />
-          ) : null}
+          ) : (
+            <p className="text-center text-sm text-muted-foreground">
+              Waiting for {scorerDisplayName} to start the round.
+            </p>
+          )}
         </div>
       ) : null}
 
@@ -577,7 +594,7 @@ export function RoundSession({
         </>
       ) : null}
 
-      {(showCompletionUI || (liveRoundStatus !== "draft" && !showStickySaveBar)) ? (
+      {showPoolResults || showAbandonedResults ? (
         <RoundResults
           scoringParticipants={scoringParticipants}
           leaderboardByParticipantId={leaderboardByParticipantId}

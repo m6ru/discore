@@ -55,10 +55,10 @@ export function tabBarPaddingClass(show: boolean): string {
     : "";
 }
 
-export function BottomTabBar() {
+export function BottomTabBar({ show }: { show: boolean }) {
   const pathname = usePathname();
 
-  if (!shouldShowTabBar(pathname)) {
+  if (!show) {
     return null;
   }
 
