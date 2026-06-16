@@ -19,6 +19,7 @@ type Props = {
   layoutName: string;
   holeCount: number;
   layoutTotalPar: number;
+  startingHole: number;
   roundStatus: RoundStatus;
 };
 
@@ -30,6 +31,7 @@ export function RoundInfoDialog({
   layoutName,
   holeCount,
   layoutTotalPar,
+  startingHole,
   roundStatus,
 }: Props) {
   return (
@@ -61,6 +63,12 @@ export function RoundInfoDialog({
               <dt className="text-muted-foreground">Par</dt>
               <dd className="font-medium tabular-nums">{layoutTotalPar}</dd>
             </div>
+            {startingHole > 1 ? (
+              <div>
+                <dt className="text-muted-foreground">Start</dt>
+                <dd className="font-medium tabular-nums">Hole {startingHole}</dd>
+              </div>
+            ) : null}
           </div>
           <div>
             <dt className="text-muted-foreground">Status</dt>

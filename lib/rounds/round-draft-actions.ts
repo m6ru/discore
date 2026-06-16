@@ -97,6 +97,17 @@ export async function updateRoundName(
     .eq("id", roundId);
 }
 
+export async function updateRoundStartingHole(
+  supabase: Client,
+  roundId: string,
+  startingHole: number
+) {
+  return supabase
+    .from("rounds")
+    .update({ starting_hole: startingHole })
+    .eq("id", roundId);
+}
+
 export async function createDraftRound(
   supabase: Client,
   layoutId: string,

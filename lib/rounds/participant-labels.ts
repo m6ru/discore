@@ -5,7 +5,7 @@ import type { ParticipantRow, UnifiedPlayer } from "@/app/rounds/[roundId]/round
  * entry. Falls back to the stored `guest_name`, then a generic placeholder.
  *
  * The `isPending` state for invitees is carried as a separate field on
- * `UnifiedPlayer` and rendered by `ParticipantsList`; it is never spliced into
+ * `UnifiedPlayer` and rendered by `DraftPlayersPanel`; it is never spliced into
  * the label string itself.
  */
 export function getParticipantLabel(

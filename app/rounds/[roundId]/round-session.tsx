@@ -11,6 +11,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
 import { isSegmentComplete } from "@/lib/scoring/segments";
+import { orderHolesForPlay, sortHolesByNumber } from "@/lib/scoring/hole-order";
 import { buildLeaderboard } from "@/lib/scoring/leaderboard";
 import { buildTeePositionMap } from "@/lib/scoring/tee-order";
 import { getParticipantLabel as labelForParticipant } from "@/lib/rounds/participant-labels";
@@ -20,18 +21,19 @@ import {
   ACTIVE_SCORING_BOTTOM_INSET,
   ActiveHoleScoring,
 } from "./components/active-hole-scoring";
-import { DraftParticipantForm } from "./components/draft-participant-form";
+import { DraftPlayersPanel } from "./components/draft-players-panel";
+import { DraftSetupDeck, DRAFT_SETUP_BOTTOM_INSET } from "./components/draft-setup-deck";
+import { DraftStartingHoleField } from "./components/draft-starting-hole-field";
+import { DraftHeaderActionsPortal } from "./components/draft-header-actions-portal";
+import { DraftRoundTitlePortal } from "./components/draft-round-title-portal";
 import { RoundResults } from "./components/round-results";
 import { ObserverActiveHint } from "./components/observer-active-hint";
-import { ParticipantsList } from "./components/participants-list";
-import { RoundLifecycleActions } from "./components/round-lifecycle-actions";
 import {
   ROUND_COMPLETE_BOTTOM_INSET,
   RoundCompleteActions,
 } from "./components/round-complete-actions";
 import { RoundSummaries } from "./components/round-summaries";
 import { ScorecardSection } from "./components/scorecard-section";
-import { DraftRoundNameField } from "./components/draft-round-name-field";
 import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
 import { RoundInfoDialog } from "./components/round-info-dialog";
 import { RoundScorecardDialog } from "./components/round-scorecard-dialog";
@@ -53,6 +55,7 @@ import { cn } from "@/lib/utils";
 export function RoundSession({
   roundId,
   roundName: initialRoundName,
+  startingHole: initialStartingHole,
   roundStatus,
   scorerUserId,
   isScorer,
@@ -74,6 +77,8 @@ export function RoundSession({
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [holeScores, setHoleScores] = useState<HoleScoreRow[]>(initialHoleScores);
   const [roundName, setRoundName] = useState<string | null>(initialRoundName);
+  const [startingHole, setStartingHole] = useState(initialStartingHole);
+  const [showAddPlayerForm, setShowAddPlayerForm] = useState(false);
   const [scorecardOpen, setScorecardOpen] = useState(false);
   const [roundInfoOpen, setRoundInfoOpen] = useState(false);
   const [isEditingScores, setIsEditingScores] = useState(false);
@@ -94,6 +99,16 @@ export function RoundSession({
 
   const scoringParticipants = participants;
 
+  const sortedHoles = useMemo(() => sortHolesByNumber(holes), [holes]);
+  const playOrderedHoles = useMemo(
+    () => orderHolesForPlay(holes, startingHole),
+    [holes, startingHole]
+  );
+  const holeNumbers = useMemo(
+    () => sortedHoles.map((hole) => hole.hole_number),
+    [sortedHoles]
+  );
+
   const {
     activeHole,
     currentHoleIndex,
@@ -109,7 +124,7 @@ export function RoundSession({
     supabase,
     roundId,
     isScorer,
-    holes,
+    holes: playOrderedHoles,
     initialHoleScores,
     scoringParticipants,
     holeScores,
@@ -171,6 +186,11 @@ export function RoundSession({
     setRoundName(initialRoundName);
   }, [initialRoundName]);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync server prop into client state
+    setStartingHole(initialStartingHole);
+  }, [initialStartingHole]);
+
   const unifiedPlayers = useMemo(
     () =>
       buildUnifiedPlayers({
@@ -189,13 +209,15 @@ export function RoundSession({
     [unifiedPlayers]
   );
 
+  const pendingInviteLabels = useMemo(
+    () => unifiedPlayers.filter((player) => player.isPending).map((player) => player.label),
+    [unifiedPlayers]
+  );
+
+  const showDraftSetupDeck = liveRoundStatus === "draft" && isScorer;
+
   const canScore =
     liveRoundStatus === "active" && !!activeHole && scoringParticipants.length > 0;
-
-  const sortedHoles = useMemo(
-    () => [...holes].sort((a, b) => a.hole_number - b.hole_number),
-    [holes]
-  );
 
   const holeIds = useMemo(() => sortedHoles.map((hole) => hole.id), [sortedHoles]);
   const firstNineHoleIds = useMemo(
@@ -253,18 +275,18 @@ export function RoundSession({
   const showStickySaveBar =
     liveRoundStatus === "active" && isScorer && canScore && showScoringUI;
 
-  const showScorecardAtBottom = !showStickySaveBar;
-  const isActiveFlatLayout = liveRoundStatus === "active";
+  const showScorecardAtBottom = !showStickySaveBar && liveRoundStatus !== "draft";
+  const isFlatLayout = liveRoundStatus === "active" || liveRoundStatus === "draft";
 
   const teePositionByParticipantId = useMemo(
     () =>
       buildTeePositionMap(
-        sortedHoles,
+        playOrderedHoles,
         currentHoleIndex,
         scoringParticipants,
         scoreLookup
       ),
-    [sortedHoles, currentHoleIndex, scoringParticipants, scoreLookup]
+    [playOrderedHoles, currentHoleIndex, scoringParticipants, scoreLookup]
   );
 
   const labelForParticipantId = useCallback(
@@ -313,17 +335,33 @@ export function RoundSession({
   const showHeaderMenu = isScorer && (showStickySaveBar || showCompletionUI);
 
   return (
+    <>
+      <DraftRoundTitlePortal
+        show={liveRoundStatus === "draft" && isScorer}
+        supabase={supabase}
+        roundId={roundId}
+        roundName={roundName}
+        disabled={isSubmitting || isTransitioning}
+        onNameChange={setRoundName}
+      />
+      <DraftHeaderActionsPortal
+        show={liveRoundStatus === "draft" && isScorer}
+        isTransitioning={isTransitioning}
+        onDeleteDraft={() => void onDeleteDraft()}
+      />
     <section
       className={cn(
         "space-y-4",
-        !isActiveFlatLayout && "rounded-lg border p-4"
+        !isFlatLayout && "rounded-lg border p-4"
       )}
       style={
         showStickySaveBar
           ? { paddingBottom: ACTIVE_SCORING_BOTTOM_INSET }
           : showCompletionUI
             ? { paddingBottom: ROUND_COMPLETE_BOTTOM_INSET }
-            : undefined
+            : showDraftSetupDeck
+              ? { paddingBottom: DRAFT_SETUP_BOTTOM_INSET }
+              : undefined
       }
     >
       <RoundHeaderMenuPortal
@@ -347,36 +385,24 @@ export function RoundSession({
             layoutName={layoutName}
             holeCount={holes.length}
             layoutTotalPar={layoutTotalPar}
+            startingHole={startingHole}
             roundStatus={liveRoundStatus}
           />
         }
       />
       {liveRoundStatus === "draft" ? (
-        <>
-          <h3 className="text-base font-semibold">Participants</h3>
-          <ParticipantsList
+        <div className="space-y-4">
+          <DraftPlayersPanel
             unifiedPlayers={unifiedPlayers}
+            isScorer={isScorer}
             isSubmitting={isSubmitting}
-            onRemovePlayer={onRemovePlayer}
-          />
-        </>
-      ) : null}
-
-      {liveRoundStatus === "draft" && isScorer ? (
-        <>
-          <DraftRoundNameField
-            supabase={supabase}
-            roundId={roundId}
-            initialName={roundName}
-            disabled={isSubmitting || isTransitioning}
-            onNameChange={setRoundName}
-          />
-          <DraftParticipantForm
+            showAddForm={showAddPlayerForm}
             participantName={participantName}
-            isSubmitting={isSubmitting}
             isSearching={isSearching}
             searchResults={searchResults}
             selectedProfile={selectedProfile}
+            onRemovePlayer={onRemovePlayer}
+            onShowAddForm={() => setShowAddPlayerForm(true)}
             onParticipantNameChange={(value) => {
               setParticipantName(value);
               setSelectedProfile(null);
@@ -385,19 +411,36 @@ export function RoundSession({
               selectProfile(profile);
               setParticipantName(profile.display_name);
             }}
-            onSubmit={(event) => void onAddParticipant(event, selectedProfile, clearSearchSelection)}
+            onSubmit={(event) => {
+              void (async () => {
+                const added = await onAddParticipant(
+                  event,
+                  selectedProfile,
+                  clearSearchSelection
+                );
+                if (added) {
+                  setShowAddPlayerForm(false);
+                }
+              })();
+            }}
+            onCancelAdd={() => {
+              setShowAddPlayerForm(false);
+              setParticipantName("");
+              clearSearchSelection();
+            }}
           />
-          <RoundLifecycleActions
-            placement="setup"
-            roundStatus={liveRoundStatus}
-            isScorer={isScorer}
-            isTransitioning={isTransitioning}
-            hasPendingInvite={hasPendingInvite}
-            onStartRound={() => void onStartRound()}
-            onDeleteDraft={() => void onDeleteDraft()}
-            onAbandonRound={() => void onAbandonRound()}
-          />
-        </>
+
+          {isScorer ? (
+            <DraftStartingHoleField
+              supabase={supabase}
+              roundId={roundId}
+              holeNumbers={holeNumbers}
+              startingHole={startingHole}
+              disabled={isSubmitting || isTransitioning}
+              onStartingHoleChange={setStartingHole}
+            />
+          ) : null}
+        </div>
       ) : null}
 
       <RoundSummaries
@@ -470,5 +513,14 @@ export function RoundSession({
         />
       ) : null}
     </section>
+    <DraftSetupDeck
+      roundStatus={liveRoundStatus}
+      isScorer={isScorer}
+      isTransitioning={isTransitioning}
+      hasPendingInvite={hasPendingInvite}
+      pendingInviteLabels={pendingInviteLabels}
+      onStartRound={() => void onStartRound()}
+    />
+    </>
   );
 }

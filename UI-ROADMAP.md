@@ -24,7 +24,7 @@ Record decisions that change behaviour in **STATUS.md**. Optional one-liner unde
 Work outward from the round you like:
 
 0. Active scorer round — **reference, don't break**
-1. Draft → start (same route)
+1. Draft → start (same route) — **done:** flat roster, add-player toggle, starting-hole picker, optional collapsed name, fixed bottom Start deck
 2. Observer during round
 3. End of round / completed
 4. Home

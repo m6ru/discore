@@ -54,13 +54,13 @@ export function useDraftSetup({
       event.preventDefault();
       if (!isScorer || roundStatus !== "draft") {
         toastInfo("Participants can only be changed while the round is in draft.");
-        return;
+        return false;
       }
 
       const trimmedName = participantName.trim();
       if (!trimmedName) {
         toastError("Participant name is required.");
-        return;
+        return false;
       }
 
       setIsSubmitting(true);
@@ -75,13 +75,13 @@ export function useDraftSetup({
         if (inviteError) {
           toastError(`Invite failed: ${inviteError.message}`);
           setIsSubmitting(false);
-          return;
+          return false;
         }
         setParticipantName("");
         clearSearchSelection();
         await loadInvites();
         setIsSubmitting(false);
-        return;
+        return true;
       }
 
       const { error: guestInsertError } = await addGuestParticipant(supabase, roundId, trimmedName);
@@ -94,13 +94,14 @@ export function useDraftSetup({
           ].join(" | ")
         );
         setIsSubmitting(false);
-        return;
+        return false;
       }
 
       setParticipantName("");
       clearSearchSelection();
       await loadParticipants();
       setIsSubmitting(false);
+      return true;
     },
     [
       isScorer,

@@ -47,6 +47,7 @@ export type HoleScoreRow = {
 export type RoundSessionProps = {
   roundId: string;
   roundName: string | null;
+  startingHole: number;
   roundStatus: RoundStatus;
   scorerUserId: string;
   isScorer: boolean;

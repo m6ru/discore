@@ -62,7 +62,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 - **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); **course-first browse** at `/courses` and `/courses/[slug]` (hub search + Start round funnel); GPS nearby-sort deferred
 - **Rounds:** create draft → invite registered users or add guests → start when no pending invites
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
-- **Active round:** Single-player stepper + selectable roster (hole / total / vs par), OB toggle, header menu (scorecard dialog, round info, abandon), optional **round name** (default "Practice round"), results pool view, end-of-round confirm deck, front-9 / final summaries, hole navigation
+- **Active round:** Single-player stepper + selectable roster (hole / total / vs par), OB toggle, header menu (scorecard dialog, round info, abandon), optional **round name** (default "Practice round"), configurable **starting hole** (play order wraps through full layout), results pool view, end-of-round confirm deck, front-9 / final summaries, hole navigation
 - **Observer:** read-only UI + Realtime scorecard / “last saved”; round status and draft invite/participant sync via `refreshRoundMeta`
 - **History:** `app/rounds/page.tsx` for past rounds
 - **Code layout:** `lib/scoring` (pure math), `lib/rounds` + `lib/profiles` (actions), `app/rounds/[roundId]/` (orchestrator, hooks, components)

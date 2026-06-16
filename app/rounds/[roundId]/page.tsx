@@ -10,7 +10,7 @@ import {
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
 import { formatRoundDisplayName } from "@/lib/rounds/round-display-name";
 import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
-import { ROUND_HEADER_ACTIONS_ID } from "./components/round-header-actions-slot";
+import { ROUND_HEADER_ACTIONS_ID, ROUND_HEADER_TITLE_ID } from "./components/round-header-actions-slot";
 import { RoundSession } from "./round-session";
 import type { HoleRow, HoleScoreRow } from "./round-types";
 
@@ -33,7 +33,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
   const { data: round, error: roundError } = await supabase
     .from("rounds")
     .select(
-      "id, name, status, started_at, scorer_id, layout_id, layouts(name, total_par, total_distance_m, courses(name))"
+      "id, name, status, started_at, scorer_id, layout_id, starting_hole, layouts(name, total_par, total_distance_m, courses(name))"
     )
     .eq("id", roundId)
     .maybeSingle();
@@ -107,9 +107,13 @@ export default async function RoundPage({ params }: RoundPageProps) {
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
       <header className="space-y-1">
         <div className="flex items-center justify-between gap-3">
-          <h1 className="min-w-0 flex-1 text-xl font-bold tracking-tight sm:text-2xl">
-            {formatRoundDisplayName(round.name)}
-          </h1>
+          {roundStatus === "draft" && isScorer ? (
+            <div id={ROUND_HEADER_TITLE_ID} className="min-w-0 flex-1" />
+          ) : (
+            <h1 className="min-w-0 flex-1 text-xl font-bold tracking-tight sm:text-2xl">
+              {formatRoundDisplayName(round.name)}
+            </h1>
+          )}
           <div className="flex shrink-0 items-center gap-2">
             {roundStatus !== "active" && roundStatus !== "draft" ? (
               <Badge variant={statusBadgeVariant(round.status)}>
@@ -147,6 +151,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
           key={round.id}
           roundId={round.id}
           roundName={round.name}
+          startingHole={round.starting_hole}
           roundStatus={roundStatus}
           scorerUserId={round.scorer_id}
           isScorer={isScorer}
@@ -162,7 +167,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
         />
       )}
 
-      {roundStatus !== "active" ? (
+      {roundStatus !== "active" && roundStatus !== "draft" ? (
         <div className="flex gap-4 text-sm">
           <Link href="/" className="text-muted-foreground underline underline-offset-4">
             Back home
