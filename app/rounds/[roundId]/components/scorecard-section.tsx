@@ -2,6 +2,7 @@ import { formatVsPar, segmentPlayerStats } from "@/lib/scoring/stats";
 import { holeScoreTone } from "@/lib/scoring/scorecard-display";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
 import { cn } from "@/lib/utils";
+import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import type { RoundStatus } from "@/lib/rounds/round-status";
 import type { HoleRow, LeaderboardRow } from "../round-types";
 
@@ -27,6 +28,8 @@ function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
       return "bg-primary/20";
     case "bogey":
       return "bg-destructive/15";
+    case "doubleBogey":
+      return "bg-destructive/35";
     default:
       return "";
   }
@@ -36,9 +39,9 @@ const stickyShadow = "shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)]";
 
 /** Fixed column widths — `left` offsets must match these exactly. */
 const STICKY_COL = {
-  player: { width: "w-[8.5rem]", left: "left-0" },
-  vsPar: { width: "w-8", left: "left-[8.5rem]" },
-  thr: { width: "w-7", left: "left-[10.5rem]" },
+  player: { width: "w-[5.25rem]", left: "left-0" },
+  vsPar: { width: "w-7", left: "left-[5.25rem]" },
+  thr: { width: "w-6", left: "left-[7rem]" },
 } as const;
 
 function stickyCol(
@@ -73,13 +76,13 @@ const summaryColClass =
 
 /** Trailing Par / Total — fixed width with vertical borders like other summary columns. */
 const endParHeaderClass =
-  "w-8 min-w-[2rem] border-b border-l border-r bg-muted px-0 py-1 text-center text-[11px] font-medium text-muted-foreground";
+  "w-7 min-w-[1.75rem] border-b border-l border-r bg-muted px-0 py-1 text-center text-[11px] font-medium text-muted-foreground";
 const endTotalHeaderClass =
-  "w-8 min-w-[2rem] border-b border-r bg-muted px-0 py-1 text-center text-[11px] font-medium text-muted-foreground";
+  "w-7 min-w-[1.75rem] border-b border-r bg-muted px-0 py-1 text-center text-[11px] font-medium text-muted-foreground";
 const endParCellClass =
-  "w-8 min-w-[2rem] border-b border-l border-r bg-background px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
+  "w-7 min-w-[1.75rem] border-b border-l border-r bg-background px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
 const endTotalCellClass =
-  "w-8 min-w-[2rem] border-b border-r bg-background px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
+  "w-7 min-w-[1.75rem] border-b border-r bg-background px-0 py-1 text-center font-mono text-[11px] font-semibold tabular-nums text-foreground";
 
 export function ScorecardSection({
   roundStatus,
@@ -102,7 +105,7 @@ export function ScorecardSection({
   return (
     <div className={embedded ? "min-h-0" : "space-y-3"}>
       {showTitle && !embedded ? (
-        <h3 className="text-sm font-semibold tracking-tight">Scorecard</h3>
+        <h3 className={sectionHeadingClassName}>Scorecard</h3>
       ) : null}
       <div className={cn("overflow-x-auto", !embedded && "rounded-lg border")}>
         <table className="w-max min-w-full border-separate border-spacing-0 text-left text-sm">
@@ -112,7 +115,7 @@ export function ScorecardSection({
                 rowSpan={2}
                 className={cn(
                   stickyCol("player", "header"),
-                  "px-2 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
+                  "max-w-[5.25rem] px-1.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
                 )}
               >
                 Player
@@ -183,17 +186,19 @@ export function ScorecardSection({
             ) : (
               leaderboardRows.map((row, index) => {
                 const full = segmentPlayerStats(row.participantId, sortedHoles, scoreLookup);
-                const rank = row.thru > 0 ? index + 1 : null;
+                const rank = full.thru > 0 ? index + 1 : null;
                 const vsParLabel = full.thru > 0 ? formatVsPar(full.vsPar) : "—";
                 const thrLabel = formatThru(full.thru, holeCount);
                 const totalLabel = full.thru > 0 ? full.totalStrokes : "—";
 
                 return (
-                  <tr key={row.participantId}>
+                  <tr
+                    key={`${row.participantId}-${full.thru}-${full.vsPar}-${full.totalStrokes}`}
+                  >
                     <td
                       className={cn(
                         stickyCol("player", "body"),
-                        "whitespace-nowrap px-2 py-1 text-[11px] font-medium text-foreground"
+                        "max-w-[5.25rem] truncate px-1.5 py-1 text-[11px] font-medium text-foreground"
                       )}
                     >
                       {rank !== null ? (

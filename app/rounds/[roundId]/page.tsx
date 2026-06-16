@@ -77,7 +77,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
       .order("created_at", { ascending: true }),
     supabase
       .from("holes")
-      .select("id, hole_number, par, distance_m")
+      .select("id, hole_number, par, distance_m, notes")
       .eq("layout_id", round.layout_id)
       .order("hole_number", { ascending: true }),
     supabase

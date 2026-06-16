@@ -10,5 +10,7 @@ describe("holeScoreTone", () => {
     expect(holeScoreTone(2, 3)).toBe("birdie");
     expect(holeScoreTone(3, 3)).toBe("par");
     expect(holeScoreTone(4, 3)).toBe("bogey");
+    expect(holeScoreTone(5, 3)).toBe("doubleBogey");
+    expect(holeScoreTone(6, 3)).toBe("doubleBogey");
   });
 });

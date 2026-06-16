@@ -1,4 +1,5 @@
 import { formatVsPar } from "@/lib/scoring/stats";
+import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import type { LeaderboardRow, ParticipantRow } from "../round-types";
 
 type Props = {
@@ -19,7 +20,7 @@ export function RoundResults({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-base font-semibold tracking-tight">Results of the pool</h3>
+      <h3 className={sectionHeadingClassName}>Results of the pool</h3>
       <ol className="divide-y divide-border rounded-lg border">
         {scoringParticipants.map((participant) => {
           const row = leaderboardByParticipantId.get(participant.id);

@@ -10,6 +10,7 @@ import {
 } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
+import { getFirstIncompleteHoleIndex } from "@/lib/scoring/stats";
 import { isSegmentComplete } from "@/lib/scoring/segments";
 import { orderHolesForPlay, sortHolesByNumber } from "@/lib/scoring/hole-order";
 import { buildLeaderboard } from "@/lib/scoring/leaderboard";
@@ -27,7 +28,7 @@ import { DraftStartingHoleField } from "./components/draft-starting-hole-field";
 import { DraftHeaderActionsPortal } from "./components/draft-header-actions-portal";
 import { DraftRoundTitlePortal } from "./components/draft-round-title-portal";
 import { RoundResults } from "./components/round-results";
-import { ObserverActiveHint } from "./components/observer-active-hint";
+import { ActiveHoleStatus } from "./components/active-hole-status";
 import {
   ROUND_COMPLETE_BOTTOM_INSET,
   RoundCompleteActions,
@@ -319,18 +320,100 @@ export function RoundSession({
     [labelByParticipantId]
   );
 
-  const renderScorecard = (options: { showTitle: boolean; embedded?: boolean }) => (
-    <ScorecardSection
-      roundStatus={liveRoundStatus}
-      sortedHoles={sortedHoles}
-      scoreLookup={scoreLookup}
-      obLookup={obLookup}
-      leaderboardRows={leaderboardRows}
-      activeHole={activeHole}
-      showTitle={options.showTitle}
-      embedded={options.embedded}
-    />
-  );
+  const scorecardActiveHole = useMemo(() => {
+    if (liveRoundStatus !== "active") {
+      return activeHole;
+    }
+    if (isScorer && activeHole) {
+      return activeHole;
+    }
+    const observedIndex = getFirstIncompleteHoleIndex(
+      playOrderedHoles,
+      scoringParticipants,
+      holeScores
+    );
+    return playOrderedHoles[observedIndex] ?? null;
+  }, [
+    liveRoundStatus,
+    isScorer,
+    activeHole,
+    playOrderedHoles,
+    scoringParticipants,
+    holeScores,
+  ]);
+
+  const buildDisplayScoreLookup = useCallback(() => {
+    const map = new Map(scoreLookup);
+    if (isScorer && activeHole && liveRoundStatus === "active") {
+      for (const participant of scoringParticipants) {
+        const raw = getStrokeInputValue(participant.id).trim();
+        if (!raw) {
+          continue;
+        }
+        const strokes = Number(raw);
+        if (!Number.isInteger(strokes) || strokes < 1) {
+          continue;
+        }
+        map.set(makeScoreLookupKey(participant.id, activeHole.id), strokes);
+      }
+    }
+    return map;
+  }, [
+    scoreLookup,
+    isScorer,
+    activeHole,
+    liveRoundStatus,
+    scoringParticipants,
+    getStrokeInputValue,
+  ]);
+
+  const buildDisplayObLookup = useCallback(() => {
+    const map = new Map(obLookup);
+    if (isScorer && activeHole && liveRoundStatus === "active") {
+      for (const participant of scoringParticipants) {
+        const raw = getStrokeInputValue(participant.id).trim();
+        if (!raw) {
+          continue;
+        }
+        map.set(
+          makeScoreLookupKey(participant.id, activeHole.id),
+          isObChecked(participant.id)
+        );
+      }
+    }
+    return map;
+  }, [
+    obLookup,
+    isScorer,
+    activeHole,
+    liveRoundStatus,
+    scoringParticipants,
+    getStrokeInputValue,
+    isObChecked,
+  ]);
+
+  const renderScorecard = (options: { showTitle: boolean; embedded?: boolean }) => {
+    const displayScoreLookup = buildDisplayScoreLookup();
+    const displayLeaderboardRows = buildLeaderboard(
+      scoringParticipants,
+      sortedHoles,
+      displayScoreLookup,
+      labelForParticipantId
+    );
+
+    return (
+      <ScorecardSection
+        roundStatus={liveRoundStatus}
+        sortedHoles={sortedHoles}
+        scoreLookup={displayScoreLookup}
+        obLookup={buildDisplayObLookup()}
+        leaderboardRows={displayLeaderboardRows}
+        activeHole={scorecardActiveHole}
+        showTitle={options.showTitle}
+        embedded={options.embedded}
+      />
+    );
+  };
 
   const showHeaderMenu = isScorer && (showStickySaveBar || showCompletionUI);
 
@@ -489,7 +572,7 @@ export function RoundSession({
             />
             </>
           ) : (
-            <ObserverActiveHint activeHole={activeHole} holesLength={holes.length} />
+            <ActiveHoleStatus activeHole={scorecardActiveHole} holesLength={holes.length} />
           )}
         </>
       ) : null}

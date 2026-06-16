@@ -1,6 +1,7 @@
 "use client";
 
 import { getTotalStrokes } from "@/lib/scoring/stats";
+import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import type { HoleScoreRow, ParticipantRow } from "../round-types";
 
 type Props = {
@@ -24,7 +25,7 @@ export function RoundSummaries({
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-semibold">Front 9 summary</h3>
+      <h3 className={sectionHeadingClassName}>Front 9 summary</h3>
       <ul className="space-y-2 text-sm">
         {scoringParticipants.map((participant) => (
           <li

@@ -33,6 +33,7 @@ export type HoleRow = {
   hole_number: number;
   par: number;
   distance_m: number;
+  notes: string | null;
 };
 
 export type HoleScoreRow = {

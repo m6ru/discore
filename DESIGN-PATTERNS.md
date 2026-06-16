@@ -14,6 +14,7 @@ North star: **active scorer round** (`app/rounds/[roundId]/`). Match these when 
 - Page: `max-w-3xl`, `p-4 sm:p-8`, single column
 - Header: bold title + muted subtitle; ghost icon actions (no outline box)
 - Lists: flat bordered rows, not card stacks inside cards
+- Section labels: `text-sm font-semibold tracking-tight` via `sectionHeadingClassName` in `lib/ui/section-heading.ts`
 - Heavy data (scorecard): full-width top sheet, minimal header
 - Primary actions on round: fixed bottom deck + safe-area
 

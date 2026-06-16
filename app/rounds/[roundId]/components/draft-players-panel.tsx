@@ -3,6 +3,7 @@ import type { ProfileSearchResult, UnifiedPlayer } from "../round-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 
 const ROW_CLASS = "flex min-h-11 items-center gap-2 px-3 text-sm";
 
@@ -83,7 +84,9 @@ export function DraftPlayersPanel({
 
   if (isScorer && showAddForm) {
     return (
-      <form onSubmit={onSubmit} className="space-y-2">
+      <div className="space-y-2">
+        <h3 className={sectionHeadingClassName}>Players</h3>
+        <form onSubmit={onSubmit} className="space-y-2">
         <div className="overflow-hidden rounded-lg border">
           <PlayerRows
             unifiedPlayers={unifiedPlayers}
@@ -145,11 +148,14 @@ export function DraftPlayersPanel({
           </Button>
         </div>
       </form>
+      </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="space-y-2">
+      <h3 className={sectionHeadingClassName}>Players</h3>
+      <div className="overflow-hidden rounded-lg border">
       {unifiedPlayers.length === 0 ? (
         <p className="px-3 py-3 text-sm text-muted-foreground">No players yet.</p>
       ) : (
@@ -173,6 +179,7 @@ export function DraftPlayersPanel({
           Add another player
         </button>
       ) : null}
+      </div>
     </div>
   );
 }

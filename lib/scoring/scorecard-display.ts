@@ -1,4 +1,11 @@
-export type HoleScoreTone = "empty" | "ace" | "eagle" | "birdie" | "par" | "bogey";
+export type HoleScoreTone =
+  | "empty"
+  | "ace"
+  | "eagle"
+  | "birdie"
+  | "par"
+  | "bogey"
+  | "doubleBogey";
 
 export function holeScoreTone(strokes: number | undefined, par: number): HoleScoreTone {
   if (strokes === undefined) {
@@ -18,5 +25,8 @@ export function holeScoreTone(strokes: number | undefined, par: number): HoleSco
   if (vsPar === 0) {
     return "par";
   }
-  return "bogey";
+  if (vsPar === 1) {
+    return "bogey";
+  }
+  return "doubleBogey";
 }
