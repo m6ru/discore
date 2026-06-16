@@ -469,7 +469,7 @@ export function RoundSession({
         onViewInfo={() => setRoundInfoOpen(true)}
         scorecardDialog={
           <RoundScorecardDialog open={scorecardOpen} onOpenChange={setScorecardOpen}>
-            {renderScorecard({ showTitle: false, showBorder: false })}
+            {renderScorecard({ showTitle: false })}
           </RoundScorecardDialog>
         }
         infoDialog={
