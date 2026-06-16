@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatVsPar, segmentPlayerStats } from "@/lib/scoring/stats";
 import { holeScoreTone } from "@/lib/scoring/scorecard-display";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
@@ -41,35 +41,45 @@ function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
 const stickyShadow = "shadow-[4px_0_6px_-4px_rgba(0,0,0,0.12)]";
 
 const holeColWidth = "w-[1.25rem] min-w-[1.25rem] max-w-[1.25rem]";
-const stickySummaryColWidth = "w-[1.3125rem] min-w-[1.3125rem] max-w-[1.3125rem]";
 
-function stickyCol(
+const COLLAPSED_PLAYER_WIDTH_PX = 7 * 16;
+const SUMMARY_COL_WIDTH_PX = 1.3125 * 16;
+const PLAYER_COL_HORIZONTAL_PADDING_PX = 12;
+const PLAYER_COL_EXTRA_MARGIN_PX = 8;
+
+function stickyColClasses(
   column: "player" | "vsPar" | "thr",
-  variant: "header" | "body",
-  playerColumnExpanded: boolean
+  variant: "header" | "body"
 ): string {
-  const playerWidth = playerColumnExpanded ? "w-[12rem]" : "w-[7rem]";
-  const vsParLeft = playerColumnExpanded ? "left-[12rem]" : "left-[7rem]";
-  const thrLeft = playerColumnExpanded ? "left-[13.3125rem]" : "left-[8.3125rem]";
-
-  const width =
-    column === "player" ? playerWidth : stickySummaryColWidth;
-  const left =
-    column === "player" ? "left-0" : column === "vsPar" ? vsParLeft : thrLeft;
-
   return cn(
     "sticky border-r border-b",
-    left,
-    width,
     variant === "header" ? "z-30 bg-muted" : "z-20 bg-background",
     column === "thr" && stickyShadow
   );
 }
 
-function playerColSize(playerColumnExpanded: boolean): string {
-  return playerColumnExpanded
-    ? "min-w-[12rem] max-w-[12rem]"
-    : "min-w-[7rem] max-w-[7rem]";
+function stickyColStyle(
+  column: "player" | "vsPar" | "thr",
+  playerWidthPx: number
+): CSSProperties {
+  if (column === "player") {
+    return {
+      width: playerWidthPx,
+      minWidth: playerWidthPx,
+      maxWidth: playerWidthPx,
+      left: 0,
+    };
+  }
+
+  const left =
+    column === "vsPar" ? playerWidthPx : playerWidthPx + SUMMARY_COL_WIDTH_PX;
+
+  return {
+    width: SUMMARY_COL_WIDTH_PX,
+    minWidth: SUMMARY_COL_WIDTH_PX,
+    maxWidth: SUMMARY_COL_WIDTH_PX,
+    left,
+  };
 }
 
 function formatThru(thru: number, holeCount: number): string {
@@ -110,32 +120,66 @@ export function ScorecardSection({
 }: Props) {
   const [playerColumnExpanded, setPlayerColumnExpanded] = useState(false);
   const [hasTruncatedNames, setHasTruncatedNames] = useState(false);
+  const [expandedPlayerWidthPx, setExpandedPlayerWidthPx] = useState(
+    COLLAPSED_PLAYER_WIDTH_PX
+  );
   const tbodyRef = useRef<HTMLTableSectionElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+
+  const togglePlayerColumn = () => setPlayerColumnExpanded((expanded) => !expanded);
+
+  const playerWidthPx = playerColumnExpanded
+    ? expandedPlayerWidthPx
+    : COLLAPSED_PLAYER_WIDTH_PX;
 
   useLayoutEffect(() => {
-    if (playerColumnExpanded) {
-      return;
+    if (!playerColumnExpanded) {
+      const measureTruncation = () => {
+        const cells = tbodyRef.current?.querySelectorAll("[data-scorecard-player-name]");
+        if (!cells?.length) {
+          setHasTruncatedNames(false);
+          return;
+        }
+        let truncated = false;
+        for (const cell of cells) {
+          if (cell.scrollWidth > cell.clientWidth + 1) {
+            truncated = true;
+            break;
+          }
+        }
+        setHasTruncatedNames(truncated);
+      };
+
+      measureTruncation();
+      window.addEventListener("resize", measureTruncation);
+      return () => window.removeEventListener("resize", measureTruncation);
     }
 
-    const measure = () => {
-      const cells = tbodyRef.current?.querySelectorAll("[data-scorecard-player-name]");
-      if (!cells?.length) {
-        setHasTruncatedNames(false);
+    const measureExpandedWidth = () => {
+      const spans = measureRef.current?.querySelectorAll("[data-measure-name]");
+      if (!spans?.length) {
+        setExpandedPlayerWidthPx(COLLAPSED_PLAYER_WIDTH_PX);
         return;
       }
-      let truncated = false;
-      for (const cell of cells) {
-        if (cell.scrollWidth > cell.clientWidth + 1) {
-          truncated = true;
-          break;
-        }
+
+      let maxContentWidth = 0;
+      for (const span of spans) {
+        maxContentWidth = Math.max(maxContentWidth, span.getBoundingClientRect().width);
       }
-      setHasTruncatedNames(truncated);
+
+      setExpandedPlayerWidthPx(
+        Math.max(
+          maxContentWidth +
+            PLAYER_COL_HORIZONTAL_PADDING_PX +
+            PLAYER_COL_EXTRA_MARGIN_PX,
+          COLLAPSED_PLAYER_WIDTH_PX
+        )
+      );
     };
 
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    measureExpandedWidth();
+    window.addEventListener("resize", measureExpandedWidth);
+    return () => window.removeEventListener("resize", measureExpandedWidth);
   }, [playerColumnExpanded, leaderboardRows]);
 
   useEffect(() => {
@@ -171,6 +215,28 @@ export function ScorecardSection({
       {showTitle ? (
         <h3 className={sectionHeadingClassName}>Scorecard</h3>
       ) : null}
+      <div
+        ref={measureRef}
+        className="pointer-events-none absolute -left-[9999px] whitespace-nowrap text-[11px] font-medium"
+        aria-hidden
+      >
+        {leaderboardRows.map((row, index) => {
+          const thru = segmentPlayerStats(row.participantId, sortedHoles, scoreLookup).thru;
+          const rank = thru > 0 ? index + 1 : null;
+          return (
+            <span key={row.participantId} data-measure-name>
+              {rank !== null ? (
+                <>
+                  <span className="text-muted-foreground tabular-nums">{rank}.</span>{" "}
+                  {row.label}
+                </>
+              ) : (
+                row.label
+              )}
+            </span>
+          );
+        })}
+      </div>
       <div className={cn("overflow-x-auto", showBorder && "rounded-lg border")}>
         <table className="w-max min-w-full border-separate border-spacing-0 text-left text-sm">
           <thead>
@@ -178,38 +244,48 @@ export function ScorecardSection({
               <th
                 rowSpan={2}
                 data-scorecard-player-column
+                role="button"
+                tabIndex={0}
+                aria-expanded={playerColumnExpanded}
+                aria-label={
+                  playerColumnExpanded ? "Collapse player names" : "Expand player names"
+                }
+                style={stickyColStyle("player", playerWidthPx)}
                 className={cn(
-                  stickyCol("player", "header", playerColumnExpanded),
-                  playerColSize(playerColumnExpanded),
-                  "px-1.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
+                  stickyColClasses("player", "header"),
+                  "cursor-pointer select-none px-1.5 py-1.5 text-left text-[11px] font-medium text-muted-foreground"
                 )}
-              >
-                <button
-                  type="button"
-                  className="flex w-full min-w-0 items-center justify-between gap-2 text-left"
-                  aria-expanded={playerColumnExpanded}
-                  aria-label={
-                    playerColumnExpanded ? "Collapse player names" : "Expand player names"
+                onClick={togglePlayerColumn}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    togglePlayerColumn();
                   }
-                  onClick={() => setPlayerColumnExpanded((expanded) => !expanded)}
-                >
+                }}
+              >
+                <span className="flex w-full min-w-0 items-center justify-between gap-2">
                   <span>Player</span>
-                  <ChevronRight
-                    className={cn(
-                      "size-4 shrink-0 transition-transform",
-                      playerColumnExpanded && "rotate-90",
-                      hasTruncatedNames && !playerColumnExpanded
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    )}
-                    aria-hidden
-                  />
-                </button>
+                  {playerColumnExpanded ? (
+                    <ChevronLeft
+                      className="size-4 shrink-0 text-foreground"
+                      aria-hidden
+                    />
+                  ) : (
+                    <ChevronRight
+                      className={cn(
+                        "size-4 shrink-0",
+                        hasTruncatedNames ? "text-foreground" : "text-muted-foreground"
+                      )}
+                      aria-hidden
+                    />
+                  )}
+                </span>
               </th>
               <th
                 rowSpan={2}
+                style={stickyColStyle("vsPar", playerWidthPx)}
                 className={cn(
-                  stickyCol("vsPar", "header", playerColumnExpanded),
+                  stickyColClasses("vsPar", "header"),
                   summaryHeaderClass
                 )}
                 title="Versus par"
@@ -218,8 +294,9 @@ export function ScorecardSection({
               </th>
               <th
                 rowSpan={2}
+                style={stickyColStyle("thr", playerWidthPx)}
                 className={cn(
-                  stickyCol("thr", "header", playerColumnExpanded),
+                  stickyColClasses("thr", "header"),
                   summaryHeaderClass
                 )}
                 title="Holes completed"
@@ -292,12 +369,13 @@ export function ScorecardSection({
                     <td
                       data-scorecard-player-column
                       data-scorecard-player-name
+                      style={stickyColStyle("player", playerWidthPx)}
                       className={cn(
-                        stickyCol("player", "body", playerColumnExpanded),
-                        playerColSize(playerColumnExpanded),
-                        "px-1.5 py-1 text-[11px] font-medium text-foreground",
+                        stickyColClasses("player", "body"),
+                        "cursor-pointer select-none px-1.5 py-1 text-[11px] font-medium text-foreground",
                         playerColumnExpanded ? "whitespace-nowrap" : "truncate"
                       )}
+                      onClick={togglePlayerColumn}
                     >
                       {rank !== null ? (
                         <>
@@ -309,18 +387,14 @@ export function ScorecardSection({
                       )}
                     </td>
                     <td
-                      className={cn(
-                        stickyCol("vsPar", "body", playerColumnExpanded),
-                        summaryColClass
-                      )}
+                      style={stickyColStyle("vsPar", playerWidthPx)}
+                      className={cn(stickyColClasses("vsPar", "body"), summaryColClass)}
                     >
                       {vsParLabel}
                     </td>
                     <td
-                      className={cn(
-                        stickyCol("thr", "body", playerColumnExpanded),
-                        summaryColClass
-                      )}
+                      style={stickyColStyle("thr", playerWidthPx)}
+                      className={cn(stickyColClasses("thr", "body"), summaryColClass)}
                     >
                       {thrLabel}
                     </td>
