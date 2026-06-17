@@ -27,7 +27,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 - Supabase `supabase_realtime` publication includes `hole_scores`, `round_invitations`, `round_participants`, `rounds`. Membership is enforced by migration `20260527190100_realtime_publication_membership.sql`.
 - **Round page** (`use-round-realtime.ts`): low-frequency tables (participants, invites, round status) use one `refreshRoundMeta()` refetch on any change; `hole_scores` stays inline-patched for speed; resync on channel `SUBSCRIBED` and tab `visibilitychange`.
-- **Hub** (`home-invites.tsx`): pending invites for current user; same resync on subscribe + visibility.
+- **Hub** (`components/home/invites.tsx`): pending invites for current user; same resync on subscribe + visibility.
 - **Live flows verified in pre-flight:** invite arrival on hub, invite accept in round, score updates for observer, round completion for observer. Re-test after deploy if publication or code changed.
 
 **Known blockers before field test:**
@@ -203,7 +203,7 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Round display name | `lib/rounds/round-display-name.ts`, `draft-round-title-portal.tsx`, `create-round-form.tsx` |
 | Draft setup UI | `draft-players-panel.tsx`, `draft-setup-deck.tsx`, `draft-starting-hole-field.tsx`, `lib/scoring/hole-order.ts` |
 | Section headings | `lib/ui/section-heading.ts` |
-| Hub / home | `app/page.tsx`, `app/home-*.tsx`, `lib/home/load-home-data.ts`, `lib/ui/{page-chrome,home-greeting}.ts` |
+| Hub / home | `app/page.tsx`, `components/home/*`, `lib/home/load-home-data.ts`, `lib/ui/{page-chrome,home-greeting}.ts` |
 | App chrome | `components/layout/bottom-tab-bar.tsx`, `components/layout/app-chrome.tsx` |
 | Courses browse | `app/courses/`, `lib/courses/`, `components/courses/course-search-dropdown.tsx` |
 | Draft round create | `lib/rounds/round-draft-actions.ts` (`createDraftRound`), `components/rounds/start-round-button.tsx` |

@@ -6,9 +6,9 @@ import {
   homeRowTitleClassName,
 } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
-import { HomeInvites } from "./home-invites";
-import { HomeRecentRounds } from "./home-recent-rounds";
-import { HomeGetStarted } from "./home-get-started";
+import { HomeInvites } from "@/components/home/invites";
+import { HomeRecentRounds } from "@/components/home/recent-rounds";
+import { HomeGetStarted } from "@/components/home/get-started";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 

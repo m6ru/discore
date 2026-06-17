@@ -4,8 +4,8 @@ import { createServerClient } from "@/lib/supabase/server";
 import { getAuthUserFirstName } from "@/lib/auth/get-auth-user-first-name";
 import { getHomePersonalSubtitle } from "@/lib/ui/home-greeting";
 import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
-import { HomeSections } from "./home-sections";
-import { HomeSectionsSkeleton } from "./home-sections-skeleton";
+import { HomeSections } from "@/components/home/sections";
+import { HomeSectionsSkeleton } from "@/components/home/sections-skeleton";
 import { Button } from "@/components/ui/button";
 
 export default async function HomePage() {
