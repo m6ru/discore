@@ -57,14 +57,15 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 ## Current capabilities
 
-- **Hub** (`app/page.tsx`): resume active rounds, pending invites, start round / history / account
+- **Hub** (`app/page.tsx`): header paints after auth; body streams via `Suspense`. `loadHomeData` — 3 parallel queries (profile, invites, participations→rounds). Indexes on `round_participants(user_id)`, pending invites, `rounds(status)`.
+- **Bottom nav:** Home · Play (`/courses`) · History (`/rounds`) · Profile (`/auth`). Tab bar hidden on live round routes (`/rounds/[id]`).
 - **Auth & profile** (`app/auth`, `lib/profiles`): sign-in, save profile, `display_name` = first + last (Option A for labels)
-- **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); **course-first browse** at `/courses` and `/courses/[slug]` (hub search + Start round funnel); GPS nearby-sort deferred
+- **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); browse at `/courses` and `/courses/[slug]` (Play tab); GPS nearby-sort deferred
 - **Rounds:** create draft → invite registered users or add guests → start when no pending invites; **draft setup UI** at `/rounds/[id]` (unified roster, starting-hole picker, editable title, invite/guest add)
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
-- **Active round:** Single-player stepper + selectable roster (hole / total / vs par), OB toggle, header menu (scorecard dialog, round info, abandon), optional **round name** (default "Practice round"), configurable **starting hole** (play order wraps through full layout), live scorecard (Par/Thr/Total + draft strokes for scorer), results pool view, end-of-round confirm deck, front-9 / final summaries, hole navigation
-- **Observer:** read-only UI + Realtime scorecard; scorecard-first (no pool list during active); `ActiveHoleStatus`; score-derived current hole; draft “waiting to start” copy
-- **Completed round:** Results of the pool + scorecard on same route; scorer stays on page after confirm; bottom tab bar (no footer links)
+- **Active round:** Single-player stepper + selectable roster (hole score / total / vs par; **Hide scores** menu toggle hides total + vs par), OB toggle, header menu (scorecard dialog, hide/show scores, round info, abandon), optional **round name**, configurable **starting hole**, live scorecard (sticky cols, expandable player names when truncated, auto-scroll to current hole), hole notes on `ActiveHoleStatus`, results pool when scorer finishes all holes or on completed/abandoned view, end-of-round confirm deck, hole navigation
+- **Observer:** read-only UI + Realtime scorecard; scorecard-first (no pool list during active); `ActiveHoleStatus`; score-derived current hole; draft “waiting to start” copy; bottom tab bar throughout active round
+- **Completed / abandoned round:** Shared finished layout via `isFinishedRoundStatus` — Results of the pool + scorecard on same route; status badge + date in header; scorer stays on page after confirm; bottom tab bar
 - **History:** `app/rounds/page.tsx` for past rounds
 - **Code layout:** `lib/scoring` (pure math), `lib/rounds` + `lib/profiles` (actions), `app/rounds/[roundId]/` (orchestrator, hooks, components)
 
@@ -78,8 +79,22 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 2. ~~**Deploy**~~ — Done (Vercel + Supabase Auth URLs).
 3. ~~**Pre-flight + Realtime**~~ — Done (publication + consolidated round/hub subscriptions).
 4. ~~**Backbone refactor**~~ — Done (typed Supabase factories, strict `RoundStatus`, `/lib/scoring` extracted + tested, scorer-as-participant trigger, signup-name trigger).
-5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). Draft setup + active scorecard + observer + completed round done; next: home, courses, or history.
+5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). **Round route done.** **Home + nav shell done.** **Next:** Courses enrichment (detail pages, GPS nearby) or **Stats session** (History sub-section).
 6. **Field test on course** — Re-run when ready; capture friction on course.
+
+### Next chat (copy-paste)
+
+```
+Continue Discore UI per UI-ROADMAP.md and DESIGN-PATTERNS.md. Read STATUS.md first.
+
+Round session at /rounds/[roundId] is the reference — don't regress it.
+
+Pick the next slice:
+- Courses — course detail enrichment (contact, map), GPS nearby sort
+- History / Stats — tier-1 player stats, optional gamification
+
+One slice per chat. Run tsc, lint, test, build before commit.
+```
 
 ---
 
@@ -91,7 +106,8 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 - **Phase 5:** Richer per-player stats and comparisons.
 - **Phase 6:** Ratings, tournaments (`tournament_id` column reserved).
 - Smart-ID / magic-link auth.
-- **Geolocation “courses near me”:** after course browse ships — sort `/courses` by distance when browser geolocation allowed (`courses.lat`/`lng` already seeded).
+- **Geolocation “courses near me”:** next Courses slice — sort `/courses` by distance when browser geolocation allowed (`courses.lat`/`lng` in schema; seed coordinates TBD).
+- **Course detail enrichment:** contact, map, extended copy on `/courses/[slug]` — next Courses slice.
 
 ---
 
@@ -145,7 +161,7 @@ Do not reintroduce `utils/supabase/*`.
 - Project ref: `uxvrnvsgqyctpxjiziyp`
 - Per machine: `supabase login`, `supabase link --project-ref uxvrnvsgqyctpxjiziyp`
 
-### Migrations (21)
+### Migrations (22)
 
 1. `20260420185000_initial_schema.sql`
 2. `20260420185100_rls_policies.sql`
@@ -168,6 +184,7 @@ Do not reintroduce `utils/supabase/*`.
 19. `20260527190100_realtime_publication_membership.sql`
 20. `20260527190200_signup_requires_first_last_name.sql`
 21. `20260611180000_rounds_name.sql`
+22. `20260617145700_home_list_query_indexes.sql`
 
 Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds` (incl. optional `name`), `round_participants`, `round_invitations`, `hole_scores`. RLS on all.
 
@@ -180,13 +197,14 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Area | Paths |
 |------|--------|
 | Scoring math | `lib/scoring/{types,stats}.ts` |
-| Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows}.ts` |
+| Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows,round-status}.ts` |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
 | Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` (scorecard, draft setup deck, active scoring, results, completion) |
 | Round display name | `lib/rounds/round-display-name.ts`, `draft-round-title-portal.tsx`, `create-round-form.tsx` |
 | Draft setup UI | `draft-players-panel.tsx`, `draft-setup-deck.tsx`, `draft-starting-hole-field.tsx`, `lib/scoring/hole-order.ts` |
 | Section headings | `lib/ui/section-heading.ts` |
-| Hub / invites | `app/page.tsx`, `app/home-invites.tsx`, `app/home-course-search.tsx` |
+| Hub / home | `app/page.tsx`, `app/home-*.tsx`, `lib/home/load-home-data.ts`, `lib/ui/{page-chrome,home-greeting}.ts` |
+| App chrome | `components/layout/bottom-tab-bar.tsx`, `components/layout/app-chrome.tsx` |
 | Courses browse | `app/courses/`, `lib/courses/`, `components/courses/course-search-dropdown.tsx` |
 | Draft round create | `lib/rounds/round-draft-actions.ts` (`createDraftRound`), `components/rounds/start-round-button.tsx` |
 

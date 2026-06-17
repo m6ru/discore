@@ -1,0 +1,72 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/lib/database.types";
+import { pickOne } from "@/lib/supabase/select-helpers";
+import { isProfileOnboardingComplete } from "@/lib/profiles/is-profile-onboarding-complete";
+import {
+  HOME_PARTICIPATION_ROW_LIMIT,
+  parseHomeParticipantRounds,
+} from "./parse-participant-rounds";
+import type { HomeData, HomeInvite } from "./types";
+
+type Client = SupabaseClient<Database>;
+
+const PARTICIPATION_ROUND_STATUSES = ["active", "completed", "draft", "abandoned"] as const;
+
+export async function loadHomeData(
+  supabase: Client,
+  userId: string
+): Promise<HomeData> {
+  const [profileResult, invitesResult, participationResult] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("first_name, display_name, avatar_url, city")
+      .eq("id", userId)
+      .maybeSingle(),
+    supabase
+      .from("round_invitations")
+      .select(
+        "id, round_id, created_at, rounds!inner(id, layouts(name, courses(name)), scorer:profiles!rounds_scorer_id_fkey(display_name))"
+      )
+      .eq("invited_user_id", userId)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("round_participants")
+      .select(
+        "rounds!inner(id, scorer_id, status, started_at, completed_at, layouts(name, courses(name)))"
+      )
+      .eq("user_id", userId)
+      .in("rounds.status", [...PARTICIPATION_ROUND_STATUSES])
+      .order("joined_at", { ascending: false })
+      .limit(HOME_PARTICIPATION_ROW_LIMIT),
+  ]);
+
+  const profile = profileResult.data;
+  const { activeRounds, recentRounds, hasJoinedRound } = parseHomeParticipantRounds(
+    participationResult.data ?? []
+  );
+
+  const invites: HomeInvite[] = (invitesResult.data ?? []).map((row) => {
+    const round = pickOne(row.rounds);
+    const layout = pickOne(round?.layouts);
+    const course = pickOne(layout?.courses);
+    const scorer = pickOne(round?.scorer);
+    return {
+      id: row.id,
+      round_id: row.round_id,
+      created_at: row.created_at,
+      course_name: course?.name ?? null,
+      layout_name: layout?.name ?? null,
+      inviter_display_name: scorer?.display_name ?? null,
+    };
+  });
+
+  return {
+    profile,
+    invites,
+    activeRounds,
+    recentRounds,
+    hasJoinedRound,
+    profileOnboardingComplete: profile ? isProfileOnboardingComplete(profile) : false,
+  };
+}

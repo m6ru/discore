@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CirclePlay, Home, MapPin, User } from "lucide-react";
+import { CirclePlay, History, Home, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type TabItem = {
@@ -22,21 +22,21 @@ const TABS: TabItem[] = [
   },
   {
     href: "/courses",
-    label: "Courses",
-    icon: MapPin,
+    label: "Play",
+    icon: CirclePlay,
     isActive: (pathname) =>
       pathname === "/courses" || pathname.startsWith("/courses/"),
-  },
-  {
-    href: "/courses",
-    label: "Start round",
-    icon: CirclePlay,
-    isActive: (pathname) => pathname === "/courses",
     emphasized: true,
   },
   {
+    href: "/rounds",
+    label: "History",
+    icon: History,
+    isActive: (pathname) => pathname === "/rounds",
+  },
+  {
     href: "/auth",
-    label: "Account",
+    label: "Profile",
     icon: User,
     isActive: (pathname) => pathname === "/auth" || pathname.startsWith("/auth/"),
   },
@@ -68,7 +68,7 @@ export function BottomTabBar({ show }: { show: boolean }) {
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       aria-label="Main navigation"
     >
-      <ul className="mx-auto flex h-[4.5rem] max-w-2xl items-stretch px-2">
+      <ul className="mx-auto flex h-[4.5rem] max-w-3xl items-stretch px-2">
         {TABS.map((tab) => {
           const active = tab.isActive(pathname);
           const Icon = tab.icon;

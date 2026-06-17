@@ -4,17 +4,19 @@ import { createServerClient } from "@/lib/supabase/server";
 import { pickOne } from "@/lib/supabase/select-helpers";
 import { Badge } from "@/components/ui/badge";
 import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   formatStatusLabel,
   statusBadgeVariant,
 } from "@/lib/rounds/format-round-status";
 import { formatRoundDisplayDate } from "@/lib/format/round-date";
-import { HISTORY_ROUND_STATUSES } from "@/lib/rounds/round-status";
+import { PAST_ROUND_STATUSES } from "@/lib/rounds/round-status";
+import {
+  homeRowLinkClassName,
+  homeRowMetaClassName,
+  homeRowTitleClassName,
+  pageSubtitleClassName,
+  pageTitleClassName,
+} from "@/lib/ui/page-chrome";
+import { HistoryViewedMarker } from "./history-viewed-marker";
 
 export default async function RoundsHistoryPage() {
   const supabase = await createServerClient();
@@ -32,37 +34,33 @@ export default async function RoundsHistoryPage() {
       "id, status, started_at, completed_at, layouts(name, courses(name)), round_participants!inner(user_id)"
     )
     .eq("round_participants.user_id", user.id)
-    .in("status", HISTORY_ROUND_STATUSES)
-    .order("started_at", { ascending: false, nullsFirst: false });
+    .in("status", [...PAST_ROUND_STATUSES])
+    .order("completed_at", { ascending: false, nullsFirst: false });
 
   const rounds = data ?? [];
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
-      <header className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Round history</h1>
-        <p className="text-sm text-muted-foreground">Your past and active rounds.</p>
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+      <HistoryViewedMarker />
+      <header className="space-y-1">
+        <h1 className={pageTitleClassName}>History</h1>
+        <p className={pageSubtitleClassName}>Your completed and abandoned rounds.</p>
       </header>
 
       {error ? (
-        <p className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
           Failed to load rounds: {error.message}
         </p>
       ) : null}
 
       {!error && rounds.length === 0 ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>No rounds yet</CardTitle>
-            <CardDescription>
-              Start one from the home screen or browse courses to pick a layout.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <p className={homeRowMetaClassName}>
+          No rounds yet. Use the Play tab to pick a course and start your first round.
+        </p>
       ) : null}
 
       {rounds.length > 0 ? (
-        <ul className="space-y-3">
+        <ul>
           {rounds.map((round) => {
             const layout = pickOne(round.layouts);
             const course = pickOne(layout?.courses);
@@ -71,22 +69,18 @@ export default async function RoundsHistoryPage() {
 
             return (
               <li key={round.id}>
-                <Link href={`/rounds/${round.id}`} className="block">
-                  <Card className="py-4 transition-colors hover:bg-accent/40">
-                    <CardHeader className="gap-2">
-                      <div className="flex items-start justify-between gap-3">
-                        <CardTitle className="truncate text-base">
-                          {course?.name ?? "Unknown course"}
-                        </CardTitle>
-                        <Badge variant={statusBadgeVariant(round.status)}>
-                          {formatStatusLabel(round.status)}
-                        </Badge>
-                      </div>
-                      <CardDescription>
-                        {layout?.name ?? "Unknown layout"} · {dateLabel}
-                      </CardDescription>
-                    </CardHeader>
-                  </Card>
+                <Link href={`/rounds/${round.id}`} className={homeRowLinkClassName}>
+                  <div className="min-w-0">
+                    <p className={`truncate ${homeRowTitleClassName}`}>
+                      {course?.name ?? "Unknown course"}
+                    </p>
+                    <p className={`truncate ${homeRowMetaClassName}`}>
+                      {layout?.name ?? "Unknown layout"} · {dateLabel}
+                    </p>
+                  </div>
+                  <Badge variant={statusBadgeVariant(round.status)} className="shrink-0">
+                    {formatStatusLabel(round.status)}
+                  </Badge>
                 </Link>
               </li>
             );

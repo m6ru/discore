@@ -4,45 +4,26 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { pickOne } from "@/lib/supabase/select-helpers";
+import type { HomeInvite } from "@/lib/home/types";
 import { toastError } from "@/lib/ui/toast-notify";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  homeRowMetaClassName,
+  homeRowTitleClassName,
+} from "@/lib/ui/page-chrome";
+import { sectionHeadingClassName } from "@/lib/ui/section-heading";
+import { Button } from "@/components/ui/button";
 
-export type InviteWithContext = {
-  id: string;
-  round_id: string;
-  created_at: string;
-  course_name: string | null;
-  layout_name: string | null;
-  inviter_display_name: string | null;
-};
+export type { HomeInvite as InviteWithContext };
 
 type Props = {
   currentUserId: string;
-  invites: InviteWithContext[];
+  invites: HomeInvite[];
 };
-
-function formatDateTime(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 export function HomeInvites({ currentUserId, invites }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
-  const [inviteItems, setInviteItems] = useState<InviteWithContext[]>(invites);
+  const [inviteItems, setInviteItems] = useState<HomeInvite[]>(invites);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const loadPendingInvites = useCallback(async () => {
@@ -117,10 +98,7 @@ export function HomeInvites({ currentUserId, invites }: Props) {
     };
   }, [supabase, currentUserId, loadPendingInvites]);
 
-  async function onRespond(
-    invite: InviteWithContext,
-    nextStatus: "accepted" | "declined"
-  ) {
+  async function onRespond(invite: HomeInvite, nextStatus: "accepted" | "declined") {
     setBusyId(invite.id);
 
     if (nextStatus === "accepted") {
@@ -165,48 +143,42 @@ export function HomeInvites({ currentUserId, invites }: Props) {
   }
 
   return (
-    <Card className="py-4">
-      <CardHeader>
-        <CardTitle>Pending invites</CardTitle>
-        <CardDescription>Accept to join the round setup.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <ul className="space-y-3">
-          {inviteItems.map((invite) => (
-            <li key={invite.id} className="rounded-lg border p-4">
-              <p className="font-medium">{invite.course_name ?? "Unknown course"}</p>
-              <p className="text-sm text-muted-foreground">
-                {invite.layout_name ?? "Unknown layout"}
+    <section className="space-y-2">
+      <h2 className={sectionHeadingClassName}>Pending invites</h2>
+      <ul>
+        {inviteItems.map((invite) => (
+          <li key={invite.id} className="space-y-3 py-2">
+            <div className="space-y-0.5 text-sm">
+              <p className={homeRowTitleClassName}>{invite.course_name ?? "Unknown course"}</p>
+              <p className={homeRowMetaClassName}>
+                {invite.layout_name ?? "Unknown layout"} · Invited by{" "}
+                {invite.inviter_display_name ?? "the scorer"}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Invited by {invite.inviter_display_name ?? "the scorer"} ·{" "}
-                {formatDateTime(invite.created_at)}
-              </p>
-              <div className="mt-4 flex gap-2">
-                <Button
-                  type="button"
-                  size="lg"
-                  className="min-h-11 flex-1"
-                  onClick={() => void onRespond(invite, "accepted")}
-                  disabled={busyId === invite.id}
-                >
-                  Accept
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="lg"
-                  className="min-h-11 flex-1"
-                  onClick={() => void onRespond(invite, "declined")}
-                  disabled={busyId === invite.id}
-                >
-                  Decline
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </CardContent>
-    </Card>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                size="lg"
+                className="min-h-11 flex-1"
+                onClick={() => void onRespond(invite, "accepted")}
+                disabled={busyId === invite.id}
+              >
+                Accept
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="min-h-11 flex-1"
+                onClick={() => void onRespond(invite, "declined")}
+                disabled={busyId === invite.id}
+              >
+                Decline
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

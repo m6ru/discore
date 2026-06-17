@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
+import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
 import { CoursesList } from "./courses-list";
 
 export default async function CoursesPage() {
@@ -16,16 +17,14 @@ export default async function CoursesPage() {
   const { courses, error: coursesError } = await loadCourseSummaries(supabase);
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-6">
-      <header className="space-y-2">
-        <h1 className="text-2xl font-bold">Courses</h1>
-        <p className="text-sm text-muted-foreground">
-          Pick a course, then choose a layout to start a round.
-        </p>
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+      <header className="space-y-1">
+        <h1 className={pageTitleClassName}>Courses</h1>
+        <p className={pageSubtitleClassName}>Pick a layout to start a round.</p>
       </header>
 
       {coursesError ? (
-        <p className="rounded-md border bg-muted p-3 text-sm text-muted-foreground">
+        <p className="rounded-lg border bg-muted p-3 text-sm text-muted-foreground">
           Failed to load courses: {coursesError.message}
         </p>
       ) : (

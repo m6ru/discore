@@ -12,5 +12,8 @@ export function isFinishedRoundStatus(status: RoundStatus): boolean {
   return status === "completed" || status === "abandoned";
 }
 
-/** Round history list: active plus finished rounds. */
-export const HISTORY_ROUND_STATUSES = ["active", "completed", "abandoned"] as const;
+/** Past rounds for history list (active rounds surface on Home). */
+export const PAST_ROUND_STATUSES = ["completed", "abandoned"] as const;
+
+/** Completed rounds only — inputs for player stats (Phase 5). */
+export const STATS_ROUND_STATUSES = ["completed"] as const;

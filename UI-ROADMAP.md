@@ -19,24 +19,64 @@ Record decisions that change behaviour in **STATUS.md**. Optional one-liner unde
 
 ---
 
+## Bottom navigation (locked)
+
+| Tab | Route | Role |
+|-----|-------|------|
+| **Home** | `/` | Activity hub — resume, invites, welcome, 3 recent completed rounds |
+| **Play** | `/courses` | Start casual round (emphasized center tab); page title **Courses** |
+| **History** | `/rounds` | Past rounds list (`completed` + `abandoned`; active rounds stay on Home) |
+| **Profile** | `/auth` | Account and settings |
+
+**Later:** fifth **Competitions** tab when events ship — do not merge with Play.
+
+---
+
 ## Journey order (suggested)
 
-Work outward from the round you like:
+0. Active scorer round — **reference, don't break**
+1. Draft → start — **done**
+2. Observer during round — **done**
+3. End of round / completed / abandoned — **done**
+4. **Home + nav shell** — **done:** tabs; `loadHomeData` (3 queries); `Suspense` streaming; list indexes migration
+5. **Courses (Play tab)** — header done; **next:** course detail enrichment (contact, map, details), GPS nearby sort when `lat`/`lng` seeded
+6. **History** — list done; **next session:** stats sub-section (Phase 5), gamified milestones
+7. Profile — functional; polish when needed
 
-0. Active scorer round — **reference, don't break**; scorecard polish done (live Par/Thr/Total, double-bogey tone, tighter columns, `sectionHeadingClassName`)
-1. Draft → start (same route) — **done:** unified Players panel, + add flow, starting-hole picker, editable header title, X delete draft, fixed Start deck; no draft scorecard
-2. Observer during round — **done:** scorecard-first; `ActiveHoleStatus`; no pool list while active; draft waiting copy
-3. End of round / completed — **done:** pool results + scorecard; scorer stays on page; tab bar replaces footer links
-4. Home
-5. Courses
-6. History (`/rounds`)
-7. Account / auth — lowest priority until needed
+---
 
-Order is flexible; user picks what hurts most.
+## Home (settled)
+
+- **Discore** title + personal subtitle (`Hei {name}, lets throw some discs!`)
+- **Continue round** when `status = active`
+- **Pending invites** with Realtime
+- **Get started** checklist — items drop off when round joined, History visited, profile enriched (avatar or city)
+- **Recent rounds** — last 3 completed; section always visible when signed in
+
+---
+
+## History & stats (planned)
+
+- **History tab** = round list for now (`PAST_ROUND_STATUSES`)
+- **Stats** (separate session): `STATS_ROUND_STATUSES` = `completed` only until competition rounds exist
+- Tier 1 stats when built: score distribution (eagle→double+), best round, OB count, rounds played
+- Tier 2+: trends, course breakdowns, friend comparisons
+- Tier 3+: GIR, putting (needs new per-hole capture)
+- Gamification (bogey-free streaks, ace milestones) — after core stats
+
+---
+
+## Courses / Play (settled header, more to build)
+
+- Tab label **Play**; page title **Courses**; subtitle *Pick a layout to start a round.*
+- Search + flat course list (existing)
+- **Next:** rich course pages (contact, map, terrain copy), GPS “near me” sort (browser geolocation + `courses.lat`/`lng`)
 
 ---
 
 ## Deferred (not this track)
 
 - PWA / install-to-homescreen — later, see STATUS
-- Phase 5 stats, GPS sort, guest claim — STATUS "Later"
+- Phase 6 competitions / ratings — STATUS "Later"
+- Guest claim (D-guest) — STATUS "Later"
+- **Social / player discovery** — search other players, view friends' rounds, follow graph; invite flow covers MVP social needs
