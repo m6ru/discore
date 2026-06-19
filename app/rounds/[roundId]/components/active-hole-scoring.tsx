@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { LeaderboardRow, HoleRow, ParticipantRow } from "../round-types";
@@ -54,6 +54,14 @@ function firstParticipantWithoutHoleScore(
     }
   }
   return participants[0]?.id ?? null;
+}
+
+function getNextParticipantId(participants: ParticipantRow[], currentId: string): string {
+  const index = participants.findIndex((participant) => participant.id === currentId);
+  if (index === -1) {
+    return participants[0]!.id;
+  }
+  return participants[(index + 1) % participants.length]!.id;
 }
 
 type CompactStepperProps = {
@@ -163,6 +171,19 @@ export function ActiveHoleScoring({
   const allHoleScoresEntered = scoringParticipants.every(
     (participant) => getStrokeInputValue(participant.id).trim().length > 0
   );
+  const currentPlayerHasScore = getStrokeInputValue(selectedParticipant.id).trim().length > 0;
+  const showNextPlayer =
+    scoringParticipants.length > 1 && !allHoleScoresEntered && currentPlayerHasScore;
+
+  const handleForwardClick = () => {
+    if (showNextPlayer) {
+      setSelectedParticipantId(
+        getNextParticipantId(scoringParticipants, selectedParticipant.id)
+      );
+      return;
+    }
+    void onSaveAndAdvanceHole();
+  };
 
   return (
     <>
@@ -218,14 +239,22 @@ export function ActiveHoleScoring({
             </Button>
             <Button
               type="button"
-              variant="default"
+              variant={showNextPlayer ? "outline" : "default"}
               className="min-h-11 rounded-xl"
-              aria-label={isLastHole ? "Save scores" : "Save and go to next hole"}
-              disabled={isSubmitting || !allHoleScoresEntered}
-              onClick={() => void onSaveAndAdvanceHole()}
+              aria-label={
+                showNextPlayer
+                  ? "Next player"
+                  : isLastHole
+                    ? "Save scores"
+                    : "Save and go to next hole"
+              }
+              disabled={isSubmitting || (!showNextPlayer && !allHoleScoresEntered)}
+              onClick={handleForwardClick}
             >
               {isSubmitting ? (
                 <span className="text-sm">…</span>
+              ) : showNextPlayer ? (
+                <ChevronDown className="size-5" aria-hidden />
               ) : (
                 <ChevronRight className="size-5" aria-hidden />
               )}
