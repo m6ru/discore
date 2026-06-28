@@ -10,10 +10,11 @@ Phase 4 bootstrap (shadcn, theme, scorer round) is **done**. Focus now: consiste
 
 1. **One screen or journey slice per chat** — don't reskin the whole app at once.
 2. **Talk before pixels** — for any screen you haven't shaped together yet, ask the user what the screen is for, what matters most, and what's out of scope. Don't fill in IA from assumptions.
-3. **Converge on patterns** from the active scorer round (`/rounds/[roundId]`, scorer, active). Other screens can stay inconsistent until you touch them.
-4. **Don't regress** the scorer flow (roster, menu, scorecard dialog, completion deck).
-5. **Checks before commit:** `tsc`, `lint`, `test`, `build`.
-6. **No** `/lib/scoring`, migrations, or RLS changes unless explicitly scoped.
+3. **Simple first** — read [BLUEPRINT.md §2a](BLUEPRINT.md). One screen slice = usually one main client file. No new `lib/` files unless shared or scoring-grade math. Talk through the approach before creating files.
+4. **Converge on patterns** from the active scorer round (`/rounds/[roundId]`, scorer, active). Other screens can stay inconsistent until you touch them.
+5. **Don't regress** the scorer flow (roster, menu, scorecard dialog, completion deck).
+6. **Checks before commit:** `tsc`, `lint`, `test`, `build`.
+7. **No** `/lib/scoring`, migrations, or RLS changes unless explicitly scoped.
 
 Record decisions that change behaviour in **STATUS.md**. Optional one-liner under a screen in the journey list below when something is settled.
 

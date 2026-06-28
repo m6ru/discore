@@ -229,6 +229,7 @@ Planned frictionless onboarding: score anonymously with local-only storage, then
 
 ### Repo guardrails
 
+- **Simplicity:** Follow [BLUEPRINT.md §2a](BLUEPRINT.md) — no file sprawl, no over-engineering; think before extracting helpers.
 - LF line endings via `.gitattributes`
 - If lint reports `lib/database.types.ts` as binary, regenerate with typegen command above
 

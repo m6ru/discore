@@ -28,6 +28,34 @@
 
 ---
 
+## 2a. Code simplicity (non-negotiable)
+
+Discore is a **one-person hobby app** for fast on-course scoring — not an enterprise platform. Code must stay **simple, short, and obvious**.
+
+**Think before building.** State the user-facing behaviour in one sentence before adding files. If the feature fits in one screen component, keep it there.
+
+**Default placement**
+- UI + screen logic → `app/…` client component for that screen
+- Server fetch / actions → `lib/rounds`, `lib/profiles`, or existing loaders
+- Extract to `lib/` only when **two or more screens** share the same logic, or when pure math must be tested (`/lib/scoring` is the model — not every helper)
+
+**Do not**
+- Create a new file per tiny helper, hook, or preference
+- Add `lib/preferences/`, micro-hooks, or “utils” folders for one-off features
+- Add unit tests for trivial formatting, sorting, or UI glue unless explicitly requested
+- Build for hypothetical reuse, “clean architecture”, or large-team workflows
+
+**Prefer**
+- One readable client file (~150–250 lines) over five files at ~40 lines each
+- Inline small helpers at the bottom of the screen file
+- Reuse existing patterns in the screen you are touching (e.g. `/rounds/[roundId]`, `/courses/courses-list.tsx`)
+
+**Speed matters.** Scorers use this on a phone between throws. Fewer layers = faster to ship and faster to debug.
+
+**Example (courses):** Sorting by distance + geolocation + first-visit prompt belong in `courses-list.tsx` plus at most one shared module for `localStorage` keys used from Profile — not a spread of hooks and display libraries.
+
+---
+
 ## 3. Architecture: Single-Source-of-Truth Data Flow
 
 One registered user per round is the **Scorer** (the round creator). All other participants are **Observers**.

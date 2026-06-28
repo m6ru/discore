@@ -7,6 +7,7 @@ Read it before making any architectural decisions, adding dependencies, or creat
 For current implementation state and priorities, read `STATUS.md`. For UI/UX work, also read `UI-ROADMAP.md` and `DESIGN-PATTERNS.md`.
 
 Key rules from the blueprint:
+- **Keep it simple:** BLUEPRINT §2a — one-person app; prefer one screen file over many `lib/` helpers; think before building.
 - Application source files: `.ts` / `.tsx` only (`app/`, `lib/`, `components/`). Tooling configs are exempt.
 - No `any` in `/lib/scoring`.
 - Supabase dual-client: never mix browser and server clients.
