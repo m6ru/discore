@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { mapsSearchUrl } from "@/lib/courses/distance";
 import { createServerClient } from "@/lib/supabase/server";
 import { StartRoundButton } from "@/components/rounds/start-round-button";
 
@@ -13,7 +14,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
 
   const { data: course, error: courseError } = await supabase
     .from("courses")
-    .select("id, name, slug, location, terrain_type, difficulty_tier, details")
+    .select("id, name, slug, location, lat, lng, terrain_type, difficulty_tier, details")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -28,6 +29,9 @@ export default async function CourseDetailPage({ params }: PageProps) {
     .eq("is_active", true)
     .order("name", { ascending: true });
 
+  const { lat, lng } = course;
+  const mapsUrl = lat !== null && lng !== null ? mapsSearchUrl(lat, lng) : null;
+
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-8">
       <header className="space-y-2">
@@ -38,6 +42,16 @@ export default async function CourseDetailPage({ params }: PageProps) {
         </p>
         <h1 className="text-2xl font-bold">{course.name}</h1>
         <p className="text-sm text-muted-foreground">{course.location}</p>
+        {mapsUrl ? (
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-sm text-primary underline underline-offset-4"
+          >
+            Open in Maps
+          </a>
+        ) : null}
         {course.terrain_type || course.difficulty_tier ? (
           <p className="text-sm text-muted-foreground">
             {[course.terrain_type, course.difficulty_tier].filter(Boolean).join(" · ")}

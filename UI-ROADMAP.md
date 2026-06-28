@@ -68,9 +68,9 @@ Record decisions that change behaviour in **STATUS.md**. Optional one-liner unde
 
 ## Courses / Play (settled header, more to build)
 
-- Tab label **Play**; page title **Courses**; subtitle *Pick a layout to start a round.*
-- Search + flat course list (existing)
-- **Next:** rich course pages (contact, map, terrain copy), GPS “near me” sort (browser geolocation + `courses.lat`/`lng`)
+- Tab label **Play**; page title **Courses**; subtitle *Pick a course to play.*
+- Search + compact course list; nearby sort when user shares location (`lat`/`lng` in DB)
+- **Next:** map view toggle (follow-up slice)
 
 ---
 

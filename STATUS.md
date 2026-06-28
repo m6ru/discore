@@ -60,10 +60,10 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 - **Hub** (`app/page.tsx`): header paints after auth; body streams via `Suspense`. `loadHomeData` — 3 parallel queries (profile, invites, participations→rounds). Indexes on `round_participants(user_id)`, pending invites, `rounds(status)`.
 - **Bottom nav:** Home · Play (`/courses`) · History (`/rounds`) · Profile (`/auth`). Tab bar hidden on live round routes (`/rounds/[id]`).
 - **Auth & profile** (`app/auth`, `lib/profiles`): sign-in, save profile, `display_name` = first + last (Option A for labels)
-- **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); browse at `/courses` and `/courses/[slug]` (Play tab); GPS nearby-sort deferred
+- **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); browse at `/courses` and `/courses/[slug]` (Play tab); **nearby sort** (browser geolocation + `lat`/`lng` when seeded), compact list rows, Open in Maps on detail
 - **Rounds:** create draft → invite registered users or add guests → start when no pending invites; **draft setup UI** at `/rounds/[id]` (unified roster, starting-hole picker, editable title, invite/guest add)
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
-- **Active round:** Single-player stepper + selectable roster (hole score / total / vs par; **Hide scores** menu toggle hides total + vs par), OB toggle, header menu (scorecard dialog, hide/show scores, round info, abandon), optional **round name**, configurable **starting hole**, live scorecard (sticky cols, expandable player names when truncated, auto-scroll to current hole), hole notes on `ActiveHoleStatus`, results pool when scorer finishes all holes or on completed/abandoned view, end-of-round confirm deck, hole navigation
+- **Active round:** Single-player stepper + selectable roster (hole score / total / vs par; **Hide scores** menu toggle hides total + vs par), OB toggle, header menu (scorecard dialog, hide/show scores, round info, abandon), optional **round name**, configurable **starting hole**, live scorecard (sticky cols, expandable player names when truncated, auto-scroll to current hole), hole notes on `ActiveHoleStatus`, results pool when scorer finishes all holes or on completed/abandoned view, end-of-round confirm deck, hole navigation, **multi-player next-player button** (`↓` until all scores entered, then green `→` advance hole)
 - **Observer:** read-only UI + Realtime scorecard; scorecard-first (no pool list during active); `ActiveHoleStatus`; score-derived current hole; draft “waiting to start” copy; bottom tab bar throughout active round
 - **Completed / abandoned round:** Shared finished layout via `isFinishedRoundStatus` — Results of the pool + scorecard on same route; status badge + date in header; scorer stays on page after confirm; bottom tab bar
 - **History:** `app/rounds/page.tsx` for past rounds
@@ -79,7 +79,7 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 2. ~~**Deploy**~~ — Done (Vercel + Supabase Auth URLs).
 3. ~~**Pre-flight + Realtime**~~ — Done (publication + consolidated round/hub subscriptions).
 4. ~~**Backbone refactor**~~ — Done (typed Supabase factories, strict `RoundStatus`, `/lib/scoring` extracted + tested, scorer-as-participant trigger, signup-name trigger).
-5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). **Round route done.** **Home + nav shell done.** **Next:** Courses enrichment (detail pages, GPS nearby) or **Stats session** (History sub-section).
+5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). **Round route done.** **Home + nav shell done.** **Courses list slice done.** **Next:** Courses map view, backfill coords in seeds, or **Stats session** (History sub-section).
 6. **Field test on course** — Re-run when ready; capture friction on course.
 
 ### Next chat (copy-paste)
@@ -90,7 +90,7 @@ Continue Discore UI per UI-ROADMAP.md and DESIGN-PATTERNS.md. Read STATUS.md fir
 Round session at /rounds/[roundId] is the reference — don't regress it.
 
 Pick the next slice:
-- Courses — course detail enrichment (contact, map), GPS nearby sort
+- Courses — map view toggle; backfill `lat`/`lng` in seeds as courses are added
 - History / Stats — tier-1 player stats, optional gamification
 
 One slice per chat. Run tsc, lint, test, build before commit.
@@ -106,8 +106,8 @@ One slice per chat. Run tsc, lint, test, build before commit.
 - **Phase 5:** Richer per-player stats and comparisons.
 - **Phase 6:** Ratings, tournaments (`tournament_id` column reserved).
 - Smart-ID / magic-link auth.
-- **Geolocation “courses near me”:** next Courses slice — sort `/courses` by distance when browser geolocation allowed (`courses.lat`/`lng` in schema; seed coordinates TBD).
-- **Course detail enrichment:** contact, map, extended copy on `/courses/[slug]` — next Courses slice.
+- **Geolocation “courses near me”:** **done** on `/courses` (browser geolocation + distance sort when `lat`/`lng` seeded).
+- **Courses map view:** follow-up slice when enough courses have coordinates.
 
 ---
 

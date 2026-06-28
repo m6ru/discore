@@ -20,7 +20,7 @@ export default async function CoursesPage() {
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
       <header className="space-y-1">
         <h1 className={pageTitleClassName}>Courses</h1>
-        <p className={pageSubtitleClassName}>Pick a layout to start a round.</p>
+        <p className={pageSubtitleClassName}>Pick a course to play.</p>
       </header>
 
       {coursesError ? (
