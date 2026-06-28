@@ -23,7 +23,7 @@ export function getNearbyCoursesPreference(): NearbyCoursesPreference {
   return "unset";
 }
 
-export function setNearbyCoursesPreference(value: NearbyCoursesPreference): void {
+export function setNearbyCoursesPreference(value: Exclude<NearbyCoursesPreference, "unset">): void {
   if (typeof window === "undefined") {
     return;
   }
@@ -33,4 +33,8 @@ export function setNearbyCoursesPreference(value: NearbyCoursesPreference): void
   } catch {
     // Ignore private-mode / quota errors.
   }
+}
+
+export function isNearbySortDisabled(): boolean {
+  return getNearbyCoursesPreference() === "disabled";
 }

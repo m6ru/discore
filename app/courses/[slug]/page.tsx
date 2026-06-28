@@ -1,31 +1,26 @@
 import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
+import { cn } from "@/lib/utils";
 import { CourseLayoutPicker } from "./course-layout-picker";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
-function courseCity(location: string): string {
-  return location.includes(",")
-    ? location.slice(0, location.indexOf(",")).trim()
-    : location.trim();
-}
-
 function courseHeaderMeta(course: {
-  location: string;
   terrain_type: string | null;
   difficulty_tier: string | null;
 }): string | null {
-  const parts = [
-    courseCity(course.location),
-    course.terrain_type?.trim(),
-    course.difficulty_tier?.trim(),
-  ].filter(Boolean);
+  const parts = [course.terrain_type?.trim(), course.difficulty_tier?.trim()].filter(Boolean);
   return parts.length > 0 ? parts.join(" · ") : null;
+}
+
+function holeCountFromRelation(holes: { count: number }[] | null | undefined): number {
+  return holes?.[0]?.count ?? 0;
 }
 
 export default async function CourseDetailPage({ params }: PageProps) {
@@ -51,7 +46,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
 
   const { data: layouts, error: layoutsError } = await supabase
     .from("layouts")
-    .select("id, name, slug, total_par, total_distance_m, map_url")
+    .select("id, name, slug, total_par, total_distance_m, map_url, holes(count)")
     .eq("course_id", course.id)
     .eq("is_active", true)
     .order("name", { ascending: true });
@@ -66,6 +61,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
     layouts?.map((layout) => ({
       id: layout.id,
       name: layout.name,
+      holeCount: holeCountFromRelation(layout.holes),
       totalPar: layout.total_par,
       totalDistanceM: layout.total_distance_m,
       mapUrl: layout.map_url,
@@ -77,12 +73,17 @@ export default async function CourseDetailPage({ params }: PageProps) {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
       <header className="space-y-1">
-        <p className="text-sm text-muted-foreground">
-          <Link href="/courses" className="underline underline-offset-4">
-            ← Courses
+        <div className="flex items-start justify-between gap-3">
+          <h1 className={cn(pageTitleClassName, "min-w-0 flex-1")}>{course.name}</h1>
+          <Link
+            href="/courses"
+            aria-label="Back to courses"
+            className="-mr-2 inline-flex shrink-0 items-center gap-0.5 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <ChevronLeft className="size-4" aria-hidden />
+            Courses
           </Link>
-        </p>
-        <h1 className={pageTitleClassName}>{course.name}</h1>
+        </div>
         {headerMeta ? <p className={pageSubtitleClassName}>{headerMeta}</p> : null}
       </header>
 

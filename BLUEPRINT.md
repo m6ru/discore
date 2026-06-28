@@ -52,7 +52,7 @@ Discore is a **one-person hobby app** for fast on-course scoring — not an ente
 
 **Speed matters.** Scorers use this on a phone between throws. Fewer layers = faster to ship and faster to debug.
 
-**Example (courses):** Sorting by distance + geolocation + first-visit prompt belong in `courses-list.tsx` plus at most one shared module for `localStorage` keys used from Profile — not a spread of hooks and display libraries.
+**Example (courses):** Sorting by distance + geolocation on Play tab belong in `courses-list.tsx` plus at most one shared module for `localStorage` keys used from Profile — not a spread of hooks and display libraries.
 
 ---
 

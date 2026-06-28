@@ -1,24 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { filterCoursesByQuery } from "@/lib/courses/filter-courses";
 import {
   getNearbyCoursesPreference,
+  isNearbySortDisabled,
   setNearbyCoursesPreference,
-  type NearbyCoursesPreference,
 } from "@/lib/courses/nearby-courses";
 import type { CourseSummary } from "@/lib/courses/types";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 
 type Props = {
@@ -97,117 +87,88 @@ function readDeviceLocation(): Promise<UserCoords> {
 
 export function CoursesList({ courses }: Props) {
   const [query, setQuery] = useState("");
-  const [preference, setPreference] = useState<NearbyCoursesPreference>(() =>
-    getNearbyCoursesPreference()
-  );
   const [coords, setCoords] = useState<UserCoords | null>(null);
-
-  const showDialog = preference === "unset";
-  const useNearby = preference === "enabled";
-
-  const fetchLocation = useCallback(() => {
-    void readDeviceLocation()
-      .then((position) => setCoords(position))
-      .catch(() => setCoords(null));
-  }, []);
+  const [sortByDistance, setSortByDistance] = useState(() => !isNearbySortDisabled());
 
   useEffect(() => {
-    if (!useNearby) {
+    if (!sortByDistance) {
       return;
     }
 
     let cancelled = false;
+    const preferenceOnMount = getNearbyCoursesPreference();
+
     void readDeviceLocation()
       .then((position) => {
-        if (!cancelled) {
-          setCoords(position);
+        if (cancelled) {
+          return;
+        }
+        setCoords(position);
+        if (preferenceOnMount !== "enabled") {
+          setNearbyCoursesPreference("enabled");
         }
       })
       .catch(() => {
-        if (!cancelled) {
-          setCoords(null);
+        if (cancelled) {
+          return;
+        }
+        setCoords(null);
+        if (preferenceOnMount === "unset") {
+          setNearbyCoursesPreference("disabled");
+          setSortByDistance(false);
         }
       });
 
     return () => {
       cancelled = true;
     };
-  }, [useNearby]);
-
-  const onAllow = () => {
-    setNearbyCoursesPreference("enabled");
-    setPreference("enabled");
-    fetchLocation();
-  };
-
-  const onDecline = () => {
-    setNearbyCoursesPreference("disabled");
-    setPreference("disabled");
-    setCoords(null);
-  };
+  }, [sortByDistance]);
 
   const sorted = useMemo(
-    () => sortForList(courses, useNearby && coords ? coords : null),
-    [courses, useNearby, coords]
+    () => sortForList(courses, sortByDistance && coords ? coords : null),
+    [courses, sortByDistance, coords]
   );
 
   const filtered = useMemo(() => filterCoursesByQuery(sorted, query), [sorted, query]);
 
   return (
-    <>
-      <AlertDialog open={showDialog}>
-        <AlertDialogContent onEscapeKeyDown={(e) => e.preventDefault()}>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Show courses near you?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Discore can sort courses by distance on the Play tab. Change this anytime in Profile.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={onDecline}>Not now</AlertDialogCancel>
-            <AlertDialogAction onClick={onAllow}>Allow</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+    <div className="space-y-4">
+      <Input
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search by name or location"
+        aria-label="Search courses by name or location"
+      />
 
-      <div className="space-y-4">
-        <Input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by name or location"
-          aria-label="Search courses by name or location"
-        />
-
-        {filtered.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {courses.length === 0 ? "No courses available." : "No courses match your search."}
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {filtered.map((course) => (
-              <li key={course.id}>
-                <Link
-                  href={`/courses/${course.slug}`}
-                  className="block rounded-lg border px-4 py-3 transition-colors hover:bg-muted/50"
-                >
-                  <div className="flex items-baseline justify-between gap-3">
-                    <p className="min-w-0 truncate font-medium">{course.name}</p>
-                    {course.distanceKm !== null ? (
-                      <span className="shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
-                        {formatDistanceKm(course.distanceKm)}
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="mt-0.5 truncate text-sm text-muted-foreground">
-                    {formatListMeta(course)}
-                  </p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </>
+      {filtered.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          {courses.length === 0 ? "No courses available." : "No courses match your search."}
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {filtered.map((course) => (
+            <li key={course.id}>
+              <Link
+                href={`/courses/${course.slug}`}
+                className="block rounded-lg border px-4 py-3 transition-colors hover:bg-muted/50"
+              >
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="min-w-0 truncate font-medium">{course.name}</p>
+                  {course.distanceKm !== null ? (
+                    <span className="shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
+                      {formatDistanceKm(course.distanceKm)}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                  {formatListMeta(course)}
+                </p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
