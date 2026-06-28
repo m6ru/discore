@@ -18,10 +18,7 @@ type Props = {
   layouts: CourseLayoutOption[];
 };
 
-const selectedLayoutClassName =
-  "border-primary bg-primary/10 font-medium text-foreground";
-const layoutRowClassName =
-  "block w-full rounded-md border border-transparent px-4 py-3 text-left text-sm transition-colors";
+const startRoundClassName = "w-full [&>button]:h-12 [&>button]:w-full [&>button]:text-base";
 
 function formatHoleCount(count: number): string {
   return count === 1 ? "1 hole" : `${count} holes`;
@@ -36,9 +33,9 @@ function formatLayoutStats(layout: CourseLayoutOption): string {
   return parts.join(" · ");
 }
 
-function LayoutDetailPanel({ layout }: { layout: CourseLayoutOption }) {
+function LayoutActionPanel({ layout }: { layout: CourseLayoutOption }) {
   return (
-    <div className="space-y-4 p-4 pt-3">
+    <div className="space-y-4">
       <p className="font-mono text-sm tabular-nums text-muted-foreground">
         {formatLayoutStats(layout)}
       </p>
@@ -52,19 +49,8 @@ function LayoutDetailPanel({ layout }: { layout: CourseLayoutOption }) {
           Layout map
         </Link>
       ) : null}
-      <StartRoundButton
-        layoutId={layout.id}
-        className="w-full sm:w-auto [&>button]:w-full sm:[&>button]:w-auto"
-      />
+      <StartRoundButton layoutId={layout.id} className={startRoundClassName} />
     </div>
-  );
-}
-
-function SelectedLayoutName({ name }: { name: string }) {
-  return (
-    <p className={cn(layoutRowClassName, selectedLayoutClassName, "cursor-default")}>
-      {name}
-    </p>
   );
 }
 
@@ -72,46 +58,46 @@ export function CourseLayoutPicker({ layouts }: Props) {
   const [selectedId, setSelectedId] = useState(layouts[0]?.id ?? "");
   const selected =
     layouts.find((layout) => layout.id === selectedId) ?? layouts[0] ?? null;
-  const singleLayout = layouts.length === 1;
 
   if (!selected) {
     return null;
   }
 
-  return (
-    <div className="rounded-lg border">
-      <div
-        className="space-y-2 p-2"
-        role={singleLayout ? undefined : "tablist"}
-        aria-label={singleLayout ? undefined : "Course layouts"}
-      >
-        {singleLayout ? (
-          <SelectedLayoutName name={layouts[0].name} />
-        ) : (
-          layouts.map((layout) => {
-            const active = layout.id === selected.id;
-            return (
-              <button
-                key={layout.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                className={cn(
-                  layoutRowClassName,
-                  active
-                    ? selectedLayoutClassName
-                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                )}
-                onClick={() => setSelectedId(layout.id)}
-              >
-                {layout.name}
-              </button>
-            );
-          })
-        )}
+  if (layouts.length === 1) {
+    return (
+      <div className="space-y-4 rounded-lg border p-4">
+        <p className="font-medium">{layouts[0].name}</p>
+        <LayoutActionPanel layout={selected} />
       </div>
-      <div className="border-t border-border" role={singleLayout ? undefined : "tabpanel"}>
-        <LayoutDetailPanel layout={selected} />
+    );
+  }
+
+  return (
+    <div className="overflow-hidden rounded-lg border">
+      <div role="tablist" aria-label="Course layouts" className="divide-y divide-border">
+        {layouts.map((layout) => {
+          const active = layout.id === selected.id;
+          return (
+            <button
+              key={layout.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              className={cn(
+                "block w-full border-l-4 px-4 py-3 text-left text-sm transition-colors",
+                active
+                  ? "border-l-primary bg-primary/5 font-medium text-foreground"
+                  : "border-l-transparent text-muted-foreground"
+              )}
+              onClick={() => setSelectedId(layout.id)}
+            >
+              {layout.name}
+            </button>
+          );
+        })}
+      </div>
+      <div className="space-y-4 border-t border-border p-4" role="tabpanel">
+        <LayoutActionPanel layout={selected} />
       </div>
     </div>
   );
