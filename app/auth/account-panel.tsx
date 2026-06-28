@@ -2,6 +2,10 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  getNearbyCoursesPreference,
+  setNearbyCoursesPreference,
+} from "@/lib/courses/nearby-courses";
 import { createClient } from "@/lib/supabase/client";
 import { saveProfile } from "@/lib/profiles/save-profile";
 import { toastError, toastSuccess } from "@/lib/ui/toast-notify";
@@ -9,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -45,6 +50,7 @@ export function AccountPanel({
   const [city, setCity] = useState(initialCity);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
+  const [nearbyCourses, setNearbyCourses] = useState(() => getNearbyCoursesPreference() === "enabled");
   const [isLoading, setIsLoading] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -240,6 +246,26 @@ export function AccountPanel({
           </Button>
         </div>
       </form>
+
+      <Separator />
+
+      <div className="flex items-center justify-between gap-4">
+        <div className="space-y-1">
+          <Label htmlFor="nearby-courses">Nearby courses</Label>
+          <p className="text-sm text-muted-foreground">
+            Sort courses by distance on the Play tab.
+          </p>
+        </div>
+        <Switch
+          id="nearby-courses"
+          checked={nearbyCourses}
+          onCheckedChange={(checked) => {
+            setNearbyCourses(checked);
+            setNearbyCoursesPreference(checked ? "enabled" : "disabled");
+          }}
+          aria-label="Sort nearby courses by distance"
+        />
+      </div>
 
       <Separator />
 

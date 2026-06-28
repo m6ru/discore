@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { mapsSearchUrl } from "@/lib/courses/distance";
 import { createServerClient } from "@/lib/supabase/server";
 import { StartRoundButton } from "@/components/rounds/start-round-button";
 
@@ -30,7 +29,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
     .order("name", { ascending: true });
 
   const { lat, lng } = course;
-  const mapsUrl = lat !== null && lng !== null ? mapsSearchUrl(lat, lng) : null;
+  const mapsUrl =
+    lat !== null && lng !== null
+      ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+      : null;
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-6 p-8">
