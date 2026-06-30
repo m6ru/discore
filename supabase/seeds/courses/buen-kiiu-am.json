@@ -1,11 +1,11 @@
 {
   "course": {
     "name": "Buen Kiiu",
-    "location": "Kuusalu vald, Harjumaa, Estonia",
+    "location": "Nõmmiku, Kiiu alevik, Kuusalu vald, Harjumaa, Estonia",
     "slug": "buen-kiiu",
     "lat": null,
     "lng": null,
-    "details": null,
+    "details": "Päevapilet: 7 €\n\nE-post: kuusaludg@gmail.com\nTelefon: +372 502 7595",
     "terrain_type": null,
     "difficulty_tier": null
   },

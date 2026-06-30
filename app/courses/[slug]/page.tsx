@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import Image from "next/image";
+import fs from "node:fs";
+import path from "node:path";
 import { notFound, redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
@@ -21,6 +24,11 @@ function courseHeaderMeta(course: {
 
 function holeCountFromRelation(holes: { count: number }[] | null | undefined): number {
   return holes?.[0]?.count ?? 0;
+}
+
+function courseMapSrc(slug: string): string | null {
+  const filePath = path.join(process.cwd(), "public", "courses", `${slug}-map.png`);
+  return fs.existsSync(filePath) ? `/courses/${slug}-map.png` : null;
 }
 
 export default async function CourseDetailPage({ params }: PageProps) {
@@ -57,6 +65,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
       : null;
 
   const headerMeta = courseHeaderMeta(course);
+  const mapImageSrc = courseMapSrc(course.slug);
   const layoutOptions =
     layouts?.map((layout) => ({
       id: layout.id,
@@ -68,7 +77,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
     })) ?? [];
 
   const showAbout =
-    course.location.trim().length > 0 || Boolean(course.details?.trim()) || mapsUrl !== null;
+    course.location.trim().length > 0 ||
+    Boolean(course.details?.trim()) ||
+    mapsUrl !== null ||
+    mapImageSrc !== null;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
@@ -110,7 +122,19 @@ export default async function CourseDetailPage({ params }: PageProps) {
           <h2 className={sectionHeadingClassName}>About</h2>
           <div className="space-y-3 text-sm text-muted-foreground">
             {course.location.trim().length > 0 ? <p>{course.location}</p> : null}
-            {course.details?.trim() ? <p>{course.details}</p> : null}
+            {course.details?.trim() ? (
+              <p className="whitespace-pre-line">{course.details}</p>
+            ) : null}
+            {mapImageSrc ? (
+              <Image
+                src={mapImageSrc}
+                alt={`${course.name} course map`}
+                width={896}
+                height={1200}
+                className="h-auto w-full rounded-lg border"
+                sizes="(max-width: 768px) 100vw, 48rem"
+              />
+            ) : null}
             {mapsUrl ? (
               <a
                 href={mapsUrl}
