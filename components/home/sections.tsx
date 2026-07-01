@@ -40,12 +40,15 @@ export async function HomeSections({ userId }: Props) {
       {data.activeRounds.length > 0 ? (
         <section className="space-y-2">
           <h2 className={sectionHeadingClassName}>Continue round</h2>
-          <ul>
+          <ul className="space-y-2">
             {data.activeRounds.map((round) => {
               const isScorer = round.scorer_id === userId;
 
               return (
-                <li key={round.id} className="space-y-3 py-2">
+                <li
+                  key={round.id}
+                  className="space-y-3 rounded-lg bg-muted/60 px-4 py-3"
+                >
                   <div className="flex items-start justify-between gap-3 text-sm">
                     <div className="min-w-0 space-y-0.5">
                       <p className={homeRowTitleClassName}>{round.course_name}</p>

@@ -17,10 +17,14 @@ export type HomeActiveRound = {
 
 export type HomeRecentRound = {
   id: string;
+  layoutId: string;
   courseName: string;
   layoutName: string;
+  status: "completed" | "abandoned";
   completedAt: string | null;
   startedAt: string | null;
+  totalStrokes: number | null;
+  vsPar: number | null;
 };
 
 export type HomeProfile = {

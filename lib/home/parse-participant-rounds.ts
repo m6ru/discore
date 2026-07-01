@@ -1,5 +1,5 @@
 import { pickOne } from "@/lib/supabase/select-helpers";
-import { STATS_ROUND_STATUSES } from "@/lib/rounds/round-status";
+import { PAST_ROUND_STATUSES } from "@/lib/rounds/round-status";
 import type { HomeActiveRound, HomeRecentRound } from "./types";
 
 /** Cap rows pulled for home round parsing (see load-home-data). */
@@ -11,6 +11,7 @@ type RoundEmbed = {
   status: string;
   started_at: string | null;
   completed_at: string | null;
+  layout_id: string;
   layouts: unknown;
 };
 
@@ -34,7 +35,7 @@ export function parseHomeParticipantRounds(rows: ParticipationRow[]): {
 } {
   const hasJoinedRound = rows.length > 0;
   const activeRounds: HomeActiveRound[] = [];
-  const completedRounds: HomeRecentRound[] = [];
+  const pastRounds: HomeRecentRound[] = [];
 
   for (const row of rows) {
     const round = pickOne(row.rounds);
@@ -55,18 +56,22 @@ export function parseHomeParticipantRounds(rows: ParticipationRow[]): {
       continue;
     }
 
-    if ((STATS_ROUND_STATUSES as readonly string[]).includes(round.status)) {
-      completedRounds.push({
+    if ((PAST_ROUND_STATUSES as readonly string[]).includes(round.status)) {
+      pastRounds.push({
         id: round.id,
+        layoutId: round.layout_id,
         courseName,
         layoutName,
+        status: round.status as "completed" | "abandoned",
         completedAt: round.completed_at,
         startedAt: round.started_at,
+        totalStrokes: null,
+        vsPar: null,
       });
     }
   }
 
-  completedRounds.sort((a, b) => {
+  pastRounds.sort((a, b) => {
     const aTime = a.completedAt ? Date.parse(a.completedAt) : 0;
     const bTime = b.completedAt ? Date.parse(b.completedAt) : 0;
     return bTime - aTime;
@@ -74,7 +79,7 @@ export function parseHomeParticipantRounds(rows: ParticipationRow[]): {
 
   return {
     activeRounds,
-    recentRounds: completedRounds.slice(0, 3),
+    recentRounds: pastRounds.slice(0, 3),
     hasJoinedRound,
   };
 }

@@ -1,12 +1,8 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import { formatRoundDisplayDate } from "@/lib/format/round-date";
+import { formatVsPar } from "@/lib/scoring/stats";
 import type { HomeRecentRound } from "@/lib/home/types";
-import {
-  homeRowLinkClassName,
-  homeRowMetaClassName,
-  homeRowTitleClassName,
-} from "@/lib/ui/page-chrome";
+import { homeRowMetaClassName } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 
 export type { HomeRecentRound };
@@ -30,21 +26,38 @@ export function HomeRecentRounds({ rounds }: Props) {
       {rounds.length === 0 ? (
         <p className={homeRowMetaClassName}>No completed rounds yet.</p>
       ) : (
-        <ul>
+        <ul className="space-y-2">
           {rounds.map((round) => {
             const dateLabel =
               formatRoundDisplayDate(round.completedAt, round.startedAt) ?? "—";
+            const metaParts = [round.layoutName, dateLabel];
+            const hasScore =
+              round.status === "completed" &&
+              round.totalStrokes !== null &&
+              round.vsPar !== null;
 
             return (
               <li key={round.id}>
-                <Link href={`/rounds/${round.id}`} className={homeRowLinkClassName}>
-                  <div className="min-w-0">
-                    <p className={`truncate ${homeRowTitleClassName}`}>{round.courseName}</p>
-                    <p className={`truncate ${homeRowMetaClassName}`}>
-                      {round.layoutName} · {dateLabel}
-                    </p>
+                <Link
+                  href={`/rounds/${round.id}`}
+                  className="block rounded-lg border px-4 py-3 transition-colors hover:bg-muted/50"
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="min-w-0 truncate font-medium">{round.courseName}</p>
+                    {round.status === "abandoned" ? (
+                      <span className="shrink-0 text-sm text-muted-foreground">Abandoned</span>
+                    ) : hasScore ? (
+                      <div className="flex shrink-0 items-baseline gap-1.5 font-mono text-sm tabular-nums">
+                        <span className="font-semibold text-foreground">
+                          {formatVsPar(round.vsPar!)}
+                        </span>
+                        <span className="text-muted-foreground">{round.totalStrokes}</span>
+                      </div>
+                    ) : null}
                   </div>
-                  <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                  <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                    {metaParts.join(" · ")}
+                  </p>
                 </Link>
               </li>
             );
