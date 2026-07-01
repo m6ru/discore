@@ -3,8 +3,8 @@
     "name": "Maardu",
     "location": "Maardu, Harjumaa, Estonia",
     "slug": "maardu",
-    "lat": null,
-    "lng": null,
+    "lat": 59.463366,
+    "lng": 25.004581,
     "details": null,
     "terrain_type": null,
     "difficulty_tier": null

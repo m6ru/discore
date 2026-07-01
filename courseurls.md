@@ -65,8 +65,22 @@ You still choose **layoutName** (the page lists several: 2025, 2026, Talv, etc.)
 4. Later: Slice D-courses import script reads those files (no Metrix fetching in the app).
 ---
 
+## Coordinates (nearby sort)
 
-
+Buen Kiiu: 59.43688857336663, 25.38687752540513
+Haapsalu: 58.943171232588085, 23.58034820584791
+Järve Talu: 59.254694916716, 24.2860837542537
+Järve Tallinn: 59.37690691704653, 24.74931361143389
+Keila discgolfpark: 59.316220, 24.388013
+Kohila: 59.172410, 24.763018
+Kurna discgolfipark: 59.339132, 24.843053
+Maardu: 59.463366, 25.004581
+Männiku Wakepark: 59.331007, 24.689243
+Muraste: 59.456446, 24.474480
+Nõva discgolfipark: 59.231773, 23.674513
+Pirgu: 59.111053, 24.823458
+Vasalemma: 59.233744, 24.278432
+Viimsi discgolfipark: 59.497554, 24.857640
 
 
 

@@ -3,8 +3,8 @@
     "name": "Pirgu",
     "location": "Pirgu, Raplamaa, Estonia",
     "slug": "pirgu",
-    "lat": null,
-    "lng": null,
+    "lat": 59.111053,
+    "lng": 24.823458,
     "details": null,
     "terrain_type": null,
     "difficulty_tier": null

@@ -3,8 +3,8 @@
     "name": "Muraste",
     "location": "Muraste, Harjumaa, Estonia",
     "slug": "muraste",
-    "lat": null,
-    "lng": null,
+    "lat": 59.456446,
+    "lng": 24.474480,
     "details": null,
     "terrain_type": null,
     "difficulty_tier": null

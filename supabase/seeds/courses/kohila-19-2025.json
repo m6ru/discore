@@ -3,8 +3,8 @@
     "name": "Kohila",
     "location": "Kohila, Raplamaa, Estonia",
     "slug": "kohila",
-    "lat": null,
-    "lng": null,
+    "lat": 59.172410,
+    "lng": 24.763018,
     "details": null,
     "terrain_type": null,
     "difficulty_tier": null
