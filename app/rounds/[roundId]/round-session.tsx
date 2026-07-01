@@ -23,7 +23,7 @@ import {
   ActiveHoleScoring,
 } from "./components/active-hole-scoring";
 import { DraftPlayersPanel } from "./components/draft-players-panel";
-import { DraftSetupDeck, DRAFT_SETUP_BOTTOM_INSET } from "./components/draft-setup-deck";
+import { DraftSetupDeck } from "./components/draft-setup-deck";
 import { DraftStartingHoleField } from "./components/draft-starting-hole-field";
 import { DraftHeaderActionsPortal } from "./components/draft-header-actions-portal";
 import { DraftRoundTitlePortal } from "./components/draft-round-title-portal";
@@ -215,8 +215,6 @@ export function RoundSession({
     () => unifiedPlayers.filter((player) => player.isPending).map((player) => player.label),
     [unifiedPlayers]
   );
-
-  const showDraftSetupDeck = liveRoundStatus === "draft" && isScorer;
 
   const canScore =
     liveRoundStatus === "active" && !!activeHole && scoringParticipants.length > 0;
@@ -437,9 +435,7 @@ export function RoundSession({
           ? { paddingBottom: ACTIVE_SCORING_BOTTOM_INSET }
           : showCompletionUI
             ? { paddingBottom: ROUND_COMPLETE_BOTTOM_INSET }
-            : showDraftSetupDeck
-              ? { paddingBottom: DRAFT_SETUP_BOTTOM_INSET }
-              : undefined
+            : undefined
       }
     >
       <RoundHeaderMenuPortal
@@ -511,14 +507,24 @@ export function RoundSession({
           />
 
           {isScorer ? (
-            <DraftStartingHoleField
-              supabase={supabase}
-              roundId={roundId}
-              holeNumbers={holeNumbers}
-              startingHole={startingHole}
-              disabled={isSubmitting || isTransitioning}
-              onStartingHoleChange={setStartingHole}
-            />
+            <>
+              <DraftStartingHoleField
+                supabase={supabase}
+                roundId={roundId}
+                holeNumbers={holeNumbers}
+                startingHole={startingHole}
+                disabled={isSubmitting || isTransitioning}
+                onStartingHoleChange={setStartingHole}
+              />
+              <DraftSetupDeck
+                roundStatus={liveRoundStatus}
+                isScorer={isScorer}
+                isTransitioning={isTransitioning}
+                hasPendingInvite={hasPendingInvite}
+                pendingInviteLabels={pendingInviteLabels}
+                onStartRound={() => void onStartRound()}
+              />
+            </>
           ) : (
             <p className="text-center text-sm text-muted-foreground">
               Waiting for {scorerDisplayName} to start the round.
@@ -590,14 +596,6 @@ export function RoundSession({
         />
       ) : null}
     </section>
-    <DraftSetupDeck
-      roundStatus={liveRoundStatus}
-      isScorer={isScorer}
-      isTransitioning={isTransitioning}
-      hasPendingInvite={hasPendingInvite}
-      pendingInviteLabels={pendingInviteLabels}
-      onStartRound={() => void onStartRound()}
-    />
     </>
   );
 }

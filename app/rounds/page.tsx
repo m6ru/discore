@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { Badge } from "@/components/ui/badge";
 import type { Database } from "@/lib/database.types";
 import { formatRoundDisplayDate } from "@/lib/format/round-date";
 import { PAST_ROUND_STATUSES, type RoundStatus } from "@/lib/rounds/round-status";
@@ -10,13 +9,7 @@ import type { Hole } from "@/lib/scoring/types";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
 import { createServerClient } from "@/lib/supabase/server";
 import { pickOne } from "@/lib/supabase/select-helpers";
-import {
-  homeRowMetaClassName,
-  homeRowTitleClassName,
-  pageSubtitleClassName,
-  pageTitleClassName,
-} from "@/lib/ui/page-chrome";
-import { cn } from "@/lib/utils";
+import { homeRowMetaClassName, pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
 import { HistoryViewedMarker } from "./history-viewed-marker";
 
 type HistoryRound = {
@@ -64,51 +57,36 @@ export default async function RoundsHistoryPage() {
       ) : null}
 
       {rounds.length > 0 ? (
-        <ul className="divide-y divide-border rounded-lg border">
+        <ul className="space-y-2">
           {rounds.map((round) => {
-            const showThruHint =
-              round.thru > 0 &&
-              round.layoutHoleCount > 0 &&
-              round.thru < round.layoutHoleCount;
             const metaParts = [round.layoutName, round.dateLabel];
-            if (showThruHint) {
-              metaParts.push(`thru ${round.thru}`);
-            }
-            const hasScore = round.totalStrokes !== null && round.vsPar !== null;
+            const hasScore =
+              round.status === "completed" &&
+              round.totalStrokes !== null &&
+              round.vsPar !== null;
 
             return (
               <li key={round.id}>
                 <Link
                   href={`/rounds/${round.id}`}
-                  className="flex min-h-11 items-center justify-between gap-3 px-3 py-2.5 text-sm transition-colors hover:bg-muted/50"
+                  className="block rounded-lg border px-4 py-3 transition-colors hover:bg-muted/50"
                 >
-                  <div className="min-w-0">
-                    <p className={cn("truncate", homeRowTitleClassName)}>{round.courseName}</p>
-                    <p className={cn("truncate", homeRowMetaClassName)}>
-                      {metaParts.join(" · ")}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="min-w-0 truncate font-medium">{round.courseName}</p>
                     {round.status === "abandoned" ? (
-                      <Badge variant="outline" className="shrink-0">
-                        Abandoned
-                      </Badge>
-                    ) : null}
-                    {hasScore ? (
-                      <div className="flex items-baseline gap-1.5 font-mono tabular-nums">
-                        <span className="text-sm font-semibold text-foreground">
+                      <span className="shrink-0 text-sm text-muted-foreground">Abandoned</span>
+                    ) : hasScore ? (
+                      <div className="flex shrink-0 items-baseline gap-1.5 font-mono text-sm tabular-nums">
+                        <span className="font-semibold text-foreground">
                           {formatVsPar(round.vsPar!)}
                         </span>
-                        <span className="text-sm text-muted-foreground">
-                          {round.totalStrokes}
-                        </span>
+                        <span className="text-muted-foreground">{round.totalStrokes}</span>
                       </div>
-                    ) : (
-                      <span className="font-mono text-sm tabular-nums text-muted-foreground">
-                        —
-                      </span>
-                    )}
+                    ) : null}
                   </div>
+                  <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                    {metaParts.join(" · ")}
+                  </p>
                 </Link>
               </li>
             );
