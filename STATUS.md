@@ -59,7 +59,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 - **Hub** (`app/page.tsx`): header paints after auth; body streams via `Suspense`. `loadHomeData` — 3 parallel queries (profile, invites, participations→rounds). Indexes on `round_participants(user_id)`, pending invites, `rounds(status)`.
 - **Bottom nav:** Home · Play (`/courses`) · History (`/rounds`) · Profile (`/auth`). Tab bar hidden on live round routes (`/rounds/[id]`).
-- **Auth & profile** (`app/auth`, `lib/profiles`): sign-in; **Profile hub** — hero (avatar, name, city, email), grouped sections (Details / Preferences / Security), sign out
+- **Auth & profile** (`app/auth`, `lib/profiles`): sign-in; **Profile hub** — hero (avatar, name, city, email), grouped sections (Details / Preferences / Authentication), sign out
 - **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); browse at `/courses` and `/courses/[slug]` (Play tab); **nearby sort** (browser geolocation + `lat`/`lng` when seeded), compact list rows, Open in Maps on detail
 - **Rounds:** create draft → invite registered users or add guests → start when no pending invites; **draft setup UI** at `/rounds/[id]` (unified roster, starting-hole picker, editable title, invite/guest add)
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)

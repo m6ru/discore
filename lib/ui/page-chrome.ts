@@ -13,4 +13,4 @@ export const homeRowMetaClassName = "text-sm text-muted-foreground";
 
 /** Full-width primary actions on tab screens (Home, Course detail). */
 export const pagePrimaryButtonClassName =
-  "min-h-12 w-full rounded-xl text-base";
+  "min-h-10 w-full rounded-xl text-sm";

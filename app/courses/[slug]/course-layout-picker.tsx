@@ -47,7 +47,7 @@ function LayoutActionPanel({ layout }: { layout: CourseLayoutOption }) {
           Layout map
         </Link>
       ) : null}
-      <StartRoundButton layoutId={layout.id} className="min-h-10 text-sm" />
+      <StartRoundButton layoutId={layout.id} />
     </div>
   );
 }

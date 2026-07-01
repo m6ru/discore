@@ -215,10 +215,7 @@ export function AccountPanel({
 
       <section className="space-y-3">
         <h2 className={sectionHeadingClassName}>Details</h2>
-        <form
-          onSubmit={onSave}
-          className="space-y-4 rounded-lg border p-4"
-        >
+        <form onSubmit={onSave} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="first-name">First name</Label>
             <Input
@@ -324,11 +321,8 @@ export function AccountPanel({
       </section>
 
       <section className="space-y-3">
-        <h2 className={sectionHeadingClassName}>Security</h2>
-        <form
-          onSubmit={onChangePassword}
-          className="space-y-4 rounded-lg border p-4"
-        >
+        <h2 className={sectionHeadingClassName}>Authentication</h2>
+        <form onSubmit={onChangePassword} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="new-password">New password</Label>
             <Input
