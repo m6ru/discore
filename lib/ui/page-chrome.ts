@@ -10,3 +10,7 @@ export const homeRowLinkClassName =
 export const homeRowTitleClassName = "font-medium text-foreground";
 
 export const homeRowMetaClassName = "text-sm text-muted-foreground";
+
+/** Full-width primary actions on tab screens (Home, Course detail). */
+export const pagePrimaryButtonClassName =
+  "min-h-12 w-full rounded-xl text-base";

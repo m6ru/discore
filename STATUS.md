@@ -49,7 +49,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 | **1** Infrastructure | Done | Next.js, Supabase clients, middleware; minimal `manifest.ts`; SW not configured |
 | **2** Schema & seeding | Done | RLS, 17 migrations, 18 seeded layouts |
 | **3** Core scoring | **Done (field MVP)** | Draft/active/complete, invites, scorer writes, observer Realtime (consolidated refresh + visibility resync) |
-| **4** UI bootstrap | **Done** | shadcn, theme, scorer round UX. Ongoing UI consistency → [UI-ROADMAP.md](UI-ROADMAP.md). PWA install deferred. |
+| **4** UI bootstrap | **Done** | shadcn, theme, scorer round UX; Profile hub, History scores, `pagePrimaryButtonClassName` on tab screens. PWA install deferred. |
 | **5** History & stats | Partial | `/rounds` list exists; richer stats not built |
 | **6** Ratings & tournaments | Not started | By design until adoption warrants |
 
@@ -59,14 +59,14 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 - **Hub** (`app/page.tsx`): header paints after auth; body streams via `Suspense`. `loadHomeData` — 3 parallel queries (profile, invites, participations→rounds). Indexes on `round_participants(user_id)`, pending invites, `rounds(status)`.
 - **Bottom nav:** Home · Play (`/courses`) · History (`/rounds`) · Profile (`/auth`). Tab bar hidden on live round routes (`/rounds/[id]`).
-- **Auth & profile** (`app/auth`, `lib/profiles`): sign-in, save profile, `display_name` = first + last (Option A for labels)
+- **Auth & profile** (`app/auth`, `lib/profiles`): sign-in; **Profile hub** — hero (avatar, name, city, email), grouped sections (Details / Preferences / Security), sign out
 - **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); browse at `/courses` and `/courses/[slug]` (Play tab); **nearby sort** (browser geolocation + `lat`/`lng` when seeded), compact list rows, Open in Maps on detail
 - **Rounds:** create draft → invite registered users or add guests → start when no pending invites; **draft setup UI** at `/rounds/[id]` (unified roster, starting-hole picker, editable title, invite/guest add)
 - **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
 - **Active round:** Single-player stepper + selectable roster (hole score / total / vs par; **Hide scores** menu toggle hides total + vs par), OB toggle, header menu (scorecard dialog, hide/show scores, round info, abandon), optional **round name**, configurable **starting hole**, live scorecard (sticky cols, expandable player names when truncated, auto-scroll to current hole), hole notes on `ActiveHoleStatus`, results pool when scorer finishes all holes or on completed/abandoned view, end-of-round confirm deck, hole navigation, **multi-player next-player button** (`↓` until all scores entered, then green `→` advance hole)
 - **Observer:** read-only UI + Realtime scorecard; scorecard-first (no pool list during active); `ActiveHoleStatus`; score-derived current hole; draft “waiting to start” copy; bottom tab bar throughout active round
 - **Completed / abandoned round:** Shared finished layout via `isFinishedRoundStatus` — Results of the pool + scorecard on same route; status badge + date in header; scorer stays on page after confirm; bottom tab bar
-- **History:** `app/rounds/page.tsx` for past rounds
+- **History:** `app/rounds/page.tsx` — bordered round list with user score (`vs par` + total strokes); **Abandoned** badge only when applicable
 - **Code layout:** `lib/scoring` (pure math), `lib/rounds` + `lib/profiles` (actions), `app/rounds/[roundId]/` (orchestrator, hooks, components)
 
 Also implemented: `round_invitations`, single active round per scorer, join codes removed, boolean `hole_scores.ob`, RLS helpers `is_round_member` / `can_manage_round_invitation`.
@@ -79,8 +79,8 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 2. ~~**Deploy**~~ — Done (Vercel + Supabase Auth URLs).
 3. ~~**Pre-flight + Realtime**~~ — Done (publication + consolidated round/hub subscriptions).
 4. ~~**Backbone refactor**~~ — Done (typed Supabase factories, strict `RoundStatus`, `/lib/scoring` extracted + tested, scorer-as-participant trigger, signup-name trigger).
-5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). **Round route done.** **Home + nav shell done.** **Courses list slice done.** **Next:** Courses map view, backfill coords in seeds, or **Stats session** (History sub-section).
-6. **Field test on course** — Re-run when ready; capture friction on course.
+5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). **Round route done.** **Home + nav shell done.** **Courses list slice done.** **Profile hub, History scores, inline primary CTA done.** **Next:** Courses map view, backfill coords in seeds, or **Stats session** (History sub-section).
+6. ~~**Field test on course**~~ — Done; scoring validated on course.
 
 ### Next chat (copy-paste)
 

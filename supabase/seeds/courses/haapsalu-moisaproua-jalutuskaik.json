@@ -3,8 +3,8 @@
     "name": "Haapsalu",
     "location": "Haapsalu, Läänemaa, Estonia",
     "slug": "haapsalu",
-    "lat": null,
-    "lng": null,
+    "lat": 58.943171232588085,
+    "lng": 23.58034820584791,
     "details": null,
     "terrain_type": null,
     "difficulty_tier": null

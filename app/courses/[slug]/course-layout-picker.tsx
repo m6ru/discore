@@ -18,8 +18,6 @@ type Props = {
   layouts: CourseLayoutOption[];
 };
 
-const startRoundClassName = "w-full [&>button]:h-12 [&>button]:w-full [&>button]:text-base";
-
 function formatHoleCount(count: number): string {
   return count === 1 ? "1 hole" : `${count} holes`;
 }
@@ -49,7 +47,7 @@ function LayoutActionPanel({ layout }: { layout: CourseLayoutOption }) {
           Layout map
         </Link>
       ) : null}
-      <StartRoundButton layoutId={layout.id} className={startRoundClassName} />
+      <StartRoundButton layoutId={layout.id} />
     </div>
   );
 }

@@ -16,7 +16,8 @@ North star: **active scorer round** (`app/rounds/[roundId]/`). Match these when 
 - Lists: flat bordered rows, not card stacks inside cards
 - Section labels: `text-sm font-semibold tracking-tight` via `sectionHeadingClassName` in `lib/ui/section-heading.ts`
 - Heavy data (scorecard): full-width top sheet, minimal header
-- Primary actions on round: fixed bottom deck + safe-area
+- **Tab screens** (Home, Play, History, Profile): primary actions inline in page content — `pagePrimaryButtonClassName` in `lib/ui/page-chrome.ts` (`min-h-12 w-full rounded-xl`)
+- **Round routes** (tab bar hidden): fixed bottom deck + safe-area for primary actions (draft start, hole save, complete)
 
 ## Numbers
 

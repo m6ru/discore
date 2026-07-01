@@ -1,0 +1,157 @@
+{
+  "course": {
+    "name": "Järve Talu Aktiivpuhkekeskus",
+    "location": "Järve talu, Nahkjala küla, Lääne-Harju vald, Harjumaa 76104",
+    "slug": "jarve-talu",
+    "lat": 59.254694916716,
+    "lng": 24.2860837542537,
+    "details": "Päevapilet: 3 €\n\nE-post: kuidokungla@hotmail.com\nTelefon: +372 5345 2464",
+    "terrain_type": null,
+    "difficulty_tier": null
+  },
+  "layout": {
+    "name": "AM 2026",
+    "slug": "am-2026",
+    "total_par": 69,
+    "total_distance_m": 1659,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 72,
+      "notes": "OB märgitud ala korvi taga, paremal ning maantee.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 4,
+      "distance_m": 139,
+      "notes": "2a — OB vahpealne metsaala, paremal enne metsa ning korvi taga.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 86,
+      "notes": "3a — OB tiik.",
+      "hole_map_url": null
+    },
+    { "hole_number": 4, "par": 3, "distance_m": 76, "notes": "4a", "hole_map_url": null },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 68,
+      "notes": "5a — OB vasakul sõidutee. Lühem AM tiiala.",
+      "hole_map_url": null
+    },
+    { "hole_number": 6, "par": 4, "distance_m": 113, "notes": "6a", "hole_map_url": null },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 64,
+      "notes": "7a — OB märgitud ala paremal. Kraavid on RELIEF ala ehk OB ilma karistuseta. Lühem AM tiiala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 4,
+      "distance_m": 94,
+      "notes": "OB ala enne järgmist tiiala. Mando, millest mängida vasakult, eksimusel +1 ja rethrow.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 113,
+      "notes": "9a — OB suurem kraavistik ning sellest vasakule, paremale ja korvi taga.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 59,
+      "notes": "10a — Hazard — kraavidega piiratud suurem saar. Eksimusel +1 ja järgmine vise ketta tagant. Väljaspool saart OB, v.a ees safe ala. Lühem AM tiiala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 4,
+      "distance_m": 101,
+      "notes": "OB kraavistik ja märgitud ala. Üle kraavi kehtib saar.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 67,
+      "notes": "12a — OB tiik ning märgitud ala vasakul. Lühem AM tiiala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 55,
+      "notes": "13a — OB märgitud ala vasakul, paremal, korvi taga ning AEDIK. Lühem AM tiiala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 45,
+      "notes": "14a — OB paremal aedik. Võistlusel jäetakse vahele; mängi rada T tagumisse korvi. Lühem AM tiiala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 4,
+      "distance_m": 83,
+      "notes": "T — Tornirada tagumisse korvi (mitte torni). Mängima peab ketta tagant.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 75,
+      "notes": "15a — OB kraav, sellest paremale, korvi taga ja vasakul. Lühem AM tiiala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 71,
+      "notes": "16a — OB korvi taga, paremal ja AEDIK. Lühem AM tiiala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 68,
+      "notes": "17a — OB vasakul kruusatee ja paremal AEDIK. Topeltmando, eksimusel +1 ja järgmine vise DZ-st.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 19,
+      "par": 3,
+      "distance_m": 82,
+      "notes": "18a — OB paremal AEDIK.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 20,
+      "par": 3,
+      "distance_m": 64,
+      "notes": "19a — OB korvi ümber ja paremal AEDIK. Lühem AM tiiala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 21,
+      "par": 3,
+      "distance_m": 64,
+      "notes": "20x — kaugus kinnitamata kohapeal.",
+      "hole_map_url": null
+    }
+  ]
+}

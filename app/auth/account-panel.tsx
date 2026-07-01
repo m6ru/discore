@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useId, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   getNearbyCoursesPreference,
@@ -8,11 +8,11 @@ import {
 } from "@/lib/courses/nearby-courses";
 import { createClient } from "@/lib/supabase/client";
 import { saveProfile } from "@/lib/profiles/save-profile";
+import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { toastError, toastSuccess } from "@/lib/ui/toast-notify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -21,9 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 type Props = {
   email: string;
+  displayName: string;
   initialFirstName: string;
   initialLastName: string;
   initialGender: string;
@@ -32,8 +34,16 @@ type Props = {
   initialAvatarUrl: string;
 };
 
+function profileInitials(firstName: string, lastName: string): string {
+  const first = firstName.trim().charAt(0);
+  const last = lastName.trim().charAt(0);
+  const combined = `${first}${last}`.toUpperCase();
+  return combined || "?";
+}
+
 export function AccountPanel({
   email,
+  displayName,
   initialFirstName,
   initialLastName,
   initialGender,
@@ -43,6 +53,7 @@ export function AccountPanel({
 }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
+  const avatarInputId = useId();
   const [firstName, setFirstName] = useState(initialFirstName);
   const [lastName, setLastName] = useState(initialLastName);
   const [gender, setGender] = useState(initialGender);
@@ -50,11 +61,30 @@ export function AccountPanel({
   const [city, setCity] = useState(initialCity);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
-  const [nearbyCourses, setNearbyCourses] = useState(() => getNearbyCoursesPreference() === "enabled");
+  const [nearbyCourses, setNearbyCourses] = useState(
+    () => getNearbyCoursesPreference() === "enabled"
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const avatarPreviewUrl = useMemo(() => {
+    if (pendingAvatarFile === null) {
+      return null;
+    }
+    return URL.createObjectURL(pendingAvatarFile);
+  }, [pendingAvatarFile]);
+
+  const heroAvatarSrc = avatarPreviewUrl ?? (avatarUrl.trim() || null);
+  const heroInitials = profileInitials(firstName, lastName);
+
+  useEffect(() => {
+    if (avatarPreviewUrl === null) {
+      return;
+    }
+    return () => URL.revokeObjectURL(avatarPreviewUrl);
+  }, [avatarPreviewUrl]);
 
   async function onSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -147,156 +177,195 @@ export function AccountPanel({
   }
 
   return (
-    <>
-      <div className="space-y-1">
-        <p className="text-sm text-muted-foreground">Signed in as</p>
-        <p className="break-all text-sm font-medium">{email}</p>
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-4">
+        <div
+          className={cn(
+            "relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border bg-muted",
+            !heroAvatarSrc && "text-lg font-semibold text-muted-foreground"
+          )}
+          aria-hidden={Boolean(heroAvatarSrc)}
+        >
+          {heroAvatarSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element -- Supabase storage URLs; no next/image remote config
+            <img src={heroAvatarSrc} alt="" className="size-full object-cover" />
+          ) : (
+            heroInitials
+          )}
+        </div>
+        <div className="min-w-0 space-y-0.5">
+          <p className="truncate text-lg font-semibold tracking-tight">{displayName}</p>
+          {city.trim() ? (
+            <p className="truncate text-sm text-muted-foreground">{city.trim()}</p>
+          ) : null}
+          <p className="truncate text-sm text-muted-foreground">{email}</p>
+        </div>
       </div>
 
-      <Separator />
+      <input
+        id={avatarInputId}
+        type="file"
+        accept=".jpg,.jpeg,image/jpeg"
+        className="sr-only"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          setPendingAvatarFile(file && file.size > 0 ? file : null);
+        }}
+      />
 
-      <form onSubmit={onSave} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="first-name">First name</Label>
-          <Input
-            id="first-name"
-            type="text"
-            required
-            value={firstName}
-            onChange={(event) => setFirstName(event.target.value)}
-            maxLength={80}
-          />
-        </div>
+      <section className="space-y-3">
+        <h2 className={sectionHeadingClassName}>Details</h2>
+        <form
+          onSubmit={onSave}
+          className="space-y-4 rounded-lg border p-4"
+        >
+          <div className="space-y-2">
+            <Label htmlFor="first-name">First name</Label>
+            <Input
+              id="first-name"
+              type="text"
+              required
+              value={firstName}
+              onChange={(event) => setFirstName(event.target.value)}
+              maxLength={80}
+            />
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="last-name">Last name</Label>
-          <Input
-            id="last-name"
-            type="text"
-            required
-            value={lastName}
-            onChange={(event) => setLastName(event.target.value)}
-            maxLength={80}
-          />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="last-name">Last name</Label>
+            <Input
+              id="last-name"
+              type="text"
+              required
+              value={lastName}
+              onChange={(event) => setLastName(event.target.value)}
+              maxLength={80}
+            />
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" value={email} disabled />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="gender">Gender</Label>
+            <Select value={gender} onValueChange={setGender}>
+              <SelectTrigger id="gender" className="w-full">
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="male">Male</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="gender">Gender</Label>
-          <Select value={gender} onValueChange={setGender}>
-            <SelectTrigger id="gender" className="w-full">
-              <SelectValue placeholder="Select gender" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="female">Female</SelectItem>
-              <SelectItem value="male">Male</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="birth-year">Year of birth</Label>
+            <Input
+              id="birth-year"
+              type="number"
+              inputMode="numeric"
+              min={1900}
+              max={3000}
+              value={birthYear}
+              onChange={(event) => setBirthYear(event.target.value)}
+              placeholder="e.g. 1994"
+            />
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="birth-year">Year of birth</Label>
-          <Input
-            id="birth-year"
-            type="number"
-            inputMode="numeric"
-            min={1900}
-            max={3000}
-            value={birthYear}
-            onChange={(event) => setBirthYear(event.target.value)}
-            placeholder="e.g. 1994"
-          />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="city">City</Label>
+            <Input
+              id="city"
+              type="text"
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+              maxLength={120}
+            />
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="city">City</Label>
-          <Input
-            id="city"
-            type="text"
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
-            maxLength={120}
-          />
-        </div>
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <Button type="button" variant="outline" size="sm" asChild>
+              <label htmlFor={avatarInputId} className="cursor-pointer">
+                Change photo
+              </label>
+            </Button>
+            {pendingAvatarFile ? (
+              <p className="text-xs text-muted-foreground">
+                {pendingAvatarFile.name} — save to upload
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">JPEG, max 1MB</p>
+            )}
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="avatar">Profile picture (JPEG, max 1MB)</Label>
-          <Input
-            id="avatar"
-            type="file"
-            accept=".jpg,.jpeg,image/jpeg"
-            className="py-1.5"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              setPendingAvatarFile(file && file.size > 0 ? file : null);
-            }}
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
             {isLoading ? "Please wait..." : "Save profile"}
           </Button>
-          <Button type="button" variant="outline" onClick={() => void onSignOut()} disabled={isLoading}>
-            Sign out
+        </form>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className={sectionHeadingClassName}>Preferences</h2>
+        <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
+          <div className="space-y-1">
+            <Label htmlFor="nearby-courses">Nearby courses</Label>
+            <p className="text-sm text-muted-foreground">
+              Sort courses by distance on the Play tab.
+            </p>
+          </div>
+          <Switch
+            id="nearby-courses"
+            checked={nearbyCourses}
+            onCheckedChange={(checked) => {
+              setNearbyCourses(checked);
+              setNearbyCoursesPreference(checked ? "enabled" : "disabled");
+            }}
+            aria-label="Sort nearby courses by distance"
+          />
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className={sectionHeadingClassName}>Security</h2>
+        <form
+          onSubmit={onChangePassword}
+          className="space-y-4 rounded-lg border p-4"
+        >
+          <div className="space-y-2">
+            <Label htmlFor="new-password">New password</Label>
+            <Input
+              id="new-password"
+              type="password"
+              required
+              minLength={6}
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-password">Confirm new password</Label>
+            <Input
+              id="confirm-password"
+              type="password"
+              required
+              minLength={6}
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+            />
+          </div>
+          <Button type="submit" variant="secondary" disabled={isChangingPassword}>
+            {isChangingPassword ? "Please wait..." : "Change password"}
           </Button>
-        </div>
-      </form>
+        </form>
+      </section>
 
-      <Separator />
-
-      <div className="flex items-center justify-between gap-4">
-        <div className="space-y-1">
-          <Label htmlFor="nearby-courses">Nearby courses</Label>
-          <p className="text-sm text-muted-foreground">
-            Sort courses by distance on the Play tab.
-          </p>
-        </div>
-        <Switch
-          id="nearby-courses"
-          checked={nearbyCourses}
-          onCheckedChange={(checked) => {
-            setNearbyCourses(checked);
-            setNearbyCoursesPreference(checked ? "enabled" : "disabled");
-          }}
-          aria-label="Sort nearby courses by distance"
-        />
-      </div>
-
-      <Separator />
-
-      <form onSubmit={onChangePassword} className="space-y-4">
-        <h3 className="text-sm font-semibold">Change password</h3>
-        <div className="space-y-2">
-          <Label htmlFor="new-password">New password</Label>
-          <Input
-            id="new-password"
-            type="password"
-            required
-            minLength={6}
-            value={newPassword}
-            onChange={(event) => setNewPassword(event.target.value)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirm-password">Confirm new password</Label>
-          <Input
-            id="confirm-password"
-            type="password"
-            required
-            minLength={6}
-            value={confirmPassword}
-            onChange={(event) => setConfirmPassword(event.target.value)}
-          />
-        </div>
-        <Button type="submit" disabled={isChangingPassword}>
-          {isChangingPassword ? "Please wait..." : "Change password"}
-        </Button>
-      </form>
-    </>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={() => void onSignOut()}
+        disabled={isLoading}
+      >
+        Sign out
+      </Button>
+    </div>
   );
 }

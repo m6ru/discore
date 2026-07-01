@@ -4,6 +4,7 @@ import { loadHomeData } from "@/lib/home/load-home-data";
 import {
   homeRowMetaClassName,
   homeRowTitleClassName,
+  pagePrimaryButtonClassName,
 } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { HomeInvites } from "@/components/home/invites";
@@ -56,7 +57,7 @@ export async function HomeSections({ userId }: Props) {
                       {isScorer ? "Scorer" : "Observer"}
                     </Badge>
                   </div>
-                  <Button asChild size="lg" className="min-h-11 w-full">
+                  <Button asChild size="lg" className={pagePrimaryButtonClassName}>
                     <Link href={`/rounds/${round.id}`}>Continue round</Link>
                   </Button>
                 </li>
