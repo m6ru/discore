@@ -80,11 +80,8 @@ export function BottomTabBar({ show }: { show: boolean }) {
                 className={cn(
                   "flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 text-xs font-medium transition-colors",
                   active
-                    ? tab.emphasized
-                      ? "text-primary"
-                      : "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                  tab.emphasized && active && "font-semibold"
+                    ? "font-semibold text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
                 aria-current={active ? "page" : undefined}
               >
@@ -92,7 +89,7 @@ export function BottomTabBar({ show }: { show: boolean }) {
                   className={cn(
                     "size-5 shrink-0",
                     tab.emphasized && "size-6",
-                    active && tab.emphasized && "fill-primary/15"
+                    active && "fill-primary/15"
                   )}
                   aria-hidden
                 />

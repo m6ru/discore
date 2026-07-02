@@ -121,7 +121,21 @@ export default async function CourseDetailPage({ params }: PageProps) {
         <section className="space-y-3">
           <h2 className={sectionHeadingClassName}>About</h2>
           <div className="space-y-3 text-sm text-muted-foreground">
-            {course.location.trim().length > 0 ? <p>{course.location}</p> : null}
+            {course.location.trim().length > 0 || mapsUrl ? (
+              <div className="space-y-1">
+                {course.location.trim().length > 0 ? <p>{course.location}</p> : null}
+                {mapsUrl ? (
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block underline underline-offset-4 hover:text-foreground"
+                  >
+                    Open in Maps
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
             {course.details?.trim() ? (
               <p className="whitespace-pre-line">{course.details}</p>
             ) : null}
@@ -134,16 +148,6 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 className="h-auto w-full rounded-lg border"
                 sizes="(max-width: 768px) 100vw, 48rem"
               />
-            ) : null}
-            {mapsUrl ? (
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block text-primary underline underline-offset-4"
-              >
-                Open in Maps
-              </a>
             ) : null}
           </div>
         </section>

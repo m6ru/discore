@@ -305,7 +305,7 @@ export function AccountPanel({
           <div className="space-y-1">
             <Label htmlFor="nearby-courses">Nearby courses</Label>
             <p className="text-sm text-muted-foreground">
-              Sort courses by distance on the Play tab.
+              Enable location services to display distances.
             </p>
           </div>
           <Switch
