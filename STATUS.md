@@ -38,7 +38,24 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 **Out of scope for field MVP:** Anonymous guest round (D-guest), advanced stats / `fairway_hit`, full shadcn UI, rich Phase 5 stats, offline sync.
 
-**Field day:** Run full round on course with two phones (LTE, browser tab not PWA). Capture friction for Tier 2 UX (layout grouping, sticky save, replace `window.confirm`).
+**Field day:** Validated on course (scoring works well). Visual polish pass done for tab screens (Home, Play, History, Profile); round route unchanged as north star.
+
+---
+
+## Where we are (Mar 2026)
+
+**Shippable hobby app** for the Estonian disc golf community: sign in, pick a course, score a round with guests or invited friends, observer watches live, history on device.
+
+| Area | State |
+|------|--------|
+| **Backbone** | Done — auth, RLS, scoring, Realtime, deploy |
+| **Round UX** | Done — reference quality; don't regress |
+| **Tab UI** | Good enough for this stage — consistent nav, cards, CTAs |
+| **Course data** | **22 layouts**, **16 parks**; all seeded courses have `lat`/`lng` |
+| **Stats / competitions** | Not started (Phase 5–6) |
+| **PWA install** | Deferred |
+
+**Recommended next product work:** History **Stats** sub-section (tier-1: rounds played, best round, score distribution, OB count). Secondary: course map PNGs, Play map view toggle, more parks via JSON seeds.
 
 ---
 
@@ -47,53 +64,50 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 | Phase | Status | Notes |
 |-------|--------|-------|
 | **1** Infrastructure | Done | Next.js, Supabase clients, middleware; minimal `manifest.ts`; SW not configured |
-| **2** Schema & seeding | Done | RLS, 17 migrations, 18 seeded layouts |
-| **3** Core scoring | **Done (field MVP)** | Draft/active/complete, invites, scorer writes, observer Realtime (consolidated refresh + visibility resync) |
-| **4** UI bootstrap | **Done** | shadcn, theme, scorer round UX; Profile hub, History scores, `pagePrimaryButtonClassName` on tab screens. PWA install deferred. |
-| **5** History & stats | Partial | `/rounds` list exists; richer stats not built |
+| **2** Schema & seeding | Done | RLS; JSON seed pipeline; **22 layouts** / **16 course parks**; all active courses have coordinates |
+| **3** Core scoring | **Done** | Field-tested; draft/active/complete, invites, scorer writes, observer Realtime |
+| **4** UI bootstrap | **Done (this stage)** | Tab screens polished: Home hub, Play list + detail, History cards, Profile hub; unified inline primary CTAs; green active nav tab. PWA deferred. |
+| **5** History & stats | Partial | History list with vs par; **Stats UI not built** |
 | **6** Ratings & tournaments | Not started | By design until adoption warrants |
 
 ---
 
 ## Current capabilities
 
-- **Hub** (`app/page.tsx`): header paints after auth; body streams via `Suspense`. `loadHomeData` — 3 parallel queries (profile, invites, participations→rounds). Indexes on `round_participants(user_id)`, pending invites, `rounds(status)`.
-- **Bottom nav:** Home · Play (`/courses`) · History (`/rounds`) · Profile (`/auth`). Tab bar hidden on live round routes (`/rounds/[id]`).
-- **Auth & profile** (`app/auth`, `lib/profiles`): sign-in; **Profile hub** — hero (avatar, name, city, email), grouped sections (Details / Preferences / Authentication), sign out
-- **Courses:** 18 layouts via JSON seed pipeline (`npm run seed:courses`); browse at `/courses` and `/courses/[slug]` (Play tab); **nearby sort** (browser geolocation + `lat`/`lng` when seeded), compact list rows, Open in Maps on detail
-- **Rounds:** create draft → invite registered users or add guests → start when no pending invites; **draft setup UI** at `/rounds/[id]` (unified roster, starting-hole picker, editable title, invite/guest add)
-- **Scoring:** online-first batched hole saves — see [BLUEPRINT.md §3a](BLUEPRINT.md)
-- **Active round:** Single-player stepper + selectable roster (hole score / total / vs par; **Hide scores** menu toggle hides total + vs par), OB toggle, header menu (scorecard dialog, hide/show scores, round info, abandon), optional **round name**, configurable **starting hole**, live scorecard (sticky cols, expandable player names when truncated, auto-scroll to current hole), hole notes on `ActiveHoleStatus`, results pool when scorer finishes all holes or on completed/abandoned view, end-of-round confirm deck, hole navigation, **multi-player next-player button** (`↓` until all scores entered, then green `→` advance hole)
-- **Observer:** read-only UI + Realtime scorecard; scorecard-first (no pool list during active); `ActiveHoleStatus`; score-derived current hole; draft “waiting to start” copy; bottom tab bar throughout active round
-- **Completed / abandoned round:** Shared finished layout via `isFinishedRoundStatus` — Results of the pool + scorecard on same route; status badge + date in header; scorer stays on page after confirm; bottom tab bar
-- **History:** `app/rounds/page.tsx` — bordered round list with user score (`vs par` + total strokes); **Abandoned** badge only when applicable
-- **Code layout:** `lib/scoring` (pure math), `lib/rounds` + `lib/profiles` (actions), `app/rounds/[roundId]/` (orchestrator, hooks, components)
+- **Hub** (`app/page.tsx`): continue-round cards (`bg-muted/60`), invites (Realtime), get-started checklist, **recent rounds** (last 3, same card UI as History with vs par)
+- **Bottom nav:** Home · Play · History · Profile; **all active tabs** use primary green; hidden on live scorer round routes
+- **Auth & profile** (`app/auth`): Profile hub — hero, Details / Preferences / **Authentication**, sign out; nearby toggle copy references location services
+- **Courses:** 22 layouts via `npm run seed:courses`; Play search + **distance sort** (all seeded parks have coords); detail — layout picker, About (address, Open in Maps under address, fees/contact), optional `public/courses/{slug}-map.png`
+- **Rounds:** draft setup (inline Start round), active scoring, observer read-only, complete/abandon
+- **History:** `app/rounds/page.tsx` — course-style cards; **vs par only** on the right (abandoned shows label, no score); loads scores inline in page file
+- **Scoring / round route** (unchanged summary): online-first saves; full scorer + observer UX at `/rounds/[roundId]` — see prior docs; **do not regress**
 
-Also implemented: `round_invitations`, single active round per scorer, join codes removed, boolean `hole_scores.ob`, RLS helpers `is_round_member` / `can_manage_round_invitation`.
+---
+
+Also implemented: `round_invitations`, single active round per scorer, join codes removed, boolean `hole_scores.ob`, RLS helpers `is_round_member` / `can_manage_round_invitation`. Code layout: `lib/scoring` (pure math), `lib/rounds` + `lib/profiles`, `app/rounds/[roundId]/` for round UI.
 
 ---
 
 ## Next (ordered)
 
-1. ~~**Profile discoverability**~~ — Done.
-2. ~~**Deploy**~~ — Done (Vercel + Supabase Auth URLs).
-3. ~~**Pre-flight + Realtime**~~ — Done (publication + consolidated round/hub subscriptions).
-4. ~~**Backbone refactor**~~ — Done (typed Supabase factories, strict `RoundStatus`, `/lib/scoring` extracted + tested, scorer-as-participant trigger, signup-name trigger).
-5. **UI & UX (journey)** — See [UI-ROADMAP.md](UI-ROADMAP.md). **Round route done.** **Home + nav shell done.** **Courses list slice done.** **Profile hub, History scores, inline primary CTA done.** **Next:** Courses map view, backfill coords in seeds, or **Stats session** (History sub-section).
-6. ~~**Field test on course**~~ — Done; scoring validated on course.
+1. ~~**Field test**~~ — Done.
+2. ~~**Tab UI polish (this stage)**~~ — Done (Home, Play, History, Profile, nav, CTAs).
+3. ~~**Course coordinates**~~ — Done for all seeded parks.
+4. **Stats (Phase 5)** — Tier-1 block on History route: rounds played, best round, score distribution, OB count (`STATS_ROUND_STATUSES` = completed only).
+5. **Course content** — Map PNGs per park (`public/courses/{slug}-map.png`); fix Järve Talu **20x** hole data when confirmed on site.
+6. **Play map view** — Optional toggle when useful (most coords now available).
 
 ### Next chat (copy-paste)
 
 ```
-Continue Discore UI per UI-ROADMAP.md and DESIGN-PATTERNS.md. Read STATUS.md first.
+Read STATUS.md and UI-ROADMAP.md first. Round route is frozen — don't regress.
 
-Round session at /rounds/[roundId] is the reference — don't regress it.
+Pick one slice:
+- History Stats — tier-1 player stats on /rounds (completed rounds only)
+- Course maps — add PNGs + any seed fixes from field notes
+- Play map view toggle
 
-Pick the next slice:
-- Courses — map view toggle; backfill `lat`/`lng` in seeds as courses are added
-- History / Stats — tier-1 player stats, optional gamification
-
-One slice per chat. Run tsc, lint, test, build before commit.
+One slice per chat. Run lint, test, build before commit.
 ```
 
 ---
@@ -106,8 +120,8 @@ One slice per chat. Run tsc, lint, test, build before commit.
 - **Phase 5:** Richer per-player stats and comparisons.
 - **Phase 6:** Ratings, tournaments (`tournament_id` column reserved).
 - Smart-ID / magic-link auth.
-- **Geolocation “courses near me”:** **done** on `/courses` (browser geolocation + distance sort when `lat`/`lng` seeded).
-- **Courses map view:** follow-up slice when enough courses have coordinates.
+- **Geolocation / nearby sort:** **done** — all seeded courses have `lat`/`lng`; Profile toggle + browser permission
+- **Courses map view:** optional follow-up on Play tab
 
 ---
 
@@ -118,8 +132,9 @@ One slice per chat. Run tsc, lint, test, build before commit.
 | **A** Resilience & domain | Complete | `/lib/scoring`; online-first writes; legacy `localStorage` queue removed |
 | **B** Round visibility | Complete | History, resume on hub, enriched invites, scorer participant self-heal |
 | **C** Score & observer UX | Complete | OB boolean, leaderboard, last-saved, Realtime (scores + meta refresh), hub invite live |
-| **D-courses** | Complete | JSON seeds, `seed:courses` → SQL migrations |
+| **D-courses** | Complete | JSON seeds, `seed:courses` → SQL migrations; 22 layouts |
 | **D-guest** | Deferred | See Later |
+| **E Tab UI (2026)** | Complete | Home, History, Profile, course detail, nav, CTAs |
 
 ---
 
@@ -161,30 +176,9 @@ Do not reintroduce `utils/supabase/*`.
 - Project ref: `uxvrnvsgqyctpxjiziyp`
 - Per machine: `supabase login`, `supabase link --project-ref uxvrnvsgqyctpxjiziyp`
 
-### Migrations (22)
+### Migrations
 
-1. `20260420185000_initial_schema.sql`
-2. `20260420185100_rls_policies.sql`
-3. `20260420185200_seed_courses.sql`
-4. `20260420193000_true_history_hardening.sql`
-5. `20260420195000_fix_round_participants_rls_recursion.sql`
-6. `20260428192554_enforce_single_active_round_per_scorer.sql`
-7. `20260429102000_round_invitations.sql`
-8. `20260429103500_fix_round_invitation_policy_recursion.sql`
-9. `20260429105500_round_participants_draft_only.sql`
-10. `20260429113000_round_participants_delete_draft.sql`
-11. `20260507093000_remove_round_join_code.sql`
-12. `20260511125000_profile_account_fields_and_avatar_storage.sql`
-13. `20260515160047_hole_scores_ob_boolean.sql`
-14. `20260518143000_seed_courses_from_json.sql`
-15. `20260518150000_drop_legacy_jarve_pro_18.sql`
-16. `20260520100345_seed_courses_from_json.sql`
-17. `20260521120000_drop_profiles_visibility.sql`
-18. `20260527190000_ensure_scorer_participant_trigger.sql`
-19. `20260527190100_realtime_publication_membership.sql`
-20. `20260527190200_signup_requires_first_last_name.sql`
-21. `20260611180000_rounds_name.sql`
-22. `20260617145700_home_list_query_indexes.sql`
+**30 files** in `supabase/migrations/` (core schema through `20260617145700_home_list_query_indexes.sql`, plus course seed batches through `20260701171527_seed_courses_from_json.sql`). Run `npx supabase migration list` to compare local vs remote.
 
 Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds` (incl. optional `name`), `round_participants`, `round_invitations`, `hole_scores`. RLS on all.
 
