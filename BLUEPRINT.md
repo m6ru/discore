@@ -56,6 +56,17 @@ Discore is a **one-person hobby app** for fast on-course scoring — not an ente
 
 ---
 
+## 2b. Performance & data access (non-negotiable)
+
+Navigation speed is a product feature — scorers are on a phone, often on mobile data. Keep these rules:
+
+- **Every server-fetching route needs a `loading.tsx` (or a `Suspense` boundary)** so a tab tap shows an instant shell instead of blocking on the server render. Keep the root layout static (no `cookies()` / `getUser()` in a layout) so those fallbacks render immediately.
+- **Auth reads:** pages / Server Components read the session via `supabase.auth.getClaims()` — it verifies the JWT locally (no Auth round-trip) when the project uses asymmetric signing keys, and `middleware.ts` has already refreshed the session. Only `middleware.ts` calls `getUser()`. Never add a second `getUser()` per navigation.
+- **Aggregates at scale:** compute per-round / per-player stats in Postgres (a view or RPC), not by pulling raw `hole_scores` into JS, once result sets grow past a handful of rounds. `lib/rounds/round-score-summary.ts` is the shared seam to swap when Phase 5 stats land.
+- **Round route exception:** `/rounds/[roundId]` is intentionally decomposed into hooks + components — it is the most complex screen and the north star. This is the sanctioned exception to §2a's "prefer one screen file"; do not cite it to justify file sprawl elsewhere.
+
+---
+
 ## 3. Architecture: Single-Source-of-Truth Data Flow
 
 One registered user per round is the **Scorer** (the round creator). All other participants are **Observers**.
@@ -193,6 +204,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 - All scoring functions live in `/lib/scoring`.
 - **MVP:** Raw score tracking only — strokes relative to par (`+1`, `-2`, `E`, etc.) and cumulative totals.
 - **Future:** The module structure and types must support plugging in weighted ratings and statistical analysis later, without restructuring. No `any` permitted in this directory.
+- **Phase 5 stats aggregation:** history/stats aggregates (rounds played, best round, distribution, OB count) are computed in Postgres via a view or RPC — not by reducing raw `hole_scores` in JS. `lib/rounds/round-score-summary.ts` is today's per-round seam and the intended swap point (see §2b).
 - After schema is finalised, generate typed DB interfaces: `supabase gen types typescript` → `/lib/database.types.ts`. Use these types for all Supabase queries.
 
 ---

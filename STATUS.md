@@ -59,6 +59,18 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 ---
 
+## Performance (nav) — done this pass
+
+Tab navigation felt laggy (2–3 s dead tap) because each tab was a server render that blocked on serial Supabase round-trips with no loading UI. Fixed per [BLUEPRINT §2b](BLUEPRINT.md):
+
+- **Route `loading.tsx` skeletons** on `/`, `/courses`, `/rounds`, `/auth` → instant shell on tap (root layout is static, so fallbacks stream immediately).
+- **`getClaims()` on tab pages** (Home, Play, History, Profile) instead of a second `getUser()` — local JWT verify, no extra Auth round-trip; middleware still refreshes the session. Round route / course detail / `rounds/new` left on `getUser()`.
+- **Shared score-summary loader** (`lib/rounds/round-score-summary.ts`) de-duplicates the Home + History fan-out and is the swap point for Phase 5 SQL aggregates.
+
+Deferred (see below): `middleware.ts` → `proxy.ts` rename (Next 16 deprecation); RLS `(select auth.uid())` initplan wrapping; trimming the no-op setter params in the round hooks.
+
+---
+
 ## Phase status
 
 | Phase | Status | Notes |
@@ -93,9 +105,10 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 1. ~~**Field test**~~ — Done.
 2. ~~**Tab UI polish (this stage)**~~ — Done (Home, Play, History, Profile, nav, CTAs).
 3. ~~**Course coordinates**~~ — Done for all seeded parks.
-4. **Stats (Phase 5)** — Tier-1 block on History route: rounds played, best round, score distribution, OB count (`STATS_ROUND_STATUSES` = completed only).
-5. **Course content** — Map PNGs per park (`public/courses/{slug}-map.png`); fix Järve Talu **20x** hole data when confirmed on site.
-6. **Play map view** — Optional toggle when useful (most coords now available).
+4. ~~**Nav speed + cleanup pass**~~ — Done (loading skeletons, `getClaims` on tab pages, shared score-summary loader; see Performance).
+5. **Stats (Phase 5)** — Tier-1 block on History route: rounds played, best round, score distribution, OB count (`STATS_ROUND_STATUSES` = completed only). Aggregate in Postgres (view/RPC), not JS — swap `lib/rounds/round-score-summary.ts` ([BLUEPRINT §2b/§8](BLUEPRINT.md)).
+6. **Course content** — Map PNGs per park (`public/courses/{slug}-map.png`); fix Järve Talu **20x** hole data when confirmed on site.
+7. **Play map view** — Optional toggle when useful (most coords now available).
 
 ### Next chat (copy-paste)
 
@@ -122,6 +135,9 @@ One slice per chat. Run lint, test, build before commit.
 - Smart-ID / magic-link auth.
 - **Geolocation / nearby sort:** **done** — all seeded courses have `lat`/`lng`; Profile toggle + browser permission
 - **Courses map view:** optional follow-up on Play tab
+- **Next 16 `middleware` → `proxy`:** build warns `middleware` is deprecated in favor of `proxy.ts` (exported `proxy`). Rename when convenient; auth-sensitive, so do it as an isolated change and re-verify session refresh.
+- **RLS initplan:** wrap `auth.uid()` as `(select auth.uid())` in policies so the planner caches it — negligible now, worth it once history/stats scan many rows.
+- **Round hooks cleanup:** `use-round-realtime` / `use-active-scoring` take no-op `setRenderNow` / `setLastSavedEvent` setters from `round-session`; trim the dead params (behavior-preserving, but touches the frozen round route — verify carefully).
 
 ---
 
@@ -191,7 +207,7 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Area | Paths |
 |------|--------|
 | Scoring math | `lib/scoring/{types,stats}.ts` |
-| Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows,round-status}.ts` |
+| Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows,round-status,round-score-summary}.ts` |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
 | Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` (scorecard, draft setup deck, active scoring, results, completion) |
 | Round display name | `lib/rounds/round-display-name.ts`, `draft-round-title-portal.tsx`, `create-round-form.tsx` |

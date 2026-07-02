@@ -26,6 +26,8 @@ Phase 4 tab-screen polish is **done for the current stage**. Round route (`/roun
 
 All active tabs: **primary green** label + icon fill.
 
+Each tab route has a `loading.tsx` skeleton so navigation shows an instant shell while the server render streams (see [BLUEPRINT §2b](BLUEPRINT.md)).
+
 ---
 
 ## Journey status
@@ -56,7 +58,7 @@ All active tabs: **primary green** label + icon fill.
 ## History & stats
 
 - **List:** completed + abandoned; vs par right-aligned; abandoned = text only
-- **Stats (next):** section on `/rounds` above list — rounds played, best round, distribution, OB count; completed rounds only
+- **Stats (next):** section on `/rounds` above list — rounds played, best round, distribution, OB count; completed rounds only. Aggregate in Postgres (view/RPC) via the `lib/rounds/round-score-summary.ts` seam, not JS reducers ([BLUEPRINT §2b/§8](BLUEPRINT.md)).
 
 ---
 
