@@ -2,9 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { pickOne } from "@/lib/supabase/select-helpers";
 import { isProfileOnboardingComplete } from "@/lib/profiles/is-profile-onboarding-complete";
-import { segmentPlayerStats } from "@/lib/scoring/stats";
-import type { Hole } from "@/lib/scoring/types";
-import { makeScoreLookupKey } from "@/lib/scoring/types";
+import { loadRoundScoreSummaries } from "@/lib/rounds/round-score-summary";
 import {
   HOME_PARTICIPATION_ROW_LIMIT,
   parseHomeParticipantRounds,
@@ -85,77 +83,17 @@ async function attachScoresToRecentRounds(
   userId: string,
   rounds: HomeRecentRound[]
 ): Promise<HomeRecentRound[]> {
-  if (rounds.length === 0) {
-    return rounds;
-  }
-
-  const roundIds = rounds.map((round) => round.id);
-  const layoutIds = [...new Set(rounds.map((round) => round.layoutId))];
-
-  const [participantsResult, scoresResult, holesResult] = await Promise.all([
-    supabase
-      .from("round_participants")
-      .select("id, round_id")
-      .eq("user_id", userId)
-      .in("round_id", roundIds),
-    supabase
-      .from("hole_scores")
-      .select("participant_id, hole_id, strokes")
-      .in("round_id", roundIds),
-    supabase
-      .from("holes")
-      .select("id, layout_id, hole_number, par")
-      .in("layout_id", layoutIds)
-      .order("hole_number", { ascending: true }),
-  ]);
-
-  if (participantsResult.error || scoresResult.error || holesResult.error) {
-    return rounds;
-  }
-
-  const participantIdByRoundId = new Map(
-    (participantsResult.data ?? []).map((row) => [row.round_id, row.id])
+  const { summaries } = await loadRoundScoreSummaries(
+    supabase,
+    userId,
+    rounds.map((round) => ({ id: round.id, layoutId: round.layoutId }))
   );
 
-  const holesByLayoutId = new Map<string, Hole[]>();
-  for (const hole of holesResult.data ?? []) {
-    const list = holesByLayoutId.get(hole.layout_id) ?? [];
-    list.push({
-      id: hole.id,
-      hole_number: hole.hole_number,
-      par: hole.par,
-    });
-    holesByLayoutId.set(hole.layout_id, list);
-  }
-
-  const scoresByParticipantId = new Map<string, { hole_id: string; strokes: number }[]>();
-  for (const score of scoresResult.data ?? []) {
-    const list = scoresByParticipantId.get(score.participant_id) ?? [];
-    list.push({ hole_id: score.hole_id, strokes: score.strokes });
-    scoresByParticipantId.set(score.participant_id, list);
-  }
-
   return rounds.map((round) => {
-    const participantId = participantIdByRoundId.get(round.id);
-    if (!participantId) {
+    const stats = summaries.get(round.id);
+    if (!stats || stats.thru === 0) {
       return round;
     }
-
-    const layoutHoles = holesByLayoutId.get(round.layoutId) ?? [];
-    const participantScores = scoresByParticipantId.get(participantId) ?? [];
-    const lookup = new Map<string, number>();
-    for (const score of participantScores) {
-      lookup.set(makeScoreLookupKey(participantId, score.hole_id), score.strokes);
-    }
-    const stats = segmentPlayerStats(participantId, layoutHoles, lookup);
-    if (stats.thru === 0) {
-      return round;
-    }
-
-    return {
-      ...round,
-      totalStrokes: stats.totalStrokes,
-      vsPar: stats.vsPar,
-    };
+    return { ...round, totalStrokes: stats.totalStrokes, vsPar: stats.vsPar };
   });
 }
