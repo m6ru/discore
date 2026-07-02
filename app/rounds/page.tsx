@@ -26,15 +26,14 @@ type HistoryRound = {
 
 export default async function RoundsHistoryPage() {
   const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims() verifies the JWT locally when possible; middleware handles refresh.
+  const { data } = await supabase.auth.getClaims();
 
-  if (!user) {
+  if (!data?.claims) {
     redirect("/auth?message=Please+sign+in+to+view+round+history");
   }
 
-  const { rounds, error } = await loadHistoryRounds(supabase, user.id);
+  const { rounds, error } = await loadHistoryRounds(supabase, data.claims.sub);
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">

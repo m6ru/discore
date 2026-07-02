@@ -6,11 +6,10 @@ import { CoursesList } from "./courses-list";
 
 export default async function CoursesPage() {
   const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims() verifies the JWT locally when possible; middleware handles refresh.
+  const { data } = await supabase.auth.getClaims();
 
-  if (!user) {
+  if (!data?.claims) {
     redirect("/auth?message=Please+sign+in+to+continue");
   }
 
