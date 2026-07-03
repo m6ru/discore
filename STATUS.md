@@ -49,13 +49,13 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 | Area | State |
 |------|--------|
 | **Backbone** | Done — auth, RLS, scoring, Realtime, deploy |
-| **Round UX** | Done — reference quality; don't regress |
+| **Round UX** | Done — works well; evolve carefully (not frozen; advanced scoring inputs planned) |
 | **Tab UI** | Good enough for this stage — consistent nav, cards, CTAs |
 | **Course data** | **22 layouts**, **16 parks**; all seeded courses have `lat`/`lng` |
 | **Stats / competitions** | Not started (Phase 5–6) |
 | **PWA install** | Deferred |
 
-**Recommended next product work:** History **Stats** sub-section (tier-1: rounds played, best round, score distribution, OB count). Secondary: course map PNGs, Play map view toggle, more parks via JSON seeds.
+**Recommended next product work (ordered):** (1) **Home upgrades** — near-you Start, "play again", stats-teaser slot; (2) History **Stats** sub-section (tier-1: rounds played, best round, score distribution, OB count); (3) **Advanced scoring** (opt-in per round). Secondary: course map PNGs, Play map view toggle, more parks via JSON seeds. See "Next (ordered)" and the [strategic wedge](BLUEPRINT.md) for rationale.
 
 ---
 
@@ -64,8 +64,14 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 Tab navigation felt laggy (2–3 s dead tap) because each tab was a server render that blocked on serial Supabase round-trips with no loading UI. Fixed per [BLUEPRINT §2b](BLUEPRINT.md):
 
 - **Route `loading.tsx` skeletons** on `/`, `/courses`, `/rounds`, `/auth` → instant shell on tap (root layout is static, so fallbacks stream immediately).
-- **`getClaims()` on tab pages** (Home, Play, History, Profile) instead of a second `getUser()` — local JWT verify, no extra Auth round-trip; middleware still refreshes the session. Round route / course detail / `rounds/new` left on `getUser()`.
+- **`getClaims()` on tab pages** (Home, Play, History, Profile) instead of a second `getUser()` — local JWT verify, no extra Auth round-trip. Round route / course detail / `rounds/new` left on `getUser()`.
 - **Shared score-summary loader** (`lib/rounds/round-score-summary.ts`) de-duplicates the Home + History fan-out and is the swap point for Phase 5 SQL aggregates.
+
+**Nav pass 2 (shipped — commit `24a2df0`):**
+
+- **Middleware now uses `getClaims()`** instead of `getUser()` (`lib/supabase/middleware.ts`). It still refreshes an expired session (rotating cookies via `setAll`) via the internal `getSession()`, but verifies the JWT **locally against the cached JWKS** — killing the per-navigation / per-prefetch cross-region Auth round-trip. Asymmetric signing keys confirmed on the Stockholm project; falls back to a network `getUser()` only for symmetric keys. Realtime/browser-client sessions are unaffected (that WebSocket authenticates independently).
+- **`experimental.staleTimes.dynamic = 30`** in `next.config.ts` — caches prefetched RSC payloads for dynamic (cookie-reading) tab routes, so re-tapping a tab renders instantly from the client router cache. Realtime/refresh reconciles staleness.
+- **`Server-Timing: auth;dur=…`** header set in middleware for measuring the auth cost per request in DevTools → Network → Timing.
 
 Deferred (see below): `middleware.ts` → `proxy.ts` rename (Next 16 deprecation); RLS `(select auth.uid())` initplan wrapping; trimming the no-op setter params in the round hooks.
 
@@ -105,20 +111,24 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 1. ~~**Field test**~~ — Done.
 2. ~~**Tab UI polish (this stage)**~~ — Done (Home, Play, History, Profile, nav, CTAs).
 3. ~~**Course coordinates**~~ — Done for all seeded parks.
-4. ~~**Nav speed + cleanup pass**~~ — Done (loading skeletons, `getClaims` on tab pages, shared score-summary loader; see Performance).
-5. **Stats (Phase 5)** — Tier-1 block on History route: rounds played, best round, score distribution, OB count (`STATS_ROUND_STATUSES` = completed only). Aggregate in Postgres (view/RPC), not JS — swap `lib/rounds/round-score-summary.ts` ([BLUEPRINT §2b/§8](BLUEPRINT.md)).
-6. **Course content** — Map PNGs per park (`public/courses/{slug}-map.png`); fix Järve Talu **20x** hole data when confirmed on site.
-7. **Play map view** — Optional toggle when useful (most coords now available).
+4. ~~**Nav speed + cleanup pass**~~ — Done (loading skeletons, `getClaims` on tab pages + middleware, `staleTimes`, shared score-summary loader; see Performance).
+5. **Home upgrades (small, next)** — Launchpad polish: **near-you Start** (reuse Play's geolocation → nearest course + default layout; fallback plain Start CTA), **"play again"** on recent-round rows, and a reserved **stats-teaser slot**. Keep home calm (no feed/widgets). See [UI-ROADMAP Home](UI-ROADMAP.md).
+6. **Stats (Phase 5)** — Tier-1 block on History route: rounds played, best round, score distribution, OB count (`STATS_ROUND_STATUSES` = completed only). Aggregate in Postgres (view/RPC), not JS — swap `lib/rounds/round-score-summary.ts` ([BLUEPRINT §2b/§8](BLUEPRINT.md)).
+7. **Advanced scoring (after Stats)** — Opt-in per-round "detailed scoring" toggle adds per-hole capture: fairway hit, C1 in reg (≤10 m), C2 in reg (≤20 m), C1 putting, C2 putting, **bullseye/parked** (≤3 m). Default off = fast casual flow. Additive nullable `hole_scores` columns. Touches the round route — its own slice, verify carefully. See [UI-ROADMAP Advanced scoring](UI-ROADMAP.md).
+8. **D-guest** — Anonymous trial + claim on signup (acquisition lever); after advanced scoring.
+9. **Course content** — Map PNGs per park (`public/courses/{slug}-map.png`); fix Järve Talu **20x** hole data when confirmed on site.
+10. **Play map view** — Optional toggle when useful (most coords now available).
 
 ### Next chat (copy-paste)
 
 ```
-Read STATUS.md and UI-ROADMAP.md first. Round route is frozen — don't regress.
+Read STATUS.md and UI-ROADMAP.md first. Round route works well — evolve it carefully, but it is NOT frozen.
 
-Pick one slice:
+Next slice (in order): Home upgrades → History Stats → Advanced scoring.
+Pick ONE:
+- Home upgrades — near-you Start, "play again" on recent, stats-teaser slot
 - History Stats — tier-1 player stats on /rounds (completed rounds only)
-- Course maps — add PNGs + any seed fixes from field notes
-- Play map view toggle
+- Advanced scoring — opt-in per-round detailed metrics (talk before pixels; touches round route)
 
 One slice per chat. Run lint, test, build before commit.
 ```
@@ -128,8 +138,8 @@ One slice per chat. Run lint, test, build before commit.
 ## Later / deferred
 
 - **PWA:** Serwist + icons when install-to-homescreen matters.
-- **Slice D-guest:** Anonymous round local-only → claim on signup (Option A below).
-- **Advanced stats:** `fairway_hit`, C1/C2 counters, scrambling — per-round opt-in toggle after D-guest.
+- **Advanced scoring:** planned as slice #7 (after Stats), **not** deferred indefinitely — opt-in per-round toggle; metric set = fairway hit, C1/C2 in reg, C1/C2 putting, bullseye/parked (≤3 m). Additive nullable `hole_scores` columns.
+- **Slice D-guest:** Anonymous round local-only → claim on signup (Option A below); acquisition lever, planned after advanced scoring.
 - **Phase 5:** Richer per-player stats and comparisons.
 - **Phase 6:** Ratings, tournaments (`tournament_id` column reserved).
 - Smart-ID / magic-link auth.

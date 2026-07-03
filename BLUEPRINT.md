@@ -10,6 +10,8 @@
 
 **Data source:** Course and layout data is provided and maintained by the app creator. The initial dataset will be sourced from [discgolfirajad.ee](https://discgolfirajad.ee). Users never create or edit course data.
 
+**Product focus:** Discore's value is in the parts a single player controls — **fast, lag-free scoring**, a **clean mobile UI**, and **excellent personal stats** — plus a **frictionless path to try it** (guest scoring today, anonymous scoring later). Advanced stats cover the metrics serious players expect (see §5). Casual/practice scoring for a local community is the beachhead; competitions and ratings come later (Phase 6), only if adoption warrants.
+
 ---
 
 ## 2. Technical Stack
@@ -63,7 +65,7 @@ Navigation speed is a product feature — scorers are on a phone, often on mobil
 - **Every server-fetching route needs a `loading.tsx` (or a `Suspense` boundary)** so a tab tap shows an instant shell instead of blocking on the server render. Keep the root layout static (no `cookies()` / `getUser()` in a layout) so those fallbacks render immediately.
 - **Auth reads:** pages / Server Components read the session via `supabase.auth.getClaims()` — it verifies the JWT locally (no Auth round-trip) when the project uses asymmetric signing keys, and `middleware.ts` has already refreshed the session. Only `middleware.ts` calls `getUser()`. Never add a second `getUser()` per navigation.
 - **Aggregates at scale:** compute per-round / per-player stats in Postgres (a view or RPC), not by pulling raw `hole_scores` into JS, once result sets grow past a handful of rounds. `lib/rounds/round-score-summary.ts` is the shared seam to swap when Phase 5 stats land.
-- **Round route exception:** `/rounds/[roundId]` is intentionally decomposed into hooks + components — it is the most complex screen and the north star. This is the sanctioned exception to §2a's "prefer one screen file"; do not cite it to justify file sprawl elsewhere.
+- **Round route exception:** `/rounds/[roundId]` is intentionally decomposed into hooks + components — it is the most complex screen. This is the sanctioned exception to §2a's "prefer one screen file"; do not cite it to justify file sprawl elsewhere. It works well and is field-tested, so change it **carefully and deliberately** — but it is **not frozen**: additions like advanced scoring inputs are expected. The "don't regress it" rule protects behaviour, not the code from ever changing.
 
 ---
 
@@ -157,7 +159,7 @@ Two strictly separate client instances are required due to Next.js App Router's 
 
 **hole_scores**
 - Fields: `round_id`, `participant_id` (FK → round_participants), `hole_id` (FK → holes), `strokes`, `ob` (boolean, out-of-bounds flag; `false` when none), `fairway_hit` (boolean, nullable — reserved for future advanced-stats slice).
-- `putts` was removed from MVP scoring; advanced putting / C1 / C2 stats may reintroduce richer fields later behind an explicit per-round toggle.
+- `putts` was removed from MVP scoring. **Advanced scoring** is the planned next major slice (see STATUS): richer per-hole capture behind an **explicit per-round opt-in toggle** so casual rounds stay a fast 2-tap-per-hole flow. Planned metric set: **fairway hit**, **Circle 1 in regulation** (≤10 m), **Circle 2 in regulation** (≤20 m), **C1 putting** (make inside 10 m), **C2 putting** (make 10–20 m), and **bullseye / parked** (lands inside 3 m of the basket); `ob` is already captured. New nullable columns are added when that slice lands — schema stays additive, casual rounds leave them null.
 - Write RLS: only the `scorer_id` of the parent round may insert or update rows in this table.
 
 ---

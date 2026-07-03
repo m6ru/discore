@@ -8,6 +8,7 @@ import {
 } from "@/lib/courses/nearby-courses";
 import { createClient } from "@/lib/supabase/client";
 import { saveProfile } from "@/lib/profiles/save-profile";
+import { AVATAR_ACCEPT_ATTR, validateAvatarFile } from "@/lib/profiles/upload-avatar";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { toastError, toastSuccess } from "@/lib/ui/toast-notify";
 import { Button } from "@/components/ui/button";
@@ -205,11 +206,22 @@ export function AccountPanel({
       <input
         id={avatarInputId}
         type="file"
-        accept=".jpg,.jpeg,image/jpeg"
+        accept={AVATAR_ACCEPT_ATTR}
         className="sr-only"
         onChange={(event) => {
           const file = event.target.files?.[0];
-          setPendingAvatarFile(file && file.size > 0 ? file : null);
+          if (!file || file.size === 0) {
+            setPendingAvatarFile(null);
+            return;
+          }
+          const validation = validateAvatarFile(file);
+          if (!validation.ok) {
+            toastError(validation.message);
+            setPendingAvatarFile(null);
+            event.target.value = "";
+            return;
+          }
+          setPendingAvatarFile(file);
         }}
       />
 
@@ -281,7 +293,7 @@ export function AccountPanel({
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <Button type="button" variant="outline" size="sm" asChild>
               <label htmlFor={avatarInputId} className="cursor-pointer">
-                Change photo
+                {avatarUrl.trim() ? "Change photo" : "Add photo"}
               </label>
             </Button>
             {pendingAvatarFile ? (
@@ -289,7 +301,7 @@ export function AccountPanel({
                 {pendingAvatarFile.name} — save to upload
               </p>
             ) : (
-              <p className="text-xs text-muted-foreground">JPEG, max 1MB</p>
+              <p className="text-xs text-muted-foreground">JPEG, PNG or HEIC · up to 10MB</p>
             )}
           </div>
 
@@ -303,19 +315,19 @@ export function AccountPanel({
         <h2 className={sectionHeadingClassName}>Preferences</h2>
         <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
           <div className="space-y-1">
-            <Label htmlFor="nearby-courses">Nearby courses</Label>
+            <Label htmlFor="location-services">Location services</Label>
             <p className="text-sm text-muted-foreground">
-              Enable location services to display distances.
+              Enable to display distances.
             </p>
           </div>
           <Switch
-            id="nearby-courses"
+            id="location-services"
             checked={nearbyCourses}
             onCheckedChange={(checked) => {
               setNearbyCourses(checked);
               setNearbyCoursesPreference(checked ? "enabled" : "disabled");
             }}
-            aria-label="Sort nearby courses by distance"
+            aria-label="Location services — enable to display distances"
           />
         </div>
       </section>
