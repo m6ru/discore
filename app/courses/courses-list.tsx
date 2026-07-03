@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { filterCoursesByQuery } from "@/lib/courses/filter-courses";
+import { distanceKm, readDeviceLocation, type UserCoords } from "@/lib/courses/distance";
 import {
   getNearbyCoursesPreference,
   isNearbySortDisabled,
@@ -14,8 +15,6 @@ import { Input } from "@/components/ui/input";
 type Props = {
   courses: CourseSummary[];
 };
-
-type UserCoords = { lat: number; lng: number };
 
 type ListCourse = CourseSummary & { distanceKm: number | null };
 
@@ -32,18 +31,6 @@ function formatListMeta(course: CourseSummary): string {
 
 function formatDistanceKm(km: number): string {
   return km < 10 ? `${km.toFixed(1)} km` : `${Math.round(km)} km`;
-}
-
-function distanceKm(from: UserCoords, to: { lat: number; lng: number }): number {
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const dLat = toRad(to.lat - from.lat);
-  const dLng = toRad(to.lng - from.lng);
-  const lat1 = toRad(from.lat);
-  const lat2 = toRad(to.lat);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
-  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function sortForList(courses: CourseSummary[], coords: UserCoords | null): ListCourse[] {
@@ -69,20 +56,6 @@ function sortForList(courses: CourseSummary[], coords: UserCoords | null): ListC
     .sort(byName);
 
   return [...located, ...unlocated];
-}
-
-function readDeviceLocation(): Promise<UserCoords> {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error("unsupported"));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      reject,
-      { enableHighAccuracy: false, maximumAge: 60_000, timeout: 10_000 }
-    );
-  });
 }
 
 export function CoursesList({ courses }: Props) {

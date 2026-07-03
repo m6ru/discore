@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase/server";
+import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
 import { loadHomeData } from "@/lib/home/load-home-data";
 import {
   homeRowMetaClassName,
@@ -10,6 +11,7 @@ import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { HomeInvites } from "@/components/home/invites";
 import { HomeRecentRounds } from "@/components/home/recent-rounds";
 import { HomeGetStarted } from "@/components/home/get-started";
+import { NearYouStart } from "@/components/home/near-you-start";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -33,10 +35,24 @@ type Props = {
 
 export async function HomeSections({ userId }: Props) {
   const supabase = await createServerClient();
-  const data = await loadHomeData(supabase, userId);
+  const [data, coursesResult] = await Promise.all([
+    loadHomeData(supabase, userId),
+    loadCourseSummaries(supabase),
+  ]);
+
+  const nearYouCourses = (coursesResult.courses ?? [])
+    .filter((course) => course.lat !== null && course.lng !== null)
+    .map((course) => ({
+      name: course.name,
+      slug: course.slug,
+      lat: course.lat!,
+      lng: course.lng!,
+    }));
 
   return (
     <>
+      {/* Phase 5 stats teaser: one-line snapshot (rounds played · best · avg) goes here. */}
+
       {data.activeRounds.length > 0 ? (
         <section className="space-y-2">
           <h2 className={sectionHeadingClassName}>Continue round</h2>
@@ -71,6 +87,10 @@ export async function HomeSections({ userId }: Props) {
       ) : null}
 
       <HomeInvites currentUserId={userId} invites={data.invites} />
+
+      {data.activeRounds.length === 0 ? (
+        <NearYouStart courses={nearYouCourses} />
+      ) : null}
 
       <HomeGetStarted
         hasJoinedRound={data.hasJoinedRound}
