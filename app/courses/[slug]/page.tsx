@@ -150,12 +150,12 @@ export default async function CourseDetailPage({ params }: PageProps) {
                 </a>
                 <div
                   id="course-map"
-                  className="fixed inset-0 z-50 hidden scroll-mt-0 bg-background target:flex target:items-center target:justify-center target:p-4"
+                  className="fixed inset-0 z-50 hidden scroll-mt-0 bg-background/90 target:flex target:items-start target:justify-center target:px-4 target:pt-[10dvh]"
                 >
                   <a href="#" className="absolute inset-0 z-0" aria-label="Close map" tabIndex={-1} />
                   <a
                     href="#"
-                    className="absolute top-3 right-3 z-20 flex size-10 items-center justify-center rounded-full border bg-background text-2xl leading-none text-muted-foreground shadow-sm"
+                    className="absolute top-3 right-3 z-20 flex size-10 items-center justify-center rounded-full border bg-background/95 text-2xl leading-none text-muted-foreground shadow-sm"
                     aria-label="Close map"
                   >
                     ×
@@ -164,7 +164,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
                   <img
                     src={mapImageSrc}
                     alt={`${course.name} course map`}
-                    className="relative z-10 max-h-[85dvh] max-w-full rounded-lg border object-contain shadow-sm"
+                    className="relative z-10 max-h-[55dvh] max-w-full rounded-lg border object-contain shadow-sm"
                   />
                 </div>
               </>
