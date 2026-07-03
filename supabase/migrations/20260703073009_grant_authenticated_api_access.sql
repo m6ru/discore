@@ -1,0 +1,1 @@
+-- No-op placeholder; grants are in 20260703103000_grant_authenticated_api_access.sql.

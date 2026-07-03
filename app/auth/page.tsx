@@ -24,9 +24,21 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
     : { data: null };
 
   const email = claims?.email ?? "";
+  const metadataFirstName =
+    typeof claims?.user_metadata?.first_name === "string"
+      ? claims.user_metadata.first_name.trim()
+      : "";
+  const metadataLastName =
+    typeof claims?.user_metadata?.last_name === "string"
+      ? claims.user_metadata.last_name.trim()
+      : "";
   const displayName =
     profile?.display_name?.trim() ||
-    buildDisplayName(profile?.first_name ?? "", profile?.last_name ?? "", email);
+    buildDisplayName(
+      profile?.first_name ?? metadataFirstName,
+      profile?.last_name ?? metadataLastName,
+      email
+    );
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
@@ -41,8 +53,8 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
         <AccountPanel
           email={email}
           displayName={displayName}
-          initialFirstName={profile?.first_name ?? ""}
-          initialLastName={profile?.last_name ?? ""}
+          initialFirstName={profile?.first_name?.trim() || metadataFirstName}
+          initialLastName={profile?.last_name?.trim() || metadataLastName}
           initialGender={profile?.gender ?? ""}
           initialBirthYear={profile?.birth_year ? String(profile.birth_year) : ""}
           initialCity={profile?.city ?? ""}

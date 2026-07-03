@@ -21,7 +21,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 **Prerequisites:** Remote Supabase with all migrations applied; `NEXT_PUBLIC_SUPABASE_*` on host; 2+ registered users.
 
-**Deploy (done):** Vercel production HTTPS; env vars set; Supabase Auth Site URL + redirect URLs pointed at deploy URL.
+**Deploy (done):** Vercel production HTTPS; env vars set; Supabase Auth Site URL + redirect URLs pointed at deploy URL (include `https://<app>/auth/callback` and `http://localhost:3000/auth/callback` for email confirmation).
 
 **Realtime (done for field MVP):**
 
@@ -189,8 +189,8 @@ Do not reintroduce `utils/supabase/*`.
 
 ### Supabase project
 
-- Project ref: `uxvrnvsgqyctpxjiziyp`
-- Per machine: `supabase login`, `supabase link --project-ref uxvrnvsgqyctpxjiziyp`
+- Project ref: `gslzfwbrdbvmnjaxxnms` (Stockholm / `eu-north-1`)
+- Per machine: `supabase login`, `supabase link --project-ref gslzfwbrdbvmnjaxxnms`
 
 ### Migrations
 
