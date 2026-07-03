@@ -37,7 +37,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
   const { data: round, error: roundError } = await supabase
     .from("rounds")
     .select(
-      "id, name, status, started_at, completed_at, scorer_id, layout_id, starting_hole, layouts(name, total_par, total_distance_m, courses(name))"
+      "id, name, status, started_at, completed_at, scorer_id, layout_id, starting_hole, layouts(name, total_par, total_distance_m, courses(name, slug))"
     )
     .eq("id", roundId)
     .maybeSingle();
@@ -168,6 +168,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
           currentUserId={user.id}
           scorerDisplayName={scorerProfile?.display_name ?? "Scorer"}
           courseName={courseRow?.name ?? "Unknown course"}
+          courseSlug={courseRow?.slug ?? null}
           layoutName={layoutRow?.name ?? "Unknown layout"}
           layoutTotalPar={layoutRow?.total_par ?? 0}
           initialParticipants={safeParticipants}

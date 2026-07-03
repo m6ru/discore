@@ -25,6 +25,7 @@ type Options = {
   roundStatus: RoundStatus;
   isScorer: boolean;
   currentUserId: string;
+  courseSlug: string | null;
   loadParticipants: () => Promise<void>;
   loadInvites: () => Promise<void>;
   setIsSubmitting: (value: boolean) => void;
@@ -37,6 +38,7 @@ export function useDraftSetup({
   roundStatus,
   isScorer,
   currentUserId,
+  courseSlug,
   loadParticipants,
   loadInvites,
   setIsSubmitting,
@@ -181,9 +183,9 @@ export function useDraftSetup({
       setIsTransitioning(false);
       return;
     }
-    router.push("/");
+    router.push(courseSlug ? `/courses/${courseSlug}` : "/courses");
     router.refresh();
-  }, [isScorer, supabase, roundId, setIsTransitioning, router]);
+  }, [isScorer, supabase, roundId, courseSlug, setIsTransitioning, router]);
 
   return {
     participantName,
