@@ -31,7 +31,7 @@ function formatLayoutStats(layout: CourseLayoutOption): string {
   return parts.join(" · ");
 }
 
-function LayoutActionPanel({ layout }: { layout: CourseLayoutOption }) {
+function LayoutDetailsPanel({ layout }: { layout: CourseLayoutOption }) {
   return (
     <div className="space-y-4">
       <p className="font-mono text-sm tabular-nums text-muted-foreground">
@@ -47,7 +47,6 @@ function LayoutActionPanel({ layout }: { layout: CourseLayoutOption }) {
           Layout map
         </Link>
       ) : null}
-      <StartRoundButton layoutId={layout.id} />
     </div>
   );
 }
@@ -63,40 +62,46 @@ export function CourseLayoutPicker({ layouts }: Props) {
 
   if (layouts.length === 1) {
     return (
-      <div className="space-y-4 rounded-lg border p-4">
-        <p className="font-medium">{layouts[0].name}</p>
-        <LayoutActionPanel layout={selected} />
+      <div className="space-y-4">
+        <div className="space-y-4 rounded-lg border p-4">
+          <p className="font-medium">{layouts[0].name}</p>
+          <LayoutDetailsPanel layout={selected} />
+        </div>
+        <StartRoundButton layoutId={selected.id} label="Set up round" />
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border">
-      <div role="tablist" aria-label="Course layouts" className="divide-y divide-border">
-        {layouts.map((layout) => {
-          const active = layout.id === selected.id;
-          return (
-            <button
-              key={layout.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              className={cn(
-                "block w-full border-l-4 px-4 py-3 text-left text-sm transition-colors",
-                active
-                  ? "border-l-primary bg-primary/5 font-medium text-foreground"
-                  : "border-l-transparent text-muted-foreground"
-              )}
-              onClick={() => setSelectedId(layout.id)}
-            >
-              {layout.name}
-            </button>
-          );
-        })}
+    <div className="space-y-4">
+      <div className="overflow-hidden rounded-lg border">
+        <div role="tablist" aria-label="Course layouts" className="divide-y divide-border">
+          {layouts.map((layout) => {
+            const active = layout.id === selected.id;
+            return (
+              <button
+                key={layout.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                className={cn(
+                  "block w-full border-l-4 px-4 py-3 text-left text-sm transition-colors",
+                  active
+                    ? "border-l-primary bg-primary/5 font-medium text-foreground"
+                    : "border-l-transparent text-muted-foreground"
+                )}
+                onClick={() => setSelectedId(layout.id)}
+              >
+                {layout.name}
+              </button>
+            );
+          })}
+        </div>
+        <div className="space-y-4 border-t border-border p-4" role="tabpanel">
+          <LayoutDetailsPanel layout={selected} />
+        </div>
       </div>
-      <div className="space-y-4 border-t border-border p-4" role="tabpanel">
-        <LayoutActionPanel layout={selected} />
-      </div>
+      <StartRoundButton layoutId={selected.id} label="Set up round" />
     </div>
   );
 }
