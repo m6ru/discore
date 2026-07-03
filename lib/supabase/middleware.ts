@@ -28,8 +28,17 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // IMPORTANT: Do not remove this. It refreshes the session if expired.
-  await supabase.auth.getUser()
+  // Refreshes the session when the token is expired (rotating the cookies via
+  // setAll above) and verifies the JWT locally against the cached JWKS — no Auth
+  // round-trip per navigation while the project uses asymmetric signing keys
+  // (falls back to a network getUser() only for symmetric keys). Only
+  // middleware touches auth; pages read claims via getClaims (BLUEPRINT §2b).
+  const authStartedMs = performance.now()
+  await supabase.auth.getClaims()
+  supabaseResponse.headers.set(
+    'Server-Timing',
+    `auth;dur=${(performance.now() - authStartedMs).toFixed(1)}`,
+  )
 
   return supabaseResponse
 }
