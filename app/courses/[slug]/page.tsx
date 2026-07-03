@@ -8,7 +8,6 @@ import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome"
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { cn } from "@/lib/utils";
 import { CourseLayoutPicker } from "./course-layout-picker";
-import { CourseMapViewer } from "./course-map-viewer";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -140,11 +139,37 @@ export default async function CourseDetailPage({ params }: PageProps) {
               <p className="whitespace-pre-line">{course.details}</p>
             ) : null}
             {mapImageSrc ? (
-              <CourseMapViewer
-                src={mapImageSrc}
-                alt={`${course.name} course map`}
-                title={course.name}
-              />
+              <>
+                <a href="#course-map" className="block">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- public course map asset */}
+                  <img
+                    src={mapImageSrc}
+                    alt={`${course.name} course map`}
+                    className="h-auto w-full rounded-lg border"
+                  />
+                </a>
+                <div
+                  id="course-map"
+                  className="fixed inset-0 z-50 hidden overscroll-contain bg-black/90 target:flex target:items-center target:justify-center"
+                >
+                  <a href="#" className="absolute inset-0" aria-label="Close map" tabIndex={-1} />
+                  <a
+                    href="#"
+                    className="absolute top-3 right-3 z-10 flex size-10 items-center justify-center text-3xl leading-none text-white/90"
+                    aria-label="Close map"
+                  >
+                    ×
+                  </a>
+                  <div className="relative z-10 max-h-full max-w-full overflow-auto p-4">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- same public course map asset */}
+                    <img
+                      src={mapImageSrc}
+                      alt={`${course.name} course map`}
+                      className="mx-auto h-auto max-w-none"
+                    />
+                  </div>
+                </div>
+              </>
             ) : null}
           </div>
         </section>
