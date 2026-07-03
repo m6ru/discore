@@ -65,7 +65,7 @@ export function AuthForm({ message }: Props) {
         toastError(error.message);
         return;
       }
-      toastSuccess("Sign-up successful. Check your email if confirmation is required.");
+      toastSuccess("Sign-up successful. Check your email for confirmation.");
     } finally {
       setIsLoading(false);
     }
