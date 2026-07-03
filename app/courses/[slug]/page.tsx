@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import Image from "next/image";
 import fs from "node:fs";
 import path from "node:path";
 import { notFound, redirect } from "next/navigation";
@@ -9,6 +8,7 @@ import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome"
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { cn } from "@/lib/utils";
 import { CourseLayoutPicker } from "./course-layout-picker";
+import { CourseMapViewer } from "./course-map-viewer";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -140,13 +140,10 @@ export default async function CourseDetailPage({ params }: PageProps) {
               <p className="whitespace-pre-line">{course.details}</p>
             ) : null}
             {mapImageSrc ? (
-              <Image
+              <CourseMapViewer
                 src={mapImageSrc}
                 alt={`${course.name} course map`}
-                width={896}
-                height={1200}
-                className="h-auto w-full rounded-lg border"
-                sizes="(max-width: 768px) 100vw, 48rem"
+                title={course.name}
               />
             ) : null}
           </div>

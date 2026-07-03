@@ -67,7 +67,7 @@ export function CourseLayoutPicker({ layouts }: Props) {
           <p className="font-medium">{layouts[0].name}</p>
           <LayoutDetailsPanel layout={selected} />
         </div>
-        <StartRoundButton layoutId={selected.id} label="Set up round" />
+        <StartRoundButton layoutId={selected.id} label="Select layout" />
       </div>
     );
   }
@@ -101,7 +101,7 @@ export function CourseLayoutPicker({ layouts }: Props) {
           <LayoutDetailsPanel layout={selected} />
         </div>
       </div>
-      <StartRoundButton layoutId={selected.id} label="Set up round" />
+      <StartRoundButton layoutId={selected.id} label="Select layout" />
     </div>
   );
 }
