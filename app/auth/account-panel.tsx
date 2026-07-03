@@ -9,7 +9,6 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { saveProfile } from "@/lib/profiles/save-profile";
 import { AVATAR_ACCEPT_ATTR, validateAvatarFile } from "@/lib/profiles/upload-avatar";
-import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { toastError, toastSuccess } from "@/lib/ui/toast-notify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -225,9 +224,7 @@ export function AccountPanel({
         }}
       />
 
-      <section className="space-y-3">
-        <h2 className={sectionHeadingClassName}>Details</h2>
-        <form onSubmit={onSave} className="space-y-4">
+      <form onSubmit={onSave} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="first-name">First name</Label>
             <Input
@@ -309,11 +306,8 @@ export function AccountPanel({
             {isLoading ? "Please wait..." : "Save profile"}
           </Button>
         </form>
-      </section>
 
-      <section className="space-y-3">
-        <h2 className={sectionHeadingClassName}>Preferences</h2>
-        <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
+      <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
           <div className="space-y-1">
             <Label htmlFor="location-services">Location services</Label>
             <p className="text-sm text-muted-foreground">
@@ -329,12 +323,9 @@ export function AccountPanel({
             }}
             aria-label="Location services — enable to display distances"
           />
-        </div>
-      </section>
+      </div>
 
-      <section className="space-y-3">
-        <h2 className={sectionHeadingClassName}>Authentication</h2>
-        <form onSubmit={onChangePassword} className="space-y-4">
+      <form onSubmit={onChangePassword} className="space-y-4 rounded-lg border p-4">
           <div className="space-y-2">
             <Label htmlFor="new-password">New password</Label>
             <Input
@@ -360,8 +351,7 @@ export function AccountPanel({
           <Button type="submit" variant="secondary" disabled={isChangingPassword}>
             {isChangingPassword ? "Please wait..." : "Change password"}
           </Button>
-        </form>
-      </section>
+      </form>
 
       <Button
         type="button"
