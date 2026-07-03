@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { StartRoundButton } from "@/components/rounds/start-round-button";
+import { useStartDraftRound } from "@/components/rounds/use-start-draft-round";
 import { cn } from "@/lib/utils";
 
 export type CourseLayoutOption = {
@@ -22,86 +21,66 @@ function formatHoleCount(count: number): string {
   return count === 1 ? "1 hole" : `${count} holes`;
 }
 
-function formatLayoutStats(layout: CourseLayoutOption): string {
+function formatLayoutMeta(layout: CourseLayoutOption): string {
   const parts = [
     layout.holeCount > 0 ? formatHoleCount(layout.holeCount) : null,
     `Par ${layout.totalPar}`,
-    `${layout.totalDistanceM.toLocaleString()} m`,
   ].filter(Boolean);
   return parts.join(" · ");
 }
 
-function LayoutDetailsPanel({ layout }: { layout: CourseLayoutOption }) {
+function LayoutStartCard({ layout }: { layout: CourseLayoutOption }) {
+  const { startDraftRound, isSubmitting } = useStartDraftRound(layout.id);
+
   return (
-    <div className="space-y-4">
-      <p className="font-mono text-sm tabular-nums text-muted-foreground">
-        {formatLayoutStats(layout)}
-      </p>
+    <li className="overflow-hidden rounded-lg border">
+      <button
+        type="button"
+        disabled={isSubmitting}
+        onClick={() => void startDraftRound()}
+        className={cn(
+          "block w-full px-4 py-3 text-left transition-colors",
+          "hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-60"
+        )}
+      >
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="min-w-0 truncate font-medium">
+            {isSubmitting ? "Creating..." : layout.name}
+          </p>
+          <span className="shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
+            {layout.totalDistanceM.toLocaleString()} m
+          </span>
+        </div>
+        <p className="mt-0.5 truncate text-sm text-muted-foreground">
+          {formatLayoutMeta(layout)}
+        </p>
+      </button>
       {layout.mapUrl ? (
-        <Link
-          href={layout.mapUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block text-sm text-primary underline underline-offset-4"
-        >
-          Layout map
-        </Link>
+        <div className="border-t px-4 py-2">
+          <Link
+            href={layout.mapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm text-primary underline-offset-4 hover:underline"
+          >
+            Layout map
+          </Link>
+        </div>
       ) : null}
-    </div>
+    </li>
   );
 }
 
 export function CourseLayoutPicker({ layouts }: Props) {
-  const [selectedId, setSelectedId] = useState(layouts[0]?.id ?? "");
-  const selected =
-    layouts.find((layout) => layout.id === selectedId) ?? layouts[0] ?? null;
-
-  if (!selected) {
+  if (layouts.length === 0) {
     return null;
   }
 
-  if (layouts.length === 1) {
-    return (
-      <div className="space-y-4">
-        <div className="space-y-4 rounded-lg border p-4">
-          <p className="font-medium">{layouts[0].name}</p>
-          <LayoutDetailsPanel layout={selected} />
-        </div>
-        <StartRoundButton layoutId={selected.id} label="Select layout" />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      <div className="overflow-hidden rounded-lg border">
-        <div role="tablist" aria-label="Course layouts" className="divide-y divide-border">
-          {layouts.map((layout) => {
-            const active = layout.id === selected.id;
-            return (
-              <button
-                key={layout.id}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                className={cn(
-                  "block w-full border-l-4 px-4 py-3 text-left text-sm transition-colors",
-                  active
-                    ? "border-l-primary bg-primary/5 font-medium text-foreground"
-                    : "border-l-transparent text-muted-foreground"
-                )}
-                onClick={() => setSelectedId(layout.id)}
-              >
-                {layout.name}
-              </button>
-            );
-          })}
-        </div>
-        <div className="space-y-4 border-t border-border p-4" role="tabpanel">
-          <LayoutDetailsPanel layout={selected} />
-        </div>
-      </div>
-      <StartRoundButton layoutId={selected.id} label="Select layout" />
-    </div>
+    <ul className="space-y-2">
+      {layouts.map((layout) => (
+        <LayoutStartCard key={layout.id} layout={layout} />
+      ))}
+    </ul>
   );
 }
