@@ -54,6 +54,7 @@ export function AuthForm({ message }: Props) {
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
             first_name: trimmedFirst,
             last_name: trimmedLast,
