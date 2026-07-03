@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import Image from "next/image";
 import fs from "node:fs";
 import path from "node:path";
 import { notFound, redirect } from "next/navigation";
@@ -139,35 +140,14 @@ export default async function CourseDetailPage({ params }: PageProps) {
               <p className="whitespace-pre-line">{course.details}</p>
             ) : null}
             {mapImageSrc ? (
-              <>
-                <a href="#course-map" className="block">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- public course map asset */}
-                  <img
-                    src={mapImageSrc}
-                    alt={`${course.name} course map`}
-                    className="h-auto w-full rounded-lg border"
-                  />
-                </a>
-                <div
-                  id="course-map"
-                  className="fixed inset-0 z-50 hidden scroll-mt-0 bg-background/90 target:flex target:items-start target:justify-center target:px-4 target:pt-[10dvh]"
-                >
-                  <a href="#" className="absolute inset-0 z-0" aria-label="Close map" tabIndex={-1} />
-                  <a
-                    href="#"
-                    className="absolute top-3 right-3 z-20 flex size-10 items-center justify-center rounded-full border bg-background/95 text-2xl leading-none text-muted-foreground shadow-sm"
-                    aria-label="Close map"
-                  >
-                    ×
-                  </a>
-                  {/* eslint-disable-next-line @next/next/no-img-element -- same public course map asset */}
-                  <img
-                    src={mapImageSrc}
-                    alt={`${course.name} course map`}
-                    className="relative z-10 max-h-[55dvh] max-w-full rounded-lg border object-contain shadow-sm"
-                  />
-                </div>
-              </>
+              <Image
+                src={mapImageSrc}
+                alt={`${course.name} course map`}
+                width={896}
+                height={1200}
+                className="h-auto w-full rounded-lg border"
+                sizes="(max-width: 768px) 100vw, 48rem"
+              />
             ) : null}
           </div>
         </section>
