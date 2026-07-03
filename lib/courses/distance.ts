@@ -1,5 +1,9 @@
 export type UserCoords = { lat: number; lng: number };
 
+export function formatDistanceKm(km: number): string {
+  return km < 10 ? `${km.toFixed(1)} km` : `${Math.round(km)} km`;
+}
+
 /** Great-circle distance in km (WGS84 haversine). */
 export function distanceKm(from: UserCoords, to: { lat: number; lng: number }): number {
   const toRad = (deg: number) => (deg * Math.PI) / 180;

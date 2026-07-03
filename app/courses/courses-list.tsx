@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { filterCoursesByQuery } from "@/lib/courses/filter-courses";
-import { distanceKm, readDeviceLocation, type UserCoords } from "@/lib/courses/distance";
+import {
+  distanceKm,
+  formatDistanceKm,
+  readDeviceLocation,
+  type UserCoords,
+} from "@/lib/courses/distance";
 import {
   getNearbyCoursesPreference,
   isNearbySortDisabled,
@@ -27,10 +32,6 @@ function formatListMeta(course: CourseSummary): string {
     Boolean
   );
   return parts.join(" · ");
-}
-
-function formatDistanceKm(km: number): string {
-  return km < 10 ? `${km.toFixed(1)} km` : `${Math.round(km)} km`;
 }
 
 function sortForList(courses: CourseSummary[], coords: UserCoords | null): ListCourse[] {

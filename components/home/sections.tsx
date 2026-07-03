@@ -47,6 +47,7 @@ export async function HomeSections({ userId }: Props) {
       slug: course.slug,
       lat: course.lat!,
       lng: course.lng!,
+      layoutCount: course.layoutCount,
     }));
 
   return (
