@@ -69,17 +69,18 @@ export function NearYouStart({ courses }: Props) {
     );
   }
 
-  const meta = [formatLayoutCount(nearest.layoutCount), formatDistanceKm(nearest.distanceKm)].join(
-    " · "
-  );
-
   return (
     <section className="space-y-2">
       <h2 className={sectionHeadingClassName}>Nearest course</h2>
       <div className="space-y-3 rounded-lg bg-muted/60 px-4 py-3">
         <div className="min-w-0 space-y-0.5">
-          <p className={homeRowTitleClassName}>{nearest.name}</p>
-          <p className={homeRowMetaClassName}>{meta}</p>
+          <div className="flex items-baseline justify-between gap-3">
+            <p className={`min-w-0 truncate ${homeRowTitleClassName}`}>{nearest.name}</p>
+            <span className="shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
+              {formatDistanceKm(nearest.distanceKm)}
+            </span>
+          </div>
+          <p className={homeRowMetaClassName}>{formatLayoutCount(nearest.layoutCount)}</p>
         </div>
         <Button asChild size="lg" className={pagePrimaryButtonClassName}>
           <Link href={`/courses/${nearest.slug}`}>Start a round</Link>
