@@ -138,9 +138,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
               </div>
             ) : null}
             {course.details?.trim() ? (
-              <p className="whitespace-pre-line border-t border-border pt-3">
-                {course.details.trim()}
-              </p>
+              <p className="whitespace-pre-line">{course.details.trim()}</p>
             ) : null}
             {mapImageSrc ? (
               <Image
