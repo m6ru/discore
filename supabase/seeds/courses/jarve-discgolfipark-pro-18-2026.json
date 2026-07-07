@@ -1,16 +1,16 @@
 {
   "course": {
-    "name": "Järve discgolfipark",
-    "location": "Tallinn, Kesklinn, Harjumaa, Estonia",
+    "name": "Epicbet Järve discgolfi park",
+    "location": "Viljandi mnt 13d, Tallinn, Estonia",
     "slug": "jarve-discgolfipark",
     "lat": 59.37690691704653,
     "lng": 24.74931361143389,
-    "details": null,
+    "details": "Disc Golf Fanatics MTÜ\n+372 53734097\ninfo@discgolffanatics.com",
     "terrain_type": null,
     "difficulty_tier": null
   },
   "layout": {
-    "name": "Pro 18 2026",
+    "name": "PRO 18 2026",
     "slug": "pro-18-2026",
     "total_par": 62,
     "total_distance_m": 2211,
@@ -18,23 +18,23 @@
     "is_active": true
   },
   "holes": [
-    { "hole_number": 1, "par": 4, "distance_m": 163, "notes": "OB vasakul, paremal ja korvi taga - Tavaline OB reegel. Lisandub +1 vise tulemusele.", "hole_map_url": null },
+    { "hole_number": 1, "par": 4, "distance_m": 163, "notes": "OB on the left, right and behind the basket.", "hole_map_url": null },
     { "hole_number": 2, "par": 3, "distance_m": 88, "notes": null, "hole_map_url": null },
     { "hole_number": 3, "par": 4, "distance_m": 145, "notes": null, "hole_map_url": null },
-    { "hole_number": 4, "par": 3, "distance_m": 99, "notes": null, "hole_map_url": null },
+    { "hole_number": 4, "par": 3, "distance_m": 99, "notes": "Hazard area on the left and behind the basket, regular HZ rule.", "hole_map_url": null },
     { "hole_number": 5, "par": 3, "distance_m": 92, "notes": null, "hole_map_url": null },
     { "hole_number": 6, "par": 3, "distance_m": 107, "notes": null, "hole_map_url": null },
-    { "hole_number": 7, "par": 4, "distance_m": 175, "notes": null, "hole_map_url": null },
-    { "hole_number": 8, "par": 3, "distance_m": 79, "notes": null, "hole_map_url": null },
+    { "hole_number": 7, "par": 4, "distance_m": 175, "notes": "Mandatory on the left side, around 70m from the teepad, play from the right side. Drop Zone near mando.", "hole_map_url": null },
+    { "hole_number": 8, "par": 3, "distance_m": 79, "notes": "Island hole, OB marked with red stakes. Drop Zone on the island.", "hole_map_url": null },
     { "hole_number": 9, "par": 3, "distance_m": 102, "notes": null, "hole_map_url": null },
     { "hole_number": 10, "par": 4, "distance_m": 168, "notes": null, "hole_map_url": null },
     { "hole_number": 11, "par": 4, "distance_m": 128, "notes": null, "hole_map_url": null },
-    { "hole_number": 12, "par": 3, "distance_m": 97, "notes": null, "hole_map_url": null },
-    { "hole_number": 13, "par": 4, "distance_m": 148, "notes": null, "hole_map_url": null },
+    { "hole_number": 12, "par": 3, "distance_m": 97, "notes": "OB on the right and behind the basket.", "hole_map_url": null },
+    { "hole_number": 13, "par": 4, "distance_m": 148, "notes": "OB on the left and right side, marked with RED stakes. Hazard area, marked with YELLOW stakes, starts ~96m from the teepad and ends ~122m from the teepad.", "hole_map_url": null },
     { "hole_number": 14, "par": 3, "distance_m": 102, "notes": null, "hole_map_url": null },
     { "hole_number": 15, "par": 3, "distance_m": 105, "notes": null, "hole_map_url": null },
-    { "hole_number": 16, "par": 4, "distance_m": 169, "notes": null, "hole_map_url": null },
-    { "hole_number": 17, "par": 4, "distance_m": 155, "notes": null, "hole_map_url": null },
-    { "hole_number": 18, "par": 3, "distance_m": 89, "notes": null, "hole_map_url": null }
+    { "hole_number": 16, "par": 4, "distance_m": 169, "notes": "OB on the right side of the fairway and behind the basket.", "hole_map_url": null },
+    { "hole_number": 17, "par": 4, "distance_m": 155, "notes": "OB on the right and left of the fairway, basket is surrounded by OB area, around 10-20m.", "hole_map_url": null },
+    { "hole_number": 18, "par": 3, "distance_m": 89, "notes": "Island hole, OB line is 63m from the Pro teepad. Any OB goes to Drop Zone, which is on the island, 15m from the basket.", "hole_map_url": null }
   ]
 }

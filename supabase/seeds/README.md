@@ -33,6 +33,18 @@ npx supabase db push
 
 SQL uses idempotent `ON CONFLICT` upserts on `courses.slug`, `layouts (course_id, slug)`, and `holes (layout_id, hole_number)`. Re-applying the same migration is safe.
 
+## What to edit where
+
+| Data | Edit in | Goes live via |
+|------|---------|---------------|
+| Holes, layouts, par, distances, hole notes, course name | JSON in `courses/` | `seed:courses --new-migration` → `db push` |
+| About copy (fees, phone, operator) — `location`, `details` | **Supabase Table Editor** → `courses` row | Save in dashboard (instant) |
+| Course map image | `public/courses/{slug}-map.png` | Git push + deploy |
+
+**Course upsert behaviour:** seed migrations update structural fields (`name`, coords, terrain) and always refresh layouts/holes. They set `location` and `details` only on **first insert** of a new course slug — later hole/layout migrations do **not** overwrite About text already in the database.
+
+To change About after a course exists, use the Supabase dashboard (or a one-off `UPDATE courses SET details = …` migration). JSON `details` / `location` values are bootstrap defaults for new courses.
+
 ### Updating course data after a migration is already applied
 
 Generate a new timestamped migration (do not edit migrations that have already run):

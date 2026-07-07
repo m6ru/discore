@@ -121,23 +121,26 @@ export default async function CourseDetailPage({ params }: PageProps) {
         <section className="space-y-3">
           <h2 className={sectionHeadingClassName}>About</h2>
           <div className="space-y-3 text-sm text-muted-foreground">
-            {course.location.trim().length > 0 || mapsUrl ? (
-              <div className="space-y-1">
-                {course.location.trim().length > 0 ? <p>{course.location}</p> : null}
+            {course.location.trim().length > 0 ? (
+              <div>
                 {mapsUrl ? (
                   <a
                     href={mapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block underline underline-offset-4 hover:text-foreground"
+                    className="underline underline-offset-4 hover:text-foreground"
                   >
-                    Open in Maps
+                    {course.location.trim()}
                   </a>
-                ) : null}
+                ) : (
+                  <p>{course.location.trim()}</p>
+                )}
               </div>
             ) : null}
             {course.details?.trim() ? (
-              <p className="whitespace-pre-line">{course.details}</p>
+              <p className="whitespace-pre-line border-t border-border pt-3">
+                {course.details.trim()}
+              </p>
             ) : null}
             {mapImageSrc ? (
               <Image
