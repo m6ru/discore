@@ -2,7 +2,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { pickOne } from "@/lib/supabase/select-helpers";
 import { isProfileOnboardingComplete } from "@/lib/profiles/is-profile-onboarding-complete";
-import { loadRoundScoreSummaries } from "@/lib/rounds/round-score-summary";
 import {
   HOME_PARTICIPATION_ROW_LIMIT,
   parseHomeParticipantRounds,
@@ -64,7 +63,6 @@ export async function loadHomeData(
 
   const recentRoundsWithScores = await attachScoresToRecentRounds(
     supabase,
-    userId,
     recentRounds
   );
 
@@ -80,20 +78,27 @@ export async function loadHomeData(
 
 async function attachScoresToRecentRounds(
   supabase: Client,
-  userId: string,
   rounds: HomeRecentRound[]
 ): Promise<HomeRecentRound[]> {
-  const { summaries } = await loadRoundScoreSummaries(
-    supabase,
-    userId,
-    rounds.map((round) => ({ id: round.id, layoutId: round.layoutId }))
-  );
+  if (rounds.length === 0) {
+    return rounds;
+  }
+
+  const { data } = await supabase
+    .from("player_round_stats")
+    .select("round_id, total_strokes, vs_par, holes_scored")
+    .in(
+      "round_id",
+      rounds.map((round) => round.id)
+    );
+
+  const byRoundId = new Map((data ?? []).map((row) => [row.round_id, row]));
 
   return rounds.map((round) => {
-    const stats = summaries.get(round.id);
-    if (!stats || stats.thru === 0) {
+    const stats = byRoundId.get(round.id);
+    if (!stats || (stats.holes_scored ?? 0) === 0) {
       return round;
     }
-    return { ...round, totalStrokes: stats.totalStrokes, vsPar: stats.vsPar };
+    return { ...round, totalStrokes: stats.total_strokes, vsPar: stats.vs_par };
   });
 }

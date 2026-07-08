@@ -52,7 +52,7 @@ export async function HomeSections({ userId }: Props) {
 
   return (
     <>
-      {/* Phase 5 stats teaser: one-line snapshot (rounds played · best · avg) goes here. */}
+      {/* Home stats teaser: wire load-player-stats.ts here (Stats v2 / slice 8). */}
 
       {data.activeRounds.length > 0 ? (
         <section className="space-y-2">

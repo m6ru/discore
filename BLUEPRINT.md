@@ -64,7 +64,7 @@ Navigation speed is a product feature — scorers are on a phone, often on mobil
 
 - **Every server-fetching route needs a `loading.tsx` (or a `Suspense` boundary)** so a tab tap shows an instant shell instead of blocking on the server render. Keep the root layout static (no `cookies()` / `getUser()` in a layout) so those fallbacks render immediately.
 - **Auth reads:** pages / Server Components read the session via `supabase.auth.getClaims()` — it verifies the JWT locally (no Auth round-trip) when the project uses asymmetric signing keys, and `middleware.ts` has already refreshed the session. Only `middleware.ts` calls `getUser()`. Never add a second `getUser()` per navigation.
-- **Aggregates at scale:** compute per-round / per-player stats in Postgres (a view or RPC), not by pulling raw `hole_scores` into JS, once result sets grow past a handful of rounds. `lib/rounds/round-score-summary.ts` is the shared seam to swap when Phase 5 stats land.
+- **Aggregates at scale:** compute per-round / per-player stats in Postgres (views), not by pulling raw `hole_scores` into JS. `player_round_stats` and `player_lifetime_stats` views are the backbone; `lib/rounds/load-player-stats.ts` loads lifetime aggregates for the UI.
 - **Round route exception:** `/rounds/[roundId]` is intentionally decomposed into hooks + components — it is the most complex screen. This is the sanctioned exception to §2a's "prefer one screen file"; do not cite it to justify file sprawl elsewhere. It works well and is field-tested, so change it **carefully and deliberately** — but it is **not frozen**: additions like advanced scoring inputs are expected. The "don't regress it" rule protects behaviour, not the code from ever changing.
 
 ---
@@ -206,7 +206,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 - All scoring functions live in `/lib/scoring`.
 - **MVP:** Raw score tracking only — strokes relative to par (`+1`, `-2`, `E`, etc.) and cumulative totals.
 - **Future:** The module structure and types must support plugging in weighted ratings and statistical analysis later, without restructuring. No `any` permitted in this directory.
-- **Phase 5 stats aggregation:** history/stats aggregates (rounds played, best round, distribution, OB count) are computed in Postgres via a view or RPC — not by reducing raw `hole_scores` in JS. `lib/rounds/round-score-summary.ts` is today's per-round seam and the intended swap point (see §2b).
+- **Phase 5 stats aggregation:** history/stats aggregates are computed in Postgres via `player_round_stats` / `player_lifetime_stats` views and `score_bucket()` — not by reducing raw `hole_scores` in JS. Per-round view also powers History list and Home recent rounds (see §2b).
 - After schema is finalised, generate typed DB interfaces: `supabase gen types typescript` → `/lib/database.types.ts`. Use these types for all Supabase queries.
 
 ---

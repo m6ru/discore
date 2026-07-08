@@ -124,8 +124,22 @@ export type Database = {
             foreignKeyName: "hole_scores_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
+            referencedRelation: "player_round_stats"
+            referencedColumns: ["participant_id"]
+          },
+          {
+            foreignKeyName: "hole_scores_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
             referencedRelation: "round_participants"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hole_scores_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "player_round_stats"
+            referencedColumns: ["round_id"]
           },
           {
             foreignKeyName: "hole_scores_round_id_fkey"
@@ -307,6 +321,13 @@ export type Database = {
             foreignKeyName: "round_invitations_round_id_fkey"
             columns: ["round_id"]
             isOneToOne: false
+            referencedRelation: "player_round_stats"
+            referencedColumns: ["round_id"]
+          },
+          {
+            foreignKeyName: "round_invitations_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
             referencedRelation: "rounds"
             referencedColumns: ["id"]
           },
@@ -338,6 +359,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "round_participants_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "player_round_stats"
+            referencedColumns: ["round_id"]
+          },
           {
             foreignKeyName: "round_participants_round_id_fkey"
             columns: ["round_id"]
@@ -410,7 +438,63 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      player_lifetime_stats: {
+        Row: {
+          ace_total: number | null
+          avg_ob_per_round: number | null
+          avg_vs_par: number | null
+          best_round_id: string | null
+          best_vs_par: number | null
+          birdie_total: number | null
+          bogey_total: number | null
+          double_plus_total: number | null
+          eagle_total: number | null
+          par_total: number | null
+          rounds_played: number | null
+        }
+        Relationships: []
+      }
+      player_round_stats: {
+        Row: {
+          ace_count: number | null
+          birdie_count: number | null
+          bogey_count: number | null
+          completed_at: string | null
+          course_name: string | null
+          double_plus_count: number | null
+          eagle_count: number | null
+          holes_scored: number | null
+          layout_hole_count: number | null
+          layout_id: string | null
+          layout_name: string | null
+          ob_holes: number | null
+          par_count: number | null
+          participant_id: string | null
+          round_id: string | null
+          started_at: string | null
+          status: string | null
+          total_par: number | null
+          total_strokes: number | null
+          user_id: string | null
+          vs_par: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rounds_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "layouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_round_invite: {
@@ -425,6 +509,7 @@ export type Database = {
         Args: { p_round_id: string; p_user_id: string }
         Returns: boolean
       }
+      score_bucket: { Args: { par: number; strokes: number }; Returns: string }
     }
     Enums: {
       [_ in never]: never

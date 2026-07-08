@@ -52,10 +52,10 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 | **Round UX** | Done — works well; evolve carefully (not frozen; advanced scoring inputs planned) |
 | **Tab UI** | Good enough for this stage — consistent nav, cards, CTAs |
 | **Course data** | **22 layouts**, **16 parks**; all seeded courses have `lat`/`lng` |
-| **Stats / competitions** | Not started (Phase 5–6) |
+| **Stats / competitions** | **v1 done** — Postgres backbone + History stats block; v2 (per-course, trends) later |
 | **PWA install** | Deferred |
 
-**Recommended next product work (ordered):** (1) **Home upgrades** — near-you Start, "play again", stats-teaser slot; (2) History **Stats** sub-section (tier-1: rounds played, best round, score distribution, OB count); (3) **Advanced scoring** (opt-in per round). Secondary: course map PNGs, Play map view toggle, more parks via JSON seeds. See "Next (ordered)" and the [strategic wedge](BLUEPRINT.md) for rationale.
+**Recommended next product work (ordered):** (1) **Advanced scoring** (opt-in per round); (2) **Stats v2** — per-course breakdown, trends, Home teaser wired to same loader; (3) **Home stats teaser** slot on `/`. Secondary: course map PNGs, Play map view, more parks via JSON seeds. See "Next (ordered)" and the [strategic wedge](BLUEPRINT.md) for rationale.
 
 ---
 
@@ -65,7 +65,7 @@ Tab navigation felt laggy (2–3 s dead tap) because each tab was a server rende
 
 - **Route `loading.tsx` skeletons** on `/`, `/courses`, `/rounds`, `/auth` → instant shell on tap (root layout is static, so fallbacks stream immediately).
 - **`getClaims()` on tab pages** (Home, Play, History, Profile) instead of a second `getUser()` — local JWT verify, no extra Auth round-trip. Round route / course detail / `rounds/new` left on `getUser()`.
-- **Shared score-summary loader** (`lib/rounds/round-score-summary.ts`) de-duplicates the Home + History fan-out and is the swap point for Phase 5 SQL aggregates.
+- **Player stats views** (`player_round_stats`, `player_lifetime_stats`) — Postgres backbone for History list, Home recent scores, and lifetime stats; replaces the former JS score fan-out. See migration `20260708170000_player_stats.sql`.
 
 **Nav pass 2 (shipped — commit `24a2df0`):**
 
@@ -85,7 +85,7 @@ Deferred (see below): `middleware.ts` → `proxy.ts` rename (Next 16 deprecation
 | **2** Schema & seeding | Done | RLS; JSON seed pipeline; **22 layouts** / **16 course parks**; all active courses have coordinates |
 | **3** Core scoring | **Done** | Field-tested; draft/active/complete, invites, scorer writes, observer Realtime |
 | **4** UI bootstrap | **Done (this stage)** | Tab screens polished: Home hub, Play list + detail, History cards, Profile hub; unified inline primary CTAs; green active nav tab. PWA deferred. |
-| **5** History & stats | Partial | History list with vs par; **Stats UI not built** |
+| **5** History & stats | **v1 done** | Postgres views + History stats block (completed rounds only); v2 per-course/trends later |
 | **6** Ratings & tournaments | Not started | By design until adoption warrants |
 
 ---
@@ -97,7 +97,7 @@ Deferred (see below): `middleware.ts` → `proxy.ts` rename (Next 16 deprecation
 - **Auth & profile** (`app/auth`): Profile hub — hero, Details / Preferences / **Authentication**, sign out; nearby toggle copy references location services
 - **Courses:** 22 layouts via `npm run seed:courses`; Play search + **distance sort** (all seeded parks have coords); detail — layout picker, About (address, Open in Maps under address, fees/contact), optional `public/courses/{slug}-map.png`
 - **Rounds:** draft setup (inline Start round), active scoring, observer read-only, complete/abandon
-- **History:** `app/rounds/page.tsx` — course-style cards; **vs par only** on the right (abandoned shows label, no score); loads scores inline in page file
+- **History:** `app/rounds/page.tsx` — **Your stats** block (rounds, best, average, OB/round, score distribution; eagle/ace when > 0) + round list with vs par (abandoned = label only). Data from `player_round_stats` / `player_lifetime_stats` views.
 - **Scoring / round route** (unchanged summary): online-first saves; full scorer + observer UX at `/rounds/[roundId]` — see prior docs; **do not regress**
 
 ---
@@ -112,23 +112,24 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 2. ~~**Tab UI polish (this stage)**~~ — Done (Home, Play, History, Profile, nav, CTAs).
 3. ~~**Course coordinates**~~ — Done for all seeded parks.
 4. ~~**Nav speed + cleanup pass**~~ — Done (loading skeletons, `getClaims` on tab pages + middleware, `staleTimes`, shared score-summary loader; see Performance).
-5. **Home upgrades (small, next)** — Launchpad polish: **near-you Start** (reuse Play's geolocation → nearest course + default layout; fallback plain Start CTA), **"play again"** on recent-round rows, and a reserved **stats-teaser slot**. Keep home calm (no feed/widgets). See [UI-ROADMAP Home](UI-ROADMAP.md).
-6. **Stats (Phase 5)** — Tier-1 block on History route: rounds played, best round, score distribution, OB count (`STATS_ROUND_STATUSES` = completed only). Aggregate in Postgres (view/RPC), not JS — swap `lib/rounds/round-score-summary.ts` ([BLUEPRINT §2b/§8](BLUEPRINT.md)).
-7. **Advanced scoring (after Stats)** — Opt-in per-round "detailed scoring" toggle adds per-hole capture: fairway hit, C1 in reg (≤10 m), C2 in reg (≤20 m), C1 putting, C2 putting, **bullseye/parked** (≤3 m). Default off = fast casual flow. Additive nullable `hole_scores` columns. Touches the round route — its own slice, verify carefully. See [UI-ROADMAP Advanced scoring](UI-ROADMAP.md).
-8. **D-guest** — Anonymous trial + claim on signup (acquisition lever); after advanced scoring.
-9. **Course content** — Map PNGs per park (`public/courses/{slug}-map.png`); fix Järve Talu **20x** hole data when confirmed on site.
-10. **Play map view** — Optional toggle when useful (most coords now available).
+5. ~~**Home upgrades (small)**~~ — Near-you Start **done**; play-again **dropped**; stats-teaser deferred until wired to `load-player-stats`.
+6. ~~**Stats v1 (Phase 5)**~~ — **Done.** `score_bucket()` + `player_round_stats` / `player_lifetime_stats` views; History + Home unified on per-round view; stats block on `/rounds` via `load-player-stats.ts`. Completed rounds only; abandoned excluded from all stats; OB = avg per round (not lifetime total).
+7. **Advanced scoring (next)** — Opt-in per-round "detailed scoring" toggle adds per-hole capture: fairway hit, C1 in reg (≤10 m), C2 in reg (≤20 m), C1 putting, C2 putting, **bullseye/parked** (≤3 m). Default off = fast casual flow. Additive nullable `hole_scores` columns. Touches the round route — its own slice, verify carefully. See [UI-ROADMAP Advanced scoring](UI-ROADMAP.md).
+8. **Stats v2** — Per-course breakdown; trend (last N vs previous N); tap best round → detail; Home stats-teaser wired to `load-player-stats.ts`. Same `player_round_stats` primitive — no rewrite.
+9. **D-guest** — Anonymous trial + claim on signup (acquisition lever); after advanced scoring.
+10. **Course content** — Map PNGs per park (`public/courses/{slug}-map.png`); fix Järve Talu **20x** hole data when confirmed on site.
+11. **Play map view** — Optional toggle when useful (most coords now available).
 
 ### Next chat (copy-paste)
 
 ```
 Read STATUS.md and UI-ROADMAP.md first. Round route works well — evolve it carefully, but it is NOT frozen.
 
-Next slice (in order): Home upgrades → History Stats → Advanced scoring.
+Next slice (in order): Advanced scoring → Stats v2 → Home stats teaser.
 Pick ONE:
-- Home upgrades — near-you Start, "play again" on recent, stats-teaser slot
-- History Stats — tier-1 player stats on /rounds (completed rounds only)
 - Advanced scoring — opt-in per-round detailed metrics (talk before pixels; touches round route)
+- Stats v2 — per-course breakdown, trends, Home teaser
+- Home stats teaser — one-line snapshot on `/` from load-player-stats
 
 One slice per chat. Run lint, test, build before commit.
 ```
@@ -140,7 +141,7 @@ One slice per chat. Run lint, test, build before commit.
 - **PWA:** Serwist + icons when install-to-homescreen matters.
 - **Advanced scoring:** planned as slice #7 (after Stats), **not** deferred indefinitely — opt-in per-round toggle; metric set = fairway hit, C1/C2 in reg, C1/C2 putting, bullseye/parked (≤3 m). Additive nullable `hole_scores` columns.
 - **Slice D-guest:** Anonymous round local-only → claim on signup (Option A below); acquisition lever, planned after advanced scoring.
-- **Phase 5:** Richer per-player stats and comparisons.
+- **Phase 5 v2:** Per-course stats, trends, Home teaser; advanced-scoring metrics once those columns exist.
 - **Phase 6:** Ratings, tournaments (`tournament_id` column reserved).
 - Smart-ID / magic-link auth.
 - **Geolocation / nearby sort:** **done** — all seeded courses have `lat`/`lng`; Profile toggle + browser permission
@@ -204,9 +205,11 @@ Do not reintroduce `utils/supabase/*`.
 
 ### Migrations
 
-**30 files** in `supabase/migrations/` (core schema through `20260617145700_home_list_query_indexes.sql`, plus course seed batches through `20260701171527_seed_courses_from_json.sql`). Run `npx supabase migration list` to compare local vs remote.
+**35 files** in `supabase/migrations/` (core schema through `20260708170000_player_stats.sql`). Run `npx supabase migration list` to compare local vs remote.
 
 Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds` (incl. optional `name`), `round_participants`, `round_invitations`, `hole_scores`. RLS on all.
+
+**Stats views:** `player_round_stats` (per-round derived stats for current user), `player_lifetime_stats` (lifetime aggregate for v1 stats block). Classification via `score_bucket(strokes, par)`. Migration `20260708170000_player_stats.sql`.
 
 **Realtime publication:** Enforced by `20260527190100_realtime_publication_membership.sql` (idempotent — adds any of `hole_scores`, `round_invitations`, `round_participants`, `rounds` that are not already in the publication).
 
@@ -217,7 +220,8 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Area | Paths |
 |------|--------|
 | Scoring math | `lib/scoring/{types,stats}.ts` |
-| Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows,round-status,round-score-summary}.ts` |
+| Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows,round-status,load-player-stats}.ts` |
+| Player stats | `lib/rounds/load-player-stats.ts`, `app/rounds/history-stats-section.tsx`; Postgres views `player_round_stats`, `player_lifetime_stats` |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
 | Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` (scorecard, draft setup deck, active scoring, results, completion) |
 | Round display name | `lib/rounds/round-display-name.ts`, `draft-round-title-portal.tsx`, `create-round-form.tsx` |

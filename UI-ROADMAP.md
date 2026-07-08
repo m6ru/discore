@@ -21,7 +21,7 @@ Phase 4 tab-screen polish is **done for the current stage**. The round route (`/
 |-----|-------|------|
 | **Home** | `/` | Launchpad: resume active round, invites, near-you Start (planned), get-started, 3 recent rounds |
 | **Play** | `/courses` | Course list + detail |
-| **History** | `/rounds` | Past rounds; Stats section planned above list |
+| **History** | `/rounds` | Past rounds + **Your stats** block (v1) |
 | **Profile** | `/auth` | Account and preferences |
 
 Four **equal-weight** tabs — clean by design. Play's icon is **subtly** larger (`emphasized` flag, `size-6` vs `size-5`); this is a light visual accent only, **not** a primary-action button. The primary "start a round" action lives on **Home** (near-you Start), not in the nav. Do not reintroduce a "center create tab".
@@ -44,12 +44,13 @@ Each tab route has a `loading.tsx` skeleton so navigation shows an instant shell
 | 5 | Play / courses | **Done** for stage — list, detail, layouts, coords, About |
 | 6 | History list | **Done** — vs par cards, abandoned label |
 | 7 | Profile | **Done** for stage — hub layout, Authentication section |
-| 8 | **Home upgrades** | **Next (small)** — near-you Start, "play again" on recent, stats-teaser slot |
-| 9 | **History Stats** | **Then** — Phase 5 tier-1 |
-| 10 | **Advanced scoring** | **After stats** — opt-in per round; richest slice, touches round route |
-| 11 | D-guest (anonymous trial + claim) | Later — acquisition lever |
-| 12 | Play map view | Later — optional toggle |
-| 13 | Ratings → competitions | Phase 6 — only if adoption warrants |
+| 8 | **Home stats teaser** | **Next (small)** — one-line snapshot on `/` from `load-player-stats` |
+| 9 | **History Stats v1** | **Done** — Postgres views + stats block on `/rounds` |
+| 10 | **Advanced scoring** | **Next** — opt-in per round; richest slice, touches round route |
+| 11 | **Stats v2** | Later — per-course, trends, richer metrics after advanced scoring |
+| 12 | D-guest (anonymous trial + claim) | Later — acquisition lever |
+| 13 | Play map view | Later — optional toggle |
+| 14 | Ratings → competitions | Phase 6 — only if adoption warrants |
 
 ---
 
@@ -60,20 +61,20 @@ Each tab route has a `loading.tsx` skeleton so navigation shows an instant shell
 - Personal subtitle, **continue round** muted cards, invites (Realtime)
 - Get-started checklist
 - **Recent rounds** — last 3, same card pattern as History (vs par)
+- **Near-you Start** — nearest course when location enabled (`NearYouStart`)
 
-**Planned upgrades (slice 8) — home is a launchpad, optimised for "start or resume scoring, now":**
+**Planned (slice 8):**
 
-- **Near-you Start round** — reuse the geolocation already used for Play's distance sort; surface the nearest course with its default layout as a one-tap start. Fallback to a plain "Start a round" CTA → Play when location is off or nothing is nearby. Goal: fewest taps from opening the app to the first throw.
-- **"Play again"** on recent-round rows — start a new round on the same layout (people replay the same local courses).
-- **Stats-teaser slot** — reserved placement for a one-line snapshot (e.g. rounds played · best · average); fills when Phase 5 stats land. Design the slot now, build later.
-- Keep home **calm** — no feed, no widgets. Speed + clarity is the feature.
+- **Stats-teaser slot** — one-line snapshot (rounds · best · average) on Home, wired to `load-player-stats.ts`. Comment placeholder in `components/home/sections.tsx`.
+- Keep home **calm** — no feed, no widgets. **Play again** on recent rows dropped (clutter).
 
 ---
 
 ## History & stats
 
-- **List:** completed + abandoned; vs par right-aligned; abandoned = text only
-- **Stats (next):** section on `/rounds` above list — rounds played, best round, distribution, OB count; completed rounds only. Aggregate in Postgres (view/RPC) via the `lib/rounds/round-score-summary.ts` seam, not JS reducers ([BLUEPRINT §2b/§8](BLUEPRINT.md)).
+- **List:** completed + abandoned; vs par right-aligned; abandoned = text only (excluded from stats)
+- **Stats v1 (done):** block on `/rounds` above list — rounds played, best, average vs par, OB/round, score distribution (birdie/par/bogey/double+; eagle/ace only when > 0). Completed rounds only. Postgres views `player_round_stats` + `player_lifetime_stats`; loader `lib/rounds/load-player-stats.ts`.
+- **Stats v2 (later):** per-course breakdown, trends, tap best round; Home teaser; advanced metrics once detailed scoring lands.
 
 ---
 

@@ -3,12 +3,12 @@ import { redirect } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { formatRoundDisplayDate } from "@/lib/format/round-date";
-import { loadRoundScoreSummaries } from "@/lib/rounds/round-score-summary";
+import { loadPlayerStats } from "@/lib/rounds/load-player-stats";
 import { PAST_ROUND_STATUSES, type RoundStatus } from "@/lib/rounds/round-status";
 import { formatVsPar } from "@/lib/scoring/stats";
 import { createServerClient } from "@/lib/supabase/server";
-import { pickOne } from "@/lib/supabase/select-helpers";
 import { homeRowMetaClassName, pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
+import { HistoryStatsSection } from "./history-stats-section";
 import { HistoryViewedMarker } from "./history-viewed-marker";
 
 type HistoryRound = {
@@ -32,23 +32,30 @@ export default async function RoundsHistoryPage() {
     redirect("/auth?message=Please+sign+in+to+view+round+history");
   }
 
-  const { rounds, error } = await loadHistoryRounds(supabase, data.claims.sub);
+  const [{ rounds, error }, { stats, error: statsError }] = await Promise.all([
+    loadHistoryRounds(supabase),
+    loadPlayerStats(supabase),
+  ]);
+
+  const loadError = error ?? statsError;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
       <HistoryViewedMarker />
       <header className="space-y-1">
         <h1 className={pageTitleClassName}>History</h1>
-        <p className={pageSubtitleClassName}>Your rounds — stats coming later.</p>
+        <p className={pageSubtitleClassName}>Your rounds and personal stats.</p>
       </header>
 
-      {error ? (
+      {loadError ? (
         <p className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-          Failed to load rounds: {error}
+          Failed to load history: {loadError}
         </p>
       ) : null}
 
-      {!error && rounds.length === 0 ? (
+      {!loadError ? <HistoryStatsSection stats={stats} /> : null}
+
+      {!loadError && rounds.length === 0 ? (
         <p className={homeRowMetaClassName}>
           No rounds yet. Use the Play tab to pick a course and start your first round.
         </p>
@@ -94,60 +101,32 @@ export default async function RoundsHistoryPage() {
 
 type Client = SupabaseClient<Database>;
 
-function holeCountFromRelation(holes: { count: number }[] | null | undefined): number {
-  return holes?.[0]?.count ?? 0;
-}
-
 async function loadHistoryRounds(
-  supabase: Client,
-  userId: string
+  supabase: Client
 ): Promise<{ rounds: HistoryRound[]; error: string | null }> {
-  const { data: roundRows, error: roundsError } = await supabase
-    .from("rounds")
+  const { data, error } = await supabase
+    .from("player_round_stats")
     .select(
-      "id, status, started_at, completed_at, layout_id, layouts(name, courses(name), holes(count)), round_participants!inner(user_id)"
+      "round_id, status, started_at, completed_at, course_name, layout_name, layout_hole_count, total_strokes, vs_par, holes_scored"
     )
-    .eq("round_participants.user_id", userId)
     .in("status", [...PAST_ROUND_STATUSES])
     .order("completed_at", { ascending: false, nullsFirst: false });
 
-  if (roundsError) {
-    return { rounds: [], error: roundsError.message };
+  if (error) {
+    return { rounds: [], error: error.message };
   }
 
-  const rows = roundRows ?? [];
-  if (rows.length === 0) {
-    return { rounds: [], error: null };
-  }
-
-  const { summaries, error: summaryError } = await loadRoundScoreSummaries(
-    supabase,
-    userId,
-    rows.map((row) => ({ id: row.id, layoutId: row.layout_id }))
-  );
-  if (summaryError) {
-    return { rounds: [], error: summaryError };
-  }
-
-  const rounds: HistoryRound[] = rows.map((row) => {
-    const layout = pickOne(row.layouts);
-    const course = pickOne(layout?.courses);
-    const stats = summaries.get(row.id);
-    const thru = stats?.thru ?? 0;
-    const hasScore = thru > 0;
-
-    return {
-      id: row.id,
-      status: row.status as RoundStatus,
-      courseName: course?.name ?? "Unknown course",
-      layoutName: layout?.name ?? "Unknown layout",
-      dateLabel: formatRoundDisplayDate(row.completed_at, row.started_at) ?? "—",
-      totalStrokes: hasScore ? stats!.totalStrokes : null,
-      vsPar: hasScore ? stats!.vsPar : null,
-      thru,
-      layoutHoleCount: holeCountFromRelation(layout?.holes),
-    };
-  });
+  const rounds: HistoryRound[] = (data ?? []).map((row) => ({
+    id: row.round_id!,
+    status: (row.status ?? "completed") as RoundStatus,
+    courseName: row.course_name ?? "Unknown course",
+    layoutName: row.layout_name ?? "Unknown layout",
+    dateLabel: formatRoundDisplayDate(row.completed_at, row.started_at) ?? "—",
+    totalStrokes: row.total_strokes,
+    vsPar: row.vs_par,
+    thru: row.holes_scored ?? 0,
+    layoutHoleCount: row.layout_hole_count ?? 0,
+  }));
 
   return { rounds, error: null };
 }

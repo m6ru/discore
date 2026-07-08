@@ -11,8 +11,20 @@ export default function Loading() {
     >
       <header className="space-y-1">
         <h1 className={pageTitleClassName}>History</h1>
-        <p className={pageSubtitleClassName}>Your rounds — stats coming later.</p>
+        <p className={pageSubtitleClassName}>Your rounds and personal stats.</p>
       </header>
+
+      <div className="space-y-3 rounded-lg border px-4 py-3">
+        <div className="h-4 w-20 animate-pulse rounded bg-muted" />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {["a", "b", "c", "d"].map((key) => (
+            <div key={key} className="space-y-2">
+              <div className="h-3 w-12 animate-pulse rounded bg-muted/70" />
+              <div className="h-5 w-8 animate-pulse rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+      </div>
 
       <ul className="space-y-2">
         {SKELETON_ROWS.map((row) => (
