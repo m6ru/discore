@@ -1,11 +1,11 @@
 {
   "course": {
     "name": "Viimsi discgolfipark",
-    "location": "Viimsi, Harjumaa, Estonia",
+    "location": "Linnakumetsa, Lubja küla, Viimsi vald, Harju maakond",
     "slug": "viimsi-discgolfipark",
     "lat": 59.497554,
     "lng": 24.857640,
-    "details": null,
+    "details": "Viimsi Discgolf MTÜ\n+372 5866 3727\nViimsidiscgolfclub@gmail.com",
     "terrain_type": null,
     "difficulty_tier": null
   },
