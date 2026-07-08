@@ -31,27 +31,22 @@ export function HistoryStatsSection({ stats }: Props) {
     return null;
   }
 
-  const mainDistribution: DistributionRow[] = [
+  const distribution: DistributionRow[] = [
+    ...(stats.distribution.ace > 0
+      ? [{ key: "ace", label: "Ace", count: stats.distribution.ace }]
+      : []),
+    ...(stats.distribution.eagle > 0
+      ? [{ key: "eagle", label: "Eagle", count: stats.distribution.eagle }]
+      : []),
     { key: "birdie", label: "Birdie", count: stats.distribution.birdie },
     { key: "par", label: "Par", count: stats.distribution.par },
     { key: "bogey", label: "Bogey", count: stats.distribution.bogey },
     { key: "double", label: "Double+", count: stats.distribution.doublePlus },
   ];
 
-  const rareHighlights: string[] = [];
-  if (stats.distribution.eagle > 0) {
-    const n = stats.distribution.eagle;
-    rareHighlights.push(`${n} eagle${n === 1 ? "" : "s"}`);
-  }
-  if (stats.distribution.ace > 0) {
-    const n = stats.distribution.ace;
-    rareHighlights.push(`${n} ace${n === 1 ? "" : "s"}`);
-  }
-
   return (
     <section className="space-y-3 rounded-lg border px-4 py-3">
       <h2 className={sectionHeadingClassName}>Your stats</h2>
-      <p className={homeRowMetaClassName}>Completed rounds only</p>
 
       <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
         <div>
@@ -78,18 +73,14 @@ export function HistoryStatsSection({ stats }: Props) {
         </div>
       </dl>
 
-      <div className="grid grid-cols-4 gap-2 border-t pt-3">
-        {mainDistribution.map((row) => (
+      <div className="grid grid-cols-3 gap-2 border-t pt-3 sm:grid-cols-6">
+        {distribution.map((row) => (
           <div key={row.key} className="min-w-0 text-center">
             <p className="truncate text-xs text-muted-foreground">{row.label}</p>
             <p className="font-mono text-sm font-semibold tabular-nums">{row.count}</p>
           </div>
         ))}
       </div>
-
-      {rareHighlights.length > 0 ? (
-        <p className="text-center text-xs text-muted-foreground">{rareHighlights.join(" · ")}</p>
-      ) : null}
     </section>
   );
 }
