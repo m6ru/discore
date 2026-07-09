@@ -4,7 +4,7 @@
 
 This project follows the Technical Master Blueprint (`BLUEPRINT.md`).
 Read it before making any architectural decisions, adding dependencies, or creating new files.
-For current implementation state and priorities, read `STATUS.md`. For UI/UX work, also read `UI-ROADMAP.md` and `DESIGN-PATTERNS.md`.
+For current implementation state and priorities, read `STATUS.md`. For UI/UX work, also read `DESIGN-PATTERNS.md`.
 
 Key rules from the blueprint:
 - **Keep it simple:** BLUEPRINT §2a — one-person app; prefer one screen file over many `lib/` helpers; think before building.

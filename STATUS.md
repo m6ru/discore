@@ -1,6 +1,6 @@
 # Discore — Status
 
-> Read [BLUEPRINT.md](BLUEPRINT.md) first, then this file. For UI/UX work, also read [UI-ROADMAP.md](UI-ROADMAP.md) and [DESIGN-PATTERNS.md](DESIGN-PATTERNS.md) when touching screens.
+> Read [BLUEPRINT.md](BLUEPRINT.md) first, then this file. For UI/UX work, also read [DESIGN-PATTERNS.md](DESIGN-PATTERNS.md) when touching screens.
 
 Update this file when behaviour or priorities change. Do not duplicate operational detail in the Blueprint.
 
@@ -52,10 +52,10 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 | **Round UX** | Done — works well; evolve carefully (not frozen; advanced scoring inputs planned) |
 | **Tab UI** | Good enough for this stage — consistent nav, cards, CTAs |
 | **Course data** | **22 layouts**, **16 parks**; all seeded courses have `lat`/`lng` |
-| **Stats / competitions** | **v1 done** — Postgres backbone + History stats block; v2 (per-course, trends) later |
+| **Stats / competitions** | **v1 shipped** — Postgres backbone + interim History block; **v2 planned** (see [Stats v2 — action plan](#stats-v2--action-plan)) |
 | **PWA install** | Deferred |
 
-**Recommended next product work (ordered):** (1) **Advanced scoring** (opt-in per round); (2) **Stats v2** — per-course breakdown, trends, Home teaser wired to same loader; (3) **Home stats teaser** slot on `/`. Secondary: course map PNGs, Play map view, more parks via JSON seeds. See "Next (ordered)" and the [strategic wedge](BLUEPRINT.md) for rationale.
+**Recommended next product work (ordered):** (1) **Stats v2** — reshape global stats, Home teaser, course stats screen, round context (see action plan below); (2) **Advanced scoring** (opt-in per round); (3) Secondary: course map PNGs, Play map view, more parks via JSON seeds.
 
 ---
 
@@ -85,7 +85,7 @@ Deferred (see below): `middleware.ts` → `proxy.ts` rename (Next 16 deprecation
 | **2** Schema & seeding | Done | RLS; JSON seed pipeline; **22 layouts** / **16 course parks**; all active courses have coordinates |
 | **3** Core scoring | **Done** | Field-tested; draft/active/complete, invites, scorer writes, observer Realtime |
 | **4** UI bootstrap | **Done (this stage)** | Tab screens polished: Home hub, Play list + detail, History cards, Profile hub; unified inline primary CTAs; green active nav tab. PWA deferred. |
-| **5** History & stats | **v1 done** | Postgres views + History stats block (completed rounds only); v2 per-course/trends later |
+| **5** History & stats | **v1 shipped** | Postgres views + interim History block; **v2 in plan** (layout-scoped stats, course stats screen) |
 | **6** Ratings & tournaments | Not started | By design until adoption warrants |
 
 ---
@@ -97,7 +97,8 @@ Deferred (see below): `middleware.ts` → `proxy.ts` rename (Next 16 deprecation
 - **Auth & profile** (`app/auth`): Profile hub — hero, Details / Preferences / **Authentication**, sign out; nearby toggle copy references location services
 - **Courses:** 22 layouts via `npm run seed:courses`; Play search + **distance sort** (all seeded parks have coords); detail — layout picker, About (address, Open in Maps under address, fees/contact), optional `public/courses/{slug}-map.png`
 - **Rounds:** draft setup (inline Start round), active scoring, observer read-only, complete/abandon
-- **History:** `app/rounds/page.tsx` — **Your stats** block (rounds, best, average, OB/round, score distribution; eagle/ace when > 0) + round list with vs par (abandoned = label only). Data from `player_round_stats` / `player_lifetime_stats` views.
+- **History:** `app/rounds/page.tsx` — interim **Your stats** block (v1; to be reshaped in v2) + round list with vs par (abandoned = label only). Data from `player_round_stats` / `player_lifetime_stats` views.
+- **Courses (stats entry, v2):** course detail will get a light park summary + **Your stats** button → dedicated stats screen (not built yet).
 - **Scoring / round route** (unchanged summary): online-first saves; full scorer + observer UX at `/rounds/[roundId]` — see prior docs; **do not regress**
 
 ---
@@ -113,9 +114,9 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 3. ~~**Course coordinates**~~ — Done for all seeded parks.
 4. ~~**Nav speed + cleanup pass**~~ — Done (loading skeletons, `getClaims` on tab pages + middleware, `staleTimes`, shared score-summary loader; see Performance).
 5. ~~**Home upgrades (small)**~~ — Near-you Start **done**; play-again **dropped**; stats-teaser deferred until wired to `load-player-stats`.
-6. ~~**Stats v1 (Phase 5)**~~ — **Done.** `score_bucket()` + `player_round_stats` / `player_lifetime_stats` views; History + Home unified on per-round view; stats block on `/rounds` via `load-player-stats.ts`. Completed rounds only; abandoned excluded from all stats; OB = avg per round (not lifetime total).
-7. **Advanced scoring (next)** — Opt-in per-round "detailed scoring" toggle adds per-hole capture: fairway hit, C1 in reg (≤10 m), C2 in reg (≤20 m), C1 putting, C2 putting, **bullseye/parked** (≤3 m). Default off = fast casual flow. Additive nullable `hole_scores` columns. Touches the round route — its own slice, verify carefully. See [UI-ROADMAP Advanced scoring](UI-ROADMAP.md).
-8. **Stats v2** — Per-course breakdown; trend (last N vs previous N); tap best round → detail; Home stats-teaser wired to `load-player-stats.ts`. Same `player_round_stats` primitive — no rewrite.
+6. ~~**Stats v1 (Phase 5)**~~ — **Done.** `score_bucket()` + `player_round_stats` / `player_lifetime_stats` views; History + Home unified on per-round view; interim stats block on `/rounds`. Completed rounds only; abandoned excluded from all stats.
+7. **Stats v2** — See [action plan](#stats-v2--action-plan). Slices A→E; one slice per chat.
+8. **Advanced scoring** — Opt-in per-round "detailed scoring" toggle (fairway hit, C1/C2 in reg, C1/C2 putting, bullseye/parked ≤3 m). After Stats v2 slices A–B. Touches round route — talk before pixels; verify carefully. See [Later / deferred](#later--deferred).
 9. **D-guest** — Anonymous trial + claim on signup (acquisition lever); after advanced scoring.
 10. **Course content** — Map PNGs per park (`public/courses/{slug}-map.png`); fix Järve Talu **20x** hole data when confirmed on site.
 11. **Play map view** — Optional toggle when useful (most coords now available).
@@ -123,25 +124,148 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 ### Next chat (copy-paste)
 
 ```
-Read STATUS.md and UI-ROADMAP.md first. Round route works well — evolve it carefully, but it is NOT frozen.
+Read STATUS.md (Stats v2 action plan) and DESIGN-PATTERNS.md first. Round route works well — evolve carefully, not frozen.
 
-Next slice (in order): Advanced scoring → Stats v2 → Home stats teaser.
-Pick ONE:
-- Advanced scoring — opt-in per-round detailed metrics (talk before pixels; touches round route)
-- Stats v2 — per-course breakdown, trends, Home teaser
-- Home stats teaser — one-line snapshot on `/` from load-player-stats
+Next slice: Stats v2 — pick ONE from the action plan (A→E):
+- A — Reshape global History block + Home teaser + ace log
+- B — Course stats screen + layout-scoped aggregates (DB + UI)
+- C — Finished round context block + link to layout stats
+- D — Per-hole stats on layout stats screen
+- E — Post-round insights (opt-out in Profile)
 
 One slice per chat. Run lint, test, build before commit.
 ```
 
 ---
 
+## Stats v2 — action plan
+
+Product brainstorm locked **Jul 2026**. **Layout** is the unit of meaningful comparison (not cross-course averages). Stats are **opt-in to view** — play flow stays fast; analysis is one deliberate tap away.
+
+### Principles
+
+- **Play first:** course page keeps layout picker + Start round unobstructed; deep stats live behind **Your stats**.
+- **No duplicate nav:** no "Your layouts" list on History — reach layout stats via **finished round** → round detail → link, or via **course stats screen**.
+- **Drop global noise (v1 UI):** lifetime hole distribution, global average vs par, global OB/round — remove from UI (SQL columns can remain for layout aggregates).
+- **Keep global highlights:** rounds played, career best (with context + link), ace journal, most-played layout (Home teaser).
+- **Completed rounds only** for all stats; abandoned excluded. No footnote needed.
+
+### Information architecture
+
+| Surface | Role |
+|---------|------|
+| **Home teaser** | Glance: rounds · best ever · aces (tap) · most-played layout (tap) |
+| **History tab** | Global summary + round list only; tab title stays **History** |
+| **Finished round** (`/rounds/[id]`) | This-round stats + vs layout history + **All stats on [layout]** link |
+| **Course page** (`/courses/[slug]`) | Light park summary + **Your stats** button → stats screen |
+| **Course stats screen** (`/courses/[slug]/stats`) | Layout chooser + per-layout deep stats; `?layout=` deep link |
+| **Ace log** (`/rounds/aces` or equivalent) | List: date, course · layout, hole # → tap opens round |
+
+```
+Home teaser ──tap aces──► Ace log
+Home teaser ──tap best──► Round detail
+Home teaser ──tap most played──► Course stats (?layout=)
+
+History ──tap round──► Round detail ──link──► Course stats (?layout=)
+Course page ──Your stats──► Course stats ──pick layout──► Per-layout blocks
+```
+
+### Locked decisions
+
+| Topic | Decision |
+|-------|----------|
+| History layouts list | **No** — avoid confusion; use round detail as bridge |
+| Course page summary | **Times played** at park (all layouts) + **last played** date |
+| Course page best score | **No** combined best across layouts (misleading) |
+| Stats button label | **Your stats** |
+| Layout with zero rounds | Show in picker with empty state |
+| Ace log | Dedicated route (scales better than modal) |
+| Home teaser | Rounds, best ever, ace count, most-played layout |
+| Post-round insights | Later slice; **default on**, Profile opt-out |
+| Rating-based best round | Phase 6+ — out of scope |
+
+### Global stats (History + Home)
+
+**Show:** rounds played; best vs par with **layout name + date**, link to `best_round_id` round; ace count → ace log.
+
+**Drop from UI:** global average vs par, global OB/round, lifetime birdie/par/bogey distribution strip.
+
+### Course page (light touch)
+
+- Compact line: e.g. **5 rounds here · last played 12 Mar**
+- Button: **Your stats** → `/courses/[slug]/stats`
+- Layout picker + Start unchanged
+
+### Course stats screen
+
+- Park-level header: total plays at course (optional layout play-count list to help pick)
+- **Layout chooser** (same mental model as course detail)
+- Per selected layout (when user has completed rounds):
+  - Times played (this layout)
+  - Best vs par (+ link to round)
+  - Average vs par (this layout only)
+  - Rates: birdie %, par %, bogey %, double+ %, OB % — **of holes played on this layout**
+  - Score distribution strip (layout-scoped — meaningful here)
+- Later (slice D): per-hole strong/weak spots on this layout
+
+### Finished round detail (bridge)
+
+On completed rounds, add context block:
+
+- This round: vs par, OB holes, this-round-only distribution
+- Vs layout history: new best / vs best / vs last round on same layout (when data exists)
+- CTA: **All stats on [layout name]** → course stats screen with layout pre-selected
+
+### Data layer (extend backbone — no rewrite)
+
+Existing: `score_bucket()`, `player_round_stats` (one row per user per round).
+
+**Add (migrations):**
+
+| View / query | Purpose |
+|--------------|---------|
+| `player_layout_stats` | `GROUP BY layout_id` from completed `player_round_stats` — plays, best, avg vs par, bucket totals, OB rates |
+| `player_course_stats` | `GROUP BY course` (via layout) — total plays at park, last played |
+| `player_ace_log` | Rows where `strokes = 1` — hole #, layout, course, round_id, date |
+| `player_layout_hole_stats` (slice D) | Per (user, layout, hole) bucket counts |
+
+Extend `player_lifetime_stats` or replace UI usage: `best_round_id`, most-played `layout_id` + names for teaser. Remove surfaced `avg_vs_par` / distribution totals from global loader when slice A ships.
+
+All aggregates stay in Postgres ([BLUEPRINT §2b/§8](BLUEPRINT.md)); `lib/rounds/load-player-stats.ts` remains the TS seam (extend, don't fan out JS).
+
+### Implementation slices
+
+| Slice | Scope | Done when |
+|-------|--------|-----------|
+| **A** | Reshape History global block; drop v1 noise; rich best round; ace log route; Home teaser (4 items); extend lifetime loader | History + Home match spec; ace log lists all aces with links |
+| **B** | `player_layout_stats` + `player_course_stats` views; `/courses/[slug]/stats` screen; course page summary + Your stats button | Can open stats from course page; switch layouts; see per-layout headline stats |
+| **C** | Finished round context block; compare to layout best / last round; link to course stats `?layout=` | Tapping History round shows context + path to full layout stats |
+| **D** | `player_layout_hole_stats`; per-hole section on layout stats screen | User sees historical birdie/bogey rates per hole on a layout |
+| **E** | Post-round insights on complete (opt-out in Profile) | Scorer sees one-time insights card after ending round; toggle in Profile |
+
+**Build order:** A → B → C → D → E. One slice per chat.
+
+### Out of scope (v2)
+
+- Trends (last 5 vs previous 5) — wait for more round data
+- Fairway %, C1 putting, etc. — after **advanced scoring** columns exist
+- Rating-based best round — Phase 6
+- Lifetime eagle journal (aces only for now)
+- "Your layouts" list on History tab
+
+### v1 → v2 UI debt
+
+Current `history-stats-section.tsx` still shows v1 fields (global average, OB/round, global distribution). **Slice A** removes/replaces these — do not extend v1 layout further before A.
+
+
+---
+
 ## Later / deferred
 
 - **PWA:** Serwist + icons when install-to-homescreen matters.
-- **Advanced scoring:** planned as slice #7 (after Stats), **not** deferred indefinitely — opt-in per-round toggle; metric set = fairway hit, C1/C2 in reg, C1/C2 putting, bullseye/parked (≤3 m). Additive nullable `hole_scores` columns.
+- **Advanced scoring:** after Stats v2 slices A–B; opt-in per-round toggle; fairway hit, C1/C2 in reg (≤10 m / ≤20 m), C1/C2 putting, bullseye/parked (≤3 m); additive nullable `hole_scores` columns. **Input UX is the main risk** — keep casual rounds fast; toggle placement (setup vs mid-round) TBD when the slice starts.
 - **Slice D-guest:** Anonymous round local-only → claim on signup (Option A below); acquisition lever, planned after advanced scoring.
-- **Phase 5 v2:** Per-course stats, trends, Home teaser; advanced-scoring metrics once those columns exist.
+- **Stats v2 (remaining):** slices C–E in [action plan](#stats-v2--action-plan) (round context, per-hole, post-round insights); trends deferred.
 - **Phase 6:** Ratings, tournaments (`tournament_id` column reserved).
 - Smart-ID / magic-link auth.
 - **Geolocation / nearby sort:** **done** — all seeded courses have `lat`/`lng`; Profile toggle + browser permission
@@ -221,7 +345,7 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 |------|--------|
 | Scoring math | `lib/scoring/{types,stats}.ts` |
 | Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows,round-status,load-player-stats}.ts` |
-| Player stats | `lib/rounds/load-player-stats.ts`, `app/rounds/history-stats-section.tsx`; Postgres views `player_round_stats`, `player_lifetime_stats` |
+| Player stats | `lib/rounds/load-player-stats.ts`, `app/rounds/history-stats-section.tsx`; views `player_round_stats`, `player_lifetime_stats`. **v2 planned:** `player_layout_stats`, `player_course_stats`, `/courses/[slug]/stats`, `/rounds/aces` — see [action plan](#stats-v2--action-plan) |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
 | Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` (scorecard, draft setup deck, active scoring, results, completion) |
 | Round display name | `lib/rounds/round-display-name.ts`, `draft-round-title-portal.tsx`, `create-round-form.tsx` |
@@ -262,4 +386,5 @@ Planned frictionless onboarding: score anonymously with local-only storage, then
 ## Maintenance
 
 - **Blueprint** = rules and architecture (change rarely).
-- **Status** = reality, field MVP, priorities, and reference appendix (change often).
+- **Status** = reality, field MVP, priorities, product action plans, and reference appendix (change often).
+- **Design patterns** = how screens should look and locked nav (change rarely). `UI-ROADMAP.md` was retired Jul 2026 — do not recreate it.

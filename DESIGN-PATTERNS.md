@@ -1,6 +1,36 @@
 # Design patterns
 
-North star: **active scorer round** (`app/rounds/[roundId]/`). Match these when redesigning other screens.
+North star: **active scorer round** (`app/rounds/[roundId]/`). Works well and is field-tested — evolve **carefully, not carelessly**. It is **not frozen**: additions like advanced scoring inputs are planned. "Don't regress it" protects scoring *behaviour*, not the code from evolving.
+
+**What to build next:** [STATUS.md](STATUS.md) (priorities, Stats v2 action plan). **Architecture:** [BLUEPRINT.md](BLUEPRINT.md).
+
+---
+
+## How to work on UI
+
+1. **One screen or journey slice per chat** — don't reskin the whole app at once.
+2. **Talk before pixels** on new surfaces.
+3. **Simple first** — [BLUEPRINT.md §2a](BLUEPRINT.md): one main file per slice; no `lib/` sprawl.
+4. **Before commit:** `tsc`, `lint`, `test`, `build`.
+
+---
+
+## Bottom navigation (locked)
+
+| Tab | Route | Role |
+|-----|-------|------|
+| **Home** | `/` | Launchpad: continue round, invites, near-you Start, get-started, recent rounds |
+| **Play** | `/courses` | Course list + detail; **Your stats** → course stats screen (Stats v2) |
+| **History** | `/rounds` | Global summary + round list |
+| **Profile** | `/auth` | Account and preferences |
+
+Four **equal-weight** tabs. Play's icon is **subtly** larger (`emphasized`, `size-6` vs `size-5`) — light accent only, **not** a primary-action button. Primary "start a round" flow lives on **Home** (near-you Start). Do not reintroduce a center create tab.
+
+All active tabs: **primary green** label + icon fill.
+
+Each tab route has a `loading.tsx` skeleton for an instant shell while the server render streams ([BLUEPRINT §2b](BLUEPRINT.md)).
+
+---
 
 ## Locked (already in code)
 
