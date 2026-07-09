@@ -55,8 +55,6 @@ export async function HomeSections({ userId }: Props) {
 
   return (
     <>
-      {!statsResult.error ? <HomeStatsTeaser stats={statsResult.stats} /> : null}
-
       {data.activeRounds.length > 0 ? (
         <section className="space-y-2">
           <h2 className={sectionHeadingClassName}>Continue round</h2>
@@ -95,6 +93,8 @@ export async function HomeSections({ userId }: Props) {
       {data.activeRounds.length === 0 ? (
         <NearYouStart courses={nearYouCourses} />
       ) : null}
+
+      {!statsResult.error ? <HomeStatsTeaser stats={statsResult.stats} /> : null}
 
       <HomeGetStarted
         hasJoinedRound={data.hasJoinedRound}
