@@ -4,10 +4,18 @@ import Image from "next/image";
 import fs from "node:fs";
 import path from "node:path";
 import { notFound, redirect } from "next/navigation";
+import { formatRoundDate } from "@/lib/format/round-date";
+import { loadPlayerCourseStats } from "@/lib/rounds/load-player-stats";
 import { createServerClient } from "@/lib/supabase/server";
-import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
+import {
+  homeRowMetaClassName,
+  pagePrimaryButtonClassName,
+  pageSubtitleClassName,
+  pageTitleClassName,
+} from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { CourseLayoutPicker } from "./course-layout-picker";
 
 type PageProps = {
@@ -59,6 +67,8 @@ export default async function CourseDetailPage({ params }: PageProps) {
     .eq("is_active", true)
     .order("name", { ascending: true });
 
+  const { stats: courseStats } = await loadPlayerCourseStats(supabase, slug);
+
   const mapsUrl =
     course.lat !== null && course.lng !== null
       ? `https://www.google.com/maps/search/?api=1&query=${course.lat},${course.lng}`
@@ -97,7 +107,19 @@ export default async function CourseDetailPage({ params }: PageProps) {
           </Link>
         </div>
         {headerMeta ? <p className={pageSubtitleClassName}>{headerMeta}</p> : null}
+        {courseStats ? (
+          <p className={homeRowMetaClassName}>
+            {courseStats.roundsPlayed === 1 ? "1 round here" : `${courseStats.roundsPlayed} rounds here`}
+            {formatRoundDate(courseStats.lastPlayedAt)
+              ? ` · last played ${formatRoundDate(courseStats.lastPlayedAt)}`
+              : null}
+          </p>
+        ) : null}
       </header>
+
+      <Button asChild className={pagePrimaryButtonClassName}>
+        <Link href={`/courses/${slug}/stats`}>Your stats</Link>
+      </Button>
 
       <section className="space-y-3">
         <h2 className={sectionHeadingClassName}>Layouts</h2>

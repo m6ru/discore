@@ -438,17 +438,72 @@ export type Database = {
       }
     }
     Views: {
-      player_lifetime_stats: {
+      player_course_stats: {
+        Row: {
+          course_id: string | null
+          course_name: string | null
+          course_slug: string | null
+          last_played_at: string | null
+          rounds_played: number | null
+        }
+        Relationships: []
+      }
+      player_layout_stats: {
         Row: {
           ace_total: number | null
-          avg_ob_per_round: number | null
           avg_vs_par: number | null
           best_round_id: string | null
           best_vs_par: number | null
           birdie_total: number | null
           bogey_total: number | null
+          course_id: string | null
+          course_name: string | null
+          course_slug: string | null
           double_plus_total: number | null
           eagle_total: number | null
+          holes_played: number | null
+          layout_id: string | null
+          layout_name: string | null
+          layout_slug: string | null
+          ob_holes_total: number | null
+          par_total: number | null
+          rounds_played: number | null
+        }
+        Relationships: []
+      }
+      player_ace_log: {
+        Row: {
+          completed_at: string | null
+          course_name: string | null
+          course_slug: string | null
+          hole_number: number | null
+          layout_id: string | null
+          layout_name: string | null
+          layout_slug: string | null
+          round_id: string | null
+        }
+        Relationships: []
+      }
+      player_lifetime_stats: {
+        Row: {
+          ace_total: number | null
+          avg_ob_per_round: number | null
+          avg_vs_par: number | null
+          best_round_completed_at: string | null
+          best_round_course_name: string | null
+          best_round_id: string | null
+          best_round_layout_name: string | null
+          best_vs_par: number | null
+          birdie_total: number | null
+          bogey_total: number | null
+          double_plus_total: number | null
+          eagle_total: number | null
+          most_played_course_name: string | null
+          most_played_course_slug: string | null
+          most_played_layout_id: string | null
+          most_played_layout_name: string | null
+          most_played_layout_slug: string | null
+          most_played_round_count: number | null
           par_total: number | null
           rounds_played: number | null
         }

@@ -1,29 +1,12 @@
-import type { PlayerStatsV1 } from "@/lib/rounds/load-player-stats";
+import Link from "next/link";
+import type { PlayerGlobalStats } from "@/lib/rounds/load-player-stats";
+import { formatRoundDisplayDate } from "@/lib/format/round-date";
 import { formatVsPar } from "@/lib/scoring/stats";
 import { homeRowMetaClassName } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 
 type Props = {
-  stats: PlayerStatsV1;
-};
-
-function formatAvgVsPar(value: number): string {
-  const rounded = Math.round(value * 10) / 10;
-  if (rounded === 0) {
-    return "E";
-  }
-  return rounded > 0 ? `+${rounded}` : String(rounded);
-}
-
-function formatAvgOb(value: number): string {
-  const rounded = Math.round(value * 10) / 10;
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
-}
-
-type DistributionRow = {
-  key: string;
-  label: string;
-  count: number;
+  stats: PlayerGlobalStats;
 };
 
 export function HistoryStatsSection({ stats }: Props) {
@@ -31,56 +14,52 @@ export function HistoryStatsSection({ stats }: Props) {
     return null;
   }
 
-  const distribution: DistributionRow[] = [
-    ...(stats.distribution.ace > 0
-      ? [{ key: "ace", label: "Ace", count: stats.distribution.ace }]
-      : []),
-    ...(stats.distribution.eagle > 0
-      ? [{ key: "eagle", label: "Eagle", count: stats.distribution.eagle }]
-      : []),
-    { key: "birdie", label: "Birdie", count: stats.distribution.birdie },
-    { key: "par", label: "Par", count: stats.distribution.par },
-    { key: "bogey", label: "Bogey", count: stats.distribution.bogey },
-    { key: "double", label: "Double+", count: stats.distribution.doublePlus },
-  ];
+  const bestDateLabel = stats.bestRound
+    ? formatRoundDisplayDate(stats.bestRound.completedAt, null)
+    : null;
 
   return (
     <section className="space-y-3 rounded-lg border px-4 py-3">
       <h2 className={sectionHeadingClassName}>Your stats</h2>
 
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
         <div>
           <dt className={homeRowMetaClassName}>Rounds</dt>
           <dd className="font-mono text-base font-semibold tabular-nums">{stats.roundsPlayed}</dd>
         </div>
+
         <div>
           <dt className={homeRowMetaClassName}>Best</dt>
           <dd className="font-mono text-base font-semibold tabular-nums">
             {stats.bestVsPar !== null ? formatVsPar(stats.bestVsPar) : "—"}
           </dd>
+          {stats.bestRound ? (
+            <dd className="mt-0.5">
+              <Link
+                href={`/rounds/${stats.bestRound.id}`}
+                className="text-sm text-primary underline-offset-4 hover:underline"
+              >
+                <span className="text-muted-foreground">
+                  {stats.bestRound.layoutName}
+                  {bestDateLabel ? ` · ${bestDateLabel}` : null}
+                </span>
+              </Link>
+            </dd>
+          ) : null}
         </div>
+
         <div>
-          <dt className={homeRowMetaClassName}>Average</dt>
-          <dd className="font-mono text-base font-semibold tabular-nums">
-            {stats.avgVsPar !== null ? formatAvgVsPar(stats.avgVsPar) : "—"}
-          </dd>
-        </div>
-        <div>
-          <dt className={homeRowMetaClassName}>OB / round</dt>
-          <dd className="font-mono text-base font-semibold tabular-nums">
-            {stats.avgObPerRound !== null ? formatAvgOb(stats.avgObPerRound) : "—"}
+          <dt className={homeRowMetaClassName}>Aces</dt>
+          <dd>
+            <Link
+              href="/rounds/aces"
+              className="font-mono text-base font-semibold tabular-nums text-primary underline-offset-4 hover:underline"
+            >
+              {stats.aceCount}
+            </Link>
           </dd>
         </div>
       </dl>
-
-      <div className="grid grid-cols-3 gap-2 border-t pt-3 sm:grid-cols-6">
-        {distribution.map((row) => (
-          <div key={row.key} className="min-w-0 text-center">
-            <p className="truncate text-xs text-muted-foreground">{row.label}</p>
-            <p className="font-mono text-sm font-semibold tabular-nums">{row.count}</p>
-          </div>
-        ))}
-      </div>
     </section>
   );
 }

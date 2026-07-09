@@ -42,7 +42,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 ---
 
-## Where we are (Mar 2026)
+## Where we are (Jul 2026)
 
 **Shippable hobby app** for the Estonian disc golf community: sign in, pick a course, score a round with guests or invited friends, observer watches live, history on device.
 
@@ -51,11 +51,11 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 | **Backbone** | Done — auth, RLS, scoring, Realtime, deploy |
 | **Round UX** | Done — works well; evolve carefully (not frozen; advanced scoring inputs planned) |
 | **Tab UI** | Good enough for this stage — consistent nav, cards, CTAs |
-| **Course data** | **22 layouts**, **16 parks**; all seeded courses have `lat`/`lng` |
-| **Stats / competitions** | **v1 shipped** — Postgres backbone + interim History block; **v2 planned** (see [Stats v2 — action plan](#stats-v2--action-plan)) |
+| **Course data** | **~209 layouts**, **~182 parks** — national skeleton from discgolfirajad.ee (Jul 2026); hand-curated parks retained; 5 split-venue merges applied. Data is **seasonal** — expect per-park review/updates over time (JSON → `seed:courses` → migration). |
+| **Stats / competitions** | **v2 in progress** — slice A shipped (global stats + ace log); slices B–E planned (see [action plan](#stats-v2--action-plan)) |
 | **PWA install** | Deferred |
 
-**Recommended next product work (ordered):** (1) **Stats v2** — reshape global stats, Home teaser, course stats screen, round context (see action plan below); (2) **Advanced scoring** (opt-in per round); (3) Secondary: course map PNGs, Play map view, more parks via JSON seeds.
+**Recommended next product work (ordered):** (1) **Stats v2** — reshape global stats, Home teaser, course stats screen, round context (see action plan below); (2) **Advanced scoring** (opt-in per round); (3) Secondary: course content quality (maps, hole updates, missing layouts), Play map view.
 
 ---
 
@@ -82,7 +82,7 @@ Deferred (see below): `middleware.ts` → `proxy.ts` rename (Next 16 deprecation
 | Phase | Status | Notes |
 |-------|--------|-------|
 | **1** Infrastructure | Done | Next.js, Supabase clients, middleware; minimal `manifest.ts`; SW not configured |
-| **2** Schema & seeding | Done | RLS; JSON seed pipeline; **22 layouts** / **16 course parks**; all active courses have coordinates |
+| **2** Schema & seeding | Done | RLS; JSON seed pipeline; **~209 layouts** / **~182 parks** (bulk import Jul 2026); coordinates on all seeded parks; ongoing edits via `supabase/seeds/courses/` |
 | **3** Core scoring | **Done** | Field-tested; draft/active/complete, invites, scorer writes, observer Realtime |
 | **4** UI bootstrap | **Done (this stage)** | Tab screens polished: Home hub, Play list + detail, History cards, Profile hub; unified inline primary CTAs; green active nav tab. PWA deferred. |
 | **5** History & stats | **v1 shipped** | Postgres views + interim History block; **v2 in plan** (layout-scoped stats, course stats screen) |
@@ -95,10 +95,10 @@ Deferred (see below): `middleware.ts` → `proxy.ts` rename (Next 16 deprecation
 - **Hub** (`app/page.tsx`): continue-round cards (`bg-muted/60`), invites (Realtime), get-started checklist, **recent rounds** (last 3, same card UI as History with vs par)
 - **Bottom nav:** Home · Play · History · Profile; **all active tabs** use primary green; hidden on live scorer round routes
 - **Auth & profile** (`app/auth`): Profile hub — hero, Details / Preferences / **Authentication**, sign out; nearby toggle copy references location services
-- **Courses:** 22 layouts via `npm run seed:courses`; Play search + **distance sort** (all seeded parks have coords); detail — layout picker, About (address, Open in Maps under address, fees/contact), optional `public/courses/{slug}-map.png`
+- **Courses:** ~209 layouts / ~182 parks via `npm run seed:courses`; Play search + **distance sort**; detail — layout picker, About (address, Open in Maps, fees/contact), optional `public/courses/{slug}-map.png`. Registry is a **starting skeleton** — many layouts need seasonal review; see [Course registry](#course-registry).
 - **Rounds:** draft setup (inline Start round), active scoring, observer read-only, complete/abandon
-- **History:** `app/rounds/page.tsx` — interim **Your stats** block (v1; to be reshaped in v2) + round list with vs par (abandoned = label only). Data from `player_round_stats` / `player_lifetime_stats` views.
-- **Courses (stats entry, v2):** course detail will get a light park summary + **Your stats** button → dedicated stats screen (not built yet).
+- **History:** `app/rounds/page.tsx` — global **Your stats** block (v2 slice A) + round list with vs par (abandoned = label only). Data from `player_lifetime_stats` / `player_round_stats` views.
+- **Courses (stats entry, v2):** course detail — park summary + **Your stats** → `/courses/[slug]/stats` (layout chooser + per-layout stats).
 - **Scoring / round route** (unchanged summary): online-first saves; full scorer + observer UX at `/rounds/[roundId]` — see prior docs; **do not regress**
 
 ---
@@ -115,26 +115,45 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 4. ~~**Nav speed + cleanup pass**~~ — Done (loading skeletons, `getClaims` on tab pages + middleware, `staleTimes`, shared score-summary loader; see Performance).
 5. ~~**Home upgrades (small)**~~ — Near-you Start **done**; play-again **dropped**; stats-teaser deferred until wired to `load-player-stats`.
 6. ~~**Stats v1 (Phase 5)**~~ — **Done.** `score_bucket()` + `player_round_stats` / `player_lifetime_stats` views; History + Home unified on per-round view; interim stats block on `/rounds`. Completed rounds only; abandoned excluded from all stats.
-7. **Stats v2** — See [action plan](#stats-v2--action-plan). Slices A→E; one slice per chat.
-8. **Advanced scoring** — Opt-in per-round "detailed scoring" toggle (fairway hit, C1/C2 in reg, C1/C2 putting, bullseye/parked ≤3 m). After Stats v2 slices A–B. Touches round route — talk before pixels; verify carefully. See [Later / deferred](#later--deferred).
-9. **D-guest** — Anonymous trial + claim on signup (acquisition lever); after advanced scoring.
-10. **Course content** — Map PNGs per park (`public/courses/{slug}-map.png`); fix Järve Talu **20x** hole data when confirmed on site.
-11. **Play map view** — Optional toggle when useful (most coords now available).
+7. ~~**National course registry (bulk)**~~ — **Done (Jul 2026).** ~187 layouts imported from discgolfirajad.ee scraper; 22 hand-curated layouts kept; 5 venue merges (Pühalepa, Vooremäe, Holstre-Põlli, Kõrvemaa, Kunda). Tooling: `scripts/match-seed-courses.ts` (`--split-review`).
+8. ~~**Stats v2 slice A**~~ — **Done.** Global History block + Home teaser + ace log (`/rounds/aces`); migration `20260709180000_stats_v2_slice_a.sql`.
+9. ~~**Stats v2 slice B**~~ — **Done.** `player_layout_stats` + `player_course_stats`; `/courses/[slug]/stats`; course page summary + Your stats button.
+10. **Stats v2 slices C–E** — See [action plan](#stats-v2--action-plan). Next: **C** (finished round context block).
+11. **Advanced scoring** — Opt-in per-round "detailed scoring" toggle (fairway hit, C1/C2 in reg, C1/C2 putting, bullseye/parked ≤3 m). After Stats v2 slices A–B. Touches round route — talk before pixels; verify carefully. See [Later / deferred](#later--deferred).
+12. **D-guest** — Anonymous trial + claim on signup (acquisition lever); after advanced scoring.
+13. **Course content (ongoing)** — Per-park review as seasons change (holes, pars, distances); map PNGs (`public/courses/{slug}-map.png`); missing layouts (e.g. Kõrvemaa PRO 18); fix Järve Talu **20x** when confirmed on site. No further bulk import planned.
+14. **Play map view** — Optional toggle when useful (coords available nationwide).
 
 ### Next chat (copy-paste)
 
 ```
 Read STATUS.md (Stats v2 action plan) and DESIGN-PATTERNS.md first. Round route works well — evolve carefully, not frozen.
 
-Next slice: Stats v2 — pick ONE from the action plan (A→E):
-- A — Reshape global History block + Home teaser + ace log
-- B — Course stats screen + layout-scoped aggregates (DB + UI)
+Next slice: Stats v2 — pick ONE from the action plan (C→E):
 - C — Finished round context block + link to layout stats
 - D — Per-hole stats on layout stats screen
 - E — Post-round insights (opt-out in Profile)
 
 One slice per chat. Run lint, test, build before commit.
 ```
+
+---
+
+## Course registry
+
+**Jul 2026:** One-time bulk import from discgolfirajad.ee (~196 scraped → 187 added + 22 hand-curated, minus overlaps). Source is often **outdated or incomplete** — treat the DB as a skeleton, not ground truth.
+
+**Maintenance model:**
+
+- **Creator-maintained** — players do not edit courses in-app ([BLUEPRINT](BLUEPRINT.md)).
+- **Update path:** edit JSON in `supabase/seeds/courses/` → `npm run seed:courses` → new migration → `npx supabase db push`. Idempotent upserts on `courses.slug`, `layouts (course_id, slug)`, `holes`.
+- **Cadence:** Many parks change **per season** (new layouts, tee moves, par/distance tweaks). Prioritise parks you play; curate over time — no need to fix all ~182 at once.
+- **Hand-curated parks** (Buen Kiiu, Haapsalu, Järve, Keila, etc.) remain source of truth where they overlap scraper data.
+- **Venue merges:** When discgolfirajad gives one layout per page, slugs can split one physical park — use `npx tsx scripts/match-seed-courses.ts supabase/seeds/courses --split-review` before adding more data.
+
+**Known gaps (examples):** Kõrvemaa missing Prodigy PRO 18 layout; Vooremäe / others may not match current on-course signage; ~23 courses had no scraper hole data.
+
+**Future (deferred):** **Player course feedback** — e.g. “layout doesn’t match course” from course detail or post-round, queued for creator review (no user edits to registry). Complements seasonal JSON updates; design when adoption warrants.
 
 ---
 
@@ -237,8 +256,8 @@ All aggregates stay in Postgres ([BLUEPRINT §2b/§8](BLUEPRINT.md)); `lib/round
 
 | Slice | Scope | Done when |
 |-------|--------|-----------|
-| **A** | Reshape History global block; drop v1 noise; rich best round; ace log route; Home teaser (4 items); extend lifetime loader | History + Home match spec; ace log lists all aces with links |
-| **B** | `player_layout_stats` + `player_course_stats` views; `/courses/[slug]/stats` screen; course page summary + Your stats button | Can open stats from course page; switch layouts; see per-layout headline stats |
+| **A** | Reshape History global block; drop v1 noise; rich best round; ace log route; Home teaser (4 items); extend lifetime loader | **Done** — History + Home match spec; `/rounds/aces` lists aces with round links |
+| **B** | `player_layout_stats` + `player_course_stats` views; `/courses/[slug]/stats` screen; course page summary + Your stats button | **Done** — stats from course page; layout chooser + per-layout headline stats |
 | **C** | Finished round context block; compare to layout best / last round; link to course stats `?layout=` | Tapping History round shows context + path to full layout stats |
 | **D** | `player_layout_hole_stats`; per-hole section on layout stats screen | User sees historical birdie/bogey rates per hole on a layout |
 | **E** | Post-round insights on complete (opt-out in Profile) | Scorer sees one-time insights card after ending round; toggle in Profile |
@@ -255,7 +274,7 @@ All aggregates stay in Postgres ([BLUEPRINT §2b/§8](BLUEPRINT.md)); `lib/round
 
 ### v1 → v2 UI debt
 
-Current `history-stats-section.tsx` still shows v1 fields (global average, OB/round, global distribution). **Slice A** removes/replaces these — do not extend v1 layout further before A.
+~~Current `history-stats-section.tsx` still shows v1 fields~~ — **Slice A done.** Global average, OB/round, and lifetime distribution removed from History + Home.
 
 
 ---
@@ -270,6 +289,7 @@ Current `history-stats-section.tsx` still shows v1 fields (global average, OB/ro
 - Smart-ID / magic-link auth.
 - **Geolocation / nearby sort:** **done** — all seeded courses have `lat`/`lng`; Profile toggle + browser permission
 - **Courses map view:** optional follow-up on Play tab
+- **Player course feedback:** report outdated/wrong layout data from app → creator review queue (no player edits to registry); see [Course registry](#course-registry)
 - **Next 16 `middleware` → `proxy`:** build warns `middleware` is deprecated in favor of `proxy.ts` (exported `proxy`). Rename when convenient; auth-sensitive, so do it as an isolated change and re-verify session refresh.
 - **RLS initplan:** wrap `auth.uid()` as `(select auth.uid())` in policies so the planner caches it — negligible now, worth it once history/stats scan many rows.
 - **Round hooks cleanup:** `use-round-realtime` / `use-active-scoring` take no-op `setRenderNow` / `setLastSavedEvent` setters from `round-session`; trim the dead params (behavior-preserving, but touches the frozen round route — verify carefully).
@@ -283,7 +303,7 @@ Current `history-stats-section.tsx` still shows v1 fields (global average, OB/ro
 | **A** Resilience & domain | Complete | `/lib/scoring`; online-first writes; legacy `localStorage` queue removed |
 | **B** Round visibility | Complete | History, resume on hub, enriched invites, scorer participant self-heal |
 | **C** Score & observer UX | Complete | OB boolean, leaderboard, last-saved, Realtime (scores + meta refresh), hub invite live |
-| **D-courses** | Complete | JSON seeds, `seed:courses` → SQL migrations; 22 layouts |
+| **D-courses** | Complete | JSON seeds, `seed:courses` → SQL migrations; national registry Jul 2026 (~209 layouts / ~182 parks); `match-seed-courses.ts` for split-venue review |
 | **D-guest** | Deferred | See Later |
 | **E Tab UI (2026)** | Complete | Home, History, Profile, course detail, nav, CTAs |
 
@@ -329,7 +349,7 @@ Do not reintroduce `utils/supabase/*`.
 
 ### Migrations
 
-**35 files** in `supabase/migrations/` (core schema through `20260708170000_player_stats.sql`). Run `npx supabase migration list` to compare local vs remote.
+**38 files** in `supabase/migrations/` (through bulk course seed `20260709132448_*`, venue merge cleanup `20260709171600_*`). Run `npx supabase migration list` to compare local vs remote.
 
 Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds` (incl. optional `name`), `round_participants`, `round_invitations`, `hole_scores`. RLS on all.
 
@@ -345,7 +365,7 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 |------|--------|
 | Scoring math | `lib/scoring/{types,stats}.ts` |
 | Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows,round-status,load-player-stats}.ts` |
-| Player stats | `lib/rounds/load-player-stats.ts`, `app/rounds/history-stats-section.tsx`; views `player_round_stats`, `player_lifetime_stats`. **v2 planned:** `player_layout_stats`, `player_course_stats`, `/courses/[slug]/stats`, `/rounds/aces` — see [action plan](#stats-v2--action-plan) |
+| Player stats | `lib/rounds/load-player-stats.ts`, `app/rounds/history-stats-section.tsx`, `components/home/stats-teaser.tsx`, `app/rounds/aces/`, `app/courses/[slug]/stats/`; views `player_round_stats`, `player_lifetime_stats`, `player_ace_log`, `player_course_stats`, `player_layout_stats`. **v2 next:** slice C–E — see [action plan](#stats-v2--action-plan) |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
 | Round UI | `app/rounds/[roundId]/round-session.tsx`, `use-round-realtime.ts`, hooks, `components/*` (scorecard, draft setup deck, active scoring, results, completion) |
 | Round display name | `lib/rounds/round-display-name.ts`, `draft-round-title-portal.tsx`, `create-round-form.tsx` |
@@ -353,7 +373,7 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Section headings | `lib/ui/section-heading.ts` |
 | Hub / home | `app/page.tsx`, `components/home/*`, `lib/home/load-home-data.ts`, `lib/ui/{page-chrome,home-greeting}.ts` |
 | App chrome | `components/layout/bottom-tab-bar.tsx`, `components/layout/app-chrome.tsx` |
-| Courses browse | `app/courses/`, `lib/courses/`, `components/courses/course-search-dropdown.tsx` |
+| Courses browse | `app/courses/`, `lib/courses/`, `components/courses/course-search-dropdown.tsx`, `scripts/match-seed-courses.ts`, `supabase/seeds/courses/` |
 | Draft round create | `lib/rounds/round-draft-actions.ts` (`createDraftRound`), `components/rounds/start-round-button.tsx` |
 
 ### Constraints

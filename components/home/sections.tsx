@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createServerClient } from "@/lib/supabase/server";
 import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
 import { loadHomeData } from "@/lib/home/load-home-data";
+import { loadPlayerStats } from "@/lib/rounds/load-player-stats";
+import { HomeStatsTeaser } from "@/components/home/stats-teaser";
 import {
   homeRowMetaClassName,
   homeRowTitleClassName,
@@ -35,9 +37,10 @@ type Props = {
 
 export async function HomeSections({ userId }: Props) {
   const supabase = await createServerClient();
-  const [data, coursesResult] = await Promise.all([
+  const [data, coursesResult, statsResult] = await Promise.all([
     loadHomeData(supabase, userId),
     loadCourseSummaries(supabase),
+    loadPlayerStats(supabase),
   ]);
 
   const nearYouCourses = (coursesResult.courses ?? [])
@@ -52,7 +55,7 @@ export async function HomeSections({ userId }: Props) {
 
   return (
     <>
-      {/* Home stats teaser: wire load-player-stats.ts here (Stats v2 / slice 8). */}
+      {!statsResult.error ? <HomeStatsTeaser stats={statsResult.stats} /> : null}
 
       {data.activeRounds.length > 0 ? (
         <section className="space-y-2">
