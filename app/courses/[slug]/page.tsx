@@ -98,10 +98,9 @@ export default async function CourseDetailPage({ params }: PageProps) {
           <Link
             href="/courses"
             aria-label="Back to courses"
-            className="-mr-2 inline-flex shrink-0 items-center gap-0.5 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="-mr-2 inline-flex shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            <ChevronLeft className="size-4" aria-hidden />
-            Courses
+            <ChevronLeft className="size-5" aria-hidden />
           </Link>
         </div>
         {headerMeta ? <p className={pageSubtitleClassName}>{headerMeta}</p> : null}

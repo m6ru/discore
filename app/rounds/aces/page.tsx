@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { formatRoundDisplayDate } from "@/lib/format/round-date";
 import { loadAceLog } from "@/lib/rounds/load-player-stats";
@@ -36,7 +37,7 @@ export default async function AceLogPage() {
         <ul className="space-y-2">
           {aces.map((ace) => {
             const dateLabel = formatRoundDisplayDate(ace.completedAt, null) ?? "—";
-            const metaParts = [ace.courseName, ace.layoutName, dateLabel];
+            const metaParts = [ace.layoutName, dateLabel];
 
             return (
               <li key={`${ace.roundId}-${ace.holeNumber}`}>
@@ -45,12 +46,14 @@ export default async function AceLogPage() {
                   className="flex items-center justify-between gap-3 rounded-lg border px-4 py-3 transition-colors hover:bg-muted/50"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium">Hole {ace.holeNumber}</p>
+                    <p className="truncate font-medium">
+                      Hole {ace.holeNumber} – {ace.courseName}
+                    </p>
                     <p className="mt-0.5 truncate text-sm text-muted-foreground">
                       {metaParts.join(" · ")}
                     </p>
                   </div>
-                  <span className="shrink-0 text-sm font-medium text-primary">View round</span>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
                 </Link>
               </li>
             );

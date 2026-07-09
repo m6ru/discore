@@ -258,10 +258,9 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
           <Link
             href={`/courses/${slug}`}
             aria-label="Back to course"
-            className="-mr-2 inline-flex shrink-0 items-center gap-0.5 rounded-md px-2 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            className="-mr-2 inline-flex shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
-            <ChevronLeft className="size-4" aria-hidden />
-            Course
+            <ChevronLeft className="size-5" aria-hidden />
           </Link>
         </div>
         <p className={pageSubtitleClassName}>{course.name}</p>

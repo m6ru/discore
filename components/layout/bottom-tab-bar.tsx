@@ -32,7 +32,7 @@ const TABS: TabItem[] = [
     href: "/rounds",
     label: "History",
     icon: History,
-    isActive: (pathname) => pathname === "/rounds",
+    isActive: (pathname) => pathname === "/rounds" || pathname === "/rounds/aces",
   },
   {
     href: "/auth",
@@ -43,7 +43,11 @@ const TABS: TabItem[] = [
 ];
 
 export function shouldShowTabBar(pathname: string): boolean {
-  if (pathname.startsWith("/rounds/") && pathname !== "/rounds/new") {
+  if (
+    pathname.startsWith("/rounds/") &&
+    pathname !== "/rounds/new" &&
+    pathname !== "/rounds/aces"
+  ) {
     return false;
   }
   return true;
