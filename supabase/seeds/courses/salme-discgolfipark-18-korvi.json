@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Salme discgolfipark",
+    "location": "Salme, Saaremaa, Estonia",
+    "slug": "salme-discgolfipark",
+    "lat": 58.164965013417,
+    "lng": 22.251295307471,
+    "details": "Salme discgolfi park algab Viking Burgeri kõrval Suure Tõllu raiesmaal. Mängimiseks on 18 korvi, tiialad on kaetud kunstmuruga. 1561 m pikkune rada pakub Sulle võimalust võidelda lagendikel tuulega, tabada männikus metsakoridori ning visata üle Salme jõe, mida mööda viikingid muistsel aal Salmele jõudsid. Rada on avatud mängimiseks kõigile tasuta, aga kettad võta ise kaasa! Salme rannapargi atmosfäär on saarelikult mõnus - meri ja kadakad. Sind ootab värske liivaga kaetud rannavõrkpalliväljak, laste mänguväljak, Salme legendaarne karussellkiik kui ka uhiuus külakiik. Salmel on kena!",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/salme-discgolfipark/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 57,
+    "total_distance_m": 1561,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 4,
+      "distance_m": 172,
+      "notes": "OB piir puude rivi ja tee korvipoolne serv",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 62,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 95,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 74,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 84,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 58,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 102,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 76,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 142,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 4,
+      "distance_m": 140,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 44,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 4,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 76,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 69,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 62,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Uhtjärve Ürgoru Nõiariigi discgolfi park",
+    "location": "Uhtjärve Ürgoru Nõiariigi discgolfi park, Võrumaa, Estonia",
+    "slug": "uhtjarve-urgoru-noiariigi-discgolfi-park",
+    "lat": 57.890402,
+    "lng": 26.585196999999994,
+    "details": "Amenities: Ketaste laenutus, WC, Majutus",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/uhtjarve-urgoru-noiariigi-discgolfi-park/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 28,
+    "total_distance_m": 820,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 95,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 95,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 4,
+      "distance_m": 120,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 110,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 105,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

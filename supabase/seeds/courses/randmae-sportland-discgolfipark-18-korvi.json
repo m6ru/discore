@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Randmäe Sportland discgolfipark",
+    "location": "Randmäe Sportland, Hiiumaa, Estonia",
+    "slug": "randmae-sportland-discgolfipark",
+    "lat": 59.03119821758937,
+    "lng": 22.579457759857178,
+    "details": "Silmailu pakkuv rada, mis asub Hiiumaal, Randmäe puhketalus mere vahetus läheduses. Discsport Star korvid, kunstmuru tiialad. Rajatüüp – pool metsa/pool parki, veetakistustega.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/randmae-sportland-discgolfipark/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 58,
+    "total_distance_m": 1833,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 113,
+      "notes": "OB - vasakul ja korvi taga. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 4,
+      "distance_m": 140,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 61,
+      "notes": "OB - korvi taga. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 97,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 71,
+      "notes": "OB - vasakul. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 90,
+      "notes": "OB - vasakul. Tavaline OB reegel. Kohustuslik rajapunkt - mängida vasakult. Eksimuse korral järgmine vise Drop Zonest. Skoorile lisandub +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 106,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 94,
+      "notes": "OB - metsatukk vasakul. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 58,
+      "notes": "Saarerada - Hazard reegel - iga viskega, mis ei jää saarele lisandub skoorile 1 vise. Mängimist jätkatakse sealt kuhu ketas maandus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 88,
+      "notes": "OB - tiik ning kogu raja ulatuses vasakul, paremal ja korvi taga. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 86,
+      "notes": "OB - märgistatud ala paremal. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 67,
+      "notes": "OB - kraav korvi taga. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 4,
+      "distance_m": 155,
+      "notes": "OB - vasakul, tiik ning peale kraavi rajast paremal. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 4,
+      "distance_m": 170,
+      "notes": "Kohustuslik rajapunkt - mängida vasakult. Eksimuse korral uus vise samast kohast. Peale teerada Hazard reegel: kui vise ei peatu mängualas lisandub skoorile 1 vise. Mängimist jätkatakse sealt kuhu ketas maandus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 4,
+      "distance_m": 182,
+      "notes": "Kohustuslik rajapunktid - mängi vahelt läbi. Eksimuse korral. järgmine vise Drop Zonest. Skoorile lisandub 1 vise. OB - kraav korvi taga. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 95,
+      "notes": "OB - kraav tiiala ees. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 78,
+      "notes": "OB - kraav rajast paremal. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 82,
+      "notes": "OB - kraav vasakul ja korvi taga. Tavaline OB reegel.",
+      "hole_map_url": null
+    }
+  ]
+}

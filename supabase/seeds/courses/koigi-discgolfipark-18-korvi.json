@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Koigi discgolfipark",
+    "location": "Koigi, Järvamaa, Estonia",
+    "slug": "koigi-discgolfipark",
+    "lat": 58.833333,
+    "lng": 25.748944,
+    "details": "Esimesed 1-9 rada kulgevad pargis, rajad 10-18 on metsa all.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/koigi-discgolfipark/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 54,
+    "total_distance_m": 1356,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 89,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 74,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 73,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 90,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 117,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 68,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 76,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 75,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 59,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 84,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 75,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 78,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

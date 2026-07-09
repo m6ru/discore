@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Mäetaguse discgolfi park",
+    "location": "Mäetaguse discgolfi park, Ida-Virumaa, Estonia",
+    "slug": "maetaguse-discgolfipark",
+    "lat": 59.22539593274493,
+    "lng": 27.27873136233518,
+    "details": "Ida-Virumaal Mäetagusel 18 korviga rajal on peetud ka mitmed Eesti Meistrivõistlustest, mis oma raskuse all võib murda nii mõnegi visa võitleja.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/maetaguse-discgolfipark/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 64,
+    "total_distance_m": 2877,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 129,
+      "notes": "OB vasakul. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 4,
+      "distance_m": 180,
+      "notes": "OB mõlemal pool ja korvi taga märgitud ala. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 5,
+      "distance_m": 318,
+      "notes": "OB mõlemal pool ja korvi taga märgitud ala. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 99,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 218,
+      "notes": "OB mõlemal pool ja korvi taga märgitud ala. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 4,
+      "distance_m": 195,
+      "notes": "OB mõlemal pool märgitud ala. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 105,
+      "notes": "OB paremal. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 4,
+      "distance_m": 228,
+      "notes": "OB paremal ja korvi taga. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 100,
+      "notes": "Saarerada. Esimese viske sattumisel OB-sse, järgmine vise Drop Zone'ist ja lisandub 1 karistusvise. Edasi tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 132,
+      "notes": "OB mõlemal pool ja korvi taga märgitud ala. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 82,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 92,
+      "notes": "OB paremal. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 4,
+      "distance_m": 203,
+      "notes": "OB mõlemal pool ja korvi taga märgitud ala. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 107,
+      "notes": "OB mõlemal pool ja korvi taga märgitud ala. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 4,
+      "distance_m": 222,
+      "notes": "OB mõlemal pool, ja korvi taga. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise. Hazard korral vise ketta tagant, lisandub 1 karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 4,
+      "distance_m": 164,
+      "notes": "OB mõlemal pool märgitud ala ning korvi taga. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 115,
+      "notes": "OB paremal ja korvi taga märgitud ala. OB korral rakendub tavaline OB reegel ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 4,
+      "distance_m": 188,
+      "notes": "OB mõlemal pool ja korvi taga märgitud ala. Esimese viske sattumisel OB-sse, järgmine vise Drop Zone'ist. Edasi tavaline OB reegel.",
+      "hole_map_url": null
+    }
+  ]
+}

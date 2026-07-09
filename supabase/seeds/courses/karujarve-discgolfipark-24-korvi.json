@@ -1,0 +1,191 @@
+{
+  "course": {
+    "name": "Karujärve discgolfipark",
+    "location": "Karujärve, Saaremaa, Estonia",
+    "slug": "karujarve-discgolfipark",
+    "lat": 58.407568769182674,
+    "lng": 22.188026905059814,
+    "details": "24 korviline rada Saaremaal Karujärvel, A ja B tiialadega.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/karujarve-discgolfipark/"
+  },
+  "layout": {
+    "name": "24 korvi",
+    "slug": "24-korvi",
+    "total_par": 77,
+    "total_distance_m": 2643,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 113,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 4,
+      "distance_m": 185,
+      "notes": "OB - paremal. Mando eksimuse korral +1 ja re-tee",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 125,
+      "notes": "OB - korvi taga ja külgedel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 64,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 86,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 90,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 129,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 97,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 4,
+      "distance_m": 148,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 88,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 86,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 155,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 142,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 4,
+      "distance_m": 160,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 100,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 19,
+      "par": 3,
+      "distance_m": 93,
+      "notes": "Korv asub garaažis. Avaviskega saarte mittetabamise korral lisandub +1 ja järgmine vise B-tiilt. Edasi tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 20,
+      "par": 4,
+      "distance_m": 160,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 21,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 22,
+      "par": 3,
+      "distance_m": 75,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 23,
+      "par": 4,
+      "distance_m": 146,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 24,
+      "par": 3,
+      "distance_m": 71,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

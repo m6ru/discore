@@ -1,0 +1,65 @@
+{
+  "course": {
+    "name": "Nõo Reaalgümnaasiumi discgolfipark",
+    "location": "Nõo Reaalgümnaasiumi, Tartumaa, Estonia",
+    "slug": "noo-reaalgumnaasiumi-discgolfipark",
+    "lat": 58.2799,
+    "lng": 26.53806,
+    "details": "Nõo Kooli juures paiknev discgolfi õpperada",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/noo-reaalgumnaasiumi-discgolfipark/"
+  },
+  "layout": {
+    "name": "6 korvi",
+    "slug": "6-korvi",
+    "total_par": 18,
+    "total_distance_m": 213,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 43,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 34,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 29,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 33,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 42,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 32,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

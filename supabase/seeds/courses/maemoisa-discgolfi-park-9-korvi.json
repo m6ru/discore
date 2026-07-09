@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Mäemõisa discgolfipark",
+    "location": "Mäemõisa, Läänemaa, Estonia",
+    "slug": "maemoisa-discgolfi-park",
+    "lat": 58.8313815,
+    "lng": 23.5849736,
+    "details": "Mõisa pargis 9 korvine rada, suhteliselt tehniline, aga radade pikkused sobivad ka algajatele.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/maemoisa-discgolfi-park/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 27,
+    "total_distance_m": 703,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 73,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 79,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 90,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 93,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 86,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

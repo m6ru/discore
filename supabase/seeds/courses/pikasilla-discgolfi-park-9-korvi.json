@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Pikasilla discgolfi park",
+    "location": "Pikasilla discgolfi park, Valgamaa, Estonia",
+    "slug": "pikasilla-discgolfi-park",
+    "lat": 58.0920583333333,
+    "lng": 26.0497833333333,
+    "details": "Looduskaunil Pikasilla puhkealal kulgev 9-korviline discgolfirada. Valdavalt parkmetsas, aga on ka mitu pikemat avarat viset.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/pikasilla-discgolfi-park/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 29,
+    "total_distance_m": 712,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 75,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 42,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 4,
+      "distance_m": 130,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 120,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "course": {
+    "name": "Väätsa discgolfipark",
+    "location": "Väätsa, Järvamaa, Estonia",
+    "slug": "vaatsa-discgolfi-park",
+    "lat": 58.888004,
+    "lng": 25.4516316,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/vaatsa-discgolfi-park/"
+  },
+  "layout": {
+    "name": "12 korvi",
+    "slug": "12-korvi",
+    "total_par": 36,
+    "total_distance_m": 836,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 75,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 70,
+      "notes": "Kohustuslik rajapunkt!",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 69,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 98,
+      "notes": "Kohustuslik rajapunkt!",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 58,
+      "notes": "Kohustuslik rajapunkt!",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 82,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

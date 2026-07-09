@@ -1,0 +1,65 @@
+{
+  "course": {
+    "name": "Muhu DiscGolfPark",
+    "location": "Muhu, Saaremaa, Estonia",
+    "slug": "muhu-discgolfi-park-liiva",
+    "lat": 58.60199048014658,
+    "lng": 23.226591385705547,
+    "details": "6 korviga DiscGolfPark, mis loodud DiscSport.ee poolt. 6 rajaline discgolfi harrastajatele mõeldud park Muhus, mis oma lühikeste rajapikkustega on sobilik ka algajatele.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/muhu-discgolfi-park-liiva/"
+  },
+  "layout": {
+    "name": "Liiva",
+    "slug": "liiva",
+    "total_par": 18,
+    "total_distance_m": 337,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 45,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 48,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 48,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 86,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 50,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Sõmeru discgolfipark",
+    "location": "Sõmeru, lääneviru, Estonia",
+    "slug": "someru-discgolfi-park",
+    "lat": 59.359727368622764,
+    "lng": 26.41713559627533,
+    "details": "Rakvere lähedal, Sõmeru alevikus asuv 9 korviga algaja sõbralik discgolfi park.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/someru-discgolfi-park/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 27,
+    "total_distance_m": 641,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 74,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 78,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 62,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 64,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 68,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 83,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Tamsalu discgolfi park",
+    "location": "Tamsalu discgolfi park, lääneviru, Estonia",
+    "slug": "tamsalu-discgolfi-park",
+    "lat": 59.16861579869181,
+    "lng": 26.104449033737183,
+    "details": "Tamsalu terviseradadel asuv keskmisest pisut raskem vaheldusrikas 18-korviline park. Esineb nii mandosid, keerukaid ob-alasid, lageda väljaga üle 150 meetriseid draive kui ka kitsaid 70-meetriseid metsaradu.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/tamsalu-discgolfi-park/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 58,
+    "total_distance_m": 1873,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 4,
+      "distance_m": 150,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 100,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 128,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 75,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 118,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 75,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 90,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 90,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 73,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 58,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 4,
+      "distance_m": 144,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 104,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 89,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 108,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 4,
+      "distance_m": 152,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 4,
+      "distance_m": 162,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Ääsmäe discgolfi park",
+    "location": "Ääsmäe discgolfi park, Harjumaa, Estonia",
+    "slug": "aasmae-discgolfi-park",
+    "lat": 59.2429392,
+    "lng": 24.4972743,
+    "details": "Tallinna lähedal (~28km), Saue vallas asuv algaja sõbralik discgolfi park. Kokku 18 rada, millest enamus asuvad metsas.\n\nAmenities: Sõidukite parkla juures asub Ääsmäe külaplats koos erinevate atraktsioonidega lastele ja kuivkäimla., Parkla juures asub ka Meie toidupood.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/aasmae-discgolfi-park/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 54,
+    "total_distance_m": 992,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 89,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 114,
+      "notes": "OB - haavanoorendiku piir, tavareegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 42,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 64,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 57,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 50,
+      "notes": "Kohustuslik rajapunkt: ketas peab lendama kahe punasega märgitud kuuse vahelt, vastasel juhul lisandub +1 vise ja järgmine vise tehakse ketta maandumiskohast. OB - tavareegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 38,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 36,
+      "notes": "Kohustuslik rajapunkt: ketas peab mööduma punasega märgistud kasest paremalt, vastasel juhul lisandub +1 vise ja tehakse uus vise tiialalt.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 57,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 37,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 59,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 48,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 73,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 37,
+      "notes": "Kohustuslik rajapunkt: ketas peab lendama kahe punasega märgitud kuuse vahelt. Kui on ületatud korvi ja parempoolset kuuske läbiv mõtteline sirge reeglitevastaselt, siis lisandub +1 vise ning jätkatakse drop zone'lt.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 50,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 45,
+      "notes": "Kohustuslik rajapunkt: ketas peab lendama kaardus toominga alt, vastasel juhul lisandub +1 vise ja seejärel sooritatakse järgmine vise kaardus toominga alt.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 36,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "course": {
+    "name": "Tori discgolfipark",
+    "location": "Tori, Pärnumaa, Estonia",
+    "slug": "tori-discgolfi-park",
+    "lat": 58.476577672462646,
+    "lng": 24.798288345336914,
+    "details": "Pärnumaal Tori koolipargis olev 6-korviline discgolfi park on väga algaja sõbralik.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/tori-discgolfi-park/"
+  },
+  "layout": {
+    "name": "6 korvi",
+    "slug": "6-korvi",
+    "total_par": 18,
+    "total_distance_m": 356,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 71,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 51,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 73,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 64,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 40,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 57,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

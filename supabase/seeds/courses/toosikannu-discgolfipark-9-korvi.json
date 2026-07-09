@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Toosikannu discgolfipark",
+    "location": "Toosikannu, Järvamaa, Estonia",
+    "slug": "toosikannu-discgolfipark",
+    "lat": 58.8079689,
+    "lng": 25.0704705,
+    "details": "Toosikannu 1 km. pikkusel discgolfi rajal on 9 korvi, radade kogupikkus on 622 meetrit ja kõikide radade PAR on 3. Kohapeal olemas 45 paari kettaid. Olemas ka online registreerimine - https://bouk.io/booking/toosikannu/341/rooms/90\n\nFee: 3 €",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/toosikannu-discgolfipark/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 27,
+    "total_distance_m": 622,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 69,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 61,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 84,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 58,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 61,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 71,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

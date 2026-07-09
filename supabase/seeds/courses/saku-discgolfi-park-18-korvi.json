@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Saku discgolfipark",
+    "location": "Saku, Harjumaa, Estonia",
+    "slug": "saku-discgolfi-park",
+    "lat": 59.296385471491895,
+    "lng": 24.66633439064026,
+    "details": "Harjumaal Sakus olev 18 korviga avatud ning mitmete veetakistustega discgolfi park.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/saku-discgolfi-park/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 56,
+    "total_distance_m": 1582,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 75,
+      "notes": "Rajal on kaks kohustuslikult läbitavat (mando) väravat. Kui viskad väravast mööda, siis järgmine vise eksitud värava vahelt ja lisa tulemusele +1 vise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 74,
+      "notes": "Korvi ümber OB ala. Eksimuse korral +1 ja liigud Dropzone'i.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 61,
+      "notes": "Vesi on OB ala. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 96,
+      "notes": "Viska kohustulikust rajapunktist paremalt poolt. Möödaviske korral liigu Dropzone. Korvi taga jookseb aiaga piirnev OB ala. Eksimuse korral lisandub +1 vise. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 98,
+      "notes": "Korvi kõrval jookseb aiaga piirnev OB ala. Eksimuse korral lisandub +1 vise. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 87,
+      "notes": "Raja keskel tuleb väravast läbi visata. Möödaviske korral järgmine vise dropzonest ja lisandub tulemusele +1 vise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 4,
+      "distance_m": 151,
+      "notes": "Rajal kaks kohustuslikku rajapunkti, viska neist õigelt poolt mööda. Eksimuse korral järgmine vise dropzonest ja tulemusele lisandub +1 vise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 68,
+      "notes": "Korvi taga OB. Eksimuse korral +1 tulemusele. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 85,
+      "notes": "Vasakpoolne aed on OB. Eksimuse korral +1 tulemusele. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 78,
+      "notes": "Korvi ümber OB saar. Tuleb visata saarele. Möödaviskel +1 tulemusele ja liigud Dropzone. Edasi tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 4,
+      "distance_m": 189,
+      "notes": "Mängi raja kohustuslikust punktist paremalt mööda. Eksimuse korral lisandub tulemusele +1 ja jätkad kohustusliku punkti kõrvalt. Vesi on OB ala. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 70,
+      "notes": "Jõe vasakpoolne kallas on OB ala. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 98,
+      "notes": "Jõe vasakpoolne kallas on OB ala. Vasakul pool vesi on OB ala. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 77,
+      "notes": "OB ala tähistatud. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 78,
+      "notes": "OB ala tähistatud. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 52,
+      "notes": "Mängi kohustuslikust rajapunktist vasakult mööda. Eksimuse korral lisa tulemusele +1 ja järgmine vise Dropzone'st.",
+      "hole_map_url": null
+    }
+  ]
+}

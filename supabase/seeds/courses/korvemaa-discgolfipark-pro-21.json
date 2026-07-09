@@ -1,0 +1,170 @@
+{
+  "course": {
+    "name": "Sportland Kõrvemaa discgolfipark",
+    "location": "Sportland Kõrvemaa, Harjumaa, Estonia",
+    "slug": "korvemaa-discgolfipark",
+    "lat": 59.3177,
+    "lng": 25.65269999999998,
+    "details": "Sportland Kõrvemaa Matka- ja Suusakeskuses ootavad sind põnevad discgolfi rajad igale vanusele ja igale mängijale. Keskusest saab alguse 1 – 18 korviga Sportland Kõrvemaa harrastajate rada ning väljakutsuvam 21 korviga Prodigy Kõrvemaa rada. Rajad on mitmekülgsed ja sobivad nii algajale, harrastajale kui ka kogenenud mängijale. Rajatasu 3,5€ inimene- tasumine kohvikus või mobiiliga. Mobiiliga tasumise juhis rajakaardi juures. Keskuses on müügil ka hea valik discgolfi varustust. Samuti saab varustust rentida. Kontaknumber: 5246628 Kodulehelkülg: www.sportlandkorvemaa.ee\n\nFee: 3.5 €\n\nAmenities: Kohvik, Ketaste müük, Majutus",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/korvemaa-discgolfipark-pro/"
+  },
+  "layout": {
+    "name": "Prodigy PRO 21",
+    "slug": "pro-21",
+    "total_par": 68,
+    "total_distance_m": 2504,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 53,
+      "notes": "OB - märgitud ala ümber korvi. Kui esimene vise läheb OB-sse mängi edasi Drop Zone alalt. Peale seda tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 112,
+      "notes": "OB - tee korvi taga, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 146,
+      "notes": "OB - märgitud alad mõlemal pool, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 101,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 154,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 108,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 4,
+      "distance_m": 182,
+      "notes": "OB - märgitud ala vasakul ja väike saar enne korvi,tavaline OB reegel. Mandatory - mängida paremalt poolt, valesti mängides jätka Drop Zone alalt.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 130,
+      "notes": "OB - märgitud alad mõlemal pool, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 156,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 4,
+      "distance_m": 150,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 81,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 120,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 123,
+      "notes": "OB - tee korvi taga, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 108,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 4,
+      "distance_m": 170,
+      "notes": "OB - tee on OB, tavaline OB reegel.Mandatory - mängida vasakult poolt, valesti mängides jätka Drop Zone alalt.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 130,
+      "notes": "OB - märgitud ala mõlemal pool, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 120,
+      "notes": "OB - tee paremal ja korvi taga, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 90,
+      "notes": "OB - tee korvi taga, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 19,
+      "par": 3,
+      "distance_m": 61,
+      "notes": "Erirada A",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 20,
+      "par": 3,
+      "distance_m": 89,
+      "notes": "Erirada B",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 21,
+      "par": 3,
+      "distance_m": 120,
+      "notes": "Erirada C",
+      "hole_map_url": null
+    }
+  ]
+}

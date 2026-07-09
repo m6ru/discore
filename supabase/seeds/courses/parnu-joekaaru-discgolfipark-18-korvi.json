@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Pärnu Jõekääru discgolfipark",
+    "location": "Pärnu Jõekääru, Pärnumaa, Estonia",
+    "slug": "parnu-joekaaru-discgolfipark",
+    "lat": 58.37686156617106,
+    "lng": 24.555602073669434,
+    "details": "Pärnu linna vahetus läheduses jõeäärne 18 korviga discgolfipark pigem edasijõudnutele, keskmine radade pikkus on üle 100m. Suviti on palju grilli ja puhkuse inimesi, seega ettevaatust!\n\nAmenities: Välikäimla, Ujumise võimalus suvel, Grillimise ala, Parkimine",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/parnu-joekaaru-discgolfipark/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 58,
+    "total_distance_m": 1956,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 99,
+      "notes": "OB vasakul kõvakattega tee ning tikkudega märgitud paremal ja korvi taga.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 54,
+      "notes": "Topelt mando, mille vahelt peab läbi mängima. Eksimuse korral +1 ja järgmine vise DZ.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 92,
+      "notes": "OB vasakul märgitud tikkudega, korvi taga kõvakattega tee ning tikkudega märgitud paremal (1 raja OB joon).",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 73,
+      "notes": "OB vasakul ja korvi taga märgitud tikkudega (17 rajaga osaliset kattuv).",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 141,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 71,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 115,
+      "notes": "OB märgitud tikkudega vasakul ja korvi taga Enne korvi hazard ala märgitud tikkudega. Hazard alale sattudes +1 ja mängitakse edasi kohast, kus ketas asub.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 102,
+      "notes": "OB korvi taga Liivi tee metallpiire ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 116,
+      "notes": "Kohustuslik rajapunkt ehk mando kõrgepingemast, millest tuleb mööda mängida vasakult. Eksimuse korral +1 ja DZ. OB korvi taga ja paremal märgitud tikkudega.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 4,
+      "distance_m": 208,
+      "notes": "OB korvi vasakul, paremal ja korvi taga märgitud tikkudega.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 4,
+      "distance_m": 135,
+      "notes": "OB vasakul märgitud tikkudega. Paremal Liivi tee metallpiire ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 60,
+      "notes": "Mandovärav mändidest, mille vahelt tuleb läbi mängida. Eksimuse korral +1 ja DZ.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 104,
+      "notes": "OB vasakul märgitud tikkudega (10 raja oma) ja paremal tikud kaldapealsel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 130,
+      "notes": "OB jõgi paremal ja korvi taga märgitud tikkudega.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 135,
+      "notes": "OB jõgi paremal ja vasakul märgitud tikkudega (7 raja OB).",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 4,
+      "distance_m": 148,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 114,
+      "notes": "OB paremal ja korvi taga märgitud tikkudega.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 59,
+      "notes": "Saarerada. Kui esimene vise ei peatu saarel, siis karistuseks +1 ja DZ. Edasi tavaline OB reegel.",
+      "hole_map_url": null
+    }
+  ]
+}

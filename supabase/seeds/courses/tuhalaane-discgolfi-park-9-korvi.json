@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Tuhalaane discgolfipark",
+    "location": "Tuhalaane, Viljandimaa, Estonia",
+    "slug": "tuhalaane-discgolfi-park",
+    "lat": 58.17577,
+    "lng": 25.656075,
+    "details": "9 korvi. Rada nr. 5 ning nr. 9 tuleb visata üle vee (vesi umbes 60 m). Asukoht on looduskaunis Tuhalaane küla Mulgi vallas.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/tuhalaane-discgolfi-park/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 28,
+    "total_distance_m": 794,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 101,
+      "notes": "OB vasakul + asfalt ja sõidutee paremal - DZ paremal",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 87,
+      "notes": "OB vasakul + asfalt - DZ vasakul (1. raja DZ)",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 83,
+      "notes": "OB sõidutee - tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 96,
+      "notes": "OB vesi + sõidutee - tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 108,
+      "notes": "OB vesi + sõidutee Mando elektripost - DZ vasakul järve kõrval.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 4,
+      "distance_m": 123,
+      "notes": "OB sõidutee (tavaline OB reegel) + Mando DZ mando juures",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 67,
+      "notes": "2x Mando + DZ. Tiilt mandot mitte tabades re-tee. Viskega rajalt mitte mandot tabades DZ.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 63,
+      "notes": "OB sõidutee - tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 66,
+      "notes": "Saarerada + OB vesi - DZ üle vee saare kõrval.",
+      "hole_map_url": null
+    }
+  ]
+}

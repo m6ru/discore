@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Alutaguse discgolfipark",
+    "location": "Alutaguse, Ida-Virumaa, Estonia",
+    "slug": "alutaguse-discgolfipark",
+    "lat": 59.291856,
+    "lng": 27.56121710000002,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/alutaguse-discgolfipark-kuldne-kotkas/"
+  },
+  "layout": {
+    "name": "Kuldne Kotkas",
+    "slug": "kuldne-kotkas",
+    "total_par": 65,
+    "total_distance_m": 2727,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 95,
+      "notes": "OB vasakul ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 4,
+      "distance_m": 170,
+      "notes": "OB vasakul asfalttee ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 4,
+      "distance_m": 195,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 73,
+      "notes": "OB vasakul asfalttee ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 220,
+      "notes": "Mando - kohustuslik rajapunkt. Tuleb mängida paremalt, eksimusel DZ ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 4,
+      "distance_m": 170,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 97,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 5,
+      "distance_m": 247,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 188,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 4,
+      "distance_m": 200,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 111,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 126,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 106,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 4,
+      "distance_m": 195,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 99,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 78,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 5,
+      "distance_m": 270,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

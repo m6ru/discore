@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Lindi discgolfipark",
+    "location": "Lindi, Pärnumaa, Estonia",
+    "slug": "lindi-discgolfipark",
+    "lat": 58.335372287112,
+    "lng": 24.255994982803,
+    "details": "Lindi Vana Kooli kohviku juures asuv 9 korviga discgolfipark.\n\nAmenities: Kohvik",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/lindi-discgolfipark/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 28,
+    "total_distance_m": 880,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 100,
+      "notes": "Kohustuslik rajapunkt (M), mängida keskelt. Eksimusele järgmine vise Drop Zone-st (DZ) ning karistus +1 viset. OB otse ees märgitud ala. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 105,
+      "notes": "OB paremal märgitud ala. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 103,
+      "notes": "OB korvi taga märgitud ala. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 75,
+      "notes": "OB vasakul märgitud ala ja korvi taga asuv aed. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 144,
+      "notes": "Kohustuslik rajapunkt (M), mängida paremalt. Eksimusel järgmine vise Drop Zone-st (DZ) ning karistus +1 viset.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 52,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 59,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 122,
+      "notes": "Kohustuslik rajapunkt (M), mängida vasakult. Eksimusel järgmine vise Drop Zone-st (DZ) ning karistus +1 viset.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 120,
+      "notes": "OB paremal märgitud ala. Tavaline OB reegel.",
+      "hole_map_url": null
+    }
+  ]
+}

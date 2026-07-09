@@ -1,0 +1,156 @@
+{
+  "course": {
+    "name": "Valgehobusemäe discgolfi park",
+    "location": "Valgehobusemäe discgolfi park, Järvamaa, Estonia",
+    "slug": "valgehobusemae-discgolfi-park",
+    "lat": 59.220981374456436,
+    "lng": 25.56367084655767,
+    "details": "Järvamaal Valgehobusemäe suusa- ja puhkekeskuse ümber paiknev 19-korviga discgolfi park, soovitatav pigem edasijõudnutele. Suured kõrguste vahed ja pikad rajad võtavad võhmale ka kõige sportlikuma tegelase teie pundist.\n\nFee: 3 €\n\nAmenities: Kohvik, Majutus, Ketaste laenutus",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/valgehobusemae-discgolfi-park/"
+  },
+  "layout": {
+    "name": "19 korvi",
+    "slug": "19-korvi",
+    "total_par": 63,
+    "total_distance_m": 2351,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 132,
+      "notes": "OB - korvi taga asuv asfaltteega piirnev ala",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 130,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 126,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 105,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 4,
+      "distance_m": 141,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 144,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 97,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 116,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 5,
+      "distance_m": 216,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 95,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 4,
+      "distance_m": 151,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 4,
+      "distance_m": 161,
+      "notes": "OB - korvi taga asuv asfaltteega piirnev ala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 100,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 109,
+      "notes": "OB - korvi taga asuv asfaltteega piirnev ala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 77,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 19,
+      "par": 4,
+      "distance_m": 214,
+      "notes": "OB - paremal ja korvi taga asuv puitaiaga piirnev ala.",
+      "hole_map_url": null
+    }
+  ]
+}

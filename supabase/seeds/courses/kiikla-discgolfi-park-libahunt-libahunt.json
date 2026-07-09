@@ -1,0 +1,107 @@
+{
+  "course": {
+    "name": "Kiikla discgolfipark",
+    "location": "Kiikla, Ida-Virumaa, Estonia",
+    "slug": "kiikla-discgolfi-park-libahunt",
+    "lat": 59.27931138832366,
+    "lng": 27.236491441726685,
+    "details": "Park asub Kiikla asulas ja on mõeldud pigem algajatele, kes veel nii pikki viskeid ei soorita. Pigem avatud park üksikute puudega.\n\nAmenities: Lähedal pood",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/kiikla-discgolfi-park-libahunt/"
+  },
+  "layout": {
+    "name": "Libahunt",
+    "slug": "libahunt",
+    "total_par": 37,
+    "total_distance_m": 940,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 61,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 56,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 4,
+      "distance_m": 160,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 50,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 54,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 73,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 118,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 90,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

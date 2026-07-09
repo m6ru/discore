@@ -1,0 +1,93 @@
+{
+  "course": {
+    "name": "Umbsaare Marjametsa discgolfipark",
+    "location": "Umbsaare Marjametsa, Võrumaa, Estonia",
+    "slug": "umbsaare-marjametsa-discgolfipark",
+    "lat": 57.8174702,
+    "lng": 27.0853558,
+    "details": "Tasuline 10-korviline discgolfipark. Raja alguses väike parkla. Poeta paar eurot parklast üle tee postkasti.\n\nFee: 2 €",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/umbsaare-marjametsa-discgolfipark/"
+  },
+  "layout": {
+    "name": "10 korvi",
+    "slug": "10-korvi",
+    "total_par": 34,
+    "total_distance_m": 991,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 82,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 4,
+      "distance_m": 150,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 95,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 115,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 4,
+      "distance_m": 155,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 4,
+      "distance_m": 120,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Koeru Laaneotsa discgolfipark",
+    "location": "Koeru Laaneotsa, Järvamaa, Estonia",
+    "slug": "laaneotsa-discgolfipark",
+    "lat": 58.965915237197,
+    "lng": 26.001234460669,
+    "details": "Keskmise raskusastmega. Sobib hästi mängijatele, kes soovivad harjutada tunneliviskeid ja täpsust.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/laaneotsa-discgolfipark/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 54,
+    "total_distance_m": 1468,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 95,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 104,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 88,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 74,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 84,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 86,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 86,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 65,
+      "notes": "Hazard OB - kui ketas maandub väljaspool märgitud ala siis järgneb karistus +1. Edasi mängid kohast, kus ketas maandus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 86,
+      "notes": "Kohustuslikud rajapunktid - mängima peab kahe punkti vahelt läbi. Valesti mängimisel karistus +1 ja jätka viskamist DZ'st.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 79,
+      "notes": "Kohustuslikust punktist mängida paremalt poolt, eksimuse korral lisandub karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 105,
+      "notes": "Kohustuslikust punktist mängida paremalt poolt, eksimuse korral liikuda DZ'i ja lisandub karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 60,
+      "notes": "Kohustuslikud rajapunktid - mängima peab kahe punkti vahelt läbi. Valesti mängimisel karistus +1 ja jätka viskamist DZ'st.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 90,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

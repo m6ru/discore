@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Vooremäe discgolfipark",
+    "location": "Vooremäe, Tartumaa, Estonia",
+    "slug": "vooremae-discgolfipark",
+    "lat": 58.2844258,
+    "lng": 26.8917194,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/vooremae-discgolfi-park-b-asetus/"
+  },
+  "layout": {
+    "name": "B Asetus",
+    "slug": "b-asetus",
+    "total_par": 60,
+    "total_distance_m": 2037,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 95,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 4,
+      "distance_m": 165,
+      "notes": "Mando. Eksimuse korral +1. Järgmine vise DZ. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 93,
+      "notes": "Mando. Eksimuse korral +1. Järgmine vise DZ. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 4,
+      "distance_m": 125,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 115,
+      "notes": "Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 4,
+      "distance_m": 185,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 130,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 5,
+      "distance_m": 235,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 90,
+      "notes": "OB saar. Eksimuse korral +1. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 91,
+      "notes": "Avaviske eksimuse korral +1, järgmine vise DZ-st. Edaspidi tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 73,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 97,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 63,
+      "notes": "Kolmekordne mando. Eksimuse korral +1. Järgmine vise DZ.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 4,
+      "distance_m": 150,
+      "notes": "Mando. Eksimuse korral +1. Järgmine vise DZ. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 108,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 77,
+      "notes": "Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 60,
+      "notes": "Kolmekordne mando. Eksimuse korral +1. Järgmine vise DZ.",
+      "hole_map_url": null
+    }
+  ]
+}

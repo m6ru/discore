@@ -1,0 +1,205 @@
+{
+  "course": {
+    "name": "Pühalepa discgolfipark",
+    "location": "Pühalepa, Hiiumaa, Estonia",
+    "slug": "puhalepa-discgolfipark",
+    "lat": 58.98803530000001,
+    "lng": 22.80550519999997,
+    "details": "Pühalepas asuv discgolfipark, Must 26-korviline layout. Saab mängida ka lihtsamat Sinist ja Punast 18-korvilist layouti. Must layout sisaldab kõiki Sinise ja Punase layouti korve.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/puhalepa-discgolfipark-must-26/"
+  },
+  "layout": {
+    "name": "Must 26",
+    "slug": "must-26",
+    "total_par": 85,
+    "total_distance_m": 2741,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 84,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 93,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 90,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 4,
+      "distance_m": 163,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 165,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 103,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 77,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 103,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 4,
+      "distance_m": 169,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 109,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 4,
+      "distance_m": 180,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 4,
+      "distance_m": 191,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 89,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 68,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 63,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 19,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 20,
+      "par": 3,
+      "distance_m": 56,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 21,
+      "par": 3,
+      "distance_m": 105,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 22,
+      "par": 4,
+      "distance_m": 140,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 23,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 24,
+      "par": 4,
+      "distance_m": 168,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 25,
+      "par": 3,
+      "distance_m": 62,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 26,
+      "par": 3,
+      "distance_m": 100,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

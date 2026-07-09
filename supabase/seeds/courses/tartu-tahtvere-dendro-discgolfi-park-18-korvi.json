@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Tartu Tähtvere Dendro discgolfipark",
+    "location": "Tartu Tähtvere Dendro, Tartumaa, Estonia",
+    "slug": "tartu-tahtvere-dendro-discgolfi-park",
+    "lat": 58.3906243540181,
+    "lng": 26.700339317321777,
+    "details": "Peaaegu Tartu kesklinnas, Tähtvere spordipargis asuv 18 korvline discgolfipark.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/tartu-tahtvere-dendro-discgolfi-park/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 57,
+    "total_distance_m": 2062,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 124,
+      "notes": "OB vasakul, paremal ja korvi taga. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 115,
+      "notes": "Rajal mandopuu, mida tuleb mängida vasakult. Eksimuse korral järgnev vise DZ, karistus +1. Lisaks on tähistatud OB ala korvist vasakul, kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 108,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 85,
+      "notes": "OB korvist paremal, kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 81,
+      "notes": "Rajal mandopuu, mida tuleb mängida vasakult, eksimuse korra re-tii ning karistus +1. Lisaks on OB raja vasak äär, kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 4,
+      "distance_m": 174,
+      "notes": "OB paremal, vasakul ja korvi taga. Kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 4,
+      "distance_m": 178,
+      "notes": "OB paremal, vasakul ja korvi taga. Kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 112,
+      "notes": "OB paremal, kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 118,
+      "notes": "OB vasakul, kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 123,
+      "notes": "OB paremal, vasakul ja korvi taga. Kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 98,
+      "notes": "OB vasaul, kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 4,
+      "distance_m": 198,
+      "notes": "OB paremal, vasakul ja korvi taga. Kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 101,
+      "notes": "OB paremal, kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 113,
+      "notes": "OB paremal ja korvi taga, kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 71,
+      "notes": "Saarerada - avaviskest peab ketas jõudma tähistatud mängualasse. Eksimuse korral järgmine vise DZ, karistus +1. Edasi kehtib tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 64,
+      "notes": "Rajal mandopuu, mida tuleb mängida paremalt. Eksimuse korral re-tii ning karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 107,
+      "notes": "OB vasakul, kehtib tavaline OB reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 92,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

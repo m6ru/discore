@@ -1,0 +1,107 @@
+{
+  "course": {
+    "name": "Märjamaa discgolfipark",
+    "location": "Märjamaa, Raplamaa, Estonia",
+    "slug": "marjamaa-discgolfipark",
+    "lat": 58.9055,
+    "lng": 24.424917,
+    "details": "Rada asub kooli kõrval enamjaolt avatud väljakul. Radade pikkused on vahemikus 48 kuni 90 meetrit ning seal on erinevaid mandosid, OB-sid ja üks saare rada.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/marjamaa-discgolfipark/"
+  },
+  "layout": {
+    "name": "12 korvi",
+    "slug": "12-korvi",
+    "total_par": 36,
+    "total_distance_m": 784,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 50,
+      "notes": "OB staadion paremal",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 74,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 53,
+      "notes": "Topeltmando: post vasakul ja elektriliin üleval",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 68,
+      "notes": "Topeltmando - vise kahe puu vahelt",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 90,
+      "notes": "Mando - puu paremal",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 75,
+      "notes": "Mando - post paremal",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 50,
+      "notes": "Saar - iga vise mis ei maandu saarele on +1 vise. Järgmine vise ketta maandumise asukohast",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 48,
+      "notes": "Topeltmando - vise kahe puu vahelt",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

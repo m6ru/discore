@@ -1,0 +1,65 @@
+{
+  "course": {
+    "name": "Audru Kooli discgolfipark",
+    "location": "Audru Kooli, Pärnumaa, Estonia",
+    "slug": "audru-kooli-discgolfi-park",
+    "lat": 58.421259,
+    "lng": 24.3139363,
+    "details": "Lühikene alustava mängija sõbralik 6 korviga rada Audru koolimaja vahetus läheduses.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/audru-kooli-discgolfi-park/"
+  },
+  "layout": {
+    "name": "6 korvi",
+    "slug": "6-korvi",
+    "total_par": 18,
+    "total_distance_m": 331,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 59,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 59,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 54,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 45,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 54,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

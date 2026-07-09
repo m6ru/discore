@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Valuoja Rotary kettagolfipark",
+    "location": "Valuoja Rotary kettagolfipark, Viljandimaa, Estonia",
+    "slug": "valuoja-rotary-kettagolfipark",
+    "lat": 58.363803216663,
+    "lng": 25.586820402447,
+    "details": "Viljandi kesklinnas asuvas Valuoja orus 18.korviline discgolfirada paljude väljakutsetega.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/valuoja-rotary-kettagolfipark/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 57,
+    "total_distance_m": 1542,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 82,
+      "notes": "Oja on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 59,
+      "notes": "Autotee ja oja on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 88,
+      "notes": "Oja ja kõnnitee on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 86,
+      "notes": "Tiik, oja ja kõnnitee on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 79,
+      "notes": "Kõnnitee on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 89,
+      "notes": "Mando eksimisel kordusvise ja +1. Kõnnitee on OB.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 80,
+      "notes": "Kõnnitee on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 4,
+      "distance_m": 158,
+      "notes": "Kõnnitee, kivimüür ja oja on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 146,
+      "notes": "Tiik ja oja on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 94,
+      "notes": "Korvi taga kõnnitee on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 44,
+      "notes": "Mando eksimisel korduvvise ja +1. Kõnnitee on OB.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 82,
+      "notes": "Kõnnitee on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 4,
+      "distance_m": 139,
+      "notes": "Tiik, oja ja kõnnitee on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 72,
+      "notes": "Oja ja kõnnitee on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 65,
+      "notes": "Oja ja tiik on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 45,
+      "notes": "Oja ja tiik on OB",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 74,
+      "notes": "Topeltmando. Eksimisel Dropzone ja +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 60,
+      "notes": "Saarerada. Eksimisel Dropzone ja +1.",
+      "hole_map_url": null
+    }
+  ]
+}

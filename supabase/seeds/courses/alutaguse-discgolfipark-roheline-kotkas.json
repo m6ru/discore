@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Alutaguse discgolfipark",
+    "location": "Alutaguse, Ida-Virumaa, Estonia",
+    "slug": "alutaguse-discgolfipark",
+    "lat": 59.291856,
+    "lng": 27.5612171,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/alutaguse-discgolfipark-roheline-kotkas/"
+  },
+  "layout": {
+    "name": "Roheline Kotkas",
+    "slug": "roheline-kotkas",
+    "total_par": 29,
+    "total_distance_m": 687,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 65,
+      "notes": "OB vasakul ja üle selle",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 63,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 82,
+      "notes": "OB vasakul asfalttee ja üle selle",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 84,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 76,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 51,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 5,
+      "distance_m": 130,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 69,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

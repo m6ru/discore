@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Jõulumäe discgolfipark",
+    "location": "Jõulumäe, Pärnumaa, Estonia",
+    "slug": "joulumae-discgolfi-park",
+    "lat": 58.22362700000001,
+    "lng": 24.515734000000066,
+    "details": "Pärnu lähedal Jõulumäel asuvas discgolfi pargis on 3 rada, kollane, punane ja sinine. Sinisel rajal on 9 korvi ja mõeldud pigem algajatele. Rajale minnes kindlasti vaadata Jõulumäe spordikeskuse kodulehele ja veenduda, et seal parasjagu mingit suuremat sündmust ei ole toimumas.\n\nAmenities: Majutus, Ketaste laenutus, WC",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/joulumae-discgolfi-park-sinine/"
+  },
+  "layout": {
+    "name": "Sinine",
+    "slug": "sinine",
+    "total_par": 30,
+    "total_distance_m": 744,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 58,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 84,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 97,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 4,
+      "distance_m": 113,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 61,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 100,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

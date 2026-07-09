@@ -1,0 +1,135 @@
+{
+  "course": {
+    "name": "Käina discgolfipark",
+    "location": "Käina, Hiiumaa, Estonia",
+    "slug": "kaina-discgolfipark",
+    "lat": 58.8315788,
+    "lng": 22.7797544,
+    "details": "Algajasõbralik, kuid samas mitmekülgne discgolfipark Käina kooli lähedal.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/kaina-discgolfipark/"
+  },
+  "layout": {
+    "name": "16 korvi",
+    "slug": "16-korvi",
+    "total_par": 49,
+    "total_distance_m": 1088,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 86,
+      "notes": "OB korvist paremal ja korvi taga - tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 74,
+      "notes": "OB aed paremal - tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 68,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 82,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 146,
+      "notes": "OB aed paremal - tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 69,
+      "notes": "OB aed paremal - tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 55,
+      "notes": "OB aed paremal - tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 60,
+      "notes": "MANDO - mängida vasakult poolt elektriposti. Eksimuse korral +1 ja vise eelmisest kohast. OB sõidutee paremal - tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 43,
+      "notes": "Saarerada - hazard reegel. Iga vise, mis ei jää saarele, lisandub +1. Mängimist jätkatakse sealt, kuhu ketas maandus. OB sõidutee paremal - OB karistus ei rakendu.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 61,
+      "notes": "OB sõidutee paremal - tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 71,
+      "notes": "TOPELTMANDO - eksimuse korral +1 ja vise drop zonest.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 62,
+      "notes": "TOPELTMANDO - eksimuse korral +1 ja vise drop zonest.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 54,
+      "notes": "Kui ketas on maandunud kiviaiale, tuleb järgmist viset teha aia tagant. OB karistus ei rakendu.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 57,
+      "notes": "OB tee paremal - tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 20,
+      "notes": "PUTIRADA - korvi mitte saamise korral liikuda järgmise joone taha ja teha sealt järgmine vise.",
+      "hole_map_url": null
+    }
+  ]
+}

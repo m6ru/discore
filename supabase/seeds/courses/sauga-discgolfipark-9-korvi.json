@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Sauga discgolfipark",
+    "location": "Sauga, Pärnumaa, Estonia",
+    "slug": "sauga-discgolfipark",
+    "lat": 58.4237763,
+    "lng": 24.491041,
+    "details": "Sauga discgolfi park on Pärnu linnapiiril olev 9-korviline rada, mille kogupikkus on 551m. Rajad on üsna lühikesed ja sobivad hästi alustavale mängijale. Rajad on üldiselt ääristatud kraavidega ning kohati puuduvad sillad jõudmaks järgmisele tiialale. Pargi kõrval puudub parkimine.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/sauga-discgolfipark/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 27,
+    "total_distance_m": 551,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 88,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 41,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 50,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 63,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 52,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

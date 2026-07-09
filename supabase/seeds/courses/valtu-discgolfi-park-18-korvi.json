@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Valtu discgolfipark",
+    "location": "Valtu, Raplamaa, Estonia",
+    "slug": "valtu-discgolfi-park",
+    "lat": 58.96229657161699,
+    "lng": 24.837255477905273,
+    "details": "Amenities: Ketaste laenutus, Ketaste müük, WC, Majutus",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/valtu-discgolfi-park/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 54,
+    "total_distance_m": 1363,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 55,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 52,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 100,
+      "notes": "Mandi elektripostist vasakult. Eksimuse korral lisandub +1 vise ning järgmine vise elektriposti alt Drop Zonest (DZ). OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 65,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 78,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 71,
+      "notes": "Triple-Mando elektriposti alt läbi. Eksimuse korral karistuseks +1 ning järgmine vise DropZonest (DZ). OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 52,
+      "notes": "OBd märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 68,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 82,
+      "notes": "Mando valgustuspostist paremalt. Eksimuse korral lisandub +1 vise ning järgmine vise valgustusposti alt Drop Zonest (DZ). OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 97,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 85,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 45,
+      "notes": "Saare rada. Esimene vise peab jääma saarele. Eksimuse korral lisandub +1 vise ning järgmine vise männi kõrvalt Drop Zonest (DZ). OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 86,
+      "notes": "Mando kolmest kasest vasakult. Eksimuse korral lisandub +1 ning järgmine vise kaskede kõrvalt DropZonest (DZ).",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 69,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 126,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 88,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 64,
+      "notes": "OB-d märgitud kaardil.",
+      "hole_map_url": null
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Iisaku discgolfipark",
+    "location": "Iisaku, Ida-Virumaa, Estonia",
+    "slug": "iisaku-discgolfipark",
+    "lat": 59.095264,
+    "lng": 27.312013,
+    "details": "Iisaku Gümnaasiumi juures asuv discgolfipark.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/iisaku-discgolfipark-tark-orav/"
+  },
+  "layout": {
+    "name": "Tark orav",
+    "slug": "tark-orav",
+    "total_par": 27,
+    "total_distance_m": 563,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 35,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 57,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 76,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 50,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 122,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 54,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 42,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

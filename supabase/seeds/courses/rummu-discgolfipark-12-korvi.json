@@ -1,0 +1,107 @@
+{
+  "course": {
+    "name": "Rummu discgolfipark",
+    "location": "Rummu, Harjumaa, Estonia",
+    "slug": "rummu-discgolfipark",
+    "lat": 59.2273404,
+    "lng": 24.196036,
+    "details": "Rummu karjääris asub 12 korviga alustavale mängijale sobilik discgolfipark.\n\nFee: 5 €\n\nAmenities: Rand karjääri ääres, Riietuskabiinid, Rannakohvik erinevate karastavate jookide, jäätise ja toitudega (suvehooajal), Riiuliraamatukogu millelt saad päevaks lugemist laenutada (suvehooajal), Telkimisala, Veepark (suvehooajal), Ujumisvõimalus omal vastutusel, Matk mäkke omal vastutusel, Võimalus osa võtta Murru vangla ekskursioonist",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/rummu-discgolfipark/"
+  },
+  "layout": {
+    "name": "12 korvi",
+    "slug": "12-korvi",
+    "total_par": 36,
+    "total_distance_m": 758,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 45,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 62,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 78,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 77,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 76,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 50,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 45,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 58,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

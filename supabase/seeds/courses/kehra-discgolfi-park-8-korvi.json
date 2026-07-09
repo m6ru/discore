@@ -1,0 +1,79 @@
+{
+  "course": {
+    "name": "Kehra discgolfi park",
+    "location": "Kehra discgolfi park, Harjumaa, Estonia",
+    "slug": "kehra-discgolfi-park",
+    "lat": 59.3300473,
+    "lng": 25.3394372,
+    "details": "Park sobib hästi algajatele ja lastele. Park asub looduskaunis kohas, Jägala jõe ääres.\n\nAmenities: Parkla, Ujumiskoht, Süüa saab Kohvik Sohvikust",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/kehra-discgolfi-park/"
+  },
+  "layout": {
+    "name": "8 korvi",
+    "slug": "8-korvi",
+    "total_par": 24,
+    "total_distance_m": 435,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 62,
+      "notes": "OB raja vasakul ja paremal ning korvi taga. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 46,
+      "notes": "OB saar, esimesel viskel eksides liigud DropZone-i ja tulemusele lisandub +1. Edasi tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 70,
+      "notes": "Rajal kohustuslikud rajapunktid, millede vahelt tuleb läbi mängida. Eksimise korradl liigud DropZone-i ja tulemusele lisandub +1",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 48,
+      "notes": "OB korvi taga. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 43,
+      "notes": "OB vasakul. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 43,
+      "notes": "OB vasakul ja korvi taga. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 68,
+      "notes": "OB paremal. Tavaline OB reegel",
+      "hole_map_url": null
+    }
+  ]
+}

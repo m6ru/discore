@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Lohusuu discgolfipark",
+    "location": "Lohusuu, Jõgevamaa, Estonia",
+    "slug": "lohusuu-discgolfipark",
+    "lat": 58.9525534,
+    "lng": 27.0453645,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/lohusuu-discgolfipark-lendhaug/"
+  },
+  "layout": {
+    "name": "Lendhaug",
+    "slug": "lendhaug",
+    "total_par": 27,
+    "total_distance_m": 690,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 70,
+      "notes": "OB paremal auto tee ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 92,
+      "notes": "OB vasakul auto tee ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 69,
+      "notes": "OB vasakul auto tee ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 78,
+      "notes": "OB korvi taga auto tee ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 75,
+      "notes": "OB paremal auto tee ja üle selle.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 55,
+      "notes": "Mandovärav-kohustulik värav, millest tuleb läbi mängida. Eksimise korral järgmine vise Drop Zone ja lisandub üks karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 114,
+      "notes": "OB tähistatud ala paremal ja korvi taga.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 70,
+      "notes": "Mando-kohustuslik rajapunkt. Tuleb mängida vasakult. eksimuse korral Drop zone ja lisandub üks karistusvise. OB vasakul auto tee ja üle selle.",
+      "hole_map_url": null
+    }
+  ]
+}

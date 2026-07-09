@@ -1,0 +1,72 @@
+{
+  "course": {
+    "name": "Metsapoole discgolfi park",
+    "location": "Metsapoole discgolfi park, Pärnumaa, Estonia",
+    "slug": "metsapoole-discgolfi-park",
+    "lat": 57.904144,
+    "lng": 24.3762998,
+    "details": "Rada kulgeb ümber põhikooli hoonete, üle selle staadioni ja läbi lähedalasuva metsatuka.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/metsapoole-discgolfi-park/"
+  },
+  "layout": {
+    "name": "7 korvi",
+    "slug": "7-korvi",
+    "total_par": 22,
+    "total_distance_m": 443,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 52,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 54,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 4,
+      "distance_m": 111,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 58,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 48,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

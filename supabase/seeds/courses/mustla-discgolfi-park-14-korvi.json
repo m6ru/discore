@@ -1,0 +1,121 @@
+{
+  "course": {
+    "name": "Mustla discgolfipark",
+    "location": "Mustla, Viljandimaa, Estonia",
+    "slug": "mustla-discgolfi-park",
+    "lat": 58.231155069234724,
+    "lng": 25.87302803993225,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/mustla-discgolfi-park/"
+  },
+  "layout": {
+    "name": "14 korvi",
+    "slug": "14-korvi",
+    "total_par": 45,
+    "total_distance_m": 1224,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 65,
+      "notes": "Kohustuslik rajapunkt värav, kust tuleb läbi mängida. Väravast mööda visates tuleb minna Dropzone +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 83,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 100,
+      "notes": "Kummimati rajapoolne serv on OB-joon. 1. raja 10 meetri ring on OB-ala. Normaalne OB-reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 60,
+      "notes": "OB-saar. Kui esimese viskega saarele ei saa, jätkatakse Dropzone+1. Edasi tavaline OB-reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 50,
+      "notes": "Kui avavise lõpetab OB-s siis tuleb jätkata Dropzone+1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 80,
+      "notes": "Laululava tabamine +1. Mängida edasi sealt kus ketas maandus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 53,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 85,
+      "notes": "Rajal kohustuslik rajapunkt (puu), millest tuleb vasakult mööda mängida.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 130,
+      "notes": "Rajal kohustuslik rajapunkt (puu), millest tuleb mööda mängida vasakult. Eksides tuleb jätkata Dropzone +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 4,
+      "distance_m": 155,
+      "notes": "Maja tabamine on +1. Mängida edasi sealt kus ketas maandus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 4,
+      "distance_m": 140,
+      "notes": "Aed korvi taga ja paremal on OB. Edasi normaalne OB-reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 65,
+      "notes": "OB on aed paremal ja autotee vasakul.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 91,
+      "notes": "Paremal olev aed on OB. Normaalne OB-reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 67,
+      "notes": "Paremal aed ja asfalt korvi taga on OB. Normaalne OB-reegel.",
+      "hole_map_url": null
+    }
+  ]
+}

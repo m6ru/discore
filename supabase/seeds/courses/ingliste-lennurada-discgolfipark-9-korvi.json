@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Ingliste Lennurada discgolfipark",
+    "location": "Ingliste Lennurada, Raplamaa, Estonia",
+    "slug": "ingliste-lennurada-discgolfipark",
+    "lat": 59.0180858,
+    "lng": 24.9459802,
+    "details": "Ingliste mõisapargis, Keila jõe kaldal asetsev 9 korviline discgolfipark. Kettaid võimalik laenutada Ingliste Raamatukogust mõne euro eest.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/ingliste-lennurada-discgolfipark/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 27,
+    "total_distance_m": 823,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 111,
+      "notes": "OB sõidutee paremal ja jõgi vasakul,tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 52,
+      "notes": "OB jõgi vasakul, sõidutee korvi taga ja paremal, mudatiik paremal,tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 75,
+      "notes": "OB sõidutee vasakul, tavaline OB reegel,paremal hoonete tabamisel, karistus +1 ja mängid sealt kuhu ketas maandus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 81,
+      "notes": "OB tiik , eksimisel DZ tiigi taga keset fairwayd.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 91,
+      "notes": "OB, sõidutee korvi taga, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 116,
+      "notes": "OB, korvi ees olev mängu kast , tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 126,
+      "notes": "OB korvi taga sõidutee, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 81,
+      "notes": "OB vasakul, tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 90,
+      "notes": "Kohustuslik rajapunkt, millest tuleb mööda mängida vasakult, eksimisel ree-tee.OB jõgi vasakul ja laululava paremal, tavaline OB reegel.",
+      "hole_map_url": null
+    }
+  ]
+}

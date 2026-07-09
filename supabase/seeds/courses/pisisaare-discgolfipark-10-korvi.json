@@ -1,0 +1,93 @@
+{
+  "course": {
+    "name": "Pisisaare discgolfipark",
+    "location": "Pisisaare, Jõgevamaa, Estonia",
+    "slug": "pisisaare-discgolfipark",
+    "lat": 58.721913995903,
+    "lng": 25.959708026538,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/pisisaare-discgolfipark/"
+  },
+  "layout": {
+    "name": "10 korvi",
+    "slug": "10-korvi",
+    "total_par": 31,
+    "total_distance_m": 761,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 65,
+      "notes": "Rajal topelt mando, mängida kahe vahelt. Eksimuse korral DZ, karistus +1. Rajal on OB ala korvist paremal ja korvi taga. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 56,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 56,
+      "notes": "Mando, mida tuleb mängida paremalt. Eksimuse korral DZ, karistus +1",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 4,
+      "distance_m": 142,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 78,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 75,
+      "notes": "Mando, mida tuleb mängida paremalt. Eksimuse korral DZ karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 93,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 60,
+      "notes": "Saarerada, eksimuse korral re-tee. Kui juba kolmas vise ei ole maandunud saarel liigu edasi dropzone´i ja tee sealt neljas vise. DZ visates kehtib tavaline OB-reegel.",
+      "hole_map_url": null
+    }
+  ]
+}

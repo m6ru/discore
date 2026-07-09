@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Sportland Kõrvemaa discgolfipark",
+    "location": "Sportland Kõrvemaa, Harjumaa, Estonia",
+    "slug": "korvemaa-discgolfipark",
+    "lat": 59.31769960897987,
+    "lng": 25.652732849121094,
+    "details": "Sportland Kõrvemaa Matka- ja Suusakeskuses ootavad sind põnevad discgolfi rajad igale vanusele ja igale mängijale. Keskusest saab alguse 1 – 18 korviga Sportland Kõrvemaa harrastajate rada ning väljakutsuvam 21 korviga Prodigy Kõrvemaa rada. Rajad on mitmekülgsed ja sobivad nii algajale, harrastajale kui ka kogenenud mängijale. Rajatasu 3,5€ inimene- tasumine kohvikus või mobiiliga. Mobiiliga tasumise juhis rajakaardi juures. Keskuses on müügil ka hea valik discgolfi varustust. Samuti saab varustust rentida. Kontaknumber: 5246628 Kodulehelkülg: www.sportlandkorvemaa.ee\n\nFee: 3.5 €\n\nAmenities: Kohvik, Ketaste müük, Majutus",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/korvemaa-discgolfi-park-harrastajad/"
+  },
+  "layout": {
+    "name": "Harrastajate rada",
+    "slug": "harrastajad",
+    "total_par": 57,
+    "total_distance_m": 1568,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 4,
+      "distance_m": 122,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 99,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 89,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 77,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 82,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 84,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 72,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 94,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 4,
+      "distance_m": 116,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 77,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 4,
+      "distance_m": 127,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 73,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

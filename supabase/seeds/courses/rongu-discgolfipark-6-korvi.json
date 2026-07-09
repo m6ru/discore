@@ -1,0 +1,65 @@
+{
+  "course": {
+    "name": "Rõngu discgolfipark",
+    "location": "Rõngu, Tartumaa, Estonia",
+    "slug": "rongu-discgolfipark",
+    "lat": 58.149016,
+    "lng": 26.246389,
+    "details": "6 korviline discgolfirada Rõngu Keskkooli territooriumil.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/rongu-discgolfipark/"
+  },
+  "layout": {
+    "name": "6 korvi",
+    "slug": "6-korvi",
+    "total_par": 18,
+    "total_distance_m": 316,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 36,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 61,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 47,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 68,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 34,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

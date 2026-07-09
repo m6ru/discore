@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Järvakandi discgolfipark",
+    "location": "Järvakandi, Raplamaa, Estonia",
+    "slug": "jarvakandi-discgolfi-park",
+    "lat": 58.775285936641254,
+    "lng": 24.802494499414024,
+    "details": "Järvakandi terviserajal asuv 18-korviga discgolfi park. Rada kulgeb mööda 3km jooksurada, mida ümbritseb männi- ja segamets. Rajal on kitsaid ning pikki metsavahe lõike, kui ka avaraid kohti, kus on võimalik pikkasid distantse visata. Mitmes kohas mängivad kõrguste vahed. Rajal on üks veetakistus. Rada on raskusastmelt pigem raske.\n\nAmenities: Pesemisvõimalused Järvakandi võimlas - tasuline., Saun samas tellimise peale - tasuline., Ketaste laenutus, Ööbimine, kaks kohvikut alevis.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/jarvakandi-discgolfi-park/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 66,
+    "total_distance_m": 2660,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 4,
+      "distance_m": 219,
+      "notes": "OB - märgitud ala vasakul",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 100,
+      "notes": "Kohustuslik rajapunkt, mööduda paremalt, eksimisel +1 ja DZ.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 4,
+      "distance_m": 138,
+      "notes": "OB - märgitud ala vasakul",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 4,
+      "distance_m": 176,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 4,
+      "distance_m": 178,
+      "notes": "OB - märgitud ala vasakul ja paremal",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 126,
+      "notes": "OB - märgitud ala vasakul ja paremal",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 117,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 4,
+      "distance_m": 149,
+      "notes": "OB - märgitud ala paremal",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 103,
+      "notes": "Esimene vise tuleb esimesest väravast läbi mängida. Ebaõnnesyumisel jätkake värava joonelt (DZ), lisandub üks vise (+1). OB - ümbritseb kogu mänguala.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 91,
+      "notes": "Saar, hazard reegel. Kui ketas ei maandu peale viske sooritamist ala sees, mis on märgitud ümber korvi, lisandub +1. Reegel kehtib peale iga viske sooritamist. 9. raja OB siin rajal ei kehti.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 4,
+      "distance_m": 185,
+      "notes": "OB - märgitud ala vasakul",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 4,
+      "distance_m": 137,
+      "notes": "OB - märgitud ala vasakul",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 4,
+      "distance_m": 143,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 4,
+      "distance_m": 186,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 4,
+      "distance_m": 155,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 104,
+      "notes": "OB - tiik, vette maandudes lisandub +1 ning vise dropzone'st. Võib minna kohe vabatahtlikult DZ joonele ning alustada 3. viskega.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 4,
+      "distance_m": 189,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 4,
+      "distance_m": 164,
+      "notes": "OB - märgitud ala",
+      "hole_map_url": null
+    }
+  ]
+}

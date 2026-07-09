@@ -1,0 +1,121 @@
+{
+  "course": {
+    "name": "Voore discgolfipark",
+    "location": "Voore, Jõgevamaa, Estonia",
+    "slug": "voore-discgolfipark",
+    "lat": 58.7185783,
+    "lng": 26.7486298,
+    "details": null,
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/voore-discgolfipark/"
+  },
+  "layout": {
+    "name": "14 korvi",
+    "slug": "14-korvi",
+    "total_par": 43,
+    "total_distance_m": 1212,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 60,
+      "notes": "OB vasakul, paremal ja korvi taga. Avaviskel OB-sse sattudes jätka mängu DZ-ist, karistus +1. Edasi kehtib tava OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 76,
+      "notes": "Mando, mida tuleb mängida vasakult. Eksimuse korral DZ +1 karistus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 84,
+      "notes": "Saarerada, eksimuse korral kehtib hazard reegel, karistus +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 86,
+      "notes": "OB on vesi ja korvi taga olev võsa. Tava OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 79,
+      "notes": "Vesi on OB, tava OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 85,
+      "notes": "Vesi ja korvist vasakul asuv võsa on OB, tava OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 92,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 88,
+      "notes": "Vesi on OB, tava OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 147,
+      "notes": "Vesi on OB, tava OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 80,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 108,
+      "notes": "Vesi on OB, tava OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 85,
+      "notes": "Vesi on OB, tava OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 68,
+      "notes": "Vesi on OB, tava OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 74,
+      "notes": "Vesi on OB, tava OB reegel.",
+      "hole_map_url": null
+    }
+  ]
+}

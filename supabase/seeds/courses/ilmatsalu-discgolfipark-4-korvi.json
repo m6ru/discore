@@ -1,0 +1,51 @@
+{
+  "course": {
+    "name": "Ilmatsalu discgolfipark",
+    "location": "Ilmatsalu, Tartumaa, Estonia",
+    "slug": "ilmatsalu-discgolfipark",
+    "lat": 58.390915,
+    "lng": 26.554744,
+    "details": "Ilmatsalu Noortekeskuse ümber paiknev 4-korviline discgolfirada",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/ilmatsalu-discgolfipark/"
+  },
+  "layout": {
+    "name": "4 korvi",
+    "slug": "4-korvi",
+    "total_par": 11,
+    "total_distance_m": 199,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 2,
+      "distance_m": 27,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 47,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

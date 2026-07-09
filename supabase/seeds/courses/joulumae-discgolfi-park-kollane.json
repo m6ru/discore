@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Jõulumäe discgolfipark",
+    "location": "Jõulumäe, Pärnumaa, Estonia",
+    "slug": "joulumae-discgolfi-park",
+    "lat": 58.22326879999999,
+    "lng": 24.516868499999987,
+    "details": "Pärnu lähedal Jõulumäel asuvas discgolfipargis on 3 rada, kollane, punane ja sinine. Kollasel rajal on 18 korvi ja ringi läbi mängimine võtab selja märjaks ka kogenumal mängijal. Rajale minnes kindlasti vaadata Jõulumäe spordikeskuse kodulehele ja veenduda, et seal parasjagu mingit suuremat sündmust ei ole toimumas.\n\nAmenities: Majutus, Ketaste laenutus, WC, EDGL Karikasari 2022 Caddy Book",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/joulumae-discgolfi-park-kollane/"
+  },
+  "layout": {
+    "name": "Kollane",
+    "slug": "kollane",
+    "total_par": 64,
+    "total_distance_m": 2584,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 90,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 4,
+      "distance_m": 210,
+      "notes": "Kohustusliku rajapunktiga eksimise korral sooritada uus vise sama koha pealt.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 5,
+      "distance_m": 222,
+      "notes": "Kohustusliku rajapunktiga eksimise korral jätkata mängu Drop Zone joonelt.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 4,
+      "distance_m": 184,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 122,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 99,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 107,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 111,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 102,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 4,
+      "distance_m": 199,
+      "notes": "Kohustusliku rajapunktiga eksimise korral jätkata mängu Drop Zone joonelt.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 103,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 109,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 4,
+      "distance_m": 179,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 5,
+      "distance_m": 237,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 102,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 113,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 5,
+      "distance_m": 211,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 84,
+      "notes": "Kohustusliku rajapunktiga eksimise korral jätkata mängu Drop Zone joonelt.",
+      "hole_map_url": null
+    }
+  ]
+}

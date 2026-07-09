@@ -1,0 +1,93 @@
+{
+  "course": {
+    "name": "Maarjamäe discgolfi park",
+    "location": "Maarjamäe discgolfi park, Harjumaa, Estonia",
+    "slug": "maarjamae-discgolfipark",
+    "lat": 59.45252465446006,
+    "lng": 24.84734058380127,
+    "details": "Tallinna kesklinnast kümne minuti kaugusel asuv 10 korviga meeldiv vahepala päevitamisele Pirita rannas. Soovitatav algajatele",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/maarjamae-discgolfipark/"
+  },
+  "layout": {
+    "name": "10 korvi",
+    "slug": "10-korvi",
+    "total_par": 30,
+    "total_distance_m": 662,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 71,
+      "notes": "OB - asfaltkattega tee",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 52,
+      "notes": "OB - märgitud korvi taga. Kohustuslik rajapunkt, mööduda vahelt, eksimusel vise viimasest kohast uuesti ning lisandub 1 karistusvise.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 62,
+      "notes": "OB - märgitud raja paremas ääres",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 80,
+      "notes": "OB - märgitud raja vasakul ning paremal",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 115,
+      "notes": "OB - märgitud raja paremas ääres",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 51,
+      "notes": "Peab viskama esimesega saarele, kui ei viska siis DZ, edasi tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 50,
+      "notes": "OB - märgitud ala vasakul",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 50,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 76,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 55,
+      "notes": "OB - märgitud ala vasakul",
+      "hole_map_url": null
+    }
+  ]
+}

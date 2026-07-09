@@ -1,0 +1,107 @@
+{
+  "course": {
+    "name": "Liipa Talu discgolfipark",
+    "location": "Liipa Talu, Harjumaa, Estonia",
+    "slug": "liipa-talu-discgolfipark",
+    "lat": 59.4188701,
+    "lng": 24.9818932,
+    "details": "Liipa Talu discgolfipark on 12-korviga harrastajasõbralik rada, mis sobib nii alustavale mängijale discgolfiga tutvumiseks kui ka edasijõudnud mängijale täpsuse treenimiseks ja lähenemiste harjutamiseks. Tiialadel on korralikud kunstmurukatted hea haarduvuse saavutamiseks ning korvideks kasutame Rootsi tippbrändi Trainer discgolfikorve. Mitmel korvil on kohustuslikud rajapunktid ehk “mandod”, mis annavad lisaraskust. Korvideni jõudmiseks on nii eestkäe- kui ka tagakäeliinid – mida suurem on viskearsenal, seda kindlakäelisemalt on võimalik võtta ka “birdiesid” ehk läbida korv kahe viskega. Discgolfipargis on mitmeid väljakutseid, et muuta ringi läbimine veelgi põnevamaks. Pool Liipa Talu discgolfipargist asub lagedal ning on kohati tuuline, teine osa aga metsatukas, kus kitsad koridorid ja täpsus on esmatähtis.\n\nFee: 2 €",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/liipa-talu-discgolfipark/"
+  },
+  "layout": {
+    "name": "12 korvi",
+    "slug": "12-korvi",
+    "total_par": 36,
+    "total_distance_m": 761,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 57,
+      "notes": "Rajal on kohustuslik mando, mis tuleb läbida vasakult poolt. Eksimuse korral lisandub tulemusele +1 ning järgmise viske sooritad dropzone'ist.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 42,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 64,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 98,
+      "notes": "Vasak ala on OB. Kui ketas maandub OB-s, siis mängid sealt edasi ja lisandub +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 57,
+      "notes": "Vise peab läbima väravat. Kui eksid väravaga, sis liigud Dropzone'i ja tulemusele lisandub +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 78,
+      "notes": "Rajal on OB jõgi. Kui ketas maandub antud alal, lisandub +1 ja sooritad järgmise viske sealt kuhu ketas maandus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 51,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 40,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 103,
+      "notes": "Rajal on kohustuslik mando, mis tuleb läbida paremalt poolt. Eksimuse korral lisandub tulemusele +1 ning järgmise viske sooritad dropzone'ist.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 51,
+      "notes": "Saarerada. Ketas peab maanduma saarel. Kui saarele ei saa, viskad sealt edasi kus oled ja lisandub +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 65,
+      "notes": "Vise peab läbima mandosid. Kui eksid mandodega, siis liigud dropzone'i ja tulemusele lisandub +1.",
+      "hole_map_url": null
+    }
+  ]
+}

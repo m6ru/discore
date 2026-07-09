@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Paunküla discgolfipark",
+    "location": "Paunküla, Harjumaa, Estonia",
+    "slug": "paunkula-discgolfi-park",
+    "lat": 59.11471939575016,
+    "lng": 25.383095741271973,
+    "details": "Chilli Disc Golfi klubi liikmete poolt disainitud ja rajatud discgolfi park Paunkülas. Park koosneb 18 rajast, mis on paigutatud metsa vahele.\n\nAmenities: Majutus, Saunad, Toitlustus",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/paunkula-discgolfi-park/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 57,
+    "total_distance_m": 1753,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 87,
+      "notes": "Mando - kohustuslik mängida paremalt poolt. Eksimise korral re-tee ja lisandub karistuseks +1",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 4,
+      "distance_m": 94,
+      "notes": "Rajal OB joon, eksimise korral tavaline OB reegel ja lisandub +1",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 71,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 86,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 88,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 82,
+      "notes": "Topelt Mando (kohustus mängida tähistatud puude vahelt), eksimise korral re-tee ja lisandub karistuseks +1. OB-liin peale korvi.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 4,
+      "distance_m": 185,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 118,
+      "notes": "Vasakul ja korvi taga OB, eksimuse korral tavaline OB reegel ja lisandub +1",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 96,
+      "notes": "Mando (kohustuslik mängida paremalt poolt), eksimise korral DZ ja lisandub +1. Taga OB-liin",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 4,
+      "distance_m": 198,
+      "notes": "OB vasakus metsatukas, eksimise korral tavaline OB reegel ja lisandub +1",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 71,
+      "notes": "OB vasakul ja korvi taga, eksimuse korral tavaline OB reegel ja lisandub +1",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 71,
+      "notes": "Esimene vise tuleb visata saarele, saarele mitte saamise korral +1 ja järgmine vise DropZone-st",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 82,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 95,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 84,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 87,
+      "notes": "OB vasakul ja paremal, tavaline OB reegel ja eksimuse korral lisandub +1",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 88,
+      "notes": "OB vasakul, tavaline OB reegel ja eksimuse korral lisandub +1",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 70,
+      "notes": "Triple Mando, eksimise korral DZ ja lisandub karistus +1",
+      "hole_map_url": null
+    }
+  ]
+}

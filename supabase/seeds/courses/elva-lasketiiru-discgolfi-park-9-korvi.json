@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Elva Lasketiiru discgolfi park",
+    "location": "Elva Lasketiiru discgolfi park, Tartumaa, Estonia",
+    "slug": "elva-lasketiiru-discgolfi-park",
+    "lat": 58.20615799999999,
+    "lng": 26.423597100000052,
+    "details": "9 korviga discgolfi park ilusa Elva männimetsa all, mis sobib nii algajatele kui ka edasijõudnutele. Rajad erinevate pikkuste ja mandodega, mis muudavad mängimise piisavalt atraktiivseks kõigile.\n\nAmenities: Peamaja hoones discgolf ketaste müük ja laenutus. Tervisespordikeskuses võimalik ööbida, pidada üritusi ja võistlusi ning kasutada muid vabaaja ja sportlikke tegevusi.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/elva-lasketiiru-discgolfi-park/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 28,
+    "total_distance_m": 717,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 105,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 56,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 4,
+      "distance_m": 165,
+      "notes": "Rajal on kohustuslik rajapunkt (Mando). Eksimise korral +1 ja dropzone. OB korral tavaline OB reegel ja +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 70,
+      "notes": "Rajal on kohustuslik rajapunkt (Mando). Eksimise korral +1 ja dropzone. Korvi taga olev ree on OB. Tavaline OB reegel ja +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 49,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 67,
+      "notes": "Paremal on OB. Tavaline OB reegel ja +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 68,
+      "notes": "Korvi taga olev autotee on OB. Tavaline OB reegel ja +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 83,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 54,
+      "notes": "Rajal on kohustuslik rajapunkt (Mando). Eksimuse korral +1 ja mängu jätkab dropzonest.",
+      "hole_map_url": null
+    }
+  ]
+}

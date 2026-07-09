@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Põltsamaa Kuningamäe discgolfipark",
+    "location": "Põltsamaa Kuningamäe, Jõgevamaa, Estonia",
+    "slug": "poltsamaa-kuningamae-discgolfipark",
+    "lat": 58.647811,
+    "lng": 25.960901,
+    "details": "Põltsamaal Kuningamäel asub 18 korviga discgolfi rada, kus peab oskusi näitama nii pikematel visetel, kui ka lähestumistel. On avatud radu, metsavahelisi tunneleid, veekogu ja OB-saared. Sobib edasijõundutele ja algajatele.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/poltsamaa-kuningamae-discgolfipark/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 55,
+    "total_distance_m": 1643,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 120,
+      "notes": "OB on asfalt ning ala pärast seda. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 70,
+      "notes": "OB on asfalt ja korvist vasakul. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 80,
+      "notes": "Kohustuslik rajapunkt, millest tuleb mööduda paremalt. Eksimuse korral DropZone ja +1. OB on veekogu ning raja vasak serv. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 86,
+      "notes": "OB on vasakul heki ääres. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 110,
+      "notes": "Korv asub saarel. Eksimuse korral DropZone j +1. Edasi tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 45,
+      "notes": "OB on asfalt heki taga ja ala pärast seda. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 105,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 100,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 95,
+      "notes": "Kohustuslik rajapunkt (värav). Eksimuse korral DropZone ja +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 4,
+      "distance_m": 170,
+      "notes": "OB on paremal. Tavaline Ob reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 75,
+      "notes": "OB on asfalt ning ala pärast seda. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 109,
+      "notes": "OB on asfalt mõlemal pool ja ala pärast seda. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 95,
+      "notes": "OB on asfalt ning ala pärast seda ning kraav. Eksimuse korral DropZone ja +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 101,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 50,
+      "notes": "Kohustuslik rajapunkt, millest tuleb mööduda vasakult. Eksimuse korral re-tee. OB on vasakul kraav ja ala pärast seda. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 80,
+      "notes": "Korv asub saarel. Kui ketas ei maandu saarel kehtib hazardreegel, mängid sealt kus ketas maandus, kuid skoorile lisad +1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 67,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 85,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    }
+  ]
+}

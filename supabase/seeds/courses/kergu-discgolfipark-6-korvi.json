@@ -1,0 +1,65 @@
+{
+  "course": {
+    "name": "Kergu discgolfipark",
+    "location": "Kergu, Pärnumaa, Estonia",
+    "slug": "kergu-discgolfipark",
+    "lat": 58.681053125686,
+    "lng": 24.761581805943,
+    "details": "Algajasõbralik 6 korviga discgolfirada Kergu Kooli kõrval.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/kergu-discgolfipark/"
+  },
+  "layout": {
+    "name": "6 korvi",
+    "slug": "6-korvi",
+    "total_par": 18,
+    "total_distance_m": 313,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 41,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 56,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 53,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 47,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 50,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

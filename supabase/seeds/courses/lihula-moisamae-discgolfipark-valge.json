@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Lihula Mõisamäe discgolfipark – Valge",
+    "location": "Lihula Mõisamäe, Pärnumaa, Estonia",
+    "slug": "lihula-moisamae-discgolfipark",
+    "lat": 58.6932184,
+    "lng": 23.8383574,
+    "details": "Pargiraja kergem asetus. OB'd on asfaltkattega teede mänguala poolne serv ja naaberkinnistute piirdeaiad.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/lihula-moisamae-discgolfipark-valge/"
+  },
+  "layout": {
+    "name": "Valge",
+    "slug": "valge",
+    "total_par": 27,
+    "total_distance_m": 674,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 64,
+      "notes": "Möödu mandost vasakult",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 89,
+      "notes": "Möödu mandost vasakult",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 96,
+      "notes": "OB naaberkinnistu piirdeaed, kui see tekib.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 63,
+      "notes": "Asfaltkattega tee mänguala poolne serv",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 69,
+      "notes": "Asfaltkattega tee mänguala poolne serv",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 87,
+      "notes": "Naaberkinnistu piirdeaed",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 74,
+      "notes": "Asfaltkattega tee mänguala poolne serv, Naaberkinnistu piirdeaed",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 65,
+      "notes": "Asfaltkattega tee mänguala poolne serv",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 67,
+      "notes": "Asfaltkattega tee mänguala poolne serv",
+      "hole_map_url": null
+    }
+  ]
+}

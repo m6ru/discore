@@ -1,0 +1,79 @@
+{
+  "course": {
+    "name": "Kalmetu kooli discgolfipark",
+    "location": "Kalmetu kooli, Viljandimaa, Estonia",
+    "slug": "kalmetu-kooli-discgolfipark",
+    "lat": 58.3896346,
+    "lng": 25.8403573,
+    "details": "Algaja sõbralik discgolfi park Tänassilmas Kalmetu kooli ümbruses.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/kalmetu-kooli-discgolfipark/"
+  },
+  "layout": {
+    "name": "8 korvi",
+    "slug": "8-korvi",
+    "total_par": 24,
+    "total_distance_m": 573,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 63,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 92,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 63,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 51,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 63,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 104,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

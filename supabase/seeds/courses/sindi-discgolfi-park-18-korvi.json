@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Sindi discgolfipark",
+    "location": "Sindi, Pärnumaa, Estonia",
+    "slug": "sindi-discgolfi-park",
+    "lat": 58.40168523402,
+    "lng": 24.640979264733,
+    "details": "Harrastajasõbralik pargirada. Vaheldusrikas - on lagedat, on tunneleid, on nii värava- kui saarerada, kergeid tõuse ja langusi, aga ka üle oru viskeid.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/sindi-discgolfi-park/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 58,
+    "total_distance_m": 1720,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 55,
+      "notes": "Topeltmando - eksimuse korral +1 ja Re-Tee. Jõgi OB - kehtib tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 4,
+      "distance_m": 154,
+      "notes": "Korvi taga ja jõgi OB. Kehtib tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 127,
+      "notes": "Mando - eksimuse korral +1 ja liigud Dropzone'i. Paremal OB - kehtib tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 88,
+      "notes": "OB-liin paremal ja tee vasakul on OB. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 80,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 67,
+      "notes": "Vasakul OB - kehtib tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 84,
+      "notes": "Saarerada - kehtib Hazard'i reegel. Eksimuse korral +1 ja jätkad mängu sealt, kus ketas maandus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 98,
+      "notes": "Korvi taga OB - kehtib tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 110,
+      "notes": "Mando eksimuse korral +1 ja liigud Dropzone'i.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 83,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 4,
+      "distance_m": 139,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 78,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 4,
+      "distance_m": 180,
+      "notes": "Mando eksimuse korral +1 ja liigud Dropzone'i. Tee paremal ja kraav vasakul on OB. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 77,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 82,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 87,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 64,
+      "notes": "Väravarada - triple mando. Eksimuse korral +1 ja liigud Dropzone'i",
+      "hole_map_url": null
+    }
+  ]
+}

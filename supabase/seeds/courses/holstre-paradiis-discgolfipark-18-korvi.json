@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Holstre Paradiis discgolfipark",
+    "location": "Holstre Paradiis, Viljandimaa, Estonia",
+    "slug": "holstre-paradiis-discgolfipark",
+    "lat": 58.2749249,
+    "lng": 25.6826362,
+    "details": "Maalilise loodusega Paradiis Discgolfpark oma 18 rajaga kutsub mängima Viljandimaale Holstresse. Park on loodud Paradiisi Puhkemaja territooriumile pakkumaks ajaveetmisvõimalust kõigile soovijatele. Mängida saab iga päev va kui puhkemaja on broneeritud. Broneeringute koha näeb infot: www.holstreparadiis.ee\n\nFee: 5 €",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/holstre-paradiis-discgolfipark/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 55,
+    "total_distance_m": 1661,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 4,
+      "distance_m": 143,
+      "notes": "Topelt mando. Vise peab läbima noolte vahelise ala. Eksimisel DZ+1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 107,
+      "notes": "Autotee ja üle selle OB, vesi OB. Eksimisel tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 82,
+      "notes": "Mando puu vasakul, vise peab mööduma õunapuust paremalt. Eksimisel DZ+1.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 74,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 98,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 141,
+      "notes": "Märgistatud OB liin vasakul. Kraav ning kraavi tagune ala OB, vesi OB. Eksimisel tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 109,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 81,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 103,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 61,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 66,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 115,
+      "notes": "Korvi taga asuv kraav ning selle tagune ala OB. Eksimisel tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 77,
+      "notes": "Vesi OB, autotee ja selle tagune ala OB. Paremal kaarvi kaldal kased OB jooneks. Eksimisel tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 87,
+      "notes": "Vesi OB. Eksimisel tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 42,
+      "notes": "Vise peab maanduma märgistatud alas, vastasel juhul tulemusele +1 juurde.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 105,
+      "notes": "Triple mando. Vise peab läbima märgistatud värava, eksimisel DZ+1.",
+      "hole_map_url": null
+    }
+  ]
+}

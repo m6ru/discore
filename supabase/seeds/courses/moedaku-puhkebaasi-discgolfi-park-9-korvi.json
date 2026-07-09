@@ -1,0 +1,86 @@
+{
+  "course": {
+    "name": "Mõedaku puhkebaasi discgolfi park",
+    "location": "Mõedaku puhkebaasi discgolfi park, lääneviru, Estonia",
+    "slug": "moedaku-puhkebaasi-discgolfi-park",
+    "lat": 59.327432198654215,
+    "lng": 26.580219268798828,
+    "details": "Mõedaku Spordibaasis Rakvere külje all asuv 9-korviline Disgolfi park. Esimesed kolm rada looklevad maalilistel muruväljadel, künklikul maa-alal. Neljas kuni kaheksas rada kulgevad ca 10 meetri laiusel metsateel, künklikul maa-alal. 9 rada kulgeb allamäge pikal mäesuusanõlval\n\nAmenities: Majutus, Toitlustus, Saun",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/moedaku-puhkebaasi-discgolfi-park/"
+  },
+  "layout": {
+    "name": "9 korvi",
+    "slug": "9-korvi",
+    "total_par": 28,
+    "total_distance_m": 913,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 143,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 100,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 96,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 65,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 70,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 77,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 67,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 85,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 210,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}

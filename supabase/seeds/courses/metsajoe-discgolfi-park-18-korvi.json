@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Metsajõe discgolfipark",
+    "location": "Metsajõe, Järvamaa, Estonia",
+    "slug": "metsajoe-discgolfi-park",
+    "lat": 58.75882799999999,
+    "lng": 25.339463000000023,
+    "details": "Fee: 2 €",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/metsajoe-discgolfi-park/"
+  },
+  "layout": {
+    "name": "18 korvi",
+    "slug": "18-korvi",
+    "total_par": 55,
+    "total_distance_m": 1985,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 81,
+      "notes": "Kui viskad esimese viske OB-sse, liigud dropzone'i. Edaspidi tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 135,
+      "notes": "OB märgitud ala. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 97,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 129,
+      "notes": "OB märgitud ala. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 73,
+      "notes": "OB märgitud ala. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 112,
+      "notes": "OB kraav. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 100,
+      "notes": "OB märgitud ala. Tavaline OB reegel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 91,
+      "notes": "OB märgitud ala. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 132,
+      "notes": "OB märgitud ala. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 112,
+      "notes": "Saarerada. Kui esimese viskega saarele ei saa +1 ja liigud DropZone'i.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 101,
+      "notes": "OB märgitud ala. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 107,
+      "notes": "OB märgitud ala. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 90,
+      "notes": "OB parem äär. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 4,
+      "distance_m": 198,
+      "notes": "OB parem äär. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 104,
+      "notes": "Paremal ja vasakul on mando. Eksimise korral DZ ja +1. OB märgitud ala. Tavaline OB reegel",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 3,
+      "distance_m": 117,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 116,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 90,
+      "notes": "Triplemando. Eksimise korral +1 ja liigud DropZone'i.",
+      "hole_map_url": null
+    }
+  ]
+}

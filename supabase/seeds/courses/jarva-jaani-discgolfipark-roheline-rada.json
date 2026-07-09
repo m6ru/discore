@@ -1,0 +1,149 @@
+{
+  "course": {
+    "name": "Järva-Jaani discgolfipark",
+    "location": "Järva-Jaani, Järvamaa, Estonia",
+    "slug": "jarva-jaani-discgolfipark",
+    "lat": 59.0339587,
+    "lng": 25.8944803,
+    "details": "Kaheksateistkümne korviga kolme kilomeetri pikkune discgolfi rada harrastajatele Võllaste terviseradadel Järva-Jaanis Järvamaal.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/jarva-jaani-discgolfipark-roheline-rada/"
+  },
+  "layout": {
+    "name": "Roheline rada",
+    "slug": "roheline-rada",
+    "total_par": 59,
+    "total_distance_m": 1568,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 68,
+      "notes": "Kohustuslik rajapunkt: mängida läbi värava. Eksimisel +1 ja DZ värava postide vahel.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 79,
+      "notes": "OB paremal, vasakul ja korvi taga",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 87,
+      "notes": "OB paremal aed. NB! Kuldse raja OB tokid ei kehti!",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 4,
+      "distance_m": 107,
+      "notes": "OB paremal",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 88,
+      "notes": "OB paremal, vasakul ja korvi taga kergliiklustee ja üle selle",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 4,
+      "distance_m": 119,
+      "notes": "Ära viska kui kergliiklusteel on inimesi!",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 74,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 77,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 4,
+      "distance_m": 123,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 4,
+      "distance_m": 126,
+      "notes": "OB fairway teises pooles paremal, vasakul ja korvi taga",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 11,
+      "par": 3,
+      "distance_m": 56,
+      "notes": "Saare rada Hazard reegliga. Hazard alas +1 ja jätkad sealt, kuhu ketas maandus.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 12,
+      "par": 3,
+      "distance_m": 58,
+      "notes": "Erireeglid puuduvad.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 13,
+      "par": 3,
+      "distance_m": 66,
+      "notes": "OB korvi taga.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 14,
+      "par": 3,
+      "distance_m": 76,
+      "notes": "OB paremal, vasakul ja korvi taga",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 15,
+      "par": 3,
+      "distance_m": 78,
+      "notes": "OB vasakul ja korvi taga.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 16,
+      "par": 4,
+      "distance_m": 145,
+      "notes": "OB ümber korvi. NB! Kui ketas on OB, lubavad reeglid tulla järgmiseks viskeks OB mineku kohast korvi joonel kaugemale.",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 17,
+      "par": 3,
+      "distance_m": 75,
+      "notes": "OB paremal ja vasakul",
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 18,
+      "par": 3,
+      "distance_m": 66,
+      "notes": "Saare rada. Kui avavise on OB, siis +1 ja jätkad Drop Zonest. Järgnevatel visetel tavaline OB reegel.",
+      "hole_map_url": null
+    }
+  ]
+}

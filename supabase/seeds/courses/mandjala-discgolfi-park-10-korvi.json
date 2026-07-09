@@ -1,0 +1,93 @@
+{
+  "course": {
+    "name": "Mändjala discgolfipark",
+    "location": "Mändjala, Saaremaa, Estonia",
+    "slug": "mandjala-discgolfi-park",
+    "lat": 58.21599999999999,
+    "lng": 22.332199899999978,
+    "details": "Park asub Mändjala Kämpingus kaunis männikus liivaluidetel Mändjala rannas mere ääres. Suve hooajal saab mängimiseks kettaid laenutada rannabaarist Manjaana. Rada on kõikidele tasuta kasutamiseks aastaringselt.",
+    "terrain_type": null,
+    "difficulty_tier": null,
+    "source_url": "https://www.discgolfirajad.ee/park/mandjala-discgolfi-park/"
+  },
+  "layout": {
+    "name": "10 korvi",
+    "slug": "10-korvi",
+    "total_par": 30,
+    "total_distance_m": 624,
+    "map_url": null,
+    "is_active": true
+  },
+  "holes": [
+    {
+      "hole_number": 1,
+      "par": 3,
+      "distance_m": 55,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 2,
+      "par": 3,
+      "distance_m": 58,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 3,
+      "par": 3,
+      "distance_m": 78,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 4,
+      "par": 3,
+      "distance_m": 63,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 5,
+      "par": 3,
+      "distance_m": 63,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 6,
+      "par": 3,
+      "distance_m": 60,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 7,
+      "par": 3,
+      "distance_m": 62,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 8,
+      "par": 3,
+      "distance_m": 86,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 9,
+      "par": 3,
+      "distance_m": 46,
+      "notes": null,
+      "hole_map_url": null
+    },
+    {
+      "hole_number": 10,
+      "par": 3,
+      "distance_m": 53,
+      "notes": null,
+      "hole_map_url": null
+    }
+  ]
+}
