@@ -3,7 +3,7 @@
 One JSON file per **layout** in `courses/`. Copy `_template.json` when adding a new layout.
 
 - Path: `supabase/seeds/courses/{course-slug}-{layout-slug}.json`
-- Hole data is hand-curated; course name/location often come from a Metrix course URL (see `courseurls.md` at repo root).
+- Hole data is hand-curated from on-course signage and official club materials (see `courseurls.md` at repo root for the workflow).
 - `source_url` is optional in JSON — omitted values are stored as `NULL`.
 - Skip `_template.json` when generating SQL.
 
