@@ -9,13 +9,11 @@ import { loadPlayerCourseStats } from "@/lib/rounds/load-player-stats";
 import { createServerClient } from "@/lib/supabase/server";
 import {
   homeRowMetaClassName,
-  pagePrimaryButtonClassName,
   pageSubtitleClassName,
   pageTitleClassName,
 } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { CourseLayoutPicker } from "./course-layout-picker";
 
 type PageProps = {
@@ -109,20 +107,24 @@ export default async function CourseDetailPage({ params }: PageProps) {
         {headerMeta ? <p className={pageSubtitleClassName}>{headerMeta}</p> : null}
         {courseStats ? (
           <p className={homeRowMetaClassName}>
-            {courseStats.roundsPlayed === 1 ? "1 round here" : `${courseStats.roundsPlayed} rounds here`}
             {formatRoundDate(courseStats.lastPlayedAt)
-              ? ` · last played ${formatRoundDate(courseStats.lastPlayedAt)}`
+              ? `Last played ${formatRoundDate(courseStats.lastPlayedAt)} · `
               : null}
+            Total rounds: {courseStats.roundsPlayed}
           </p>
         ) : null}
       </header>
 
-      <Button asChild className={pagePrimaryButtonClassName}>
-        <Link href={`/courses/${slug}/stats`}>Your stats</Link>
-      </Button>
-
       <section className="space-y-3">
-        <h2 className={sectionHeadingClassName}>Layouts</h2>
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className={sectionHeadingClassName}>Layouts</h2>
+          <Link
+            href={`/courses/${slug}/stats`}
+            className="shrink-0 text-sm font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Your stats
+          </Link>
+        </div>
 
         {layoutsError ? (
           <p className="rounded-lg border bg-muted p-3 text-sm text-muted-foreground">

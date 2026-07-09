@@ -33,14 +33,14 @@ function StatFigure({ label, value, href }: StatFigureProps) {
     return (
       <Link
         href={href}
-        className="block min-w-0 rounded-md px-1 py-0.5 transition-colors hover:bg-background/70"
+        className="block min-w-0 rounded-md px-1 py-0.5 text-center transition-colors hover:bg-background/70"
       >
         {body}
       </Link>
     );
   }
 
-  return <div className="min-w-0 px-1 py-0.5">{body}</div>;
+  return <div className="min-w-0 px-1 py-0.5 text-center">{body}</div>;
 }
 
 type HighlightCalloutProps = {
@@ -101,7 +101,7 @@ export function GlobalStatsSummary({ stats, showMostPlayed = false }: Props) {
 
         {showMostPlayed && stats.mostPlayedLayout ? (
           <HighlightCallout
-            href={`/courses/${stats.mostPlayedLayout.courseSlug}/stats?layout=${stats.mostPlayedLayout.layoutSlug}`}
+            href={`/courses/${stats.mostPlayedLayout.courseSlug}`}
             label="Most played"
             title={stats.mostPlayedLayout.courseName}
             meta={stats.mostPlayedLayout.layoutName}

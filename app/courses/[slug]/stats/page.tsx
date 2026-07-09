@@ -45,9 +45,42 @@ function formatRate(count: number, total: number): string {
 }
 
 function courseSummaryLine(roundsPlayed: number, lastPlayedAt: string | null): string {
-  const roundLabel = roundsPlayed === 1 ? "1 round here" : `${roundsPlayed} rounds here`;
   const lastPlayed = formatRoundDate(lastPlayedAt);
-  return lastPlayed ? `${roundLabel} · last played ${lastPlayed}` : roundLabel;
+  const roundsPart = `Total rounds: ${roundsPlayed}`;
+  return lastPlayed ? `Last played ${lastPlayed} · ${roundsPart}` : roundsPart;
+}
+
+function LayoutPicker({
+  layouts,
+  courseSlug,
+  selectedLayoutId,
+}: {
+  layouts: LayoutOption[];
+  courseSlug: string;
+  selectedLayoutId: string | undefined;
+}) {
+  return (
+    <div className="flex w-full rounded-lg border bg-muted/40 p-1">
+      {layouts.map((layout) => {
+        const isSelected = layout.id === selectedLayoutId;
+
+        return (
+          <Link
+            key={layout.id}
+            href={`/courses/${courseSlug}/stats?layout=${layout.slug}`}
+            className={cn(
+              "flex min-w-0 flex-1 items-center justify-center rounded-md px-2 py-2 text-center text-sm transition-colors",
+              isSelected
+                ? "bg-background font-medium text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <span className="truncate">{layout.name}</span>
+          </Link>
+        );
+      })}
+    </div>
+  );
 }
 
 function pickSelectedLayout(
@@ -73,7 +106,7 @@ function pickSelectedLayout(
 function LayoutStatsBody({ stats }: { stats: PlayerLayoutStats }) {
   const { distribution, holesPlayed } = stats;
   const distributionRows = [
-    ...(distribution.ace > 0 ? [{ key: "ace", label: "Ace", count: distribution.ace }] : []),
+    { key: "ace", label: "Ace", count: distribution.ace },
     ...(distribution.eagle > 0
       ? [{ key: "eagle", label: "Eagle", count: distribution.eagle }]
       : []),
@@ -85,12 +118,12 @@ function LayoutStatsBody({ stats }: { stats: PlayerLayoutStats }) {
 
   return (
     <section className="space-y-3 rounded-lg border px-4 py-3">
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
-        <div>
+      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 [&_dd]:ml-0">
+        <div className="text-center">
           <dt className={homeRowMetaClassName}>Times played</dt>
           <dd className="font-mono text-base font-semibold tabular-nums">{stats.roundsPlayed}</dd>
         </div>
-        <div>
+        <div className="text-center">
           <dt className={homeRowMetaClassName}>Best</dt>
           <dd className="font-mono text-base font-semibold tabular-nums">
             {stats.bestVsPar !== null ? formatVsPar(stats.bestVsPar) : "—"}
@@ -106,7 +139,7 @@ function LayoutStatsBody({ stats }: { stats: PlayerLayoutStats }) {
             </dd>
           ) : null}
         </div>
-        <div>
+        <div className="text-center">
           <dt className={homeRowMetaClassName}>Average</dt>
           <dd className="font-mono text-base font-semibold tabular-nums">
             {stats.avgVsPar !== null ? formatAvgVsPar(stats.avgVsPar) : "—"}
@@ -114,32 +147,32 @@ function LayoutStatsBody({ stats }: { stats: PlayerLayoutStats }) {
         </div>
       </dl>
 
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t pt-3 sm:grid-cols-5">
-        <div>
+      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t pt-3 sm:grid-cols-5 [&_dd]:ml-0">
+        <div className="text-center">
           <dt className={homeRowMetaClassName}>Birdie</dt>
           <dd className="font-mono text-sm font-semibold tabular-nums">
             {formatRate(distribution.birdie, holesPlayed)}
           </dd>
         </div>
-        <div>
+        <div className="text-center">
           <dt className={homeRowMetaClassName}>Par</dt>
           <dd className="font-mono text-sm font-semibold tabular-nums">
             {formatRate(distribution.par, holesPlayed)}
           </dd>
         </div>
-        <div>
+        <div className="text-center">
           <dt className={homeRowMetaClassName}>Bogey</dt>
           <dd className="font-mono text-sm font-semibold tabular-nums">
             {formatRate(distribution.bogey, holesPlayed)}
           </dd>
         </div>
-        <div>
+        <div className="text-center">
           <dt className={homeRowMetaClassName}>Double+</dt>
           <dd className="font-mono text-sm font-semibold tabular-nums">
             {formatRate(distribution.doublePlus, holesPlayed)}
           </dd>
         </div>
-        <div>
+        <div className="text-center">
           <dt className={homeRowMetaClassName}>OB</dt>
           <dd className="font-mono text-sm font-semibold tabular-nums">
             {formatRate(stats.obHolesTotal, holesPlayed)}
@@ -147,9 +180,14 @@ function LayoutStatsBody({ stats }: { stats: PlayerLayoutStats }) {
         </div>
       </dl>
 
-      <div className="grid grid-cols-3 gap-2 border-t pt-3 sm:grid-cols-6">
+      <div
+        className={cn(
+          "grid gap-2 border-t pt-3 justify-items-center text-center",
+          distribution.eagle > 0 ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-5"
+        )}
+      >
         {distributionRows.map((row) => (
-          <div key={row.key} className="min-w-0 text-center">
+          <div key={row.key} className="min-w-0 w-full">
             <p className="truncate text-xs text-muted-foreground">{row.label}</p>
             <p className="font-mono text-sm font-semibold tabular-nums">{row.count}</p>
           </div>
@@ -246,46 +284,24 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
       ) : null}
 
       {!loadError ? (
-        <section className="space-y-2">
-          <h2 className={sectionHeadingClassName}>Layout</h2>
+        <section className="space-y-3">
           {layoutOptions.length === 0 ? (
             <p className={homeRowMetaClassName}>No active layouts for this course.</p>
           ) : (
-            <ul className="space-y-2">
-              {layoutOptions.map((layout) => {
-                const layoutStats = layoutStatsResult.byLayoutId.get(layout.id);
-                const isSelected = selectedLayout?.id === layout.id;
-                const metaParts = [
-                  layoutStats
-                    ? layoutStats.roundsPlayed === 1
-                      ? "1 round"
-                      : `${layoutStats.roundsPlayed} rounds`
-                    : "No rounds",
-                ];
-
-                return (
-                  <li key={layout.id}>
-                    <Link
-                      href={`/courses/${slug}/stats?layout=${layout.slug}`}
-                      className={cn(
-                        "block rounded-lg border px-4 py-3 transition-colors hover:bg-muted/50",
-                        isSelected && "border-primary bg-muted/30"
-                      )}
-                    >
-                      <p className="font-medium">{layout.name}</p>
-                      <p className="mt-0.5 text-sm text-muted-foreground">{metaParts.join(" · ")}</p>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+            <>
+              <h2 className={sectionHeadingClassName}>Layout</h2>
+              <LayoutPicker
+                layouts={layoutOptions}
+                courseSlug={slug}
+                selectedLayoutId={selectedLayout?.id}
+              />
+            </>
           )}
         </section>
       ) : null}
 
       {!loadError && selectedLayout ? (
         <section className="space-y-2">
-          <h2 className={sectionHeadingClassName}>{selectedLayout.name}</h2>
           {selectedStats ? (
             <LayoutStatsBody stats={selectedStats} />
           ) : (
