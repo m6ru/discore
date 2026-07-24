@@ -197,6 +197,131 @@ export async function loadPlayerLayoutStatsForCourse(
   return { byLayoutId, error: null };
 }
 
+export type FinishedRoundPriorRound = {
+  roundId: string;
+  vsPar: number;
+  completedAt: string | null;
+};
+
+/** Personal this-round + layout history for a completed round detail (Stats v2 slice C). */
+export type FinishedRoundContext = {
+  roundId: string;
+  vsPar: number;
+  obHoles: number;
+  holesScored: number;
+  distribution: PlayerStatsDistribution;
+  layoutName: string;
+  layoutSlug: string;
+  courseSlug: string;
+  roundsPlayedOnLayout: number;
+  isNewBest: boolean;
+  bestVsPar: number | null;
+  bestRoundId: string | null;
+  lastRound: FinishedRoundPriorRound | null;
+};
+
+/**
+ * Context for a finished round the current user played.
+ * Returns null when abandoned, no scored holes, or the viewer has no personal row (guest / observer-only).
+ */
+export async function loadFinishedRoundContext(
+  supabase: Client,
+  args: {
+    roundId: string;
+    layoutId: string;
+    courseSlug: string;
+    layoutSlug: string;
+  }
+): Promise<{ context: FinishedRoundContext | null; error: string | null }> {
+  const { roundId, layoutId, courseSlug, layoutSlug } = args;
+
+  const [thisRoundResult, layoutResult, lastRoundResult] = await Promise.all([
+    supabase
+      .from("player_round_stats")
+      .select(
+        "round_id, status, vs_par, ob_holes, holes_scored, layout_name, ace_count, eagle_count, birdie_count, par_count, bogey_count, double_plus_count"
+      )
+      .eq("round_id", roundId)
+      .maybeSingle(),
+    supabase
+      .from("player_layout_stats")
+      .select("rounds_played, best_vs_par, best_round_id, layout_name, layout_slug, course_slug")
+      .eq("layout_id", layoutId)
+      .maybeSingle(),
+    supabase
+      .from("player_round_stats")
+      .select("round_id, vs_par, completed_at")
+      .eq("layout_id", layoutId)
+      .eq("status", "completed")
+      .gt("holes_scored", 0)
+      .neq("round_id", roundId)
+      .order("completed_at", { ascending: false, nullsFirst: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+
+  if (thisRoundResult.error) {
+    return { context: null, error: thisRoundResult.error.message };
+  }
+  if (layoutResult.error) {
+    return { context: null, error: layoutResult.error.message };
+  }
+  if (lastRoundResult.error) {
+    return { context: null, error: lastRoundResult.error.message };
+  }
+
+  const thisRound = thisRoundResult.data;
+  if (
+    !thisRound ||
+    thisRound.status !== "completed" ||
+    !thisRound.holes_scored ||
+    thisRound.vs_par === null
+  ) {
+    return { context: null, error: null };
+  }
+
+  const layout = layoutResult.data;
+  const lastRow = lastRoundResult.data;
+  const bestRoundId = layout?.best_round_id ?? null;
+  const bestVsPar = layout?.best_vs_par ?? null;
+  const isNewBest = bestRoundId === roundId;
+
+  const lastRound: FinishedRoundPriorRound | null =
+    lastRow?.round_id && lastRow.vs_par !== null
+      ? {
+          roundId: lastRow.round_id,
+          vsPar: lastRow.vs_par,
+          completedAt: lastRow.completed_at,
+        }
+      : null;
+
+  return {
+    context: {
+      roundId,
+      vsPar: thisRound.vs_par,
+      obHoles: thisRound.ob_holes ?? 0,
+      holesScored: thisRound.holes_scored,
+      distribution: {
+        ace: thisRound.ace_count ?? 0,
+        eagle: thisRound.eagle_count ?? 0,
+        birdie: thisRound.birdie_count ?? 0,
+        par: thisRound.par_count ?? 0,
+        bogey: thisRound.bogey_count ?? 0,
+        doublePlus: thisRound.double_plus_count ?? 0,
+      },
+      layoutName: layout?.layout_name ?? thisRound.layout_name ?? "Unknown layout",
+      layoutSlug: layout?.layout_slug || layoutSlug,
+      courseSlug: layout?.course_slug || courseSlug,
+      roundsPlayedOnLayout: layout?.rounds_played ?? 1,
+      isNewBest,
+      bestVsPar,
+      bestRoundId,
+      lastRound,
+    },
+    error: null,
+  };
+}
+
 function mapLayoutStatsRow(row: {
   layout_id: string | null;
   layout_slug: string | null;

@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { FinishedRoundContextPanel } from "@/components/stats/finished-round-context";
 import { createServerClient } from "@/lib/supabase/server";
 import { pickOne } from "@/lib/supabase/select-helpers";
 import {
@@ -7,6 +8,7 @@ import {
   statusBadgeVariant,
 } from "@/lib/rounds/format-round-status";
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
+import { loadFinishedRoundContext } from "@/lib/rounds/load-player-stats";
 import { formatRoundDisplayName } from "@/lib/rounds/round-display-name";
 import {
   isFinishedRoundStatus,
@@ -37,7 +39,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
   const { data: round, error: roundError } = await supabase
     .from("rounds")
     .select(
-      "id, name, status, started_at, completed_at, scorer_id, layout_id, starting_hole, layouts(name, total_par, total_distance_m, courses(name, slug))"
+      "id, name, status, started_at, completed_at, scorer_id, layout_id, starting_hole, layouts(name, slug, total_par, total_distance_m, courses(name, slug))"
     )
     .eq("id", roundId)
     .maybeSingle();
@@ -57,15 +59,19 @@ export default async function RoundPage({ params }: RoundPageProps) {
   }
 
   const roundStatus: RoundStatus = isRoundStatus(round.status) ? round.status : "draft";
+  const layoutRowEarly = pickOne(round.layouts);
+  const courseRowEarly = pickOne(layoutRowEarly?.courses);
+  const courseSlug = courseRowEarly?.slug ?? "";
+  const layoutSlug = layoutRowEarly?.slug ?? "";
 
-  // All five reads below are independent given `round.id` / `round.layout_id` /
-  // `round.scorer_id`, so they fan out in parallel.
+  // Independent reads given `round.id` / `round.layout_id` / `round.scorer_id`.
   const [
     { data: participants, error: participantsError },
     { data: invites, error: invitesError },
     { data: holes, error: holesError },
     { data: existingScores, error: existingScoresError },
     { data: scorerProfile },
+    finishedContextResult,
   ] = await Promise.all([
     supabase
       .from("round_participants")
@@ -93,10 +99,19 @@ export default async function RoundPage({ params }: RoundPageProps) {
       .select("display_name")
       .eq("id", round.scorer_id)
       .maybeSingle(),
+    roundStatus === "completed" && courseSlug && layoutSlug
+      ? loadFinishedRoundContext(supabase, {
+          roundId: round.id,
+          layoutId: round.layout_id,
+          courseSlug,
+          layoutSlug,
+        })
+      : Promise.resolve({ context: null, error: null }),
   ]);
 
-  const layoutRow = pickOne(round.layouts);
-  const courseRow = pickOne(layoutRow?.courses);
+  const layoutRow = layoutRowEarly;
+  const courseRow = courseRowEarly;
+  const finishedRoundContext = finishedContextResult.context;
   const finishedDateLabel = isFinishedRoundStatus(roundStatus)
     ? formatRoundDisplayDate(round.completed_at, round.started_at)
     : null;
@@ -139,6 +154,10 @@ export default async function RoundPage({ params }: RoundPageProps) {
           <p className="text-sm text-muted-foreground">{finishedDateLabel}</p>
         ) : null}
       </header>
+
+      {finishedRoundContext ? (
+        <FinishedRoundContextPanel context={finishedRoundContext} />
+      ) : null}
 
       {participantsError ? (
         <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
