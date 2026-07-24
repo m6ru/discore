@@ -197,129 +197,79 @@ export async function loadPlayerLayoutStatsForCourse(
   return { byLayoutId, error: null };
 }
 
-export type FinishedRoundPriorRound = {
-  roundId: string;
-  vsPar: number;
-  completedAt: string | null;
-};
+export type ScoreBucketKey = "ace" | "eagle" | "birdie" | "par" | "bogey" | "doublePlus";
 
-/** Personal this-round + layout history for a completed round detail (Stats v2 slice C). */
-export type FinishedRoundContext = {
-  roundId: string;
-  vsPar: number;
-  obHoles: number;
-  holesScored: number;
+export type PlayerLayoutHoleStats = {
+  holeId: string;
+  holeNumber: number;
+  par: number;
+  timesPlayed: number;
+  avgVsPar: number | null;
+  obCount: number;
   distribution: PlayerStatsDistribution;
-  layoutName: string;
-  layoutSlug: string;
-  courseSlug: string;
-  roundsPlayedOnLayout: number;
-  isNewBest: boolean;
-  bestVsPar: number | null;
-  bestRoundId: string | null;
-  lastRound: FinishedRoundPriorRound | null;
+  /** Most common score bucket on this hole (tie → worse result). */
+  usualBucket: ScoreBucketKey;
 };
 
-/**
- * Context for a finished round the current user played.
- * Returns null when abandoned, no scored holes, or the viewer has no personal row (guest / observer-only).
- */
-export async function loadFinishedRoundContext(
+/** Per-hole history for one layout, ordered by hole number (Stats v2 slice D). */
+export async function loadPlayerLayoutHoleStats(
   supabase: Client,
-  args: {
-    roundId: string;
-    layoutId: string;
-    courseSlug: string;
-    layoutSlug: string;
-  }
-): Promise<{ context: FinishedRoundContext | null; error: string | null }> {
-  const { roundId, layoutId, courseSlug, layoutSlug } = args;
+  layoutId: string
+): Promise<{ holes: PlayerLayoutHoleStats[]; error: string | null }> {
+  const { data, error } = await supabase
+    .from("player_layout_hole_stats")
+    .select(
+      "hole_id, hole_number, par, times_played, avg_vs_par, ob_count, ace_count, eagle_count, birdie_count, par_count, bogey_count, double_plus_count"
+    )
+    .eq("layout_id", layoutId)
+    .order("hole_number", { ascending: true });
 
-  const [thisRoundResult, layoutResult, lastRoundResult] = await Promise.all([
-    supabase
-      .from("player_round_stats")
-      .select(
-        "round_id, status, vs_par, ob_holes, holes_scored, layout_name, ace_count, eagle_count, birdie_count, par_count, bogey_count, double_plus_count"
-      )
-      .eq("round_id", roundId)
-      .maybeSingle(),
-    supabase
-      .from("player_layout_stats")
-      .select("rounds_played, best_vs_par, best_round_id, layout_name, layout_slug, course_slug")
-      .eq("layout_id", layoutId)
-      .maybeSingle(),
-    supabase
-      .from("player_round_stats")
-      .select("round_id, vs_par, completed_at")
-      .eq("layout_id", layoutId)
-      .eq("status", "completed")
-      .gt("holes_scored", 0)
-      .neq("round_id", roundId)
-      .order("completed_at", { ascending: false, nullsFirst: false })
-      .limit(1)
-      .maybeSingle(),
-  ]);
-
-  if (thisRoundResult.error) {
-    return { context: null, error: thisRoundResult.error.message };
-  }
-  if (layoutResult.error) {
-    return { context: null, error: layoutResult.error.message };
-  }
-  if (lastRoundResult.error) {
-    return { context: null, error: lastRoundResult.error.message };
+  if (error) {
+    return { holes: [], error: error.message };
   }
 
-  const thisRound = thisRoundResult.data;
-  if (
-    !thisRound ||
-    thisRound.status !== "completed" ||
-    !thisRound.holes_scored ||
-    thisRound.vs_par === null
-  ) {
-    return { context: null, error: null };
+  const holes: PlayerLayoutHoleStats[] = (data ?? []).map((row) => {
+    const distribution: PlayerStatsDistribution = {
+      ace: row.ace_count ?? 0,
+      eagle: row.eagle_count ?? 0,
+      birdie: row.birdie_count ?? 0,
+      par: row.par_count ?? 0,
+      bogey: row.bogey_count ?? 0,
+      doublePlus: row.double_plus_count ?? 0,
+    };
+    return {
+      holeId: row.hole_id!,
+      holeNumber: row.hole_number!,
+      par: row.par!,
+      timesPlayed: row.times_played ?? 0,
+      avgVsPar: row.avg_vs_par,
+      obCount: row.ob_count ?? 0,
+      distribution,
+      usualBucket: pickUsualBucket(distribution),
+    };
+  });
+
+  return { holes, error: null };
+}
+
+/** Prefer the mode; on ties pick the worse bucket (more useful as a caution). */
+function pickUsualBucket(distribution: PlayerStatsDistribution): ScoreBucketKey {
+  const candidates: { key: ScoreBucketKey; count: number }[] = [
+    { key: "ace", count: distribution.ace },
+    { key: "eagle", count: distribution.eagle },
+    { key: "birdie", count: distribution.birdie },
+    { key: "par", count: distribution.par },
+    { key: "bogey", count: distribution.bogey },
+    { key: "doublePlus", count: distribution.doublePlus },
+  ];
+
+  let best = candidates[0]!;
+  for (const candidate of candidates.slice(1)) {
+    if (candidate.count >= best.count) {
+      best = candidate;
+    }
   }
-
-  const layout = layoutResult.data;
-  const lastRow = lastRoundResult.data;
-  const bestRoundId = layout?.best_round_id ?? null;
-  const bestVsPar = layout?.best_vs_par ?? null;
-  const isNewBest = bestRoundId === roundId;
-
-  const lastRound: FinishedRoundPriorRound | null =
-    lastRow?.round_id && lastRow.vs_par !== null
-      ? {
-          roundId: lastRow.round_id,
-          vsPar: lastRow.vs_par,
-          completedAt: lastRow.completed_at,
-        }
-      : null;
-
-  return {
-    context: {
-      roundId,
-      vsPar: thisRound.vs_par,
-      obHoles: thisRound.ob_holes ?? 0,
-      holesScored: thisRound.holes_scored,
-      distribution: {
-        ace: thisRound.ace_count ?? 0,
-        eagle: thisRound.eagle_count ?? 0,
-        birdie: thisRound.birdie_count ?? 0,
-        par: thisRound.par_count ?? 0,
-        bogey: thisRound.bogey_count ?? 0,
-        doublePlus: thisRound.double_plus_count ?? 0,
-      },
-      layoutName: layout?.layout_name ?? thisRound.layout_name ?? "Unknown layout",
-      layoutSlug: layout?.layout_slug || layoutSlug,
-      courseSlug: layout?.course_slug || courseSlug,
-      roundsPlayedOnLayout: layout?.rounds_played ?? 1,
-      isNewBest,
-      bestVsPar,
-      bestRoundId,
-      lastRound,
-    },
-    error: null,
-  };
+  return best.key;
 }
 
 function mapLayoutStatsRow(row: {

@@ -57,6 +57,7 @@ export type RoundSessionProps = {
   courseName: string;
   courseSlug: string | null;
   layoutName: string;
+  layoutSlug: string | null;
   layoutTotalPar: number;
   initialParticipants: ParticipantRow[];
   initialInvites: InviteRow[];

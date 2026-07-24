@@ -121,6 +121,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "hole_scores_hole_id_fkey"
+            columns: ["hole_id"]
+            isOneToOne: false
+            referencedRelation: "player_layout_hole_stats"
+            referencedColumns: ["hole_id"]
+          },
+          {
             foreignKeyName: "hole_scores_participant_id_fkey"
             columns: ["participant_id"]
             isOneToOne: false
@@ -133,6 +140,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "round_participants"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hole_scores_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "player_ace_log"
+            referencedColumns: ["round_id"]
           },
           {
             foreignKeyName: "hole_scores_round_id_fkey"
@@ -189,6 +203,20 @@ export type Database = {
             referencedRelation: "layouts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "holes_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "player_ace_log"
+            referencedColumns: ["layout_id"]
+          },
+          {
+            foreignKeyName: "holes_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "player_layout_stats"
+            referencedColumns: ["layout_id"]
+          },
         ]
       }
       layouts: {
@@ -232,6 +260,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "courses"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "layouts_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "player_course_stats"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "layouts_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "player_layout_stats"
+            referencedColumns: ["course_id"]
           },
         ]
       }
@@ -321,6 +363,13 @@ export type Database = {
             foreignKeyName: "round_invitations_round_id_fkey"
             columns: ["round_id"]
             isOneToOne: false
+            referencedRelation: "player_ace_log"
+            referencedColumns: ["round_id"]
+          },
+          {
+            foreignKeyName: "round_invitations_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
             referencedRelation: "player_round_stats"
             referencedColumns: ["round_id"]
           },
@@ -359,6 +408,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "round_participants_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "player_ace_log"
+            referencedColumns: ["round_id"]
+          },
           {
             foreignKeyName: "round_participants_round_id_fkey"
             columns: ["round_id"]
@@ -428,6 +484,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "rounds_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "player_ace_log"
+            referencedColumns: ["layout_id"]
+          },
+          {
+            foreignKeyName: "rounds_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "player_layout_stats"
+            referencedColumns: ["layout_id"]
+          },
+          {
             foreignKeyName: "rounds_scorer_id_fkey"
             columns: ["scorer_id"]
             isOneToOne: false
@@ -438,6 +508,19 @@ export type Database = {
       }
     }
     Views: {
+      player_ace_log: {
+        Row: {
+          completed_at: string | null
+          course_name: string | null
+          course_slug: string | null
+          hole_number: number | null
+          layout_id: string | null
+          layout_name: string | null
+          layout_slug: string | null
+          round_id: string | null
+        }
+        Relationships: []
+      }
       player_course_stats: {
         Row: {
           course_id: string | null
@@ -447,6 +530,46 @@ export type Database = {
           rounds_played: number | null
         }
         Relationships: []
+      }
+      player_layout_hole_stats: {
+        Row: {
+          ace_count: number | null
+          avg_vs_par: number | null
+          birdie_count: number | null
+          bogey_count: number | null
+          double_plus_count: number | null
+          eagle_count: number | null
+          hole_id: string | null
+          hole_number: number | null
+          layout_id: string | null
+          ob_count: number | null
+          par: number | null
+          par_count: number | null
+          times_played: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rounds_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "layouts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rounds_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "player_ace_log"
+            referencedColumns: ["layout_id"]
+          },
+          {
+            foreignKeyName: "rounds_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "player_layout_stats"
+            referencedColumns: ["layout_id"]
+          },
+        ]
       }
       player_layout_stats: {
         Row: {
@@ -468,19 +591,6 @@ export type Database = {
           ob_holes_total: number | null
           par_total: number | null
           rounds_played: number | null
-        }
-        Relationships: []
-      }
-      player_ace_log: {
-        Row: {
-          completed_at: string | null
-          course_name: string | null
-          course_slug: string | null
-          hole_number: number | null
-          layout_id: string | null
-          layout_name: string | null
-          layout_slug: string | null
-          round_id: string | null
         }
         Relationships: []
       }
@@ -547,6 +657,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "layouts"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rounds_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "player_ace_log"
+            referencedColumns: ["layout_id"]
+          },
+          {
+            foreignKeyName: "rounds_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "player_layout_stats"
+            referencedColumns: ["layout_id"]
           },
         ]
       }

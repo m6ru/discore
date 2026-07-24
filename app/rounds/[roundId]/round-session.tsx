@@ -37,6 +37,7 @@ import { ScorecardSection } from "./components/scorecard-section";
 import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
 import { RoundInfoDialog } from "./components/round-info-dialog";
 import { RoundScorecardDialog } from "./components/round-scorecard-dialog";
+import { FinishedRoundStatsLink } from "@/components/stats/finished-round-stats-link";
 import { Button } from "@/components/ui/button";
 import { isFinishedRoundStatus } from "@/lib/rounds/round-status";
 import type {
@@ -65,6 +66,7 @@ export function RoundSession({
   courseName,
   courseSlug,
   layoutName,
+  layoutSlug,
   layoutTotalPar,
   initialParticipants,
   initialInvites,
@@ -579,6 +581,10 @@ export function RoundSession({
         </>
       ) : null}
 
+      {isFinishedRound && showScorecardAtBottom
+        ? renderScorecard({ showTitle: true })
+        : null}
+
       {showPoolResults ? (
         <RoundResults
           scoringParticipants={scoringParticipants}
@@ -587,7 +593,17 @@ export function RoundSession({
         />
       ) : null}
 
-      {showScorecardAtBottom ? renderScorecard({ showTitle: true }) : null}
+      {!isFinishedRound && showScorecardAtBottom
+        ? renderScorecard({ showTitle: true })
+        : null}
+
+      {isFinishedRound && courseSlug && layoutSlug ? (
+        <FinishedRoundStatsLink
+          courseSlug={courseSlug}
+          layoutSlug={layoutSlug}
+          layoutName={layoutName}
+        />
+      ) : null}
 
       {showCompletionUI ? (
         <RoundCompleteActions

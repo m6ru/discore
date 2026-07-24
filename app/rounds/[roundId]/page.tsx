@@ -1,6 +1,5 @@
 import { notFound, redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { FinishedRoundContextPanel } from "@/components/stats/finished-round-context";
 import { createServerClient } from "@/lib/supabase/server";
 import { pickOne } from "@/lib/supabase/select-helpers";
 import {
@@ -8,7 +7,6 @@ import {
   statusBadgeVariant,
 } from "@/lib/rounds/format-round-status";
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
-import { loadFinishedRoundContext } from "@/lib/rounds/load-player-stats";
 import { formatRoundDisplayName } from "@/lib/rounds/round-display-name";
 import {
   isFinishedRoundStatus,
@@ -59,10 +57,6 @@ export default async function RoundPage({ params }: RoundPageProps) {
   }
 
   const roundStatus: RoundStatus = isRoundStatus(round.status) ? round.status : "draft";
-  const layoutRowEarly = pickOne(round.layouts);
-  const courseRowEarly = pickOne(layoutRowEarly?.courses);
-  const courseSlug = courseRowEarly?.slug ?? "";
-  const layoutSlug = layoutRowEarly?.slug ?? "";
 
   // Independent reads given `round.id` / `round.layout_id` / `round.scorer_id`.
   const [
@@ -71,7 +65,6 @@ export default async function RoundPage({ params }: RoundPageProps) {
     { data: holes, error: holesError },
     { data: existingScores, error: existingScoresError },
     { data: scorerProfile },
-    finishedContextResult,
   ] = await Promise.all([
     supabase
       .from("round_participants")
@@ -99,19 +92,10 @@ export default async function RoundPage({ params }: RoundPageProps) {
       .select("display_name")
       .eq("id", round.scorer_id)
       .maybeSingle(),
-    roundStatus === "completed" && courseSlug && layoutSlug
-      ? loadFinishedRoundContext(supabase, {
-          roundId: round.id,
-          layoutId: round.layout_id,
-          courseSlug,
-          layoutSlug,
-        })
-      : Promise.resolve({ context: null, error: null }),
   ]);
 
-  const layoutRow = layoutRowEarly;
-  const courseRow = courseRowEarly;
-  const finishedRoundContext = finishedContextResult.context;
+  const layoutRow = pickOne(round.layouts);
+  const courseRow = pickOne(layoutRow?.courses);
   const finishedDateLabel = isFinishedRoundStatus(roundStatus)
     ? formatRoundDisplayDate(round.completed_at, round.started_at)
     : null;
@@ -155,10 +139,6 @@ export default async function RoundPage({ params }: RoundPageProps) {
         ) : null}
       </header>
 
-      {finishedRoundContext ? (
-        <FinishedRoundContextPanel context={finishedRoundContext} />
-      ) : null}
-
       {participantsError ? (
         <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
           Failed to load participants: {participantsError.message}
@@ -189,6 +169,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
           courseName={courseRow?.name ?? "Unknown course"}
           courseSlug={courseRow?.slug ?? null}
           layoutName={layoutRow?.name ?? "Unknown layout"}
+          layoutSlug={layoutRow?.slug ?? null}
           layoutTotalPar={layoutRow?.total_par ?? 0}
           initialParticipants={safeParticipants}
           initialInvites={normalizeInviteRows(invites ?? [])}

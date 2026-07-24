@@ -4,8 +4,11 @@ import { notFound, redirect } from "next/navigation";
 import { formatRoundDate } from "@/lib/format/round-date";
 import {
   loadPlayerCourseStats,
+  loadPlayerLayoutHoleStats,
   loadPlayerLayoutStatsForCourse,
+  type PlayerLayoutHoleStats,
   type PlayerLayoutStats,
+  type ScoreBucketKey,
 } from "@/lib/rounds/load-player-stats";
 import { formatVsPar } from "@/lib/scoring/stats";
 import { createServerClient } from "@/lib/supabase/server";
@@ -42,6 +45,23 @@ function formatRate(count: number, total: number): string {
   }
   const pct = Math.round((count / total) * 1000) / 10;
   return `${pct}%`;
+}
+
+function usualBucketLabel(bucket: ScoreBucketKey): string {
+  switch (bucket) {
+    case "ace":
+      return "Ace";
+    case "eagle":
+      return "Eagle";
+    case "birdie":
+      return "Birdie";
+    case "par":
+      return "Par";
+    case "bogey":
+      return "Bogey";
+    case "doublePlus":
+      return "Double+";
+  }
 }
 
 function courseSummaryLine(roundsPlayed: number, lastPlayedAt: string | null): string {
@@ -103,7 +123,13 @@ function pickSelectedLayout(
   return withRounds ?? layouts[0]!;
 }
 
-function LayoutStatsBody({ stats }: { stats: PlayerLayoutStats }) {
+function LayoutStatsBody({
+  stats,
+  holeStats,
+}: {
+  stats: PlayerLayoutStats;
+  holeStats: PlayerLayoutHoleStats[];
+}) {
   const { distribution, holesPlayed } = stats;
   const distributionRows = [
     { key: "ace", label: "Ace", count: distribution.ace },
@@ -117,83 +143,117 @@ function LayoutStatsBody({ stats }: { stats: PlayerLayoutStats }) {
   ];
 
   return (
-    <section className="space-y-3 rounded-lg border px-4 py-3">
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 [&_dd]:ml-0">
-        <div className="text-center">
-          <dt className={homeRowMetaClassName}>Times played</dt>
-          <dd className="font-mono text-base font-semibold tabular-nums">{stats.roundsPlayed}</dd>
-        </div>
-        <div className="text-center">
-          <dt className={homeRowMetaClassName}>Best</dt>
-          <dd className="font-mono text-base font-semibold tabular-nums">
-            {stats.bestVsPar !== null ? formatVsPar(stats.bestVsPar) : "—"}
-          </dd>
-          {stats.bestRoundId ? (
-            <dd className="mt-0.5">
-              <Link
-                href={`/rounds/${stats.bestRoundId}`}
-                className="text-sm text-primary underline-offset-4 hover:underline"
-              >
-                View round
-              </Link>
-            </dd>
-          ) : null}
-        </div>
-        <div className="text-center">
-          <dt className={homeRowMetaClassName}>Average</dt>
-          <dd className="font-mono text-base font-semibold tabular-nums">
-            {stats.avgVsPar !== null ? formatAvgVsPar(stats.avgVsPar) : "—"}
-          </dd>
-        </div>
-      </dl>
-
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t pt-3 sm:grid-cols-5 [&_dd]:ml-0">
-        <div className="text-center">
-          <dt className={homeRowMetaClassName}>Birdie</dt>
-          <dd className="font-mono text-sm font-semibold tabular-nums">
-            {formatRate(distribution.birdie, holesPlayed)}
-          </dd>
-        </div>
-        <div className="text-center">
-          <dt className={homeRowMetaClassName}>Par</dt>
-          <dd className="font-mono text-sm font-semibold tabular-nums">
-            {formatRate(distribution.par, holesPlayed)}
-          </dd>
-        </div>
-        <div className="text-center">
-          <dt className={homeRowMetaClassName}>Bogey</dt>
-          <dd className="font-mono text-sm font-semibold tabular-nums">
-            {formatRate(distribution.bogey, holesPlayed)}
-          </dd>
-        </div>
-        <div className="text-center">
-          <dt className={homeRowMetaClassName}>Double+</dt>
-          <dd className="font-mono text-sm font-semibold tabular-nums">
-            {formatRate(distribution.doublePlus, holesPlayed)}
-          </dd>
-        </div>
-        <div className="text-center">
-          <dt className={homeRowMetaClassName}>OB</dt>
-          <dd className="font-mono text-sm font-semibold tabular-nums">
-            {formatRate(stats.obHolesTotal, holesPlayed)}
-          </dd>
-        </div>
-      </dl>
-
-      <div
-        className={cn(
-          "grid gap-2 border-t pt-3 justify-items-center text-center",
-          distribution.eagle > 0 ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-5"
-        )}
-      >
-        {distributionRows.map((row) => (
-          <div key={row.key} className="min-w-0 w-full">
-            <p className="truncate text-xs text-muted-foreground">{row.label}</p>
-            <p className="font-mono text-sm font-semibold tabular-nums">{row.count}</p>
+    <div className="space-y-4">
+      <section className="space-y-3 rounded-lg border px-4 py-3">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 [&_dd]:ml-0">
+          <div className="text-center">
+            <dt className={homeRowMetaClassName}>Times played</dt>
+            <dd className="font-mono text-base font-semibold tabular-nums">{stats.roundsPlayed}</dd>
           </div>
-        ))}
-      </div>
-    </section>
+          <div className="text-center">
+            <dt className={homeRowMetaClassName}>Best</dt>
+            <dd className="font-mono text-base font-semibold tabular-nums">
+              {stats.bestVsPar !== null ? formatVsPar(stats.bestVsPar) : "—"}
+            </dd>
+            {stats.bestRoundId ? (
+              <dd className="mt-0.5">
+                <Link
+                  href={`/rounds/${stats.bestRoundId}`}
+                  className="text-sm text-primary underline-offset-4 hover:underline"
+                >
+                  View round
+                </Link>
+              </dd>
+            ) : null}
+          </div>
+          <div className="text-center">
+            <dt className={homeRowMetaClassName}>Average</dt>
+            <dd className="font-mono text-base font-semibold tabular-nums">
+              {stats.avgVsPar !== null ? formatAvgVsPar(stats.avgVsPar) : "—"}
+            </dd>
+          </div>
+        </dl>
+
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t pt-3 sm:grid-cols-5 [&_dd]:ml-0">
+          <div className="text-center">
+            <dt className={homeRowMetaClassName}>Birdie</dt>
+            <dd className="font-mono text-sm font-semibold tabular-nums">
+              {formatRate(distribution.birdie, holesPlayed)}
+            </dd>
+          </div>
+          <div className="text-center">
+            <dt className={homeRowMetaClassName}>Par</dt>
+            <dd className="font-mono text-sm font-semibold tabular-nums">
+              {formatRate(distribution.par, holesPlayed)}
+            </dd>
+          </div>
+          <div className="text-center">
+            <dt className={homeRowMetaClassName}>Bogey</dt>
+            <dd className="font-mono text-sm font-semibold tabular-nums">
+              {formatRate(distribution.bogey, holesPlayed)}
+            </dd>
+          </div>
+          <div className="text-center">
+            <dt className={homeRowMetaClassName}>Double+</dt>
+            <dd className="font-mono text-sm font-semibold tabular-nums">
+              {formatRate(distribution.doublePlus, holesPlayed)}
+            </dd>
+          </div>
+          <div className="text-center">
+            <dt className={homeRowMetaClassName}>OB</dt>
+            <dd className="font-mono text-sm font-semibold tabular-nums">
+              {formatRate(stats.obHolesTotal, holesPlayed)}
+            </dd>
+          </div>
+        </dl>
+
+        <div
+          className={cn(
+            "grid gap-2 border-t pt-3 justify-items-center text-center",
+            distribution.eagle > 0 ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-5"
+          )}
+        >
+          {distributionRows.map((row) => (
+            <div key={row.key} className="min-w-0 w-full">
+              <p className="truncate text-xs text-muted-foreground">{row.label}</p>
+              <p className="font-mono text-sm font-semibold tabular-nums">{row.count}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {holeStats.length > 0 ? (
+        <section className="space-y-2">
+          <h2 className={sectionHeadingClassName}>Per hole</h2>
+          <ul className="divide-y rounded-lg border">
+            {holeStats.map((hole) => {
+              const obRate = formatRate(hole.obCount, hole.timesPlayed);
+              const avgLabel =
+                hole.avgVsPar !== null ? formatAvgVsPar(hole.avgVsPar) : "—";
+
+              return (
+                <li key={hole.holeId} className="flex items-baseline justify-between gap-3 px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="font-medium">
+                      Hole {hole.holeNumber}
+                      <span className="text-muted-foreground"> · Par {hole.par}</span>
+                    </p>
+                    <p className={cn(homeRowMetaClassName, "mt-0.5")}>
+                      Usually {usualBucketLabel(hole.usualBucket).toLowerCase()}
+                      <span> · Avg {avgLabel}</span>
+                      {hole.obCount > 0 ? <span> · OB {obRate}</span> : null}
+                    </p>
+                  </div>
+                  <p className="shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
+                    {hole.timesPlayed}×
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+    </div>
   );
 }
 
@@ -231,9 +291,6 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
       loadPlayerLayoutStatsForCourse(supabase, slug),
     ]);
 
-  const loadError =
-    layoutsError?.message ?? courseStatsResult.error ?? layoutStatsResult.error ?? null;
-
   const layoutOptions: LayoutOption[] =
     layouts?.map((layout) => ({
       id: layout.id,
@@ -246,6 +303,18 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
     layoutSlug,
     layoutStatsResult.byLayoutId
   );
+
+  const holeStatsResult = selectedLayout
+    ? await loadPlayerLayoutHoleStats(supabase, selectedLayout.id)
+    : { holes: [], error: null };
+
+  const loadError =
+    layoutsError?.message ??
+    courseStatsResult.error ??
+    layoutStatsResult.error ??
+    holeStatsResult.error ??
+    null;
+
   const selectedStats = selectedLayout
     ? (layoutStatsResult.byLayoutId.get(selectedLayout.id) ?? null)
     : null;
@@ -302,7 +371,7 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
       {!loadError && selectedLayout ? (
         <section className="space-y-2">
           {selectedStats ? (
-            <LayoutStatsBody stats={selectedStats} />
+            <LayoutStatsBody stats={selectedStats} holeStats={holeStatsResult.holes} />
           ) : (
             <p className={homeRowMetaClassName}>
               No completed rounds on this layout yet. Start a round from the course page.
