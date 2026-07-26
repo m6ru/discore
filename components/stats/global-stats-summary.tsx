@@ -29,15 +29,6 @@ function StatFigure({ label, value }: StatFigureProps) {
   );
 }
 
-/** Layout length played (sum of hole distances), not flight path. */
-function formatDistanceM(meters: number): string {
-  if (meters >= 1000) {
-    const km = Math.round(meters / 100) / 10;
-    return `${km} km`;
-  }
-  return `${meters} m`;
-}
-
 type HighlightCalloutProps = {
   href: string;
   label: string;
@@ -82,7 +73,7 @@ export function GlobalStatsSummary({ stats, showMostPlayed = false }: Props) {
         <div className="grid grid-cols-3 gap-3">
           <StatFigure label="Rounds" value={String(stats.roundsPlayed)} />
           <StatFigure label="Throws" value={String(stats.totalThrows)} />
-          <StatFigure label="Distance" value={formatDistanceM(stats.totalDistanceM)} />
+          <StatFigure label="Meters" value={String(stats.totalDistanceM)} />
         </div>
 
         {stats.bestRound && stats.bestVsPar !== null ? (
