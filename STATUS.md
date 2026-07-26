@@ -173,7 +173,7 @@ Product brainstorm locked **Jul 2026**. **Layout** is the unit of meaningful com
 
 | Surface | Role |
 |---------|------|
-| **Home teaser** | Muted panel: total rounds + aces (figures); best round + most-played (highlight callouts) |
+| **Home teaser** | Muted panel: rounds · throws · distance; best round + most-played **course** |
 | **History tab** | Same global stats panel + round list; tab title stays **History** |
 | **Finished round** (`/rounds/[id]`) | Scorecard first + pool results; quiet layout link; one-time insights after complete *(E)* |
 | **Course page** (`/courses/[slug]`) | Last played · total rounds; layout picker primary; **Your stats** link → stats screen |
@@ -201,7 +201,7 @@ Course page ──Your stats──► Course stats ──layout tab──► Per
 | Stats entry on course page | **Your stats** — text link beside Layouts heading (not primary CTA) |
 | Layout with zero rounds | Show in picker with empty state |
 | Ace log | Dedicated route (scales better than modal) |
-| Home teaser | Total rounds, best round (course + score), aces, most-played (→ course page) |
+| Home teaser | Total rounds, throws, distance (layout meters); best round; most-played **course** (all layouts at park) |
 | Post-round insights | **Done (slice E)** — default on, Profile opt-out; one-time after complete only |
 | Rating-based best round | Phase 6+ — out of scope |
 
@@ -209,9 +209,9 @@ Course page ──Your stats──► Course stats ──layout tab──► Per
 
 **UI:** `components/stats/global-stats-summary.tsx` — muted panel with figure row (total rounds, aces) + highlight callouts (best round, most-played on Home only).
 
-**Show:** total rounds; best round (course name + score, link to round); ace count → ace log; most-played → course page (Home only).
+**Show:** total rounds; total throws; total distance (layout length played); best round (course name + score, link to round); most-played **course** (Home only).
 
-**Drop from UI:** global average vs par, global OB/round, lifetime birdie/par/bogey distribution strip.
+**Drop from UI:** aces on Home/History teaser (ace log route remains); global average vs par, global OB/round, lifetime birdie/par/bogey distribution strip.
 
 ### Course page (light touch)
 

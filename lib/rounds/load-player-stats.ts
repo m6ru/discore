@@ -10,10 +10,8 @@ export type PlayerBestRound = {
   completedAt: string | null;
 };
 
-export type PlayerMostPlayedLayout = {
-  layoutId: string;
-  layoutSlug: string;
-  layoutName: string;
+export type PlayerMostPlayedCourse = {
+  courseId: string;
   courseSlug: string;
   courseName: string;
   roundCount: number;
@@ -21,10 +19,11 @@ export type PlayerMostPlayedLayout = {
 
 export type PlayerGlobalStats = {
   roundsPlayed: number;
+  totalThrows: number;
+  totalDistanceM: number;
   bestVsPar: number | null;
   bestRound: PlayerBestRound | null;
-  aceCount: number;
-  mostPlayedLayout: PlayerMostPlayedLayout | null;
+  mostPlayedCourse: PlayerMostPlayedCourse | null;
 };
 
 export type AceLogEntry = {
@@ -91,14 +90,10 @@ export async function loadPlayerStats(
         }
       : null;
 
-  const mostPlayedLayout =
-    data.most_played_layout_id &&
-    data.most_played_layout_slug &&
-    data.most_played_course_slug
+  const mostPlayedCourse =
+    data.most_played_course_id && data.most_played_course_slug
       ? {
-          layoutId: data.most_played_layout_id,
-          layoutSlug: data.most_played_layout_slug,
-          layoutName: data.most_played_layout_name ?? "Unknown layout",
+          courseId: data.most_played_course_id,
           courseSlug: data.most_played_course_slug,
           courseName: data.most_played_course_name ?? "Unknown course",
           roundCount: data.most_played_round_count ?? 0,
@@ -108,10 +103,11 @@ export async function loadPlayerStats(
   return {
     stats: {
       roundsPlayed: data.rounds_played,
+      totalThrows: Number(data.total_throws ?? 0),
+      totalDistanceM: Number(data.total_distance_m ?? 0),
       bestVsPar: data.best_vs_par,
       bestRound,
-      aceCount: data.ace_total ?? 0,
-      mostPlayedLayout,
+      mostPlayedCourse,
     },
     error: null,
   };
@@ -417,9 +413,10 @@ function mapLayoutStatsRow(row: {
 function emptyStats(): PlayerGlobalStats {
   return {
     roundsPlayed: 0,
+    totalThrows: 0,
+    totalDistanceM: 0,
     bestVsPar: null,
     bestRound: null,
-    aceCount: 0,
-    mostPlayedLayout: null,
+    mostPlayedCourse: null,
   };
 }

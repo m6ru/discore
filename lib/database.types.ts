@@ -608,14 +608,14 @@ export type Database = {
           bogey_total: number | null
           double_plus_total: number | null
           eagle_total: number | null
+          most_played_course_id: string | null
           most_played_course_name: string | null
           most_played_course_slug: string | null
-          most_played_layout_id: string | null
-          most_played_layout_name: string | null
-          most_played_layout_slug: string | null
           most_played_round_count: number | null
           par_total: number | null
           rounds_played: number | null
+          total_distance_m: number | null
+          total_throws: number | null
         }
         Relationships: []
       }

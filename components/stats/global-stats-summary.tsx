@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   stats: PlayerGlobalStats;
-  /** Home teaser includes most-played layout; History omits it. */
+  /** Home teaser includes most-played course; History omits it. */
   showMostPlayed?: boolean;
 };
 
@@ -18,36 +18,31 @@ const highlightClassName =
 type StatFigureProps = {
   label: string;
   value: string;
-  href?: string;
 };
 
-function StatFigure({ label, value, href }: StatFigureProps) {
-  const body = (
-    <>
+function StatFigure({ label, value }: StatFigureProps) {
+  return (
+    <div className="min-w-0 px-1 py-0.5 text-center">
       <p className="font-mono text-2xl font-semibold leading-none tabular-nums">{value}</p>
       <p className="mt-1.5 text-xs font-semibold text-muted-foreground">{label}</p>
-    </>
+    </div>
   );
+}
 
-  if (href) {
-    return (
-      <Link
-        href={href}
-        className="block min-w-0 rounded-md px-1 py-0.5 text-center transition-colors hover:bg-background/70"
-      >
-        {body}
-      </Link>
-    );
+/** Layout length played (sum of hole distances), not flight path. */
+function formatDistanceM(meters: number): string {
+  if (meters >= 1000) {
+    const km = Math.round(meters / 100) / 10;
+    return `${km} km`;
   }
-
-  return <div className="min-w-0 px-1 py-0.5 text-center">{body}</div>;
+  return `${meters} m`;
 }
 
 type HighlightCalloutProps = {
   href: string;
   label: string;
   title: string;
-  meta: string;
+  meta?: string;
   value: string;
   valueSuffix?: string;
 };
@@ -58,7 +53,7 @@ function HighlightCallout({ href, label, title, meta, value, valueSuffix }: High
       <div className="min-w-0">
         <p className="text-xs font-semibold text-muted-foreground">{label}</p>
         <p className="mt-0.5 truncate font-medium">{title}</p>
-        <p className={cn(homeRowMetaClassName, "mt-0.5 truncate")}>{meta}</p>
+        {meta ? <p className={cn(homeRowMetaClassName, "mt-0.5 truncate")}>{meta}</p> : null}
       </div>
       <div className="shrink-0 text-right">
         <span className="font-mono text-xl font-semibold tabular-nums">{value}</span>
@@ -84,9 +79,10 @@ export function GlobalStatsSummary({ stats, showMostPlayed = false }: Props) {
       <h2 className={sectionHeadingClassName}>Your stats</h2>
 
       <div className="space-y-3 rounded-lg bg-muted/60 px-4 py-3">
-        <div className="grid grid-cols-2 gap-4">
-          <StatFigure label="Total rounds" value={String(stats.roundsPlayed)} />
-          <StatFigure label="Aces" value={String(stats.aceCount)} href="/rounds/aces" />
+        <div className="grid grid-cols-3 gap-3">
+          <StatFigure label="Rounds" value={String(stats.roundsPlayed)} />
+          <StatFigure label="Throws" value={String(stats.totalThrows)} />
+          <StatFigure label="Distance" value={formatDistanceM(stats.totalDistanceM)} />
         </div>
 
         {stats.bestRound && stats.bestVsPar !== null ? (
@@ -99,14 +95,13 @@ export function GlobalStatsSummary({ stats, showMostPlayed = false }: Props) {
           />
         ) : null}
 
-        {showMostPlayed && stats.mostPlayedLayout ? (
+        {showMostPlayed && stats.mostPlayedCourse ? (
           <HighlightCallout
-            href={`/courses/${stats.mostPlayedLayout.courseSlug}`}
+            href={`/courses/${stats.mostPlayedCourse.courseSlug}`}
             label="Most played"
-            title={stats.mostPlayedLayout.courseName}
-            meta={stats.mostPlayedLayout.layoutName}
-            value={String(stats.mostPlayedLayout.roundCount)}
-            valueSuffix={stats.mostPlayedLayout.roundCount === 1 ? "round" : "rounds"}
+            title={stats.mostPlayedCourse.courseName}
+            value={String(stats.mostPlayedCourse.roundCount)}
+            valueSuffix={stats.mostPlayedCourse.roundCount === 1 ? "round" : "rounds"}
           />
         ) : null}
       </div>
