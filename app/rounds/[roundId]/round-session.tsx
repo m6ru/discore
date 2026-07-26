@@ -19,6 +19,16 @@ import { getParticipantLabel as labelForParticipant } from "@/lib/rounds/partici
 import { buildUnifiedPlayers } from "@/lib/rounds/unified-players";
 import type { InviteRow } from "@/lib/rounds/invite-rows";
 import {
+  loadPostRoundInsights,
+  type PostRoundInsights,
+} from "@/lib/rounds/load-player-stats";
+import {
+  clearPostRoundInsightsPending,
+  hasPostRoundInsightsPending,
+  isPostRoundInsightsEnabled,
+  markPostRoundInsightsPending,
+} from "@/lib/rounds/post-round-insights-preference";
+import {
   ACTIVE_SCORING_BOTTOM_INSET,
   ActiveHoleScoring,
 } from "./components/active-hole-scoring";
@@ -38,6 +48,7 @@ import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
 import { RoundInfoDialog } from "./components/round-info-dialog";
 import { RoundScorecardDialog } from "./components/round-scorecard-dialog";
 import { FinishedRoundStatsLink } from "@/components/stats/finished-round-stats-link";
+import { PostRoundInsightsCard } from "@/components/stats/post-round-insights";
 import { Button } from "@/components/ui/button";
 import { isFinishedRoundStatus } from "@/lib/rounds/round-status";
 import type {
@@ -65,6 +76,7 @@ export function RoundSession({
   scorerDisplayName,
   courseName,
   courseSlug,
+  layoutId,
   layoutName,
   layoutSlug,
   layoutTotalPar,
@@ -87,9 +99,82 @@ export function RoundSession({
   const [scorecardOpen, setScorecardOpen] = useState(false);
   const [roundInfoOpen, setRoundInfoOpen] = useState(false);
   const [isEditingScores, setIsEditingScores] = useState(false);
+  const [postRoundInsights, setPostRoundInsights] = useState<PostRoundInsights | null>(null);
+  const [showPostRoundInsights, setShowPostRoundInsights] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return (
+      isScorer &&
+      isFinishedRoundStatus(roundStatus) &&
+      isPostRoundInsightsEnabled() &&
+      hasPostRoundInsightsPending(roundId)
+    );
+  });
   const ignoreRenderNow: Dispatch<SetStateAction<number>> = useCallback(() => {}, []);
   const ignoreLastSavedEvent: Dispatch<SetStateAction<LastSavedEvent | null>> =
     useCallback(() => {}, []);
+
+  const onRoundCompleted = useCallback(() => {
+    setLiveRoundStatus("completed");
+    if (!isScorer || !isPostRoundInsightsEnabled()) {
+      return;
+    }
+    markPostRoundInsightsPending(roundId);
+    setShowPostRoundInsights(true);
+  }, [isScorer, roundId]);
+
+  const dismissPostRoundInsights = useCallback(() => {
+    clearPostRoundInsightsPending(roundId);
+    setShowPostRoundInsights(false);
+    setPostRoundInsights(null);
+  }, [roundId]);
+
+  useEffect(() => {
+    if (
+      !showPostRoundInsights ||
+      !isScorer ||
+      !courseSlug ||
+      !layoutSlug ||
+      !isFinishedRoundStatus(liveRoundStatus)
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void (async () => {
+      const { insights } = await loadPostRoundInsights(supabase, {
+        roundId,
+        layoutId,
+        courseSlug,
+        layoutSlug,
+      });
+      if (cancelled) {
+        return;
+      }
+      if (!insights) {
+        clearPostRoundInsightsPending(roundId);
+        setShowPostRoundInsights(false);
+        setPostRoundInsights(null);
+        return;
+      }
+      setPostRoundInsights(insights);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    showPostRoundInsights,
+    isScorer,
+    courseSlug,
+    layoutSlug,
+    liveRoundStatus,
+    supabase,
+    roundId,
+    layoutId,
+  ]);
 
   const { loadParticipants, loadInvites } = useRoundRealtime({
     supabase,
@@ -146,6 +231,7 @@ export function RoundSession({
     isScorer,
     saveCurrentHoleScores,
     setIsTransitioning,
+    onCompleted: onRoundCompleted,
   });
 
   const {
@@ -585,6 +671,13 @@ export function RoundSession({
         ? renderScorecard({ showTitle: true })
         : null}
 
+      {showPostRoundInsights && postRoundInsights ? (
+        <PostRoundInsightsCard
+          insights={postRoundInsights}
+          onDismiss={dismissPostRoundInsights}
+        />
+      ) : null}
+
       {showPoolResults ? (
         <RoundResults
           scoringParticipants={scoringParticipants}
@@ -597,7 +690,10 @@ export function RoundSession({
         ? renderScorecard({ showTitle: true })
         : null}
 
-      {isFinishedRound && courseSlug && layoutSlug ? (
+      {isFinishedRound &&
+      courseSlug &&
+      layoutSlug &&
+      !(showPostRoundInsights && postRoundInsights) ? (
         <FinishedRoundStatsLink
           courseSlug={courseSlug}
           layoutSlug={layoutSlug}

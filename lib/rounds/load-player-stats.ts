@@ -197,6 +197,106 @@ export async function loadPlayerLayoutStatsForCourse(
   return { byLayoutId, error: null };
 }
 
+export type PostRoundInsights = {
+  vsPar: number;
+  aceCount: number;
+  layoutName: string;
+  layoutSlug: string;
+  courseSlug: string;
+  isNewBest: boolean;
+  isFirstOnLayout: boolean;
+  lastRound: { roundId: string; vsPar: number } | null;
+};
+
+/**
+ * Moment-shaped insights right after completing a round (Stats v2 slice E).
+ * Returns null when there is no personal completed row or nothing notable to say.
+ */
+export async function loadPostRoundInsights(
+  supabase: Client,
+  args: {
+    roundId: string;
+    layoutId: string;
+    courseSlug: string;
+    layoutSlug: string;
+  }
+): Promise<{ insights: PostRoundInsights | null; error: string | null }> {
+  const { roundId, layoutId, courseSlug, layoutSlug } = args;
+
+  const [thisRoundResult, layoutResult, lastRoundResult] = await Promise.all([
+    supabase
+      .from("player_round_stats")
+      .select("round_id, status, vs_par, holes_scored, layout_name, ace_count")
+      .eq("round_id", roundId)
+      .maybeSingle(),
+    supabase
+      .from("player_layout_stats")
+      .select("rounds_played, best_vs_par, best_round_id, layout_name, layout_slug, course_slug")
+      .eq("layout_id", layoutId)
+      .maybeSingle(),
+    supabase
+      .from("player_round_stats")
+      .select("round_id, vs_par, completed_at")
+      .eq("layout_id", layoutId)
+      .eq("status", "completed")
+      .gt("holes_scored", 0)
+      .neq("round_id", roundId)
+      .order("completed_at", { ascending: false, nullsFirst: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+
+  if (thisRoundResult.error) {
+    return { insights: null, error: thisRoundResult.error.message };
+  }
+  if (layoutResult.error) {
+    return { insights: null, error: layoutResult.error.message };
+  }
+  if (lastRoundResult.error) {
+    return { insights: null, error: lastRoundResult.error.message };
+  }
+
+  const thisRound = thisRoundResult.data;
+  if (
+    !thisRound ||
+    thisRound.status !== "completed" ||
+    !thisRound.holes_scored ||
+    thisRound.vs_par === null
+  ) {
+    return { insights: null, error: null };
+  }
+
+  const layout = layoutResult.data;
+  const lastRow = lastRoundResult.data;
+  const roundsPlayed = layout?.rounds_played ?? 1;
+  const isFirstOnLayout = roundsPlayed <= 1;
+  const isNewBest = layout?.best_round_id === roundId;
+  const lastRound =
+    lastRow?.round_id && lastRow.vs_par !== null
+      ? { roundId: lastRow.round_id, vsPar: lastRow.vs_par }
+      : null;
+  const aceCount = thisRound.ace_count ?? 0;
+
+  const hasMoment = isNewBest || isFirstOnLayout || aceCount > 0 || lastRound !== null;
+  if (!hasMoment) {
+    return { insights: null, error: null };
+  }
+
+  return {
+    insights: {
+      vsPar: thisRound.vs_par,
+      aceCount,
+      layoutName: layout?.layout_name ?? thisRound.layout_name ?? "Unknown layout",
+      layoutSlug: layout?.layout_slug || layoutSlug,
+      courseSlug: layout?.course_slug || courseSlug,
+      isNewBest,
+      isFirstOnLayout,
+      lastRound,
+    },
+    error: null,
+  };
+}
+
 export type ScoreBucketKey = "ace" | "eagle" | "birdie" | "par" | "bogey" | "doublePlus";
 
 export type PlayerLayoutHoleStats = {

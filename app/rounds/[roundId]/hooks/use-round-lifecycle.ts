@@ -15,6 +15,7 @@ type Options = {
   isScorer: boolean;
   saveCurrentHoleScores: () => Promise<boolean>;
   setIsTransitioning: (value: boolean) => void;
+  onCompleted?: () => void;
 };
 
 export function useRoundLifecycle({
@@ -23,6 +24,7 @@ export function useRoundLifecycle({
   isScorer,
   saveCurrentHoleScores,
   setIsTransitioning,
+  onCompleted,
 }: Options) {
   const router = useRouter();
 
@@ -49,9 +51,10 @@ export function useRoundLifecycle({
       setIsTransitioning(false);
       return;
     }
+    onCompleted?.();
     router.refresh();
     setIsTransitioning(false);
-  }, [saveCurrentHoleScores, supabase, roundId, setIsTransitioning, router]);
+  }, [saveCurrentHoleScores, supabase, roundId, setIsTransitioning, router, onCompleted]);
 
   return { onAbandonRound, onCompleteRound };
 }

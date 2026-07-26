@@ -56,6 +56,7 @@ export type RoundSessionProps = {
   scorerDisplayName: string;
   courseName: string;
   courseSlug: string | null;
+  layoutId: string;
   layoutName: string;
   layoutSlug: string | null;
   layoutTotalPar: number;

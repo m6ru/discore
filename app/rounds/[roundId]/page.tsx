@@ -168,6 +168,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
           scorerDisplayName={scorerProfile?.display_name ?? "Scorer"}
           courseName={courseRow?.name ?? "Unknown course"}
           courseSlug={courseRow?.slug ?? null}
+          layoutId={round.layout_id}
           layoutName={layoutRow?.name ?? "Unknown layout"}
           layoutSlug={layoutRow?.slug ?? null}
           layoutTotalPar={layoutRow?.total_par ?? 0}

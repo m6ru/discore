@@ -6,6 +6,10 @@ import {
   getNearbyCoursesPreference,
   setNearbyCoursesPreference,
 } from "@/lib/courses/nearby-courses";
+import {
+  getPostRoundInsightsPreference,
+  setPostRoundInsightsPreference,
+} from "@/lib/rounds/post-round-insights-preference";
 import { createClient } from "@/lib/supabase/client";
 import { saveProfile } from "@/lib/profiles/save-profile";
 import { AVATAR_ACCEPT_ATTR, validateAvatarFile } from "@/lib/profiles/upload-avatar";
@@ -63,6 +67,9 @@ export function AccountPanel({
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [nearbyCourses, setNearbyCourses] = useState(
     () => getNearbyCoursesPreference() === "enabled"
+  );
+  const [postRoundInsights, setPostRoundInsights] = useState(
+    () => getPostRoundInsightsPreference() !== "disabled"
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -322,6 +329,24 @@ export function AccountPanel({
               setNearbyCoursesPreference(checked ? "enabled" : "disabled");
             }}
             aria-label="Location services — enable to display distances"
+          />
+      </div>
+
+      <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
+          <div className="space-y-1">
+            <Label htmlFor="post-round-insights">Post-round insights</Label>
+            <p className="text-sm text-muted-foreground">
+              Show a short summary after you end a round.
+            </p>
+          </div>
+          <Switch
+            id="post-round-insights"
+            checked={postRoundInsights}
+            onCheckedChange={(checked) => {
+              setPostRoundInsights(checked);
+              setPostRoundInsightsPreference(checked ? "enabled" : "disabled");
+            }}
+            aria-label="Post-round insights — show a short summary after you end a round"
           />
       </div>
 
