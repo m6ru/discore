@@ -27,7 +27,7 @@ export function useStartDraftRound(layoutId: string) {
       // Unsigned players have no session; getUser() reports that as an error.
       if (!user) {
         const existing = loadLocalTrial();
-        if (existing?.status === "active") {
+        if (existing?.status === "setup" || existing?.status === "active") {
           router.push("/rounds/trial");
           return;
         }

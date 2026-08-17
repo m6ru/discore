@@ -31,7 +31,7 @@ export function ContinueTrialCard() {
   return (
     <section className="space-y-2">
       <h2 className={sectionHeadingClassName}>
-        {isCompleted ? "Save this round" : "Continue round"}
+        {isCompleted ? "Save this round" : trial.status === "setup" ? "Set up round" : "Continue round"}
       </h2>
       <div className="space-y-3 rounded-lg bg-muted/60 px-4 py-3">
         <div className="flex items-start justify-between gap-3 text-sm">
@@ -57,7 +57,7 @@ export function ContinueTrialCard() {
           </div>
         ) : (
           <Button asChild size="lg" className={pagePrimaryButtonClassName}>
-            <Link href="/rounds/trial">Continue round</Link>
+            <Link href="/rounds/trial">{trial.status === "setup" ? "Set up round" : "Continue round"}</Link>
           </Button>
         )}
       </div>

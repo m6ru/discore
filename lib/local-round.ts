@@ -9,6 +9,8 @@ export const LOCAL_TRIAL_STORAGE_KEY = "discore:local-trial";
 
 const STROKE_MIN = 1;
 const STROKE_MAX = 25;
+const LEGACY_SCORER_ID = "trial";
+const LEGACY_SCORER_NAME = "You";
 
 export type LocalTrialHole = {
   id: string;
@@ -18,16 +20,25 @@ export type LocalTrialHole = {
   notes: string | null;
 };
 
+export type LocalTrialPlayer = {
+  id: string;
+  name: string;
+  isScorer: boolean;
+};
+
 export type LocalTrialScore = {
   holeId: string;
+  playerId: string;
   strokes: number;
   ob: boolean;
 };
 
+export type LocalTrialStatus = "setup" | "active" | "completed";
+
 export type LocalTrialRound = {
   version: 1;
   claimId: string;
-  status: "active" | "completed";
+  status: LocalTrialStatus;
   layoutId: string;
   courseName: string;
   courseSlug: string | null;
@@ -35,6 +46,7 @@ export type LocalTrialRound = {
   startedAt: string;
   completedAt: string | null;
   holes: LocalTrialHole[];
+  players: LocalTrialPlayer[];
   scores: LocalTrialScore[];
 };
 
@@ -46,6 +58,70 @@ export type ClaimLocalTrialResult =
 
 let claimInFlight: Promise<ClaimLocalTrialResult> | null = null;
 
+export function playerNameKey(name: string): string {
+  return name.trim().toLowerCase();
+}
+
+export function createLocalTrialPlayer(name: string, isScorer: boolean): LocalTrialPlayer {
+  return {
+    id: crypto.randomUUID(),
+    name: name.trim(),
+    isScorer,
+  };
+}
+
+export function addGuestPlayer(
+  players: LocalTrialPlayer[],
+  name: string
+): { ok: true; players: LocalTrialPlayer[] } | { ok: false; message: string } {
+  const trimmed = name.trim();
+  if (!trimmed) {
+    return { ok: false, message: "Player name is required." };
+  }
+  if (players.some((player) => playerNameKey(player.name) === playerNameKey(trimmed))) {
+    return { ok: false, message: "That name is already in the round." };
+  }
+  return {
+    ok: true,
+    players: [...players, createLocalTrialPlayer(trimmed, false)],
+  };
+}
+
+export function removeGuestPlayer(
+  players: LocalTrialPlayer[],
+  playerId: string
+): LocalTrialPlayer[] {
+  return players.filter((player) => player.id !== playerId || player.isScorer);
+}
+
+export function setScorerName(
+  players: LocalTrialPlayer[],
+  name: string
+): LocalTrialPlayer[] {
+  return players.map((player) =>
+    player.isScorer ? { ...player, name: name.trim() } : player
+  );
+}
+
+export function startLocalTrialPlay(
+  round: LocalTrialRound,
+  players: LocalTrialPlayer[]
+): { ok: true; round: LocalTrialRound } | { ok: false; message: string } {
+  const rosterError = validateRoster(players, { requireScorerName: true });
+  if (rosterError) {
+    return { ok: false, message: rosterError };
+  }
+
+  const next: LocalTrialRound = {
+    ...round,
+    status: "active",
+    players,
+    startedAt: round.startedAt || new Date().toISOString(),
+  };
+  saveLocalTrial(next);
+  return { ok: true, round: next };
+}
+
 export function parseLocalTrial(raw: unknown): LocalTrialRound | null {
   if (!raw || typeof raw !== "object") {
     return null;
@@ -55,7 +131,7 @@ export function parseLocalTrial(raw: unknown): LocalTrialRound | null {
   if (value.version !== 1) {
     return null;
   }
-  if (value.status !== "active" && value.status !== "completed") {
+  if (value.status !== "setup" && value.status !== "active" && value.status !== "completed") {
     return null;
   }
   if (typeof value.claimId !== "string" || value.claimId.length === 0) {
@@ -95,9 +171,14 @@ export function parseLocalTrial(raw: unknown): LocalTrialRound | null {
     holes.push(parsed);
   }
 
+  const migrated = migrateLegacyPlayers(value.players);
+  if (!migrated) {
+    return null;
+  }
+
   const scores: LocalTrialScore[] = [];
   for (const score of value.scores) {
-    const parsed = parseScore(score);
+    const parsed = parseScore(score, migrated.defaultPlayerId);
     if (!parsed) {
       return null;
     }
@@ -115,6 +196,7 @@ export function parseLocalTrial(raw: unknown): LocalTrialRound | null {
     startedAt: value.startedAt,
     completedAt: value.completedAt,
     holes,
+    players: migrated.players,
     scores,
   };
 }
@@ -160,8 +242,13 @@ export function clearLocalTrial(): void {
 }
 
 export function isLocalTrialFullyScored(round: LocalTrialRound): boolean {
+  if (round.players.length === 0) {
+    return false;
+  }
   return round.holes.every((hole) =>
-    round.scores.some((score) => score.holeId === hole.id)
+    round.players.every((player) =>
+      round.scores.some((score) => score.holeId === hole.id && score.playerId === player.id)
+    )
   );
 }
 
@@ -172,14 +259,22 @@ export function validateLocalTrialForClaim(round: LocalTrialRound): string | nul
   if (!round.completedAt) {
     return "Trial is missing a completion time.";
   }
+  const rosterError = validateRoster(round.players, { requireScorerName: true });
+  if (rosterError) {
+    return rosterError;
+  }
   if (!isLocalTrialFullyScored(round)) {
     return "Trial is missing hole scores.";
   }
 
   const holeIds = new Set(round.holes.map((hole) => hole.id));
+  const playerIds = new Set(round.players.map((player) => player.id));
   for (const score of round.scores) {
     if (!holeIds.has(score.holeId)) {
       return "Trial has a score for an unknown hole.";
+    }
+    if (!playerIds.has(score.playerId)) {
+      return "Trial has a score for an unknown player.";
     }
     if (
       !Number.isInteger(score.strokes) ||
@@ -203,7 +298,7 @@ export function createLocalTrial(input: {
   return {
     version: 1,
     claimId: crypto.randomUUID(),
-    status: "active",
+    status: "setup",
     layoutId: input.layoutId,
     courseName: input.courseName,
     courseSlug: input.courseSlug,
@@ -211,6 +306,7 @@ export function createLocalTrial(input: {
     startedAt: new Date().toISOString(),
     completedAt: null,
     holes: [...input.holes].sort((a, b) => a.hole_number - b.hole_number),
+    players: [createLocalTrialPlayer("", true)],
     scores: [],
   };
 }
@@ -319,10 +415,20 @@ async function claimLocalTrial(supabase: Client): Promise<ClaimLocalTrialResult>
     return participantId;
   }
 
+  const guests = await ensureGuestParticipants(
+    supabase,
+    roundId.roundId,
+    local,
+    participantId.participantId
+  );
+  if (!guests.ok) {
+    return guests;
+  }
+
   const scoresResult = await insertMissingHoleScores(
     supabase,
     roundId.roundId,
-    participantId.participantId,
+    guests.playerToParticipant,
     local
   );
   if (!scoresResult.ok) {
@@ -331,6 +437,84 @@ async function claimLocalTrial(supabase: Client): Promise<ClaimLocalTrialResult>
 
   clearLocalTrial();
   return { ok: true, outcome: "claimed", roundId: roundId.roundId };
+}
+
+function validateRoster(
+  players: LocalTrialPlayer[],
+  options: { requireScorerName: boolean }
+): string | null {
+  if (players.length === 0) {
+    return "Add at least one player.";
+  }
+  const scorers = players.filter((player) => player.isScorer);
+  if (scorers.length !== 1) {
+    return "Exactly one scorer is required.";
+  }
+  if (options.requireScorerName && !scorers[0]!.name.trim()) {
+    return "Your name is required.";
+  }
+
+  const keys = players.map((player) => playerNameKey(player.name));
+  const named = keys.filter((key) => key.length > 0);
+  if (named.length !== new Set(named).size) {
+    return "Player names must be unique.";
+  }
+  if (players.some((player) => !player.isScorer && !player.name.trim())) {
+    return "Guest names cannot be empty.";
+  }
+
+  return null;
+}
+
+function migrateLegacyPlayers(
+  raw: unknown
+): { players: LocalTrialPlayer[]; defaultPlayerId: string } | null {
+  if (raw === undefined) {
+    return {
+      players: [{ id: LEGACY_SCORER_ID, name: LEGACY_SCORER_NAME, isScorer: true }],
+      defaultPlayerId: LEGACY_SCORER_ID,
+    };
+  }
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return null;
+  }
+
+  const players: LocalTrialPlayer[] = [];
+  for (const player of raw) {
+    const parsed = parsePlayer(player);
+    if (!parsed) {
+      return null;
+    }
+    players.push(parsed);
+  }
+
+  const scorer = players.find((player) => player.isScorer);
+  if (!scorer) {
+    return null;
+  }
+
+  return { players, defaultPlayerId: scorer.id };
+}
+
+function parsePlayer(raw: unknown): LocalTrialPlayer | null {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+  const value = raw as Record<string, unknown>;
+  if (typeof value.id !== "string" || value.id.length === 0) {
+    return null;
+  }
+  if (typeof value.name !== "string") {
+    return null;
+  }
+  if (typeof value.isScorer !== "boolean") {
+    return null;
+  }
+  return {
+    id: value.id,
+    name: value.name,
+    isScorer: value.isScorer,
+  };
 }
 
 function parseHole(raw: unknown): LocalTrialHole | null {
@@ -362,7 +546,7 @@ function parseHole(raw: unknown): LocalTrialHole | null {
   };
 }
 
-function parseScore(raw: unknown): LocalTrialScore | null {
+function parseScore(raw: unknown, defaultPlayerId: string): LocalTrialScore | null {
   if (!raw || typeof raw !== "object") {
     return null;
   }
@@ -370,6 +554,10 @@ function parseScore(raw: unknown): LocalTrialScore | null {
   if (typeof value.holeId !== "string" || value.holeId.length === 0) {
     return null;
   }
+  const playerId =
+    typeof value.playerId === "string" && value.playerId.length > 0
+      ? value.playerId
+      : defaultPlayerId;
   if (typeof value.strokes !== "number" || !Number.isInteger(value.strokes)) {
     return null;
   }
@@ -378,6 +566,7 @@ function parseScore(raw: unknown): LocalTrialScore | null {
   }
   return {
     holeId: value.holeId,
+    playerId,
     strokes: value.strokes,
     ob: value.ob,
   };
@@ -495,38 +684,127 @@ async function loadScorerParticipantId(
   return { ok: true, participantId: data.id };
 }
 
+async function ensureGuestParticipants(
+  supabase: Client,
+  roundId: string,
+  local: LocalTrialRound,
+  scorerParticipantId: string
+): Promise<
+  | { ok: true; playerToParticipant: Map<string, string> }
+  | { ok: false; message: string }
+> {
+  const scorer = local.players.find((player) => player.isScorer);
+  if (!scorer) {
+    return { ok: false, message: "Trial is missing a scorer." };
+  }
+
+  const playerToParticipant = new Map<string, string>([[scorer.id, scorerParticipantId]]);
+  const guests = local.players.filter((player) => !player.isScorer);
+  if (guests.length === 0) {
+    return { ok: true, playerToParticipant };
+  }
+
+  const { data: existing, error: existingError } = await supabase
+    .from("round_participants")
+    .select("id, guest_name")
+    .eq("round_id", roundId);
+
+  if (existingError) {
+    return { ok: false, message: `Could not load participants: ${existingError.message}` };
+  }
+
+  const byName = new Map<string, string>();
+  for (const row of existing ?? []) {
+    if (row.guest_name) {
+      byName.set(playerNameKey(row.guest_name), row.id);
+    }
+  }
+
+  const missing = guests.filter((guest) => !byName.has(playerNameKey(guest.name)));
+  if (missing.length > 0) {
+    const { data: inserted, error: insertError } = await supabase
+      .from("round_participants")
+      .insert(
+        missing.map((guest) => ({
+          round_id: roundId,
+          guest_name: guest.name.trim(),
+        }))
+      )
+      .select("id, guest_name");
+
+    if (insertError) {
+      return { ok: false, message: `Could not save guests: ${insertError.message}` };
+    }
+
+    for (const row of inserted ?? []) {
+      if (row.guest_name) {
+        byName.set(playerNameKey(row.guest_name), row.id);
+      }
+    }
+  }
+
+  for (const guest of guests) {
+    const participantId = byName.get(playerNameKey(guest.name));
+    if (!participantId) {
+      return { ok: false, message: "Could not match a guest to the claimed round." };
+    }
+    playerToParticipant.set(guest.id, participantId);
+  }
+
+  return { ok: true, playerToParticipant };
+}
+
 async function insertMissingHoleScores(
   supabase: Client,
   roundId: string,
-  participantId: string,
+  playerToParticipant: Map<string, string>,
   local: LocalTrialRound
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   const { data: existing, error: existingError } = await supabase
     .from("hole_scores")
-    .select("hole_id")
+    .select("hole_id, participant_id")
     .eq("round_id", roundId);
 
   if (existingError) {
     return { ok: false, message: `Could not load scores: ${existingError.message}` };
   }
 
-  const have = new Set((existing ?? []).map((row) => row.hole_id));
-  const missing = local.scores.filter((score) => !have.has(score.holeId));
-  if (missing.length === 0) {
-    return { ok: true };
-  }
+  const have = new Set(
+    (existing ?? []).map((row) => `${row.participant_id}:${row.hole_id}`)
+  );
 
-  const { error } = await supabase.from("hole_scores").insert(
-    missing.map((score) => ({
+  const payload: {
+    round_id: string;
+    participant_id: string;
+    hole_id: string;
+    strokes: number;
+    ob: boolean;
+    fairway_hit: null;
+  }[] = [];
+  for (const score of local.scores) {
+    const participantId = playerToParticipant.get(score.playerId);
+    if (!participantId) {
+      return { ok: false, message: "Trial has a score for an unknown player." };
+    }
+    const key = `${participantId}:${score.holeId}`;
+    if (have.has(key)) {
+      continue;
+    }
+    payload.push({
       round_id: roundId,
       participant_id: participantId,
       hole_id: score.holeId,
       strokes: score.strokes,
       ob: score.ob,
       fairway_hit: null,
-    }))
-  );
+    });
+  }
 
+  if (payload.length === 0) {
+    return { ok: true };
+  }
+
+  const { error } = await supabase.from("hole_scores").insert(payload);
   if (error) {
     return { ok: false, message: `Could not save scores: ${error.message}` };
   }

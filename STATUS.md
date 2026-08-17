@@ -371,7 +371,7 @@ Do not reintroduce `utils/supabase/*`.
 
 ### Migrations
 
-**42 files** in `supabase/migrations/` (through D-guest `20260817075028_anon_catalog_select_and_trial_claim.sql`). Run `npx supabase migration list` to compare local vs remote.
+**43 files** in `supabase/migrations/` (through trial named guests `20260817141422_trial_claim_named_guests.sql`). Run `npx supabase migration list` to compare local vs remote.
 
 Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds` (incl. optional `name` and `guest_claim_id` for claimed trials), `round_participants`, `round_invitations`, `hole_scores`. RLS on all. Anon may `SELECT` `courses` / `layouts` / `holes` only.
 
@@ -411,9 +411,9 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 
 Anonymous trial is shipped (Option A). Distinct from named guests on a signed-in round, and from the removed `localStorage` scorer outbox.
 
-- **Storage:** one slot at `discore:local-trial`. Solo only; no invites, observers, Realtime, or History/stats for the trial.
-- **In progress:** persists locally so the unsigned player can resume. Starting another layout while active **resumes** the existing trial. Starting another layout after complete **replaces** the unclaimed round.
-- **On signup/login:** a **completed** trial is claimed (insert round + scorer participant + hole_scores, then clear). An in-progress or corrupt trial is **discarded** (cleared, not inserted). Idempotent via `rounds.guest_claim_id`.
+- **Storage:** one slot at `discore:local-trial`. Pass-the-phone: scorer types their name and may add other players as **named guests**. No invites, observers, Realtime, or History/stats for the trial. Inviting a registered Discore account still requires sign-in.
+- **In progress:** persists locally so the unsigned player can resume (setup or active). Starting another layout while setup/active **resumes** the existing trial. Starting another layout after complete **replaces** the unclaimed round.
+- **On signup/login:** a **completed** trial is claimed (insert round + scorer as `user_id` + extra players as `guest_name` + hole_scores, then clear). An in-progress or corrupt trial is **discarded** (cleared, not inserted). Idempotent via `rounds.guest_claim_id`. The scorer’s typed trial name is scorecard-only; history uses their profile name.
 - **Route:** `/rounds/trial` — isolated from signed-in `/rounds/[id]`.
 
 ### Cross-machine handoff
