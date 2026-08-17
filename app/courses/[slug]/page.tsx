@@ -3,7 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import fs from "node:fs";
 import path from "node:path";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { formatRoundDate } from "@/lib/format/round-date";
 import { loadPlayerCourseStats } from "@/lib/rounds/load-player-stats";
 import { createServerClient } from "@/lib/supabase/server";
@@ -40,13 +40,8 @@ function courseMapSrc(slug: string): string | null {
 export default async function CourseDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/auth?message=Please+sign+in+to+continue");
-  }
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims ?? null;
 
   const { data: course, error: courseError } = await supabase
     .from("courses")
@@ -65,7 +60,9 @@ export default async function CourseDetailPage({ params }: PageProps) {
     .eq("is_active", true)
     .order("name", { ascending: true });
 
-  const { stats: courseStats } = await loadPlayerCourseStats(supabase, slug);
+  const { stats: courseStats } = claims
+    ? await loadPlayerCourseStats(supabase, slug)
+    : { stats: null };
 
   const mapsUrl =
     course.lat !== null && course.lng !== null
@@ -117,12 +114,14 @@ export default async function CourseDetailPage({ params }: PageProps) {
       <section className="space-y-3">
         <div className="flex items-baseline justify-between gap-3">
           <h2 className={sectionHeadingClassName}>Layouts</h2>
-          <Link
-            href={`/courses/${slug}/stats`}
-            className="shrink-0 text-sm font-medium text-primary underline-offset-4 hover:underline"
-          >
-            Your stats
-          </Link>
+          {claims ? (
+            <Link
+              href={`/courses/${slug}/stats`}
+              className="shrink-0 text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
+              Your stats
+            </Link>
+          ) : null}
         </div>
 
         {layoutsError ? (

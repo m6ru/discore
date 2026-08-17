@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { claimLocalTrialIfNeeded } from "@/lib/local-round";
 import { toastError, toastSuccess } from "@/lib/ui/toast-notify";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,12 @@ export function AuthForm({ message }: Props) {
           toastError(error.message);
           return;
         }
+        const claim = await claimLocalTrialIfNeeded(supabase);
+        if (!claim.ok) {
+          toastError(claim.message);
+        } else if (claim.outcome === "claimed") {
+          toastSuccess("Your trial round was saved to history.");
+        }
         router.push("/");
         router.refresh();
         return;
@@ -50,7 +57,7 @@ export function AuthForm({ message }: Props) {
       // First/last name are passed as user metadata. The `handle_new_user`
       // trigger composes `profiles.display_name` from them so we never store
       // email on the profile (BLUEPRINT §5/§7).
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -63,6 +70,17 @@ export function AuthForm({ message }: Props) {
       });
       if (error) {
         toastError(error.message);
+        return;
+      }
+      if (data.session) {
+        const claim = await claimLocalTrialIfNeeded(supabase);
+        if (!claim.ok) {
+          toastError(claim.message);
+        } else if (claim.outcome === "claimed") {
+          toastSuccess("Your trial round was saved to history.");
+        }
+        router.push("/");
+        router.refresh();
         return;
       }
       toastSuccess("Sign-up successful. Check your email for confirmation.");

@@ -36,7 +36,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 
 **Profile discoverability (done):** `profiles.visibility` removed; authenticated users can read all profiles for invite/search. Migration `20260521120000_drop_profiles_visibility.sql` on remote.
 
-**Out of scope for field MVP:** Anonymous guest round (D-guest), advanced stats / `fairway_hit`, full shadcn UI, rich Phase 5 stats, offline sync.
+**Out of scope for field MVP:** Anonymous guest round (D-guest — now shipped), advanced stats / `fairway_hit`, full shadcn UI, rich Phase 5 stats, offline sync.
 
 **Field day:** Validated on course (scoring works well). Visual polish pass done for tab screens (Home, Play, History, Profile); round route unchanged as north star.
 
@@ -64,7 +64,7 @@ Update this file when behaviour or priorities change. Do not duplicate operation
 Tab navigation felt laggy (2–3 s dead tap) because each tab was a server render that blocked on serial Supabase round-trips with no loading UI. Fixed per [BLUEPRINT §2b](BLUEPRINT.md):
 
 - **Route `loading.tsx` skeletons** on `/`, `/courses`, `/rounds`, `/auth` → instant shell on tap (root layout is static, so fallbacks stream immediately).
-- **`getClaims()` on tab pages** (Home, Play, History, Profile) instead of a second `getUser()` — local JWT verify, no extra Auth round-trip. Round route / course detail / `rounds/new` left on `getUser()`.
+- **`getClaims()` on tab pages** (Home, Play, History, Profile) and course detail instead of a second `getUser()` — local JWT verify, no extra Auth round-trip. Round route / `rounds/new` left on `getUser()`.
 - **Player stats views** (`player_round_stats`, `player_lifetime_stats`) — Postgres backbone for History list, Home recent scores, and lifetime stats; replaces the former JS score fan-out. See migration `20260708170000_player_stats.sql`.
 
 **Nav pass 2 (shipped — commit `24a2df0`):**
@@ -92,11 +92,11 @@ Deferred (see below): `middleware.ts` → `proxy.ts` rename (Next 16 deprecation
 
 ## Current capabilities
 
-- **Hub** (`app/page.tsx`): continue-round cards, invites (Realtime), near-you Start, get-started, **Your stats** panel (below nearest course when no active round), recent rounds
+- **Hub** (`app/page.tsx`): continue-round cards, invites (Realtime), near-you Start, get-started, **Your stats** panel (below nearest course when no active round), recent rounds. Unsigned: play-first guest launchpad (Start a round + quieter Sign in) and a Continue card when a local trial exists.
 - **Bottom nav:** Home · Play · History · Profile; hidden on **live scorer** round routes (`/rounds/[id]` draft/active); shown on `/rounds/aces`, `/rounds/new`, completed rounds, observers
 - **Auth & profile** (`app/auth`): Profile hub — hero, Details / Preferences / **Authentication**, sign out; nearby toggle copy references location services
-- **Courses:** ~209 layouts / ~182 parks via `npm run seed:courses`; Play search + **distance sort**; detail — **last played · total rounds** when played, layout picker (primary), **Your stats** text link beside Layouts heading → `/courses/[slug]/stats`; About + optional map PNG
-- **Rounds:** draft setup (inline Start round), active scoring, observer read-only, complete/abandon
+- **Courses:** ~209 layouts / ~182 parks via `npm run seed:courses`; Play search + **distance sort**; detail — **last played · total rounds** when played (signed-in), layout picker (primary), **Your stats** text link beside Layouts heading → `/courses/[slug]/stats` (hidden when unsigned); About + optional map PNG. Catalog is publicly readable (anon `SELECT` on `courses` / `layouts` / `holes`).
+- **Rounds:** draft setup (inline Start round), active scoring, observer read-only, complete/abandon. Unsigned players score a solo trial at `/rounds/trial` (localStorage) and claim it after auth.
 - **History:** global **Your stats** panel (`components/stats/global-stats-summary.tsx`) + round list with vs par
 - **Ace log** (`/rounds/aces`): hole · course rows, layout · date, chevron → round; tab bar visible (History tab active)
 - **Course stats** (`/courses/[slug]/stats`): equal-width layout tabs, per-layout summary + **Per hole** list (usually X · avg · OB); `?layout=` deep link
@@ -125,7 +125,7 @@ Also implemented: `round_invitations`, single active round per scorer, join code
 12. ~~**Stats v2 slice E**~~ — **Done.** One-time post-complete insights card (new best / first round / vs last / aces + layout link); Profile **Post-round insights** toggle (default on, localStorage). Not shown on History revisit.
 13. **Stats UX rethink** — Concept + UI pass across Home/History/course stats/finished round (talk before pixels).
 14. **Advanced scoring** — Opt-in per-round "detailed scoring" toggle. After rethink (or sooner if preferred). See [Later / deferred](#later--deferred).
-15. **D-guest** — Anonymous trial + claim on signup (acquisition lever); after advanced scoring.
+15. ~~**D-guest**~~ — **Done.** Anonymous trial + claim on signup/login.
 16. **Course content (ongoing)** — Per-park review as seasons change (holes, pars, distances); map PNGs (`public/courses/{slug}-map.png`); missing layouts (e.g. Kõrvemaa PRO 18); fix Järve Talu **20x** when confirmed on site. No further bulk import planned.
 17. **Play map view** — Optional toggle when useful (coords available nationwide).
 
@@ -305,7 +305,7 @@ All aggregates stay in Postgres ([BLUEPRINT §2b/§8](BLUEPRINT.md)); `lib/round
 
 - **PWA:** Serwist + icons when install-to-homescreen matters.
 - **Advanced scoring:** after stats UX rethink (or sooner if preferred); opt-in per-round toggle; fairway hit, C1/C2 in reg (≤10 m / ≤20 m), C1/C2 putting, bullseye/parked (≤3 m); additive nullable `hole_scores` columns. **Input UX is the main risk** — keep casual rounds fast; toggle placement (setup vs mid-round) TBD when the slice starts.
-- **Slice D-guest:** Anonymous round local-only → claim on signup (Option A below); acquisition lever, planned after advanced scoring.
+- **Slice D-guest:** **Done** — anonymous round local-only → claim on signup/login (Option A). See [Product sidenote](#product-sidenote--guest-trial-d-guest).
 - **Stats v2:** A–E shipped; trends deferred; optional active-hole hints from `player_layout_hole_stats`. Broader stats UX rethink next.
 - **Phase 6:** Ratings, tournaments (`tournament_id` column reserved).
 - Smart-ID / magic-link auth.
@@ -326,7 +326,7 @@ All aggregates stay in Postgres ([BLUEPRINT §2b/§8](BLUEPRINT.md)); `lib/round
 | **B** Round visibility | Complete | History, resume on hub, enriched invites, scorer participant self-heal |
 | **C** Score & observer UX | Complete | OB boolean, leaderboard, last-saved, Realtime (scores + meta refresh), hub invite live |
 | **D-courses** | Complete | JSON seeds, `seed:courses` → SQL migrations; national registry Jul 2026 (~209 layouts / ~182 parks); `match-seed-courses.ts` for split-venue review |
-| **D-guest** | Deferred | See Later |
+| **D-guest** | Complete | Anonymous trial at `/rounds/trial`; claim one completed round on signup/login |
 | **E Tab UI (2026)** | Complete | Home, History, Profile, course detail, nav, CTAs |
 
 ---
@@ -371,9 +371,9 @@ Do not reintroduce `utils/supabase/*`.
 
 ### Migrations
 
-**41 files** in `supabase/migrations/` (through stats v2 hole stats `20260724111713_player_layout_hole_stats.sql`). Run `npx supabase migration list` to compare local vs remote.
+**42 files** in `supabase/migrations/` (through D-guest `20260817075028_anon_catalog_select_and_trial_claim.sql`). Run `npx supabase migration list` to compare local vs remote.
 
-Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds` (incl. optional `name`), `round_participants`, `round_invitations`, `hole_scores`. RLS on all.
+Tables in use: `profiles`, `courses`, `layouts`, `holes`, `rounds` (incl. optional `name` and `guest_claim_id` for claimed trials), `round_participants`, `round_invitations`, `hole_scores`. RLS on all. Anon may `SELECT` `courses` / `layouts` / `holes` only.
 
 **Stats views:** `player_round_stats`, `player_lifetime_stats`, `player_ace_log`, `player_course_stats`, `player_layout_stats`, `player_layout_hole_stats` (classification via `score_bucket()`). Migrations `20260708170000_player_stats.sql`, `20260709180000_stats_v2_slice_a.sql`, `20260709190000_stats_v2_slice_b.sql`, `20260724111713_player_layout_hole_stats.sql`.
 
@@ -386,6 +386,7 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 | Area | Paths |
 |------|--------|
 | Scoring math | `lib/scoring/{types,stats}.ts` |
+| Local trial | `lib/local-round.ts`, `app/rounds/trial/` |
 | Round actions | `lib/rounds/{hole-scores,unified-players,participant-labels,round-draft-actions,round-active-actions,invite-rows,round-status,load-player-stats}.ts` |
 | Player stats | `lib/rounds/load-player-stats.ts`, `lib/rounds/post-round-insights-preference.ts`, `components/stats/global-stats-summary.tsx`, `components/stats/finished-round-stats-link.tsx`, `components/stats/post-round-insights.tsx`, `components/home/stats-teaser.tsx`, `app/rounds/history-stats-section.tsx`, `app/rounds/aces/`, `app/courses/[slug]/stats/`; views above. **Next:** stats UX rethink |
 | Profiles | `lib/profiles/{format-display-name,upload-avatar,save-profile}.ts` |
@@ -406,9 +407,14 @@ Typegen: `npx supabase gen types typescript --linked > lib/database.types.ts`
 - Round delete only when zero `hole_scores`
 - Participation: invite flow or guest name in draft; join codes removed
 
-### Product sidenote — guest round (Option A)
+### Product sidenote — guest trial (D-guest)
 
-Planned frictionless onboarding: score anonymously with local-only storage, then “claim” on signup to insert one completed history round. Not implemented; distinct from removed `localStorage` scorer outbox.
+Anonymous trial is shipped (Option A). Distinct from named guests on a signed-in round, and from the removed `localStorage` scorer outbox.
+
+- **Storage:** one slot at `discore:local-trial`. Solo only; no invites, observers, Realtime, or History/stats for the trial.
+- **In progress:** persists locally so the unsigned player can resume. Starting another layout while active **resumes** the existing trial. Starting another layout after complete **replaces** the unclaimed round.
+- **On signup/login:** a **completed** trial is claimed (insert round + scorer participant + hole_scores, then clear). An in-progress or corrupt trial is **discarded** (cleared, not inserted). Idempotent via `rounds.guest_claim_id`.
+- **Route:** `/rounds/trial` — isolated from signed-in `/rounds/[id]`.
 
 ### Cross-machine handoff
 

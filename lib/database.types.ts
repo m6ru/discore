@@ -442,6 +442,7 @@ export type Database = {
         Row: {
           completed_at: string | null
           created_at: string
+          guest_claim_id: string | null
           id: string
           layout_id: string
           name: string | null
@@ -454,6 +455,7 @@ export type Database = {
         Insert: {
           completed_at?: string | null
           created_at?: string
+          guest_claim_id?: string | null
           id?: string
           layout_id: string
           name?: string | null
@@ -466,6 +468,7 @@ export type Database = {
         Update: {
           completed_at?: string | null
           created_at?: string
+          guest_claim_id?: string | null
           id?: string
           layout_id?: string
           name?: string | null

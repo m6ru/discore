@@ -94,7 +94,7 @@ The app targets **reliable scoring while connected**. Disc golf courses can have
 
 - Realtime still delivers `hole_scores` changes after rows land in Postgres (unchanged).
 
-**This is not offline-first.** Starting a round, loading layouts, and saving scores all **require** a working session and network for the write path. Brief outages are tolerated only in the sense that **work in progress remains editable** until a save succeeds.
+**This is not offline-first.** Starting a signed-in round, loading layouts, and saving scores all **require** a working session and network for the write path. Brief outages are tolerated only in the sense that **work in progress remains editable** until a save succeeds. The anonymous trial (`/rounds/trial`) is the exception: scores stay in localStorage until the player signs in and claims a **completed** round.
 
 **Code placement**
 
@@ -185,19 +185,19 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 | Table | Read | Insert | Update | Delete |
 |---|---|---|---|---|
 | `profiles` | Any authenticated user. | On signup via auth trigger only. | Own row only. | Not permitted. |
-| `courses` | Anyone authenticated. | Creator (service role) only. | Creator (service role) only. | Not permitted. |
-| `layouts` | Anyone authenticated. | Service role only. | Service role only. | Not permitted. |
-| `holes` | Anyone authenticated. | Service role only. | Service role only. | Not permitted. |
+| `courses` | Anyone (anon + authenticated). Public catalog. | Creator (service role) only. | Creator (service role) only. | Not permitted. |
+| `layouts` | Anyone (anon + authenticated). Public catalog. | Service role only. | Service role only. | Not permitted. |
+| `holes` | Anyone (anon + authenticated). Public catalog. | Service role only. | Service role only. | Not permitted. |
 | `rounds` | Participant in the round (`round_participants`) or Scorer. | Authenticated users (own rounds). | Scorer only (`scorer_id = auth.uid()`). | Not permitted. |
 | `round_participants` | Members of the same round only. | Scorer adds guests/participants in `draft`, or invited user accepts invite while round is `draft`. | Not permitted. | Not permitted. |
-| `hole_scores` | Members of the same round only. | Not permitted directly — Scorer writes via `rounds.scorer_id = auth.uid()` check. | Scorer of the parent round only (`rounds.scorer_id = auth.uid()`). | Not permitted. |
+| `hole_scores` | Members of the same round only. | Scorer of an `active` round, or scorer inserting scores for a completed claimed trial (`guest_claim_id` set; hole must belong to the layout). | Scorer of the parent round only (`rounds.scorer_id = auth.uid()`), while `active`. | Not permitted. |
 
 ### Critical policy implementation notes
 
 - **`hole_scores` write policy must join to `rounds`** — the policy must verify `auth.uid() = (SELECT scorer_id FROM rounds WHERE id = hole_scores.round_id)`. Never trust a `scorer_id` value sent from the client.
 - **`profiles` read scope** — `SELECT` for `authenticated` only (`using (true)`). Unauthenticated requests must return zero rows. Users may only `UPDATE` their own row. Profile rows are discoverable for invite/search; **never store email on `profiles`** — `display_name` is composed from `first_name`/`last_name` at signup, with a non-PII `"Player <uuid>"` fallback if metadata is missing.
 - **No client-supplied roles** — there is no admin role in the MVP. No user should be able to modify any field that elevates their own permissions. If a `role` column is added in future, it must only be writable via a server-side trigger or service role, never via the client.
-- **Publishable key is public by design** — but with the above RLS policies in place, an unauthenticated request using the publishable key must return zero rows from every table.
+- **Publishable key is public by design.** Unauthenticated requests using the publishable key must return zero rows from **personal** tables (`profiles`, `rounds`, `round_participants`, `hole_scores`, `round_invitations`). The **course catalog** (`courses`, `layouts`, `holes`) is an intentional exception: anon may `SELECT` so unsigned players can browse and start a local trial. Anon has no INSERT/UPDATE/DELETE on any table.
 
 ---
 

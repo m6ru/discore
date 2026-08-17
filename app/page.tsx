@@ -1,12 +1,12 @@
-import Link from "next/link";
 import { Suspense } from "react";
 import { createServerClient } from "@/lib/supabase/server";
 import { getAuthUserFirstName } from "@/lib/auth/get-auth-user-first-name";
 import { getHomePersonalSubtitle } from "@/lib/ui/home-greeting";
 import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
+import { ClaimTrialOnAuth } from "@/components/home/claim-trial-on-auth";
+import { GuestHomeSections } from "@/components/home/guest-sections";
 import { HomeSections } from "@/components/home/sections";
 import { HomeSectionsSkeleton } from "@/components/home/sections-skeleton";
-import { Button } from "@/components/ui/button";
 
 export default async function HomePage() {
   const supabase = await createServerClient();
@@ -22,18 +22,21 @@ export default async function HomePage() {
         <p className={pageSubtitleClassName}>
           {claims
             ? getHomePersonalSubtitle(getAuthUserFirstName(claims))
-            : "Sign in to save rounds and play with friends."}
+            : "Score a round — sign in later to save it."}
         </p>
       </header>
 
       {!claims ? (
-        <Button asChild size="lg" className="min-h-11 w-full sm:w-auto">
-          <Link href="/auth">Sign in</Link>
-        </Button>
-      ) : (
         <Suspense fallback={<HomeSectionsSkeleton />}>
-          <HomeSections userId={claims.sub} />
+          <GuestHomeSections />
         </Suspense>
+      ) : (
+        <>
+          <ClaimTrialOnAuth />
+          <Suspense fallback={<HomeSectionsSkeleton />}>
+            <HomeSections userId={claims.sub} />
+          </Suspense>
+        </>
       )}
     </main>
   );

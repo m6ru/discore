@@ -4,6 +4,10 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { createDraftRound } from "@/lib/rounds/round-draft-actions";
+import {
+  loadLocalTrial,
+  startLocalTrialFromLayout,
+} from "@/lib/local-round";
 import { toastError } from "@/lib/ui/toast-notify";
 
 export function useStartDraftRound(layoutId: string) {
@@ -26,7 +30,19 @@ export function useStartDraftRound(layoutId: string) {
       }
 
       if (!user) {
-        router.push("/auth?message=Please+sign+in+to+continue");
+        const existing = loadLocalTrial();
+        if (existing?.status === "active") {
+          router.push("/rounds/trial");
+          return;
+        }
+
+        const created = await startLocalTrialFromLayout(supabase, layoutId);
+        if (!created.ok) {
+          toastError(created.message);
+          return;
+        }
+
+        router.push("/rounds/trial");
         return;
       }
 

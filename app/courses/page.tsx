@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
 import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
 import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
@@ -6,13 +5,6 @@ import { CoursesList } from "./courses-list";
 
 export default async function CoursesPage() {
   const supabase = await createServerClient();
-  // getClaims() verifies the JWT locally when possible; middleware handles refresh.
-  const { data } = await supabase.auth.getClaims();
-
-  if (!data?.claims) {
-    redirect("/auth?message=Please+sign+in+to+continue");
-  }
-
   const { courses, error: coursesError } = await loadCourseSummaries(supabase);
 
   return (
