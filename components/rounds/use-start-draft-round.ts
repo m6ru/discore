@@ -24,11 +24,7 @@ export function useStartDraftRound(layoutId: string) {
         error: userError,
       } = await supabase.auth.getUser();
 
-      if (userError) {
-        toastError(`Session check failed: ${userError.message}`);
-        return;
-      }
-
+      // Unsigned players have no session; getUser() reports that as an error.
       if (!user) {
         const existing = loadLocalTrial();
         if (existing?.status === "active") {
@@ -43,6 +39,11 @@ export function useStartDraftRound(layoutId: string) {
         }
 
         router.push("/rounds/trial");
+        return;
+      }
+
+      if (userError) {
+        toastError(`Session check failed: ${userError.message}`);
         return;
       }
 
