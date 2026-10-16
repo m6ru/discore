@@ -143,8 +143,9 @@ select lives_ok(
      select '40000000-0000-0000-0000-000000000001', rp.id, '30000000-0000-0000-0000-000000000001', 3, false
      from public.round_participants rp
      where rp.round_id = '40000000-0000-0000-0000-000000000001'
-       and rp.user_id = 'a0000000-0000-0000-0000-00000000000a' $$,
-  'scorer can save a valid score'
+       and rp.user_id = 'a0000000-0000-0000-0000-00000000000a'
+     returning id, strokes $$,
+  'scorer can save a valid score and read it back'
 );
 
 select throws_ok(
@@ -226,13 +227,15 @@ select lives_ok(
 select lives_ok(
   $$ insert into public.rounds (id, scorer_id, layout_id, status, completed_at, guest_claim_id)
      values ('40000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-00000000000a',
-             '20000000-0000-0000-0000-000000000002', 'completed', now(), gen_random_uuid()) $$,
-  'trial claim can insert a completed round'
+             '20000000-0000-0000-0000-000000000002', 'completed', now(), gen_random_uuid())
+     returning id $$,
+  'trial claim can insert a completed round and read it back (supabase-js .insert().select())'
 );
 
 select lives_ok(
   $$ insert into public.round_participants (round_id, guest_name)
-     values ('40000000-0000-0000-0000-000000000003', 'Trial Guest') $$,
+     values ('40000000-0000-0000-0000-000000000003', 'Trial Guest')
+     returning id, guest_name $$,
   'trial claim can add a named guest'
 );
 
