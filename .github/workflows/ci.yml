@@ -44,3 +44,21 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder
           NEXT_TELEMETRY_DISABLED: 1
+
+  # Replays every migration into a throwaway local Postgres and runs the pgTAP
+  # RLS / integrity tests in supabase/tests.
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: supabase/setup-cli@v3
+        with:
+          version: 2.121.0
+
+      - name: Start database (applies all migrations)
+        run: supabase db start
+
+      - name: Database tests
+        run: supabase test db

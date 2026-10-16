@@ -28,6 +28,7 @@ Other scripts:
 | ------------------- | ----------------------------------------------- |
 | `npm run lint`      | ESLint (Next config)                            |
 | `npm test`          | Vitest run over `lib/**/*.test.ts`              |
+| `npx supabase test db` | pgTAP RLS / integrity tests in `supabase/tests/` (needs Docker + `npx supabase start`) |
 | `npm run test:watch`| Vitest in watch mode                            |
 | `npm run seed:courses` | Validate course JSON seeds in `supabase/seeds/courses/` |
 
