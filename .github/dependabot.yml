@@ -10,6 +10,13 @@ updates:
       # One PR for all safe (minor/patch) bumps; majors still arrive one by one.
       minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # Keep Node types on the runtime major we deploy (engines: node 24.x).
+      - dependency-name: "@types/node"
+        update-types: [version-update:semver-major]
+      # typescript-eslint (via eslint-config-next) does not support TS 7 yet.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
     commit-message:
       prefix: "chore(deps)"
 
