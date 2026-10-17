@@ -1,14 +1,14 @@
 {
   "course": {
-    "name": "Lihula Mõisamäe discgolfipark – Sinine",
+    "name": "Lihula Mõisamäe discgolfipark",
     "location": "Lihula Mõisamäe, Pärnumaa, Estonia",
     "slug": "lihula-moisamae-discgolfipark",
-    "lat": 58.6935595,
-    "lng": 23.8379861,
-    "details": "Pargirada Lihula mõisapargis. Raskem asetus. OB'd on asfaltkattega tee mänguala poolne serv ja naaberkinnistute piirdeaiad.",
+    "lat": 58.6932184,
+    "lng": 23.8383574,
+    "details": "Pargiraja kergem asetus. OB'd on asfaltkattega teede mänguala poolne serv ja naaberkinnistute piirdeaiad.",
     "terrain_type": null,
     "difficulty_tier": null,
-    "source_url": "https://www.discgolfirajad.ee/park/lihula-moisamae-discgolfipark/"
+    "source_url": "https://www.discgolfirajad.ee/park/lihula-moisamae-discgolfipark-valge/"
   },
   "layout": {
     "name": "9 korvi",

@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Koosa discgolfi park",
+    "name": "Koosa discgolfipark",
     "location": "Koosa discgolfi park, Tartumaa, Estonia",
     "slug": "koosa-discgolfi-park",
-    "lat": 58.52614789162578,
-    "lng": 27.07384734945981,
+    "lat": 58.5261478916258,
+    "lng": 27.0738473494598,
     "details": "Amenities: Kõrval asub kauplus A&O",
     "terrain_type": null,
     "difficulty_tier": null,

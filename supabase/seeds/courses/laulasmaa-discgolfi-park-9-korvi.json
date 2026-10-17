@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Laulasmaa DiscGolfPark",
+    "name": "Laulasmaa discgolfipark",
     "location": "Laulasmaa, Harjumaa, Estonia",
     "slug": "laulasmaa-discgolfi-park",
-    "lat": 59.37573637053766,
-    "lng": 24.237277507781982,
+    "lat": 59.3757363705377,
+    "lng": 24.237277507782,
     "details": "Laulasmaa Spa ümber paiknev 9 korviga DiscGolfPark, mis tehtud DiscSport.ee poolt.",
     "terrain_type": null,
     "difficulty_tier": null,

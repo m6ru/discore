@@ -1,14 +1,14 @@
 {
   "course": {
-    "name": "Pärnu Raeküla discgolfipark PRO asetus",
+    "name": "Pärnu Raeküla discgolfipark",
     "location": "Pärnu Raeküla, Pärnumaa, Estonia",
     "slug": "parnu-raekula-discgolfipark",
-    "lat": 58.360023507948,
-    "lng": 24.584108319088,
+    "lat": 58.3596724,
+    "lng": 24.5865638,
     "details": "Pärnus Raeküla linnaosas, Reiu metsas asuv 19 korviga ning soojendusalaga Pro & Amatööride asetusega discgolfipark.",
     "terrain_type": null,
     "difficulty_tier": null,
-    "source_url": "https://www.discgolfirajad.ee/park/parnu-raekula-discgolfipark/"
+    "source_url": "https://www.discgolfirajad.ee/park/parnu-raekula-discgolfipark-am-asetus/"
   },
   "layout": {
     "name": "18 korvi",

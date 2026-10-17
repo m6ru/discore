@@ -1,11 +1,11 @@
 {
   "course": {
     "name": "Järve Talu Aktiivpuhkekeskus",
-    "location": "Järve talu, Nahkjala küla, Lääne-Harju vald, Harjumaa 76104",
+    "location": "Järve talu, Nahkjala küla, Lääne-Harju vald, Harjumaa",
     "slug": "jarve-talu",
     "lat": 59.254694916716,
     "lng": 24.2860837542537,
-    "details": "Päevapilet: 3 €\n\nE-post: kuidokungla@hotmail.com\nTelefon: +372 5345 2464",
+    "details": "Päevapilet: 3 €\n\nFEUM OÜ\n+372 5345 2464\nkuidokungla@hotmail.com",
     "terrain_type": null,
     "difficulty_tier": null
   },

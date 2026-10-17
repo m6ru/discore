@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Avinurme discgolfi park",
+    "name": "Avinurme discgolfipark",
     "location": "Avinurme discgolfi park, Jõgevamaa, Estonia",
     "slug": "avinurme-discgolfi-park",
-    "lat": 58.98519929588689,
-    "lng": 26.86984419822693,
+    "lat": 58.9851992958869,
+    "lng": 26.8698441982269,
     "details": "Avinurmes 9 korviline avatud väljak, algab ja lõppeb staadioni juures.",
     "terrain_type": null,
     "difficulty_tier": null,

@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Ebavere discgolfi park",
+    "name": "Ebavere discgolfipark",
     "location": "Ebavere discgolfi park, lääneviru, Estonia",
     "slug": "ebavere-discgolfi-park",
-    "lat": 59.10446049999999,
-    "lng": 26.230022700000063,
+    "lat": 59.1044605,
+    "lng": 26.2300227000001,
     "details": null,
     "terrain_type": null,
     "difficulty_tier": null,

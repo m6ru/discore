@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Kellavere DiscGolfPark",
+    "name": "Kellavere discgolfipark",
     "location": "Kellavere, lääneviru, Estonia",
     "slug": "kellavere-discgolfi-park",
-    "lat": 59.073883075002165,
-    "lng": 26.524394423681656,
+    "lat": 59.0738830750022,
+    "lng": 26.5243944236817,
     "details": "Laekvere vallas, Kellavere mäel asuv DiscSport.ee poolt loodud 9 korviga DiscGolfPark.",
     "terrain_type": null,
     "difficulty_tier": null,

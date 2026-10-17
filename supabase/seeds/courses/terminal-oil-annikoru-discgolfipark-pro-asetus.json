@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Terminal Oil Annikoru discgolfipark powered by DiscSport",
+    "name": "Terminal Oil Annikoru discgolfipark",
     "location": "Terminal Oil Annikoru, Tartumaa, Estonia",
     "slug": "terminal-oil-annikoru-discgolfipark",
-    "lat": 58.26442970000001,
-    "lng": 26.307958999999983,
+    "lat": 58.2644297,
+    "lng": 26.307959,
     "details": "Tartu maakonnas asuv Annikoru 18 rajaga discgolfipark pakub pinget nii algajale kui ka edasijõudnutele.",
     "terrain_type": null,
     "difficulty_tier": null,

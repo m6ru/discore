@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Tamsalu discgolfi park",
+    "name": "Tamsalu discgolfipark",
     "location": "Tamsalu discgolfi park, lääneviru, Estonia",
     "slug": "tamsalu-discgolfi-park",
-    "lat": 59.16861579869181,
-    "lng": 26.104449033737183,
+    "lat": 59.1686157986918,
+    "lng": 26.1044490337372,
     "details": "Tamsalu terviseradadel asuv keskmisest pisut raskem vaheldusrikas 18-korviline park. Esineb nii mandosid, keerukaid ob-alasid, lageda väljaga üle 150 meetriseid draive kui ka kitsaid 70-meetriseid metsaradu.",
     "terrain_type": null,
     "difficulty_tier": null,

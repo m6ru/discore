@@ -18,6 +18,36 @@ export type LoadedSeedFile = {
   data: CourseSeedFile;
 };
 
+/**
+ * Every layout file repeats its course block, and the database has one row per
+ * course, so all copies must be identical — otherwise whichever file is
+ * generated last would silently win.
+ */
+export function findCourseBlockConflicts(loaded: Pick<LoadedSeedFile, "label" | "data">[]): string[] {
+  const firstBySlug = new Map<string, Pick<LoadedSeedFile, "label" | "data">>();
+  const issues: string[] = [];
+
+  for (const file of loaded) {
+    const first = firstBySlug.get(file.data.course.slug);
+    if (!first) {
+      firstBySlug.set(file.data.course.slug, file);
+      continue;
+    }
+    const a: Record<string, unknown> = first.data.course;
+    const b: Record<string, unknown> = file.data.course;
+    const fields = [...new Set([...Object.keys(a), ...Object.keys(b)])].filter(
+      (key) => JSON.stringify(a[key] ?? null) !== JSON.stringify(b[key] ?? null),
+    );
+    if (fields.length > 0) {
+      issues.push(
+        `${file.label}: course block differs from ${first.label} (${fields.join(", ")}) — keep all layouts of a course identical`,
+      );
+    }
+  }
+
+  return issues;
+}
+
 export function loadAndValidateSeedFiles(filePaths: string[]): LoadedSeedFile[] {
   const loaded: LoadedSeedFile[] = [];
   let errorCount = 0;
@@ -51,6 +81,11 @@ export function loadAndValidateSeedFiles(filePaths: string[]): LoadedSeedFile[] 
       `[ok] ${label} — ${result.data.holes.length} holes, par ${result.computedTotalPar}, ${result.computedTotalDistanceM}m`,
     );
     loaded.push({ filePath, label, data: result.data });
+  }
+
+  for (const issue of findCourseBlockConflicts(loaded)) {
+    errorCount += 1;
+    console.error(`[error] ${issue}`);
   }
 
   if (errorCount > 0) {

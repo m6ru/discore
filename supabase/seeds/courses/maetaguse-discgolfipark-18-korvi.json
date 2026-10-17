@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Mäetaguse discgolfi park",
+    "name": "Mäetaguse discgolfipark",
     "location": "Mäetaguse discgolfi park, Ida-Virumaa, Estonia",
     "slug": "maetaguse-discgolfipark",
-    "lat": 59.22539593274493,
-    "lng": 27.27873136233518,
+    "lat": 59.2253959327449,
+    "lng": 27.2787313623352,
     "details": "Ida-Virumaal Mäetagusel 18 korviga rajal on peetud ka mitmed Eesti Meistrivõistlustest, mis oma raskuse all võib murda nii mõnegi visa võitleja.",
     "terrain_type": null,
     "difficulty_tier": null,

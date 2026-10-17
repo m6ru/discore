@@ -3,12 +3,12 @@
     "name": "Järva-Jaani discgolfipark",
     "location": "Järva-Jaani, Järvamaa, Estonia",
     "slug": "jarva-jaani-discgolfipark",
-    "lat": 59.03408476846492,
-    "lng": 25.894309187788394,
-    "details": "Kaheksateistkümne korviga kolme kilomeetri pikkune edasijõudnutele mõeldud discgolfi rada Võllaste terviseradadel Järva-Jaanis Järvamaal.",
+    "lat": 59.0339587,
+    "lng": 25.8944803,
+    "details": "Kaheksateistkümne korviga kolme kilomeetri pikkune discgolfi rada harrastajatele Võllaste terviseradadel Järva-Jaanis Järvamaal.",
     "terrain_type": null,
     "difficulty_tier": null,
-    "source_url": "https://www.discgolfirajad.ee/park/jarva-jaani-discgolfipark-kuldne-rada/"
+    "source_url": "https://www.discgolfirajad.ee/park/jarva-jaani-discgolfipark-roheline-rada/"
   },
   "layout": {
     "name": "Kuldne rada",

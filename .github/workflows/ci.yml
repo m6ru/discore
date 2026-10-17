@@ -36,6 +36,10 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      # Fails if course JSON is invalid or was edited without a seed migration.
+      - name: Course seeds
+        run: npx tsx scripts/seed-courses.ts --check
+
       # Every data route renders at request time, so the build never talks to
       # Supabase — placeholders are enough and CI needs no secrets.
       - name: Build

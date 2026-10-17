@@ -1,0 +1,1047 @@
+{
+  "aasmae-discgolfi-park-18-korvi.json": {
+    "hash": "ec6ea39dc8319dfc",
+    "course": "aasmae-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "abja-paluoja-discgolfi-park-11-korvi.json": {
+    "hash": "a457874339db09ce",
+    "course": "abja-paluoja-discgolfi-park",
+    "layout": "11-korvi"
+  },
+  "aegviidu-discgolfi-park-9-korvi.json": {
+    "hash": "863ea1467d00e901",
+    "course": "aegviidu-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "ala-discgolfi-park-9-korvi.json": {
+    "hash": "9c4724e53034ee8f",
+    "course": "ala-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "albu-manni-discgolfipark-9-korvi.json": {
+    "hash": "603f98bf37ef6f8b",
+    "course": "albu-manni-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "alutaguse-discgolfipark-kuldne-kotkas.json": {
+    "hash": "789295cecf002c9d",
+    "course": "alutaguse-discgolfipark",
+    "layout": "kuldne-kotkas"
+  },
+  "alutaguse-discgolfipark-punane-kotkas.json": {
+    "hash": "1dbf30c6ce573470",
+    "course": "alutaguse-discgolfipark",
+    "layout": "punane-kotkas"
+  },
+  "alutaguse-discgolfipark-roheline-kotkas.json": {
+    "hash": "c1c319a6b12e937c",
+    "course": "alutaguse-discgolfipark",
+    "layout": "roheline-kotkas"
+  },
+  "alutaguse-discgolfipark-sinine-kotkas.json": {
+    "hash": "e729143cad9d8b53",
+    "course": "alutaguse-discgolfipark",
+    "layout": "sinine-kotkas"
+  },
+  "alutaguse-discgolfipark-valge-kotkas.json": {
+    "hash": "17b91cfeb03e888e",
+    "course": "alutaguse-discgolfipark",
+    "layout": "valge-kotkas"
+  },
+  "aravete-discgolfi-park-18-korvi.json": {
+    "hash": "c8d3ce71720ca408",
+    "course": "aravete-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "are-moisapargi-discgolfi-park-9-korvi.json": {
+    "hash": "7db0db17cad3e791",
+    "course": "are-moisapargi-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "audru-kooli-discgolfi-park-6-korvi.json": {
+    "hash": "756de4a5f4637ea6",
+    "course": "audru-kooli-discgolfi-park",
+    "layout": "6-korvi"
+  },
+  "avinurme-discgolfi-park-9-korvi.json": {
+    "hash": "e86a60089c2b86a0",
+    "course": "avinurme-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "buen-kiiu-am.json": {
+    "hash": "4684bb06caab6d98",
+    "course": "buen-kiiu",
+    "layout": "am"
+  },
+  "buen-kiiu-pro.json": {
+    "hash": "ec47d5bcf81bef30",
+    "course": "buen-kiiu",
+    "layout": "pro"
+  },
+  "ebavere-discgolfi-park-18-korvi.json": {
+    "hash": "9a365c2310edc1f5",
+    "course": "ebavere-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "elva-lasketiiru-discgolfi-park-9-korvi.json": {
+    "hash": "d4aad9394d381a1f",
+    "course": "elva-lasketiiru-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "emmaste-discgolfipark-9-korvi.json": {
+    "hash": "a443d9be7545ef91",
+    "course": "emmaste-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "haademeeste-keskkooli-discgolfi-park-6-korvi.json": {
+    "hash": "7dc498c7bbc1812b",
+    "course": "haademeeste-keskkooli-discgolfi-park",
+    "layout": "6-korvi"
+  },
+  "haanja-discgolfipark-18-korvi.json": {
+    "hash": "386d486d32f6f1f5",
+    "course": "haanja-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "haapsalu-moisaharra-sojaretk.json": {
+    "hash": "a4cace2ec4f72052",
+    "course": "haapsalu",
+    "layout": "moisaharra-sojaretk-must"
+  },
+  "haapsalu-moisaproua-jalutuskaik.json": {
+    "hash": "fa2b704b83c8e59e",
+    "course": "haapsalu",
+    "layout": "moisaproua-jalutuskaik-punane"
+  },
+  "haapsalu-paruni-talvetee-sinine.json": {
+    "hash": "dde1e4437fcebd74",
+    "course": "haapsalu",
+    "layout": "paruni-talvetee-sinine"
+  },
+  "holstre-paradiis-discgolfipark-18-korvi.json": {
+    "hash": "e3cccf077c781c84",
+    "course": "holstre-paradiis-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "holstre-polli-discgolfipark-18-korvi.json": {
+    "hash": "02b337c6fafc7911",
+    "course": "holstre-polli-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "holstre-polli-discgolfipark-kollane.json": {
+    "hash": "eea827fec89e491c",
+    "course": "holstre-polli-discgolfipark",
+    "layout": "kollane"
+  },
+  "hummuli-discgolfi-park-9-korvi.json": {
+    "hash": "ed7c1159eb02e74b",
+    "course": "hummuli-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "iisaku-discgolfipark-lendorav.json": {
+    "hash": "5f6c026a0ffc3c4b",
+    "course": "iisaku-discgolfipark",
+    "layout": "lendorav"
+  },
+  "iisaku-discgolfipark-tark-orav.json": {
+    "hash": "de562739dc504c28",
+    "course": "iisaku-discgolfipark",
+    "layout": "tark-orav"
+  },
+  "ilmatsalu-discgolfipark-4-korvi.json": {
+    "hash": "7cb4ba1304d1f4ee",
+    "course": "ilmatsalu-discgolfipark",
+    "layout": "4-korvi"
+  },
+  "imavere-discgolfipark-18-korvi.json": {
+    "hash": "5faf712d566b74d3",
+    "course": "imavere-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "ingliste-lennurada-discgolfipark-9-korvi.json": {
+    "hash": "89bd7bb475c162e5",
+    "course": "ingliste-lennurada-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "jarta-discgolfipark-a-asetus.json": {
+    "hash": "bd3ee91ad8d2084c",
+    "course": "jarta-discgolfipark",
+    "layout": "a-asetus"
+  },
+  "jarta-discgolfipark-b-asetus.json": {
+    "hash": "eb5c4925845972b6",
+    "course": "jarta-discgolfipark",
+    "layout": "b-asetus"
+  },
+  "jarva-jaani-discgolfipark-kuldne-rada.json": {
+    "hash": "396064be80a76b85",
+    "course": "jarva-jaani-discgolfipark",
+    "layout": "kuldne-rada"
+  },
+  "jarva-jaani-discgolfipark-roheline-rada.json": {
+    "hash": "9657669e00a76912",
+    "course": "jarva-jaani-discgolfipark",
+    "layout": "roheline-rada"
+  },
+  "jarvakandi-discgolfi-park-18-korvi.json": {
+    "hash": "c7bd33dccd370473",
+    "course": "jarvakandi-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "jarve-discgolfipark-algaja-7.json": {
+    "hash": "cab126b803d346de",
+    "course": "jarve-discgolfipark",
+    "layout": "algaja-7"
+  },
+  "jarve-discgolfipark-am-18-2026.json": {
+    "hash": "debdb6262cd5e09f",
+    "course": "jarve-discgolfipark",
+    "layout": "am-18-2026"
+  },
+  "jarve-discgolfipark-pro-18-2026.json": {
+    "hash": "fb73502a9a57f423",
+    "course": "jarve-discgolfipark",
+    "layout": "pro-18-2026"
+  },
+  "jarve-talu-am-2026.json": {
+    "hash": "e58732625f3f41c9",
+    "course": "jarve-talu",
+    "layout": "am-2026"
+  },
+  "jarve-talu-pro-2026.json": {
+    "hash": "4085d9a6df186a0d",
+    "course": "jarve-talu",
+    "layout": "pro-2026"
+  },
+  "jogeva-discgolfipark-9-korvi.json": {
+    "hash": "9c4c948b775c32b4",
+    "course": "jogeva-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "joulumae-discgolfi-park-kollane.json": {
+    "hash": "87396c247bb1c468",
+    "course": "joulumae-discgolfi-park",
+    "layout": "kollane"
+  },
+  "joulumae-discgolfi-park-punane.json": {
+    "hash": "5472fb7e70345f30",
+    "course": "joulumae-discgolfi-park",
+    "layout": "punane"
+  },
+  "joulumae-discgolfi-park-sinine.json": {
+    "hash": "d0ff39984b3ae576",
+    "course": "joulumae-discgolfi-park",
+    "layout": "sinine"
+  },
+  "kaagvere-discgolfipark-6-korvi.json": {
+    "hash": "7f8f4079beef0842",
+    "course": "kaagvere-discgolfipark",
+    "layout": "6-korvi"
+  },
+  "kaapa-discgolfi-park-7-korvi.json": {
+    "hash": "bf20988fbdfdef50",
+    "course": "kaapa-discgolfi-park",
+    "layout": "7-korvi"
+  },
+  "kaarepere-discgolfi-park-9-korvi.json": {
+    "hash": "da259629c6b31653",
+    "course": "kaarepere-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "kadrina-discgolfi-park-9-korvi.json": {
+    "hash": "8527962757bfed7d",
+    "course": "kadrina-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "kaina-discgolfipark-16-korvi.json": {
+    "hash": "8e38623e78da0344",
+    "course": "kaina-discgolfipark",
+    "layout": "16-korvi"
+  },
+  "kaiu-discgolfipark-19-korvi.json": {
+    "hash": "0ba4b8940b7bfe36",
+    "course": "kaiu-discgolfipark",
+    "layout": "19-korvi"
+  },
+  "kaldamae-discgolfipark-18-korvi.json": {
+    "hash": "176f6b7ef964da9c",
+    "course": "kaldamae-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "kalmetu-kooli-discgolfipark-8-korvi.json": {
+    "hash": "ad3688a4ec644a94",
+    "course": "kalmetu-kooli-discgolfipark",
+    "layout": "8-korvi"
+  },
+  "karujarve-discgolfipark-24-korvi.json": {
+    "hash": "bf0e9df154f0cc4c",
+    "course": "karujarve-discgolfipark",
+    "layout": "24-korvi"
+  },
+  "kehra-discgolfi-park-8-korvi.json": {
+    "hash": "79f12c6e8fc90f29",
+    "course": "kehra-discgolfi-park",
+    "layout": "8-korvi"
+  },
+  "kehtna-discgolfipark-9-korvi.json": {
+    "hash": "f99b7303c21e201d",
+    "course": "kehtna-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "keila-discgolfpark-harrastaja-2026.json": {
+    "hash": "89b34715a99020fb",
+    "course": "keila-discgolfpark",
+    "layout": "harrastaja-2026"
+  },
+  "keila-discgolfpark-pro-2026.json": {
+    "hash": "c7fbdc3675f52711",
+    "course": "keila-discgolfpark",
+    "layout": "pro-2026"
+  },
+  "kellavere-discgolfi-park-9-korvi.json": {
+    "hash": "b1a014c47ffced70",
+    "course": "kellavere-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "kergu-discgolfipark-6-korvi.json": {
+    "hash": "4f91e9dd90a2666b",
+    "course": "kergu-discgolfipark",
+    "layout": "6-korvi"
+  },
+  "kernu-discgolfi-park-12-korvi.json": {
+    "hash": "fc8dd734ad2641b5",
+    "course": "kernu-discgolfi-park",
+    "layout": "12-korvi"
+  },
+  "keskus-suvi-discgolfipark-kirju-rahn.json": {
+    "hash": "addd471da327f7eb",
+    "course": "keskus-suvi-discgolfipark",
+    "layout": "kirju-rahn"
+  },
+  "kihnu-discgolfi-park-9-korvi.json": {
+    "hash": "2fbbc5a0980f4c86",
+    "course": "kihnu-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "kiikla-discgolfi-park-libahunt-libahunt.json": {
+    "hash": "8b0455f9d679139f",
+    "course": "kiikla-discgolfi-park-libahunt",
+    "layout": "libahunt"
+  },
+  "kilingi-nomme-discgolfipark-9-korvi.json": {
+    "hash": "7335137338562dc4",
+    "course": "kilingi-nomme-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "kivioli-seikluskeskuse-discgolfi-park-18-korvi.json": {
+    "hash": "627360543810eb19",
+    "course": "kivioli-seikluskeskuse-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "kohila-19-2025.json": {
+    "hash": "fdde2d326d8b9f9d",
+    "course": "kohila",
+    "layout": "19-2025"
+  },
+  "kohtla-jarve-discgolfipark-trilobiit.json": {
+    "hash": "a714fa42c49ccb6a",
+    "course": "kohtla-jarve-discgolfipark",
+    "layout": "trilobiit"
+  },
+  "kohtla-nomme-discgolfipark-9-korvi.json": {
+    "hash": "69cc0e3f208ecd6b",
+    "course": "kohtla-nomme-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "koigi-discgolfipark-18-korvi.json": {
+    "hash": "8396afb3bde9e822",
+    "course": "koigi-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "kolga-jaani-discgolfi-park-9-korvi.json": {
+    "hash": "04dd4f133e03a413",
+    "course": "kolga-jaani-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "koosa-discgolfi-park-9-korvi.json": {
+    "hash": "753f853c79ee2004",
+    "course": "koosa-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "korvemaa-discgolfipark-harrastajad.json": {
+    "hash": "b9579ff08d48215f",
+    "course": "korvemaa-discgolfipark",
+    "layout": "harrastajad"
+  },
+  "korvemaa-discgolfipark-pro-21.json": {
+    "hash": "98b3c8625269b74f",
+    "course": "korvemaa-discgolfipark",
+    "layout": "pro-21"
+  },
+  "kose-discgolfi-park-18-korvi.json": {
+    "hash": "57745ea91318f202",
+    "course": "kose-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "kullamaa-discgolfi-park-9-korvi.json": {
+    "hash": "59bba1e2122a47d3",
+    "course": "kullamaa-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "kunda-discgolfipark-edasijoudnute.json": {
+    "hash": "611c000807297856",
+    "course": "kunda-discgolfipark",
+    "layout": "edasijoudnute"
+  },
+  "kunda-discgolfipark-harjutus.json": {
+    "hash": "4b13a6b8f2140631",
+    "course": "kunda-discgolfipark",
+    "layout": "harjutus"
+  },
+  "kuremae-discgolfi-park-9-korvi.json": {
+    "hash": "c39e67354f28cb87",
+    "course": "kuremae-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "kurna-discgolfipark-2024.json": {
+    "hash": "68c46d79209b4b71",
+    "course": "kurna-discgolfipark",
+    "layout": "2024"
+  },
+  "kuusalu-keskkooli-rihumae-discgolfipark-11-korvi.json": {
+    "hash": "9953754b07dc6068",
+    "course": "kuusalu-keskkooli-rihumae-discgolfipark",
+    "layout": "11-korvi"
+  },
+  "kuutsemae-discgolfipark-18-korvi.json": {
+    "hash": "12b7ff8957fe997d",
+    "course": "kuutsemae-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "laaneotsa-discgolfipark-18-korvi.json": {
+    "hash": "c2709f7cfc4663f7",
+    "course": "laaneotsa-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "laulasmaa-discgolfi-park-9-korvi.json": {
+    "hash": "f75d4ff454684e8e",
+    "course": "laulasmaa-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "lihula-moisamae-discgolfipark-9-korvi.json": {
+    "hash": "cd9d8daad800a170",
+    "course": "lihula-moisamae-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "lihula-moisamae-discgolfipark-valge.json": {
+    "hash": "7b85ca8fe238e361",
+    "course": "lihula-moisamae-discgolfipark",
+    "layout": "valge"
+  },
+  "liipa-talu-discgolfipark-12-korvi.json": {
+    "hash": "5e565b46d116b1da",
+    "course": "liipa-talu-discgolfipark",
+    "layout": "12-korvi"
+  },
+  "lindi-discgolfipark-9-korvi.json": {
+    "hash": "ee43f29ed1013e98",
+    "course": "lindi-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "linnamae-discgolfi-park-9-korvi.json": {
+    "hash": "21653202060a41c7",
+    "course": "linnamae-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "lohusuu-discgolfipark-lendhaug.json": {
+    "hash": "227462f874b7fa80",
+    "course": "lohusuu-discgolfipark",
+    "layout": "lendhaug"
+  },
+  "lumanda-discgolfipark-9-korvi.json": {
+    "hash": "f5d15a0e84bc8ecb",
+    "course": "lumanda-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "maardu-am-2025.json": {
+    "hash": "dad3d56a9a578f5f",
+    "course": "maardu",
+    "layout": "am-2025"
+  },
+  "maardu-pro-2025.json": {
+    "hash": "86527a62d769656d",
+    "course": "maardu",
+    "layout": "pro-2025"
+  },
+  "maarjamae-discgolfipark-10-korvi.json": {
+    "hash": "d287202b96454a59",
+    "course": "maarjamae-discgolfipark",
+    "layout": "10-korvi"
+  },
+  "maemoisa-discgolfi-park-9-korvi.json": {
+    "hash": "555a78f007b6c295",
+    "course": "maemoisa-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "maeotsa-discgolfipark-18-korvi.json": {
+    "hash": "b6777d4b9f434790",
+    "course": "maeotsa-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "maetaguse-discgolfipark-18-korvi.json": {
+    "hash": "ed4373ed148e6db5",
+    "course": "maetaguse-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "mammaste-discgolfi-park-18-korvi.json": {
+    "hash": "eeba2ede669754fe",
+    "course": "mammaste-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "mandjala-discgolfi-park-10-korvi.json": {
+    "hash": "6bb0d84677f198c8",
+    "course": "mandjala-discgolfi-park",
+    "layout": "10-korvi"
+  },
+  "manniku-wakepark-2026.json": {
+    "hash": "07ea42abd954319a",
+    "course": "manniku-wakepark",
+    "layout": "2026"
+  },
+  "marjamaa-discgolfipark-12-korvi.json": {
+    "hash": "5b24134fe178e334",
+    "course": "marjamaa-discgolfipark",
+    "layout": "12-korvi"
+  },
+  "metsajoe-discgolfi-park-18-korvi.json": {
+    "hash": "e7c7371cfb124295",
+    "course": "metsajoe-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "metsapoole-discgolfi-park-7-korvi.json": {
+    "hash": "3a8c1b860448f4fc",
+    "course": "metsapoole-discgolfi-park",
+    "layout": "7-korvi"
+  },
+  "moedaku-puhkebaasi-discgolfi-park-9-korvi.json": {
+    "hash": "49db26c78bef43f7",
+    "course": "moedaku-puhkebaasi-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "moisakula-discgolfipark-13-korvi.json": {
+    "hash": "2afb41896990f699",
+    "course": "moisakula-discgolfipark",
+    "layout": "13-korvi"
+  },
+  "muhu-discgolfi-park-liiva-liiva.json": {
+    "hash": "52ba0871de2381a9",
+    "course": "muhu-discgolfi-park-liiva",
+    "layout": "liiva"
+  },
+  "muraste-2026.json": {
+    "hash": "f9c9b0bb170ed0b1",
+    "course": "muraste",
+    "layout": "2026"
+  },
+  "mustla-discgolfi-park-14-korvi.json": {
+    "hash": "35e997296d8ebc92",
+    "course": "mustla-discgolfi-park",
+    "layout": "14-korvi"
+  },
+  "musumanniku-discgolfi-park-18-korvi.json": {
+    "hash": "fd6fe77e949cfb19",
+    "course": "musumanniku-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "naissaare-discgolfipark-9-korvi.json": {
+    "hash": "fe2b964ada7af690",
+    "course": "naissaare-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "noo-discgolfi-park-12-korvi.json": {
+    "hash": "126adc64540b351f",
+    "course": "noo-discgolfi-park",
+    "layout": "12-korvi"
+  },
+  "noo-reaalgumnaasiumi-discgolfipark-6-korvi.json": {
+    "hash": "468748f4cb96d8d1",
+    "course": "noo-reaalgumnaasiumi-discgolfipark",
+    "layout": "6-korvi"
+  },
+  "nova-discgolfipark-18-korvi.json": {
+    "hash": "5fadb226753f3f45",
+    "course": "nova-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "olustvere-discgolfipark-18-korvi.json": {
+    "hash": "59e96d0adb7a25e4",
+    "course": "olustvere-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "oru-discgolfipark-12-korvi.json": {
+    "hash": "0f2859310f6893a1",
+    "course": "oru-discgolfipark",
+    "layout": "12-korvi"
+  },
+  "osula-discgolfi-park-9-korvi.json": {
+    "hash": "49bd03f2c92ba8e4",
+    "course": "osula-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "pagari-discgolfipark-6-korvi.json": {
+    "hash": "dfaab9a490683a6c",
+    "course": "pagari-discgolfipark",
+    "layout": "6-korvi"
+  },
+  "paide-ulejoe-discgolfipark-9-korvi.json": {
+    "hash": "637ab5e5594b584c",
+    "course": "paide-ulejoe-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "paikuse-discgolfi-park-9-korvi.json": {
+    "hash": "cd26d0fa9b28a373",
+    "course": "paikuse-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "pala-discgolfirada-9-korvi.json": {
+    "hash": "e6ed7058e7a3a23a",
+    "course": "pala-discgolfirada",
+    "layout": "9-korvi"
+  },
+  "palade-discgolfipark-18-korvi.json": {
+    "hash": "f5e7bf7e8876dd72",
+    "course": "palade-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "paldiski-discgolfi-park-9-korvi.json": {
+    "hash": "b9015f5f0297f5c4",
+    "course": "paldiski-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "palivere-discgolfipark-18-korvi.json": {
+    "hash": "ec9b07d5fafbf2e3",
+    "course": "palivere-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "parnjoe-discgolfipark-6-korvi.json": {
+    "hash": "e27f57dc242256fc",
+    "course": "parnjoe-discgolfipark",
+    "layout": "6-korvi"
+  },
+  "parnu-jaagupi-discgolfi-park-18-korvi.json": {
+    "hash": "0dda8bec5ac4c467",
+    "course": "parnu-jaagupi-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "parnu-joekaaru-discgolfipark-18-korvi.json": {
+    "hash": "46be2b62af1771dc",
+    "course": "parnu-joekaaru-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "parnu-raekula-discgolfipark-18-korvi.json": {
+    "hash": "c8d4f101a72c064c",
+    "course": "parnu-raekula-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "parnu-raekula-discgolfipark-am-asetus.json": {
+    "hash": "b320c6d866d5e060",
+    "course": "parnu-raekula-discgolfipark",
+    "layout": "am-asetus"
+  },
+  "paunkula-discgolfi-park-18-korvi.json": {
+    "hash": "58ec79f863a24f5c",
+    "course": "paunkula-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "pikasilla-discgolfi-park-9-korvi.json": {
+    "hash": "d2862a14303ddaec",
+    "course": "pikasilla-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "pirgu-18-korvi.json": {
+    "hash": "6ab448aa90542e64",
+    "course": "pirgu",
+    "layout": "18-korvi"
+  },
+  "pisisaare-discgolfipark-10-korvi.json": {
+    "hash": "c4d7680009613a28",
+    "course": "pisisaare-discgolfipark",
+    "layout": "10-korvi"
+  },
+  "piusa-urgoru-discgolfipark-9-korvi.json": {
+    "hash": "c59edc27d5b7fd50",
+    "course": "piusa-urgoru-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "poide-discgolfipark-21-korvi.json": {
+    "hash": "99b7b817154f06f6",
+    "course": "poide-discgolfipark",
+    "layout": "21-korvi"
+  },
+  "poltsamaa-kuningamae-discgolfipark-18-korvi.json": {
+    "hash": "bbfaa5a3ac6d7bb6",
+    "course": "poltsamaa-kuningamae-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "puhalepa-discgolfipark-must-26.json": {
+    "hash": "94f5e7216061f581",
+    "course": "puhalepa-discgolfipark",
+    "layout": "must-26"
+  },
+  "puhalepa-discgolfipark-punane-19.json": {
+    "hash": "9f66b00ecd2c1c43",
+    "course": "puhalepa-discgolfipark",
+    "layout": "punane-19"
+  },
+  "puhalepa-discgolfipark-sinine-19.json": {
+    "hash": "1abf6b9348b4ba6a",
+    "course": "puhalepa-discgolfipark",
+    "layout": "sinine-19"
+  },
+  "raama-discgolfi-park-9-korvi.json": {
+    "hash": "564fb44939c842c9",
+    "course": "raama-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "rakke-discgolfi-park-9-korvi.json": {
+    "hash": "bc5ad4f9ca8d4340",
+    "course": "rakke-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "rakvere-discgolfi-park-18-korvi.json": {
+    "hash": "abb7f6c44051b2f9",
+    "course": "rakvere-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "randmae-sportland-discgolfipark-18-korvi.json": {
+    "hash": "84500759edd4460a",
+    "course": "randmae-sportland-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "rannapargi-discgolfipark-rannapargi-open-2024-layout.json": {
+    "hash": "3cb05bc31fd91cd3",
+    "course": "rannapargi-discgolfipark",
+    "layout": "rannapargi-open-2024-layout"
+  },
+  "rannapargi-discgolfipark-rannapargi-open-2026-layout.json": {
+    "hash": "0f3dc2aba3aed5ab",
+    "course": "rannapargi-discgolfipark",
+    "layout": "rannapargi-open-2026-layout"
+  },
+  "rannu-kooli-discgolfipark-9-korvi.json": {
+    "hash": "931dd0321f3779c6",
+    "course": "rannu-kooli-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "rapina-discgolfi-park-9-korvi.json": {
+    "hash": "e36f4ebddd0becbd",
+    "course": "rapina-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "respo-discgolfipark-18-korvi.json": {
+    "hash": "5581ffd0b6c4984b",
+    "course": "respo-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "rongu-discgolfipark-6-korvi.json": {
+    "hash": "445f9fda492b83fe",
+    "course": "rongu-discgolfipark",
+    "layout": "6-korvi"
+  },
+  "roodevalja-discgolfipark-9-korvi.json": {
+    "hash": "ea8b7b1db085f682",
+    "course": "roodevalja-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "roosta-puhkekula-discgolfipark-9-korvi.json": {
+    "hash": "c16b0b3d7ef84546",
+    "course": "roosta-puhkekula-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "rummu-discgolfipark-12-korvi.json": {
+    "hash": "0239221ded56fdc5",
+    "course": "rummu-discgolfipark",
+    "layout": "12-korvi"
+  },
+  "saarepeedi-discgolfi-park-18-korvi.json": {
+    "hash": "6d50267964d4d2e5",
+    "course": "saarepeedi-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "saku-discgolfi-park-18-korvi.json": {
+    "hash": "1619f5d2d8021179",
+    "course": "saku-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "salme-discgolfipark-18-korvi.json": {
+    "hash": "02f539f81dfe46ed",
+    "course": "salme-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "sauga-discgolfipark-9-korvi.json": {
+    "hash": "ae07c84624af59b0",
+    "course": "sauga-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "simuna-discgolfipark-18-korvi.json": {
+    "hash": "4a629272d5ee5a0d",
+    "course": "simuna-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "sindi-discgolfi-park-18-korvi.json": {
+    "hash": "442f2ff6488e5958",
+    "course": "sindi-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "someru-discgolfi-park-9-korvi.json": {
+    "hash": "5df451c3b371c88f",
+    "course": "someru-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "sportland-prodigy-elva-discgolfi-park-18-korvi.json": {
+    "hash": "2044c77a0daadbdb",
+    "course": "sportland-prodigy-elva-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "suure-jaani-discgolfi-park-9-korvi.json": {
+    "hash": "e0f6ae2783ea09ff",
+    "course": "suure-jaani-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "tamsalu-discgolfi-park-18-korvi.json": {
+    "hash": "2354974be2aa6d09",
+    "course": "tamsalu-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "tapa-mannikumae-discgolfipark-18-korvi.json": {
+    "hash": "e1267a5d333b459a",
+    "course": "tapa-mannikumae-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "tartu-roosi-discgolfi-park-18-korvi.json": {
+    "hash": "fa1935fa42646200",
+    "course": "tartu-roosi-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "tartu-tahtvere-dendro-discgolfi-park-18-korvi.json": {
+    "hash": "59c56cba69c8bec5",
+    "course": "tartu-tahtvere-dendro-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "tehvandi-discgolfipark-18-korvi.json": {
+    "hash": "672cc3c3e414a8a8",
+    "course": "tehvandi-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "terminal-oil-annikoru-discgolfipark-am-asetus.json": {
+    "hash": "30d634e228a52bfb",
+    "course": "terminal-oil-annikoru-discgolfipark",
+    "layout": "am-asetus"
+  },
+  "terminal-oil-annikoru-discgolfipark-pro-asetus.json": {
+    "hash": "141f433d4aee3d66",
+    "course": "terminal-oil-annikoru-discgolfipark",
+    "layout": "pro-asetus"
+  },
+  "toosikannu-discgolfipark-9-korvi.json": {
+    "hash": "6b0afedf77684971",
+    "course": "toosikannu-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "tori-discgolfi-park-6-korvi.json": {
+    "hash": "1b34f8610180599c",
+    "course": "tori-discgolfi-park",
+    "layout": "6-korvi"
+  },
+  "torva-discgolfi-park-18-korvi.json": {
+    "hash": "a84156a06b8d58bd",
+    "course": "torva-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "tostamaa-discgolfi-park-18-korvi.json": {
+    "hash": "9507b24b9803600d",
+    "course": "tostamaa-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "tudulinna-discgolfipark-9-korvi.json": {
+    "hash": "bc38aabd0127ff8c",
+    "course": "tudulinna-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "tuhalaane-discgolfi-park-9-korvi.json": {
+    "hash": "d78e593a0233b5bf",
+    "course": "tuhalaane-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "turba-discgolfipark-12-korvi.json": {
+    "hash": "acd0850fe41da9ba",
+    "course": "turba-discgolfipark",
+    "layout": "12-korvi"
+  },
+  "turi-discgolfi-park-9-korvi.json": {
+    "hash": "50bc4d84742ec7f3",
+    "course": "turi-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "uhtjarve-urgoru-noiariigi-discgolfi-park-9-korvi.json": {
+    "hash": "af8312a71cb47ca5",
+    "course": "uhtjarve-urgoru-noiariigi-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "uhtna-discgolfipark-9-korvi.json": {
+    "hash": "90848385cde72af8",
+    "course": "uhtna-discgolfipark",
+    "layout": "9-korvi"
+  },
+  "umbsaare-marjametsa-discgolfipark-10-korvi.json": {
+    "hash": "de0b2509eecf1db6",
+    "course": "umbsaare-marjametsa-discgolfipark",
+    "layout": "10-korvi"
+  },
+  "vaana-joesuu-discgolfi-park-9-korvi.json": {
+    "hash": "7a7681894a212553",
+    "course": "vaana-joesuu-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "vaatsa-discgolfi-park-12-korvi.json": {
+    "hash": "b31fa86ab0251111",
+    "course": "vaatsa-discgolfi-park",
+    "layout": "12-korvi"
+  },
+  "valga-discgolfi-park-9-korvi.json": {
+    "hash": "61c766d852bf7678",
+    "course": "valga-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "valga-jaanikese-discgolfipark-18-korvi.json": {
+    "hash": "e38643363edc15d6",
+    "course": "valga-jaanikese-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "valgehobusemae-discgolfi-park-19-korvi.json": {
+    "hash": "6e02f7a6a91730c1",
+    "course": "valgehobusemae-discgolfi-park",
+    "layout": "19-korvi"
+  },
+  "valgeranna-discgolfi-park-18-korvi.json": {
+    "hash": "2c1e0242d9f63b64",
+    "course": "valgeranna-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "valgu-discgolfi-park-12-korvi.json": {
+    "hash": "ce93f0df23e89f87",
+    "course": "valgu-discgolfi-park",
+    "layout": "12-korvi"
+  },
+  "valjala-discgolfi-park-9-korvi.json": {
+    "hash": "ddaa371d2066b07f",
+    "course": "valjala-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "valtu-discgolfi-park-18-korvi.json": {
+    "hash": "38b70c911bdfa846",
+    "course": "valtu-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "valuoja-rotary-kettagolfipark-18-korvi.json": {
+    "hash": "2da7114294824ec8",
+    "course": "valuoja-rotary-kettagolfipark",
+    "layout": "18-korvi"
+  },
+  "vandra-discgolfi-park-9-korvi.json": {
+    "hash": "b3a25cad6614d2b7",
+    "course": "vandra-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "varska-discgolfipark-15-korvi.json": {
+    "hash": "9f8c4c40403b081b",
+    "course": "varska-discgolfipark",
+    "layout": "15-korvi"
+  },
+  "varska-sanatooriumi-discgolfi-park-9-korvi.json": {
+    "hash": "922a11eea6573b7d",
+    "course": "varska-sanatooriumi-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "vasalemma-22-2025.json": {
+    "hash": "1c4821147cec5881",
+    "course": "vasalemma",
+    "layout": "22-2025"
+  },
+  "vastse-kuuste-discgolfi-park-9-korvi.json": {
+    "hash": "26f2199c3ddf9da2",
+    "course": "vastse-kuuste-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "vastseliina-discgolfi-park-12-korvi.json": {
+    "hash": "73cbd438078bdb53",
+    "course": "vastseliina-discgolfi-park",
+    "layout": "12-korvi"
+  },
+  "vidrike-discgolfi-park-9-korvi.json": {
+    "hash": "6701affd85680226",
+    "course": "vidrike-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "viimsi-discgolfipark-2025.json": {
+    "hash": "de1d9fde6fdc9838",
+    "course": "viimsi-discgolfipark",
+    "layout": "2025"
+  },
+  "viljandi-discgolfi-park-18-korvi.json": {
+    "hash": "86e09130a04edffb",
+    "course": "viljandi-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "vinni-pajusti-discgolfi-park-18-korvi.json": {
+    "hash": "56cb78100d0e3f51",
+    "course": "vinni-pajusti-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "viru-jaagupi-discgolfipark-18-korvi.json": {
+    "hash": "18e58c7d22e09c8b",
+    "course": "viru-jaagupi-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "vohma-discgolfipark-12-korvi.json": {
+    "hash": "c9a5bfbc84d6d228",
+    "course": "vohma-discgolfipark",
+    "layout": "12-korvi"
+  },
+  "voka-discgolfi-park-9-korvi.json": {
+    "hash": "ddf081d85c1aeff3",
+    "course": "voka-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "vonnu-discgolfi-park-9-korvi.json": {
+    "hash": "9c86e22538a48028",
+    "course": "vonnu-discgolfi-park",
+    "layout": "9-korvi"
+  },
+  "voore-discgolfipark-14-korvi.json": {
+    "hash": "afd491f899f3f682",
+    "course": "voore-discgolfipark",
+    "layout": "14-korvi"
+  },
+  "vooremae-discgolfipark-18-korvi.json": {
+    "hash": "12f37eb9f36c6461",
+    "course": "vooremae-discgolfipark",
+    "layout": "18-korvi"
+  },
+  "vooremae-discgolfipark-b-asetus.json": {
+    "hash": "862f45da75d25c44",
+    "course": "vooremae-discgolfipark",
+    "layout": "b-asetus"
+  },
+  "voru-kubija-discgolfi-park-18-korvi.json": {
+    "hash": "7ea339f420cebd32",
+    "course": "voru-kubija-discgolfi-park",
+    "layout": "18-korvi"
+  },
+  "voru-laane-discgolfipark-9-korvi.json": {
+    "hash": "722687ab0af95f6a",
+    "course": "voru-laane-discgolfipark",
+    "layout": "9-korvi"
+  }
+}

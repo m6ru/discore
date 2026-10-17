@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Maarjamäe discgolfi park",
+    "name": "Maarjamäe discgolfipark",
     "location": "Maarjamäe discgolfi park, Harjumaa, Estonia",
     "slug": "maarjamae-discgolfipark",
-    "lat": 59.45252465446006,
-    "lng": 24.84734058380127,
+    "lat": 59.4525246544601,
+    "lng": 24.8473405838013,
     "details": "Tallinna kesklinnast kümne minuti kaugusel asuv 10 korviga meeldiv vahepala päevitamisele Pirita rannas. Soovitatav algajatele",
     "terrain_type": null,
     "difficulty_tier": null,

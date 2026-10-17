@@ -3,12 +3,12 @@
     "name": "Jõulumäe discgolfipark",
     "location": "Jõulumäe, Pärnumaa, Estonia",
     "slug": "joulumae-discgolfi-park",
-    "lat": 58.223446630948494,
-    "lng": 24.514945149421692,
-    "details": "Pärnu lähedal Jõulumäel asuvas discgolfipargis on 3 rada, kollane, punane ja sinine. Sinine rada on neist lühim, 9 korviga. Rajale minnes kindlasti vaadata Jõulumäe spordikeskuse kodulehele ja veenduda, et seal parasjagu mingit suuremat sündmust ei ole toimumas.\n\nAmenities: Ketaste laenutus, WC, Majutus, EDGL Karikasari 2022 Caddy Book",
+    "lat": 58.223627,
+    "lng": 24.5157340000001,
+    "details": "Pärnu lähedal Jõulumäel asuvas discgolfi pargis on 3 rada, kollane, punane ja sinine. Sinisel rajal on 9 korvi ja mõeldud pigem algajatele. Rajale minnes kindlasti vaadata Jõulumäe spordikeskuse kodulehele ja veenduda, et seal parasjagu mingit suuremat sündmust ei ole toimumas.\n\nAmenities: Majutus, Ketaste laenutus, WC",
     "terrain_type": null,
     "difficulty_tier": null,
-    "source_url": "https://www.discgolfirajad.ee/park/joulumae-discgolfi-park-punane/"
+    "source_url": "https://www.discgolfirajad.ee/park/joulumae-discgolfi-park-sinine/"
   },
   "layout": {
     "name": "Punane",
