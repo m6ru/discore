@@ -682,6 +682,22 @@ export type Database = {
       }
     }
     Functions: {
+      accept_invite: {
+        Args: { p_invite_id: string }
+        Returns: string
+      }
+      claim_trial: {
+        Args: {
+          p_claim_id: string
+          p_completed_at: string
+          p_hole_ids: string[]
+          p_layout_id: string
+          p_players: Json
+          p_scores: Json
+          p_started_at: string
+        }
+        Returns: string
+      }
       has_round_invite: {
         Args: { p_round_id: string; p_user_id: string }
         Returns: boolean

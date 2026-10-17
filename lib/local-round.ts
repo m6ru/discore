@@ -400,43 +400,33 @@ async function claimLocalTrial(supabase: Client): Promise<ClaimLocalTrialResult>
     return { ok: true, outcome: "skipped" };
   }
 
-  const layoutCheck = await assertHolesMatchLayout(supabase, local);
-  if (!layoutCheck.ok) {
-    return layoutCheck;
-  }
+  // One transaction in the database (claim_trial): the round, guests and
+  // scores are saved together or not at all. Safe to retry with the same claimId.
+  const { data: roundId, error } = await supabase.rpc("claim_trial", {
+    p_claim_id: local.claimId,
+    p_layout_id: local.layoutId,
+    p_started_at: local.startedAt,
+    p_completed_at: local.completedAt ?? new Date().toISOString(),
+    p_hole_ids: local.holes.map((hole) => hole.id),
+    p_players: local.players.map((player) => ({
+      id: player.id,
+      name: player.name,
+      is_scorer: player.isScorer,
+    })),
+    p_scores: local.scores.map((score) => ({
+      player_id: score.playerId,
+      hole_id: score.holeId,
+      strokes: score.strokes,
+      ob: score.ob,
+    })),
+  });
 
-  const roundId = await insertOrLoadClaimedRound(supabase, local, user.id);
-  if (!roundId.ok) {
-    return roundId;
-  }
-
-  const participantId = await loadScorerParticipantId(supabase, roundId.roundId, user.id);
-  if (!participantId.ok) {
-    return participantId;
-  }
-
-  const guests = await ensureGuestParticipants(
-    supabase,
-    roundId.roundId,
-    local,
-    participantId.participantId
-  );
-  if (!guests.ok) {
-    return guests;
-  }
-
-  const scoresResult = await insertMissingHoleScores(
-    supabase,
-    roundId.roundId,
-    guests.playerToParticipant,
-    local
-  );
-  if (!scoresResult.ok) {
-    return scoresResult;
+  if (error || !roundId) {
+    return { ok: false, message: `Could not save round: ${error?.message ?? "no round returned"}` };
   }
 
   clearLocalTrial();
-  return { ok: true, outcome: "claimed", roundId: roundId.roundId };
+  return { ok: true, outcome: "claimed", roundId };
 }
 
 function validateRoster(
@@ -570,244 +560,4 @@ function parseScore(raw: unknown, defaultPlayerId: string): LocalTrialScore | nu
     strokes: value.strokes,
     ob: value.ob,
   };
-}
-
-async function assertHolesMatchLayout(
-  supabase: Client,
-  local: LocalTrialRound
-): Promise<{ ok: true } | { ok: false; message: string }> {
-  const { data, error } = await supabase
-    .from("holes")
-    .select("id")
-    .eq("layout_id", local.layoutId);
-
-  if (error) {
-    return { ok: false, message: `Could not verify layout holes: ${error.message}` };
-  }
-
-  const layoutHoleIds = new Set((data ?? []).map((hole) => hole.id));
-  if (layoutHoleIds.size !== local.holes.length) {
-    return { ok: false, message: "Layout holes no longer match this trial." };
-  }
-  if (!local.holes.every((hole) => layoutHoleIds.has(hole.id))) {
-    return { ok: false, message: "Layout holes no longer match this trial." };
-  }
-
-  return { ok: true };
-}
-
-async function insertOrLoadClaimedRound(
-  supabase: Client,
-  local: LocalTrialRound,
-  scorerId: string
-): Promise<{ ok: true; roundId: string } | { ok: false; message: string }> {
-  const existing = await loadRoundByClaimId(supabase, local.claimId, scorerId);
-  if (!existing.ok) {
-    return existing;
-  }
-  if (existing.roundId) {
-    return { ok: true, roundId: existing.roundId };
-  }
-
-  const { data, error } = await supabase
-    .from("rounds")
-    .insert({
-      layout_id: local.layoutId,
-      scorer_id: scorerId,
-      status: "completed",
-      started_at: local.startedAt,
-      completed_at: local.completedAt,
-      guest_claim_id: local.claimId,
-      starting_hole: 1,
-    })
-    .select("id")
-    .maybeSingle();
-
-  if (error) {
-    if (error.code === "23505") {
-      const retried = await loadRoundByClaimId(supabase, local.claimId, scorerId);
-      if (!retried.ok) {
-        return retried;
-      }
-      if (retried.roundId) {
-        return { ok: true, roundId: retried.roundId };
-      }
-    }
-    return { ok: false, message: `Could not save round: ${error.message}` };
-  }
-
-  if (!data) {
-    return { ok: false, message: "Could not save round." };
-  }
-
-  return { ok: true, roundId: data.id };
-}
-
-async function loadRoundByClaimId(
-  supabase: Client,
-  claimId: string,
-  scorerId: string
-): Promise<{ ok: true; roundId: string | null } | { ok: false; message: string }> {
-  const { data, error } = await supabase
-    .from("rounds")
-    .select("id")
-    .eq("guest_claim_id", claimId)
-    .eq("scorer_id", scorerId)
-    .maybeSingle();
-
-  if (error) {
-    return { ok: false, message: `Could not look up trial round: ${error.message}` };
-  }
-
-  return { ok: true, roundId: data?.id ?? null };
-}
-
-async function loadScorerParticipantId(
-  supabase: Client,
-  roundId: string,
-  userId: string
-): Promise<{ ok: true; participantId: string } | { ok: false; message: string }> {
-  const { data, error } = await supabase
-    .from("round_participants")
-    .select("id")
-    .eq("round_id", roundId)
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (error) {
-    return { ok: false, message: `Could not load participant: ${error.message}` };
-  }
-  if (!data) {
-    return { ok: false, message: "Scorer was not added to the claimed round." };
-  }
-
-  return { ok: true, participantId: data.id };
-}
-
-async function ensureGuestParticipants(
-  supabase: Client,
-  roundId: string,
-  local: LocalTrialRound,
-  scorerParticipantId: string
-): Promise<
-  | { ok: true; playerToParticipant: Map<string, string> }
-  | { ok: false; message: string }
-> {
-  const scorer = local.players.find((player) => player.isScorer);
-  if (!scorer) {
-    return { ok: false, message: "Trial is missing a scorer." };
-  }
-
-  const playerToParticipant = new Map<string, string>([[scorer.id, scorerParticipantId]]);
-  const guests = local.players.filter((player) => !player.isScorer);
-  if (guests.length === 0) {
-    return { ok: true, playerToParticipant };
-  }
-
-  const { data: existing, error: existingError } = await supabase
-    .from("round_participants")
-    .select("id, guest_name")
-    .eq("round_id", roundId);
-
-  if (existingError) {
-    return { ok: false, message: `Could not load participants: ${existingError.message}` };
-  }
-
-  const byName = new Map<string, string>();
-  for (const row of existing ?? []) {
-    if (row.guest_name) {
-      byName.set(playerNameKey(row.guest_name), row.id);
-    }
-  }
-
-  const missing = guests.filter((guest) => !byName.has(playerNameKey(guest.name)));
-  if (missing.length > 0) {
-    const { data: inserted, error: insertError } = await supabase
-      .from("round_participants")
-      .insert(
-        missing.map((guest) => ({
-          round_id: roundId,
-          guest_name: guest.name.trim(),
-        }))
-      )
-      .select("id, guest_name");
-
-    if (insertError) {
-      return { ok: false, message: `Could not save guests: ${insertError.message}` };
-    }
-
-    for (const row of inserted ?? []) {
-      if (row.guest_name) {
-        byName.set(playerNameKey(row.guest_name), row.id);
-      }
-    }
-  }
-
-  for (const guest of guests) {
-    const participantId = byName.get(playerNameKey(guest.name));
-    if (!participantId) {
-      return { ok: false, message: "Could not match a guest to the claimed round." };
-    }
-    playerToParticipant.set(guest.id, participantId);
-  }
-
-  return { ok: true, playerToParticipant };
-}
-
-async function insertMissingHoleScores(
-  supabase: Client,
-  roundId: string,
-  playerToParticipant: Map<string, string>,
-  local: LocalTrialRound
-): Promise<{ ok: true } | { ok: false; message: string }> {
-  const { data: existing, error: existingError } = await supabase
-    .from("hole_scores")
-    .select("hole_id, participant_id")
-    .eq("round_id", roundId);
-
-  if (existingError) {
-    return { ok: false, message: `Could not load scores: ${existingError.message}` };
-  }
-
-  const have = new Set(
-    (existing ?? []).map((row) => `${row.participant_id}:${row.hole_id}`)
-  );
-
-  const payload: {
-    round_id: string;
-    participant_id: string;
-    hole_id: string;
-    strokes: number;
-    ob: boolean;
-    fairway_hit: null;
-  }[] = [];
-  for (const score of local.scores) {
-    const participantId = playerToParticipant.get(score.playerId);
-    if (!participantId) {
-      return { ok: false, message: "Trial has a score for an unknown player." };
-    }
-    const key = `${participantId}:${score.holeId}`;
-    if (have.has(key)) {
-      continue;
-    }
-    payload.push({
-      round_id: roundId,
-      participant_id: participantId,
-      hole_id: score.holeId,
-      strokes: score.strokes,
-      ob: score.ob,
-      fairway_hit: null,
-    });
-  }
-
-  if (payload.length === 0) {
-    return { ok: true };
-  }
-
-  const { error } = await supabase.from("hole_scores").insert(payload);
-  if (error) {
-    return { ok: false, message: `Could not save scores: ${error.message}` };
-  }
-
-  return { ok: true };
 }

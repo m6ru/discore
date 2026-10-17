@@ -102,16 +102,20 @@ export function HomeInvites({ currentUserId, invites }: Props) {
     setBusyId(invite.id);
 
     if (nextStatus === "accepted") {
-      const { error: participantError } = await supabase.from("round_participants").insert({
-        round_id: invite.round_id,
-        user_id: currentUserId,
+      // Joins the round and marks the invite accepted in one transaction.
+      const { error: acceptError } = await supabase.rpc("accept_invite", {
+        p_invite_id: invite.id,
       });
 
-      if (participantError && participantError.code !== "23505") {
-        toastError(`Invite acceptance failed: ${participantError.message}`);
+      if (acceptError) {
+        toastError(`Invite acceptance failed: ${acceptError.message}`);
         setBusyId(null);
         return;
       }
+
+      router.push(`/rounds/${invite.round_id}`);
+      router.refresh();
+      return;
     }
 
     const { error: updateError } = await supabase
@@ -125,12 +129,6 @@ export function HomeInvites({ currentUserId, invites }: Props) {
     if (updateError) {
       toastError(`Failed to update invite: ${updateError.message}`);
       setBusyId(null);
-      return;
-    }
-
-    if (nextStatus === "accepted") {
-      router.push(`/rounds/${invite.round_id}`);
-      router.refresh();
       return;
     }
 
