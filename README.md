@@ -30,6 +30,7 @@ Other scripts:
 | `npm test`          | Vitest run over `lib/**/*.test.ts`              |
 | `npx supabase test db` | pgTAP RLS / integrity tests in `supabase/tests/` (needs Docker + `npx supabase start`) |
 | `npm run test:watch`| Vitest in watch mode                            |
+| `npm run test:e2e`  | Playwright E2E in `e2e/` against local Supabase (needs `npx supabase start`; first time: `npx playwright install chromium`) |
 | `npm run seed:courses` | Validate course JSON seeds in `supabase/seeds/courses/` |
 
 Course data is creator-maintained — see `supabase/seeds/README.md`.

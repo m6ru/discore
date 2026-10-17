@@ -44,3 +44,7 @@ next-env.d.ts
 # course seed generator output (migrations are committed)
 /supabase/seeds/generated/*
 !/supabase/seeds/generated/.gitkeep
+
+# playwright
+/test-results/
+/playwright-report/
