@@ -1,65 +1,46 @@
 # Course seeds
 
-One JSON file per **layout** in `courses/`. Copy `_template.json` when adding a new layout.
+Git is the single source of truth for course data. One JSON file per **layout** in `courses/`; copy `_template.json` when adding a new layout.
 
 - Path: `supabase/seeds/courses/{course-slug}-{layout-slug}.json`
-- Hole data is hand-curated from on-course signage and official club materials (see `courseurls.md` at repo root for the workflow).
-- `source_url` is optional in JSON — omitted values are stored as `NULL`.
-- Skip `_template.json` when generating SQL.
+- Each layout file repeats its course block (`name`, `location`, `details`, coords, …). All files of a course must have an **identical** course block — validation fails otherwise.
+- `source_url` is optional — omitted values are stored as `NULL`.
+- Do not edit courses, layouts or holes in the Supabase dashboard: the next seed migration overwrites them.
 
-## Legacy migration note
-
-`20260420185200_seed_courses.sql` inserted Järve as course slug `jarve` with layout `pro-18`. The JSON library uses canonical slug `jarve-discgolfipark` and separate layout slugs (e.g. `pro-18-2026`). Generated SQL renames `jarve` → `jarve-discgolfipark` before upserting so the old row is not duplicated. That migration is kept for history; new data is JSON → SQL only.
-
-## Workflow (no service role key)
-
-Course writes go through **Supabase migrations**, using the CLI’s linked-project credentials (same as schema changes). No `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`.
+## Workflow
 
 1. Edit or add JSON under `courses/`.
-2. From repo root:
-
-```bash
-npm run seed:courses
-```
-
-This validates all JSON and writes `supabase/seeds/generated/course_seeds.sql` (gitignored; for local review).
-
-3. When JSON changes need to reach the database, create a **new** migration and apply:
+2. Generate a migration with **only the files that changed** and apply it:
 
 ```bash
 npx tsx scripts/seed-courses.ts --new-migration
 npx supabase db push
 ```
 
-SQL uses idempotent `ON CONFLICT` upserts on `courses.slug`, `layouts (course_id, slug)`, and `holes (layout_id, hole_number)`. Re-applying the same migration is safe.
+3. Commit the new migration **together with** `supabase/seeds/applied.json`.
 
-## What to edit where
+`applied.json` records a fingerprint of every layout file as of the last seed migration; that is how `--new-migration` knows what changed. CI runs `--check` and fails if a JSON file was edited without a migration.
 
-| Data | Edit in | Goes live via |
-|------|---------|---------------|
-| Holes, layouts, par, distances, hole notes, course name | JSON in `courses/` | `seed:courses --new-migration` → `db push` |
-| About copy (fees, phone, operator) — `location`, `details` | **Supabase Table Editor** → `courses` row | Save in dashboard (instant) |
-| Course map image | `public/courses/{slug}-map.png` | Git push + deploy |
-
-**Course upsert behaviour:** seed migrations update structural fields (`name`, coords, terrain) and always refresh layouts/holes. They set `location` and `details` only on **first insert** of a new course slug — later hole/layout migrations do **not** overwrite About text already in the database.
-
-To change About after a course exists, use the Supabase dashboard (or a one-off `UPDATE courses SET details = …` migration). JSON `details` / `location` values are bootstrap defaults for new courses.
-
-### Updating course data after a migration is already applied
-
-Generate a new timestamped migration (do not edit migrations that have already run):
+Other commands:
 
 ```bash
-npx tsx scripts/seed-courses.ts --new-migration
-npx supabase db push
+npm run seed:courses                               # validate + write a full snapshot to seeds/generated/ (gitignored, for review)
+npx tsx scripts/seed-courses.ts --validate-only    # validate only
+npx tsx scripts/seed-courses.ts --check            # what CI runs
 ```
 
-Validate JSON only (no files written):
+## What happens to existing data
 
-```bash
-npx tsx scripts/seed-courses.ts --validate-only
-```
+| Change in JSON | Effect in the database |
+|---|---|
+| Edit course / layout / hole fields | Upserted (including `location` and `details`) |
+| Remove a hole | Hole deleted — **migration fails** if it has scores |
+| Delete a layout file or rename its slug | Layout deleted — **migration fails** if it has rounds. Set `"is_active": false` to retire a played layout instead |
+| Change a hole's par | Only rounds scored afterwards use the new par. Each score stores the par it was played at (`hole_scores.par`) |
 
-## Verify
+Course map images are not seed data: `public/courses/{slug}-map.png`, deployed with the app.
 
-Sign in to the app and open `/courses`. Each seeded course should appear with its active layouts; pick a layout and start a draft round.
+## Legacy notes
+
+- Seed migrations before 2026-10 are full snapshots of every course; they are kept because migrations are history.
+- `20260420185200_seed_courses.sql` inserted Järve as slug `jarve`; generated SQL renames it to `jarve-discgolfipark` before upserting (`LEGACY_COURSE_SLUG_ALIASES`).

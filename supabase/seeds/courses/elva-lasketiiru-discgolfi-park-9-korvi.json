@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Elva Lasketiiru discgolfi park",
+    "name": "Elva Lasketiiru discgolfipark",
     "location": "Elva Lasketiiru discgolfi park, Tartumaa, Estonia",
     "slug": "elva-lasketiiru-discgolfi-park",
-    "lat": 58.20615799999999,
-    "lng": 26.423597100000052,
+    "lat": 58.206158,
+    "lng": 26.4235971000001,
     "details": "9 korviga discgolfi park ilusa Elva männimetsa all, mis sobib nii algajatele kui ka edasijõudnutele. Rajad erinevate pikkuste ja mandodega, mis muudavad mängimise piisavalt atraktiivseks kõigile.\n\nAmenities: Peamaja hoones discgolf ketaste müük ja laenutus. Tervisespordikeskuses võimalik ööbida, pidada üritusi ja võistlusi ning kasutada muid vabaaja ja sportlikke tegevusi.",
     "terrain_type": null,
     "difficulty_tier": null,

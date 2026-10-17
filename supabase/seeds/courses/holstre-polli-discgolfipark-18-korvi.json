@@ -1,14 +1,14 @@
 {
   "course": {
-    "name": "Holstre-Polli discgolfipark",
-    "location": "Holstre-Polli, Viljandimaa, Estonia",
+    "name": "Holstre-Põlli discgolfipark",
+    "location": "Holstre-Põlli, Viljandimaa, Estonia",
     "slug": "holstre-polli-discgolfipark",
-    "lat": 58.283522,
-    "lng": 25.664336999999932,
-    "details": "Holstre-Polli tervisekeskuse suusaradadel asuv 18.korviline discgolfi rada. Palume arvestada mängimisel teiste sportlastega ja pöörata rõhku viske ohutusele.\n\nAmenities: Ketaste laenutus, WC, Majutus, Pesemisvõimalused, Tenniseväljak, Korvpalli väljak, Grillimiskoht",
+    "lat": 58.283631833492,
+    "lng": 25.665363156037,
+    "details": null,
     "terrain_type": null,
     "difficulty_tier": null,
-    "source_url": "https://www.discgolfirajad.ee/park/holstre-polli-discgolfi-park/"
+    "source_url": "https://www.discgolfirajad.ee/park/holstre-polli-kollane-discgolfipark/"
   },
   "layout": {
     "name": "18 korvi",

@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Pärnu-Jaagupi discgolfi park",
+    "name": "Pärnu-Jaagupi discgolfipark",
     "location": "Pärnu-Jaagupi discgolfi park, Pärnumaa, Estonia",
     "slug": "parnu-jaagupi-discgolfi-park",
-    "lat": 58.61009044241413,
-    "lng": 24.50010745767213,
+    "lat": 58.6100904424141,
+    "lng": 24.5001074576721,
     "details": null,
     "terrain_type": null,
     "difficulty_tier": null,

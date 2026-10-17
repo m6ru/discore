@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Valga discgolfi park",
+    "name": "Valga discgolfipark",
     "location": "Valga discgolfi park, Valgamaa, Estonia",
     "slug": "valga-discgolfi-park",
-    "lat": 57.77948389999999,
-    "lng": 26.05111720000002,
+    "lat": 57.7794839,
+    "lng": 26.0511172,
     "details": "Valga linnapargis asuv 9 korviga discgolfi park.\n\nAmenities: Spordihallist saab laenutada kettaid.",
     "terrain_type": null,
     "difficulty_tier": null,

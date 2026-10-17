@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Muhu DiscGolfPark",
+    "name": "Muhu discgolfipark",
     "location": "Muhu, Saaremaa, Estonia",
     "slug": "muhu-discgolfi-park-liiva",
-    "lat": 58.60199048014658,
-    "lng": 23.226591385705547,
+    "lat": 58.6019904801466,
+    "lng": 23.2265913857055,
     "details": "6 korviga DiscGolfPark, mis loodud DiscSport.ee poolt. 6 rajaline discgolfi harrastajatele mõeldud park Muhus, mis oma lühikeste rajapikkustega on sobilik ka algajatele.",
     "terrain_type": null,
     "difficulty_tier": null,

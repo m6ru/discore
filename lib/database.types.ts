@@ -88,6 +88,7 @@ export type Database = {
           hole_id: string
           id: string
           ob: boolean
+          par: number
           participant_id: string
           round_id: string
           strokes: number
@@ -98,6 +99,7 @@ export type Database = {
           hole_id: string
           id?: string
           ob?: boolean
+          par?: number
           participant_id: string
           round_id: string
           strokes: number
@@ -108,6 +110,7 @@ export type Database = {
           hole_id?: string
           id?: string
           ob?: boolean
+          par?: number
           participant_id?: string
           round_id?: string
           strokes?: number

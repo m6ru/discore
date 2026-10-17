@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Türi discgolfi park",
+    "name": "Türi discgolfipark",
     "location": "Türi discgolfi park, Järvamaa, Estonia",
     "slug": "turi-discgolfi-park",
-    "lat": 58.803856873274526,
-    "lng": 25.455873809509285,
+    "lat": 58.8038568732745,
+    "lng": 25.4558738095093,
     "details": "Järvamaal Türil asuv 9 korviga discgolfi park.",
     "terrain_type": null,
     "difficulty_tier": null,

@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Kuutsemäe discgolfi park",
+    "name": "Kuutsemäe discgolfipark",
     "location": "Kuutsemäe discgolfi park, Valgamaa, Estonia",
     "slug": "kuutsemae-discgolfipark",
-    "lat": 58.02593639879997,
-    "lng": 26.321854232788155,
+    "lat": 58.0259363988,
+    "lng": 26.3218542327882,
     "details": "Must 18-korviga PRO-rada, mis on oma tõusude ja langustega tõsine väljakutse ka kogenud discgolfarile. Pikad avadraivid, täpne vise, tugev vaimne võitlus ja hea füüsiline vorm on see, mis annavad mängijale antud rajal eelise. Mitmed PAR4d, üks PAR5, 90m vise üle tehisjärve ja ca 250m 17. rada ülevalt mäenõlvalt alla orgu pakuvad adrenaliini rohkem ja veel. Ka algajatele on mõeldud, pargis on veel eraldi kergemad asetused, vastavalt siis Punane ja Roheline rada.",
     "terrain_type": null,
     "difficulty_tier": null,

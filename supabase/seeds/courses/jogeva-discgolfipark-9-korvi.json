@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Jõgeva discgolfi park",
+    "name": "Jõgeva discgolfipark",
     "location": "Jõgeva discgolfi park, Jõgevamaa, Estonia",
     "slug": "jogeva-discgolfipark",
-    "lat": 58.744700007194915,
-    "lng": 26.37829452753067,
+    "lat": 58.7447000071949,
+    "lng": 26.3782945275307,
     "details": "Jõgeval asuv mitmekesine avatud radadega ning samas ka kitsaste tunnelitega 9 korvoga discgolfipark.\n\nAmenities: Ketaste laenutus Virtuse Spordihoones",
     "terrain_type": null,
     "difficulty_tier": null,

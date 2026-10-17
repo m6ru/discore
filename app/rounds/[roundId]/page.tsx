@@ -85,7 +85,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
       .order("hole_number", { ascending: true }),
     supabase
       .from("hole_scores")
-      .select("id, participant_id, hole_id, strokes, ob, fairway_hit")
+      .select("id, participant_id, hole_id, strokes, ob, fairway_hit, par")
       .eq("round_id", round.id),
     supabase
       .from("profiles")
@@ -100,6 +100,13 @@ export default async function RoundPage({ params }: RoundPageProps) {
     ? formatRoundDisplayDate(round.completed_at, round.started_at)
     : null;
   const safeParticipants = participants ?? [];
+  // Scores keep the par they were played at; a later par correction in the
+  // course data must not change how a finished scorecard reads.
+  const playedPar = new Map((existingScores ?? []).map((score) => [score.hole_id, score.par]));
+  const displayHoles = (holes ?? []).map((hole) => ({
+    ...hole,
+    par: playedPar.get(hole.id) ?? hole.par,
+  }));
   const isScorer = round.scorer_id === user.id;
   const isRoundParticipant = safeParticipants.some(
     (participant) => participant.user_id === user.id,
@@ -174,7 +181,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
           layoutTotalPar={layoutRow?.total_par ?? 0}
           initialParticipants={safeParticipants}
           initialInvites={normalizeInviteRows(invites ?? [])}
-          holes={(holes ?? []) as HoleRow[]}
+          holes={displayHoles as HoleRow[]}
           initialHoleScores={(existingScores ?? []) as HoleScoreRow[]}
         />
       )}

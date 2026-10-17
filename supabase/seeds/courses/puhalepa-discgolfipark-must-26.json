@@ -3,12 +3,12 @@
     "name": "Pühalepa discgolfipark",
     "location": "Pühalepa, Hiiumaa, Estonia",
     "slug": "puhalepa-discgolfipark",
-    "lat": 58.98803530000001,
-    "lng": 22.80550519999997,
-    "details": "Pühalepas asuv discgolfipark, Must 26-korviline layout. Saab mängida ka lihtsamat Sinist ja Punast 18-korvilist layouti. Must layout sisaldab kõiki Sinise ja Punase layouti korve.",
+    "lat": 58.9884007,
+    "lng": 22.8051691,
+    "details": "Hiiumaal, Pühalepal asuv 19 korviga ning kahe asetusega discgolfi rada. Punane-asetus edasijõudnutele ning Sinine-asetus rohkem harrastajatele suunatud.",
     "terrain_type": null,
     "difficulty_tier": null,
-    "source_url": "https://www.discgolfirajad.ee/park/puhalepa-discgolfipark-must-26/"
+    "source_url": "https://www.discgolfirajad.ee/park/puhalepa-discgolfipark-sinine-19/"
   },
   "layout": {
     "name": "Must 26",

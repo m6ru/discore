@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Järta discgolfipark B-asetus",
+    "name": "Järta discgolfipark",
     "location": "Järta, Raplamaa, Estonia",
     "slug": "jarta-discgolfipark",
     "lat": 58.8973513,
-    "lng": 24.47311220000006,
+    "lng": 24.4731122000001,
     "details": "Rapla maakonnas Märjamaal Järta terviseradadel paiknev 18 korviga rada.",
     "terrain_type": null,
     "difficulty_tier": null,

@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Vidrike discgolfi park",
+    "name": "Vidrike discgolfipark",
     "location": "Vidrike discgolfi park, Valgamaa, Estonia",
     "slug": "vidrike-discgolfi-park",
-    "lat": 57.98130414511189,
-    "lng": 26.521875858306885,
+    "lat": 57.9813041451119,
+    "lng": 26.5218758583069,
     "details": null,
     "terrain_type": null,
     "difficulty_tier": null,

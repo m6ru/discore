@@ -1,10 +1,10 @@
 {
   "course": {
-    "name": "Rakke DiscGolfPark",
+    "name": "Rakke discgolfipark",
     "location": "Rakke, lääneviru, Estonia",
     "slug": "rakke-discgolfi-park",
-    "lat": 58.98042013516948,
-    "lng": 26.25513377249149,
+    "lat": 58.9804201351695,
+    "lng": 26.2551337724915,
     "details": "Lääne-Virumaal Rakkes asuv 9 korviga DiscGolfPark, mis loodud DiscSport.ee poolt.",
     "terrain_type": null,
     "difficulty_tier": null,
