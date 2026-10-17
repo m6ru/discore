@@ -66,3 +66,39 @@ jobs:
 
       - name: Database tests
         run: supabase test db
+
+  # Clicks through the real app (production build) in a phone-sized Chromium,
+  # against a throwaway local Supabase stack. See e2e/ and playwright.config.ts.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Start Supabase (applies all migrations)
+        run: npx supabase start -x studio,edge-runtime,vector,logflare,imgproxy,supavisor
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E tests
+        run: npx playwright test
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Upload report (screenshots + traces)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
