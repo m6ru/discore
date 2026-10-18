@@ -40,6 +40,16 @@ npx tsx scripts/seed-courses.ts --check            # what CI runs
 
 Course map images are not seed data: `public/courses/{slug}-map.png`, deployed with the app.
 
+## Adding a layout with an agent
+
+The owner provides, per layout: **course name**, **layout name** (as it should appear in the app), and the **holes** (hole number, par, distance in metres) from on-course signage or official club material. The agent:
+
+- Copies `_template.json` to `{course-slug}-{layout-slug}.json`; slugs are the slugified names (`Männiku Wakepark` → `manniku-wakepark`).
+- If the course already has layouts, copies the **existing course block exactly** (validation fails on any difference).
+- Builds `holes[]`; sets `layout.total_par` / `total_distance_m` to the sums; `notes`, `hole_map_url`, `map_url` are `null` unless given; `is_active: true`.
+- **Never invents hole data.** If published totals disagree with the owner's table, use the table and say so.
+- Runs `npx tsx scripts/seed-courses.ts --new-migration`, commits the JSON + migration + `applied.json` in a PR; the owner runs `npx supabase db push`.
+
 ## Legacy notes
 
 - Seed migrations before 2026-10 are full snapshots of every course; they are kept because migrations are history.

@@ -6,7 +6,7 @@
 
 **Core objective:** Browser-based PWA for disc golf score tracking. Mobile-first UI, but online connection is required — offline play is not a current goal.
 
-**Target:** Start as a hobby/portfolio project for a local Estonian disc golf community. Architecture must support a natural path to a public, scalable product if community adoption warrants it — without rewrites.
+**Target:** Start as a hobby project for a local Estonian disc golf community. Architecture must support a natural path to a public, scalable product if community adoption warrants it — without rewrites.
 
 **Data source:** Course and layout data is provided and maintained by the app creator. The initial dataset will be sourced from [discgolfirajad.ee](https://discgolfirajad.ee). Users never create or edit course data.
 
@@ -24,7 +24,8 @@
 | Backend | Supabase (PostgreSQL) — Auth + Realtime |
 | Package manager | npm |
 | Local dev | Supabase CLI + `.env.example` for secret management |
-| PWA | `serwist` — service worker lifecycle when Phase 4 configures it (dependency may exist before wiring). No offline sync required. |
+| PWA | Web app manifest only for now; a service worker (e.g. Serwist) is deferred until install-to-home-screen matters. No offline sync required. |
+| Testing | Vitest (pure logic), pgTAP via `supabase test db` (RLS, triggers, functions), Playwright (user flows against local Supabase). All run in GitHub Actions on every PR. |
 | UI primitives | `shadcn/ui` (Radix UI + Tailwind, code copied into `components/ui/`). Theme via CSS variables in `app/globals.css`. The scorecard table stays bespoke. |
 | Icons | `lucide-react` |
 
@@ -63,7 +64,7 @@ Discore is a **one-person hobby app** for fast on-course scoring — not an ente
 Navigation speed is a product feature — scorers are on a phone, often on mobile data. Keep these rules:
 
 - **Every server-fetching route needs a `loading.tsx` (or a `Suspense` boundary)** so a tab tap shows an instant shell instead of blocking on the server render. Keep the root layout static (no `cookies()` / `getUser()` in a layout) so those fallbacks render immediately.
-- **Auth reads:** pages / Server Components read the session via `supabase.auth.getClaims()` — it verifies the JWT locally (no Auth round-trip) when the project uses asymmetric signing keys, and `middleware.ts` has already refreshed the session. Only `middleware.ts` calls `getUser()`. Never add a second `getUser()` per navigation.
+- **Auth reads:** pages / Server Components read the session via `supabase.auth.getClaims()` — it verifies the JWT locally (no Auth round-trip) when the project uses asymmetric signing keys, and `middleware.ts` has already refreshed the session. Use `getClaims()` in pages; do not add new `getUser()` calls (a network round trip). Known leftovers: the round page, `rounds/new`, and course stats still call `getUser()` (tracked in STATUS.md).
 - **Aggregates at scale:** compute per-round / per-player stats in Postgres (views), not by pulling raw `hole_scores` into JS. `player_round_stats` and `player_lifetime_stats` views are the backbone; `lib/rounds/load-player-stats.ts` loads lifetime aggregates for the UI.
 - **Round route exception:** `/rounds/[roundId]` is intentionally decomposed into hooks + components — it is the most complex screen. This is the sanctioned exception to §2a's "prefer one screen file"; do not cite it to justify file sprawl elsewhere. It works well and is field-tested, so change it **carefully and deliberately** — but it is **not frozen**: additions like advanced scoring inputs are expected. The "don't regress it" rule protects behaviour, not the code from ever changing.
 
@@ -188,11 +189,15 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 | `courses` | Anyone (anon + authenticated). Public catalog. | Creator (service role) only. | Creator (service role) only. | Not permitted. |
 | `layouts` | Anyone (anon + authenticated). Public catalog. | Service role only. | Service role only. | Not permitted. |
 | `holes` | Anyone (anon + authenticated). Public catalog. | Service role only. | Service role only. | Not permitted. |
-| `rounds` | Participant in the round (`round_participants`) or Scorer. | Authenticated users (own rounds). | Scorer only (`scorer_id = auth.uid()`). | Not permitted. |
-| `round_participants` | Members of the same round only. | Scorer adds guests/participants in `draft`, or invited user accepts invite while round is `draft`. | Not permitted. | Not permitted. |
+| `rounds` | Participant in the round (`round_participants`), invitee, or Scorer. | Own rounds: a `draft`, or a `completed` round carrying a `guest_claim_id` (trial claim). | Scorer only (`scorer_id = auth.uid()`). | Not permitted. |
+| `round_participants` | Members of the same round only. | Scorer adds **guests** (name only) in `draft`; a **registered user** joins only themselves, with a pending invite. Guests may also be added to a just-claimed trial. | Not permitted. | Not permitted. |
 | `hole_scores` | Members of the same round only. | Scorer of an `active` round, or scorer inserting scores for a completed claimed trial (`guest_claim_id` set; hole must belong to the layout). | Scorer of the parent round only (`rounds.scorer_id = auth.uid()`), while `active`. | Not permitted. |
 
 ### Critical policy implementation notes
+
+- **Integrity beyond RLS lives in triggers and constraints:** status transitions (`draft → active → completed/abandoned`, no reopening), `layout_id` locked after start, `guest_claim_id` immutable, score participant/hole must belong to the round and its layout, strokes 1–25, and `hole_scores.par` stamped by the database. Course rows with history cannot be deleted (`ON DELETE RESTRICT`).
+- **Every policy, trigger, or function change ships with pgTAP tests** in `supabase/tests/`.
+- **Multi-step writes are Postgres functions** (`claim_trial`, `accept_invite`) running `SECURITY INVOKER`, so each is one transaction and RLS still applies.
 
 - **`hole_scores` write policy must join to `rounds`** — the policy must verify `auth.uid() = (SELECT scorer_id FROM rounds WHERE id = hole_scores.round_id)`. Never trust a `scorer_id` value sent from the client.
 - **`profiles` read scope** — `SELECT` for `authenticated` only (`using (true)`). Unauthenticated requests must return zero rows. Users may only `UPDATE` their own row. Profile rows are discoverable for invite/search; **never store email on `profiles`** — `display_name` is composed from `first_name`/`last_name` at signup, with a non-PII `"Player <uuid>"` fallback if metadata is missing.
