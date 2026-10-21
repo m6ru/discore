@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createServerClient } from "@/lib/supabase/server";
 import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
 import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
@@ -21,6 +22,13 @@ export default async function CoursesPage() {
       ) : (
         <CoursesList courses={courses ?? []} />
       )}
+
+      <p className="text-center text-sm text-muted-foreground">
+        Missing a course?{" "}
+        <Link href="/courses/suggest" className="font-medium text-primary underline-offset-4 hover:underline">
+          Suggest it
+        </Link>
+      </p>
     </main>
   );
 }

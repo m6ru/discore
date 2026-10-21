@@ -39,6 +39,94 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_admins: {
+        Row: {
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      course_suggestions: {
+        Row: {
+          course_id: string | null
+          course_name: string | null
+          created_at: string
+          id: string
+          kind: string
+          layout_id: string | null
+          location: string | null
+          note: string
+          owner_note: string | null
+          photo_paths: string[]
+          reviewed_at: string | null
+          status: string
+          thanked_seen_at: string | null
+          user_id: string
+        }
+        Insert: {
+          course_id?: string | null
+          course_name?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          layout_id?: string | null
+          location?: string | null
+          note: string
+          owner_note?: string | null
+          photo_paths?: string[]
+          reviewed_at?: string | null
+          status?: string
+          thanked_seen_at?: string | null
+          user_id?: string
+        }
+        Update: {
+          course_id?: string | null
+          course_name?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          layout_id?: string | null
+          location?: string | null
+          note?: string
+          owner_note?: string | null
+          photo_paths?: string[]
+          reviewed_at?: string | null
+          status?: string
+          thanked_seen_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_suggestions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_suggestions_layout_id_fkey"
+            columns: ["layout_id"]
+            isOneToOne: false
+            referencedRelation: "layouts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_suggestions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           created_at: string
@@ -702,6 +790,7 @@ export type Database = {
         Args: { p_round_id: string; p_user_id: string }
         Returns: boolean
       }
+      is_app_admin: { Args: never; Returns: boolean }
       is_round_member: {
         Args: { p_round_id: string; p_user_id: string }
         Returns: boolean

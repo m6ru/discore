@@ -11,6 +11,7 @@ import {
 } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { HomeInvites } from "@/components/home/invites";
+import { SuggestionThanks } from "@/components/home/suggestion-thanks";
 import { HomeRecentRounds } from "@/components/home/recent-rounds";
 import { HomeGetStarted } from "@/components/home/get-started";
 import { NearYouStart } from "@/components/home/near-you-start";
@@ -89,6 +90,8 @@ export async function HomeSections({ userId }: Props) {
       ) : null}
 
       <HomeInvites currentUserId={userId} invites={data.invites} />
+
+      <SuggestionThanks items={data.suggestionThanks} />
 
       {data.activeRounds.length === 0 ? (
         <NearYouStart courses={nearYouCourses} />

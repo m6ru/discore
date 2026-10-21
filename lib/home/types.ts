@@ -34,6 +34,14 @@ export type HomeProfile = {
   city: string | null;
 };
 
+/** An applied course suggestion whose thank-you the sender hasn't dismissed. */
+export type HomeSuggestionThanks = {
+  id: string;
+  courseName: string | null;
+  layoutName: string | null;
+  ownerNote: string | null;
+};
+
 export type HomeData = {
   profile: HomeProfile | null;
   invites: HomeInvite[];
@@ -41,4 +49,5 @@ export type HomeData = {
   recentRounds: HomeRecentRound[];
   hasJoinedRound: boolean;
   profileOnboardingComplete: boolean;
+  suggestionThanks: HomeSuggestionThanks[];
 };

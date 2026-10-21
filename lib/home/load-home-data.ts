@@ -6,7 +6,7 @@ import {
   HOME_PARTICIPATION_ROW_LIMIT,
   parseHomeParticipantRounds,
 } from "./parse-participant-rounds";
-import type { HomeData, HomeInvite, HomeRecentRound } from "./types";
+import type { HomeData, HomeInvite, HomeRecentRound, HomeSuggestionThanks } from "./types";
 
 type Client = SupabaseClient<Database>;
 
@@ -16,7 +16,7 @@ export async function loadHomeData(
   supabase: Client,
   userId: string
 ): Promise<HomeData> {
-  const [profileResult, invitesResult, participationResult] = await Promise.all([
+  const [profileResult, invitesResult, participationResult, thanksResult] = await Promise.all([
     supabase
       .from("profiles")
       .select("first_name, display_name, avatar_url, city")
@@ -39,6 +39,14 @@ export async function loadHomeData(
       .in("rounds.status", [...PARTICIPATION_ROUND_STATUSES])
       .order("joined_at", { ascending: false })
       .limit(HOME_PARTICIPATION_ROW_LIMIT),
+    supabase
+      .from("course_suggestions")
+      .select("id, kind, course_name, owner_note, courses(name), layouts(name)")
+      .eq("user_id", userId)
+      .eq("status", "applied")
+      .is("thanked_seen_at", null)
+      .order("reviewed_at", { ascending: false })
+      .limit(3),
   ]);
 
   const profile = profileResult.data;
@@ -61,6 +69,13 @@ export async function loadHomeData(
     };
   });
 
+  const suggestionThanks: HomeSuggestionThanks[] = (thanksResult.data ?? []).map((row) => ({
+    id: row.id,
+    courseName: row.kind === "new_course" ? row.course_name : (pickOne(row.courses)?.name ?? null),
+    layoutName: pickOne(row.layouts)?.name ?? null,
+    ownerNote: row.owner_note,
+  }));
+
   const recentRoundsWithScores = await attachScoresToRecentRounds(
     supabase,
     recentRounds
@@ -73,6 +88,7 @@ export async function loadHomeData(
     recentRounds: recentRoundsWithScores,
     hasJoinedRound,
     profileOnboardingComplete: profile ? isProfileOnboardingComplete(profile) : false,
+    suggestionThanks,
   };
 }
 

@@ -1,6 +1,12 @@
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { createServerClient } from "@/lib/supabase/server";
 import { buildDisplayName } from "@/lib/profiles/format-display-name";
-import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
+import {
+  homeRowLinkClassName,
+  pageSubtitleClassName,
+  pageTitleClassName,
+} from "@/lib/ui/page-chrome";
 import { AccountPanel } from "./account-panel";
 import { AuthForm } from "./auth-form";
 
@@ -22,6 +28,15 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
         .eq("id", claims.sub)
         .maybeSingle()
     : { data: null };
+
+  // Owner-only: link to the course-suggestion review with the number waiting.
+  const { data: isAdmin } = claims ? await supabase.rpc("is_app_admin") : { data: false };
+  const { count: newSuggestions } = isAdmin
+    ? await supabase
+        .from("course_suggestions")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "new")
+    : { count: null };
 
   const email = claims?.email ?? "";
   const metadataFirstName =
@@ -48,6 +63,20 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
           {claims ? "Your account and preferences." : "Sign in or create an account."}
         </p>
       </header>
+
+      {isAdmin ? (
+        <Link href="/admin/suggestions" className={homeRowLinkClassName}>
+          <span className="font-medium">Course suggestions</span>
+          <span className="flex items-center gap-2 text-muted-foreground">
+            {newSuggestions ? (
+              <span className="rounded-full bg-primary px-2 py-0.5 font-mono text-xs tabular-nums text-primary-foreground">
+                {newSuggestions} new
+              </span>
+            ) : null}
+            <ChevronRight className="size-4" aria-hidden />
+          </span>
+        </Link>
+      ) : null}
 
       {claims ? (
         <AccountPanel
