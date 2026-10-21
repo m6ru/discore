@@ -9,10 +9,10 @@
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
 - **Updated:** 2026-10-21
-- **State:** Hardening done; product direction in BLUEPRINT §1. Instant scoring live (BLUEPRINT §3a). `proxy.ts` rename and friendly error messages (`lib/ui/friendly-error.ts`) done. Disc golf skill in `.claude/skills/disc-golf/` — load it before scoring, stats or course-data work.
-- **Decisions (owner, 2026-10-21):** keep the "OB" label as one yes/no per hole (covers mandos and hazards; penalty types only in advanced scoring). An unfinished hole scores par + 4 (PDGA 811 F) — not reachable today, since a round completes only when every hole is scored.
-- **Next:** Roadmap #1 course suggestions — design talk first. Owner field-tests instant scoring on forest courses.
-- **In flight:** nothing.
+- **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions built: `/courses/suggest` (fix or new course, note + up to 3 photos), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home. Disc golf skill in `.claude/skills/disc-golf/`.
+- **Decisions (owner, 2026-10-21):** "OB" stays one yes/no per hole. Unfinished hole = par + 4 (not reachable today). Suggestions: signed-in only; owner reviews by hand (no AI pre-reading); sender is thanked in the app, not by email.
+- **Next:** PR 2 — Telegram ping to the owner on each new suggestion (personal Telegram + bot from @BotFather; Supabase Edge Function + database webhook; token and chat id as Supabase secrets).
+- **In flight:** course suggestions PR (`feat/course-suggestions`) — owner adds themselves to `app_admins` after `db push`.
 
 ---
 
@@ -20,7 +20,7 @@ _Overwritten at the end of every session — describes now, not history (history
 
 Ordered. The security and reliability items from an external code review (Oct 2026) are done.
 
-1. **Course suggestions** — users suggest changes to a course / a new course; owner reviews and applies via seed JSON. Fresh course data is the edge; AM/PRO, colour and seasonal ("2025AM") layouts are common, and a re-set course means a new layout + retiring the old one, never editing played holes. Design talk first: entry points, what the user sees afterwards, owner notification, spam protection.
+1. **Suggestion ping** — Telegram message to the owner per new course suggestion (PR 2 of course suggestions).
 2. **Architecture docs.** Walkthrough + diagram, data flow of a round (draft → active → complete, Realtime to observers), short decision records: single-scorer model, RLS as authorization, local trial + claim, seed JSON as source of truth, par snapshot, RPCs for atomic writes, sync queue.
 3. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
 4. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.

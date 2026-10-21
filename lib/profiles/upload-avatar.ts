@@ -16,14 +16,14 @@ export const AVATAR_TOO_LARGE_MESSAGE = "Image must be 10MB or smaller.";
 const AVATAR_MAX_DIMENSION = 512;
 const AVATAR_OUTPUT_QUALITY = 0.82;
 
-type AvatarKind = "jpeg" | "png" | "heic";
+export type ImageKind = "jpeg" | "png" | "heic";
 
 function hasExtension(name: string, extensions: string[]): boolean {
   const lower = name.toLowerCase();
   return extensions.some((ext) => lower.endsWith(ext));
 }
 
-function detectAvatarKind(file: File): AvatarKind | null {
+export function detectImageKind(file: File): ImageKind | null {
   const type = file.type.toLowerCase();
   if (type === "image/jpeg" || type === "image/jpg" || hasExtension(file.name, [".jpg", ".jpeg"])) {
     return "jpeg";
@@ -42,7 +42,7 @@ function detectAvatarKind(file: File): AvatarKind | null {
 }
 
 export function validateAvatarFile(file: File): { ok: true } | { ok: false; message: string } {
-  if (detectAvatarKind(file) === null) {
+  if (detectImageKind(file) === null) {
     return { ok: false, message: AVATAR_INVALID_TYPE_MESSAGE };
   }
   if (file.size > AVATAR_MAX_INPUT_BYTES) {
@@ -52,8 +52,12 @@ export function validateAvatarFile(file: File): { ok: true } | { ok: false; mess
 }
 
 // Convert HEIC to JPEG (browsers can't decode HEIC on a canvas), then downscale
-// to a square-ish thumbnail and re-encode as JPEG.
-async function prepareAvatarBlob(file: File, kind: AvatarKind): Promise<Blob> {
+// so the longest side is at most maxDimension, and re-encode as JPEG.
+export async function prepareJpegBlob(
+  file: File,
+  kind: ImageKind,
+  maxDimension: number = AVATAR_MAX_DIMENSION
+): Promise<Blob> {
   let sourceBlob: Blob = file;
 
   if (kind === "heic") {
@@ -67,7 +71,7 @@ async function prepareAvatarBlob(file: File, kind: AvatarKind): Promise<Blob> {
   }
 
   const bitmap = await createImageBitmap(sourceBlob, { imageOrientation: "from-image" });
-  const scale = Math.min(1, AVATAR_MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
   const width = Math.max(1, Math.round(bitmap.width * scale));
   const height = Math.max(1, Math.round(bitmap.height * scale));
 
@@ -96,7 +100,7 @@ export async function uploadProfileAvatar(
   userId: string,
   file: File
 ): Promise<{ ok: true; publicUrl: string } | { ok: false; message: string }> {
-  const kind = detectAvatarKind(file);
+  const kind = detectImageKind(file);
   if (kind === null) {
     return { ok: false, message: AVATAR_INVALID_TYPE_MESSAGE };
   }
@@ -106,7 +110,7 @@ export async function uploadProfileAvatar(
 
   let blob: Blob;
   try {
-    blob = await prepareAvatarBlob(file, kind);
+    blob = await prepareJpegBlob(file, kind);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Could not process image.";
     return { ok: false, message };

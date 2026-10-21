@@ -39,20 +39,26 @@ export async function ensureTestCourse(): Promise<void> {
   if (holesError) throw holesError;
 }
 
-export type TestUser = { email: string; firstName: string; lastName: string; displayName: string };
+export type TestUser = { id: string; email: string; firstName: string; lastName: string; displayName: string };
 
 /** A fresh confirmed user with a unique name, so parallel tests never collide. */
 export async function createUser(firstName: string): Promise<TestUser> {
   const lastName = `E2e${randomUUID().slice(0, 6)}`;
   const email = `${firstName.toLowerCase()}-${randomUUID()}@e2e.local`;
-  const { error } = await admin.auth.admin.createUser({
+  const { data, error } = await admin.auth.admin.createUser({
     email,
     password: PASSWORD,
     email_confirm: true,
     user_metadata: { first_name: firstName, last_name: lastName },
   });
   if (error) throw error;
-  return { email, firstName, lastName, displayName: `${firstName} ${lastName}` };
+  return { id: data.user!.id, email, firstName, lastName, displayName: `${firstName} ${lastName}` };
+}
+
+/** Lets the user review course suggestions (`app_admins`). */
+export async function makeAdmin(user: TestUser): Promise<void> {
+  const { error } = await admin.from("app_admins").insert({ user_id: user.id });
+  if (error) throw error;
 }
 
 export async function signIn(page: Page, user: TestUser): Promise<void> {

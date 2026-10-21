@@ -12,7 +12,7 @@
 
 **Scorer model:** One person scores the whole card — how disc golf is played. No multi-scorer rounds.
 
-**Data source:** Course and layout data is provided and maintained by the app creator. Coverage is **every course in Estonia** — a player should never arrive at a park that is missing. Users never edit course data directly; they will be able to **suggest** changes and new courses, which the creator reviews and applies through the seed JSON (git stays the single source of truth).
+**Data source:** Course and layout data is provided and maintained by the app creator. Coverage is **every course in Estonia** — a player should never arrive at a park that is missing. Users never edit course data directly; they can **suggest** changes and new courses (`/courses/suggest`), which the creator reviews and applies through the seed JSON (git stays the single source of truth).
 
 **Product focus:** Discore's value is in the parts a single player controls — **fast, lag-free scoring**, a **clean mobile UI**, and **excellent personal stats** — plus a **frictionless path to try it** (guest scoring today, anonymous scoring later). Advanced stats cover the metrics serious players expect (see §5). Casual/practice scoring for a local community is the beachhead; competitions and ratings come later (Phase 6), only if adoption warrants.
 
@@ -204,6 +204,8 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 | `rounds` | Participant in the round (`round_participants`), invitee, or Scorer. | Own rounds: a `draft`, or a `completed` round carrying a `guest_claim_id` (trial claim). | Scorer only (`scorer_id = auth.uid()`). | Not permitted. |
 | `round_participants` | Members of the same round only. | Scorer adds **guests** (name only) in `draft`; a **registered user** joins only themselves, with a pending invite. Guests may also be added to a just-claimed trial. | Not permitted. | Not permitted. |
 | `hole_scores` | Members of the same round only. | Scorer of an `active` round, or scorer inserting scores for a completed claimed trial (`guest_claim_id` set; hole must belong to the layout). | Scorer of the parent round only (`rounds.scorer_id = auth.uid()`), while `active`. | Not permitted. |
+| `course_suggestions` | Sender (own rows) and admins. | Signed-in users, as themselves, status `new`; photos only from their own storage folder; 10 per day (trigger). | Admins: `status`, `owner_note` (trigger stamps `reviewed_at`). Sender: only `thanked_seen_at`. Content is immutable. | Not permitted. |
+| `app_admins` | Nobody via the API (RLS, no policies); checked through `is_app_admin()`. | Owner, by hand in the dashboard SQL editor. | — | — |
 
 ### Critical policy implementation notes
 
@@ -214,7 +216,8 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 
 - **`hole_scores` write policy must join to `rounds`** — the policy must verify `auth.uid() = (SELECT scorer_id FROM rounds WHERE id = hole_scores.round_id)`. Never trust a `scorer_id` value sent from the client.
 - **`profiles` read scope** — `SELECT` for `authenticated` only (`using (true)`). Unauthenticated requests must return zero rows. Users may only `UPDATE` their own row. Profile rows are discoverable for invite/search; **never store email on `profiles`** — `display_name` is composed from `first_name`/`last_name` at signup, with a non-PII `"Player <uuid>"` fallback if metadata is missing.
-- **No client-supplied roles** — there is no admin role in the MVP. No user should be able to modify any field that elevates their own permissions. If a `role` column is added in future, it must only be writable via a server-side trigger or service role, never via the client.
+- **No client-supplied roles.** The only elevated role is `app_admins` (reviews course suggestions). It is a separate table nobody can read or write through the API; rows are added by hand in the dashboard SQL editor (`insert into public.app_admins (user_id) select id from auth.users where email = '…';`). Policies check it via `is_app_admin()` (`SECURITY DEFINER`, returns only a boolean). Never add a role column a user could write.
+- **Course suggestion photos** live in the private Storage bucket `course-suggestion-photos` (JPEG ≤ 5 MB, converted on the phone): the sender uploads into `<user id>/…`; only the sender and admins can read; the review page uses 1-hour signed URLs.
 - **Publishable key is public by design.** Unauthenticated requests using the publishable key must return zero rows from **personal** tables (`profiles`, `rounds`, `round_participants`, `hole_scores`, `round_invitations`). The **course catalog** (`courses`, `layouts`, `holes`) is an intentional exception: anon may `SELECT` so unsigned players can browse and start a local trial. Anon has no INSERT/UPDATE/DELETE on any table.
 
 ---

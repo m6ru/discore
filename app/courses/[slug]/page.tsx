@@ -175,6 +175,16 @@ export default async function CourseDetailPage({ params }: PageProps) {
           </div>
         </section>
       ) : null}
+
+      <p className="text-center text-sm text-muted-foreground">
+        Something wrong or out of date?{" "}
+        <Link
+          href={`/courses/suggest?course=${course.slug}`}
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
+          Suggest a fix
+        </Link>
+      </p>
     </main>
   );
 }
