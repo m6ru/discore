@@ -18,8 +18,8 @@ Researched 2026-10-21. PDGA rule text is **Official Rules of Disc Golf, rev. 1 J
 
 | Situation | Penalty | Next lie | Rule |
 |---|---|---|---|
-| **Out-of-bounds (OB)** | +1 | Previous lie, or ≤ 1 m from where it last was in bounds; organiser may also allow the drop zone or ≤ 1 m from the OB line nearest the disc | [806.02](https://www.pdga.com/rules/official-rules-disc-golf/80602) |
-| OB, going straight to the drop zone (if organiser allows) | +2 | Drop zone | 806.02 G |
+| **Out-of-bounds (OB)** | **+1** — the normal case, including when the next throw is from the drop zone | Previous lie, or ≤ 1 m from where it last was in bounds; organiser may also allow the drop zone or ≤ 1 m from the OB line nearest the disc | [806.02](https://www.pdga.com/rules/official-rules-disc-golf/80602) D |
+| *Rare:* skipping straight to an OB area's drop zone, only where the organiser announces it | +2 | Drop zone | [806.02](https://www.pdga.com/rules/official-rules-disc-golf/80602) G |
 | **Missed mandatory** (disc enters the restricted plane) | +1 | Mando's drop zone, else previous lie | [804.01](https://www.pdga.com/rules/official-rules-disc-golf/80401) |
 | **Hazard** | +1 | Lie stays where the disc is | [806.05](https://www.pdga.com/rules/official-rules-disc-golf/80605) |
 | Required relief area | 0 | Played like OB without the penalty | [806.04](https://www.pdga.com/rules/official-rules-disc-golf/80604) |
@@ -27,8 +27,8 @@ Researched 2026-10-21. PDGA rule text is **Official Rules of Disc Golf, rev. 1 J
 | **Abandoned throw** | throw counts +1 | Previous lie (or a designated drop zone) | [809.01](https://www.pdga.com/rules/official-rules-disc-golf/80901) |
 | Practice throw | +1 (throw not counted) | — | [809.03](https://www.pdga.com/rules/official-rules-disc-golf/80903) |
 | Stance violation (tee or marked lie) | +1 | — | [802.04](https://www.pdga.com/rules/official-rules-disc-golf/80204), [802.07](https://www.pdga.com/rules/official-rules-disc-golf/80207) |
-| Lost disc | +1, previous lie (*not re-read this time — verify*) | | [805.03](https://www.pdga.com/rules/official-rules-disc-golf/80503) |
-| Above two metres | +1 only if the organiser declares it in effect (*verify*) | | [806](https://www.pdga.com/rules/official-rules-disc-golf/806), referenced in 803.02 D |
+| **Lost disc** (not found within 3 min) | +1 | Previous lie, or the lost-disc drop zone if there is one | [805.03](https://www.pdga.com/rules/official-rules-disc-golf/80503) |
+| Above two metres | +1, **only** if the organiser declares the rule in effect | On the ground directly below the disc | [805.02](https://www.pdga.com/rules/official-rules-disc-golf/80502) |
 
 **Drop zone** (*karistusviskeala*) is not a penalty by itself: it is a designated place to play from, used as an option after OB, a missed mando or an abandoned throw. It is played like a tee or a marked lie ([802.07](https://www.pdga.com/rules/official-rules-disc-golf/80207)).
 
