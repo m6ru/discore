@@ -81,6 +81,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* No rubber-band bounce at the page edges: on iOS browsers (e.g. Brave) a
+     slight downward drag while tapping scores triggered pull-to-refresh,
+     which pushed the page down and reloaded the round. */
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
