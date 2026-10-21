@@ -4,7 +4,7 @@
 
 ## 1. Project Vision
 
-**Core objective:** Browser-based PWA for disc golf score tracking. Mobile-first UI. **Scoring must never make the scorer wait** — a weak or missing signal on the course must not slow down or block entering scores (see §3a for current vs target behaviour).
+**Core objective:** Browser-based PWA for disc golf score tracking. Mobile-first UI. **Scoring must never make the scorer wait** — a weak or missing signal on the course must not slow down or block entering scores (see §3a).
 
 **Target:** Start as a hobby project for a local Estonian disc golf community. Architecture must support a natural path to a public, scalable product if community adoption warrants it — without rewrites.
 
@@ -28,7 +28,7 @@
 | Backend | Supabase (PostgreSQL) — Auth + Realtime |
 | Package manager | npm |
 | Local dev | Supabase CLI + `.env.example` for secret management |
-| PWA | Web app manifest only for now; a service worker (e.g. Serwist) is deferred until install-to-home-screen matters. Background sync of scores is planned (§3a). |
+| PWA | Web app manifest only for now; a service worker (e.g. Serwist) is deferred until install-to-home-screen matters. Scores sync in the background without one (§3a). |
 | Testing | Vitest (pure logic), pgTAP via `supabase test db` (RLS, triggers, functions), Playwright (user flows against local Supabase). All run in GitHub Actions on every PR. |
 | UI primitives | `shadcn/ui` (Radix UI + Tailwind, code copied into `components/ui/`). Theme via CSS variables in `app/globals.css`. The scorecard table stays bespoke. |
 | Icons | `lucide-react` |
@@ -78,30 +78,36 @@ Navigation speed is a product feature — scorers are on a phone, often on mobil
 
 One registered user per round is the **Scorer** (the round creator). All other participants are **Observers**.
 
-- The **Scorer** is the sole write authority for all `hole_scores` in the round. Writes use **direct, online-first** Supabase calls from the client (see Section 3a below).
+- The **Scorer** is the sole write authority for all `hole_scores` in the round. Writes are saved on the device first and synced to Supabase in the background (see Section 3a below).
 - **Observers** (registered users who accepted a round invitation and appear in `round_participants`) are read-only. They receive live updates via Supabase Realtime subscriptions.
 - **Guests** (unregistered players added by name) are passive entries — they have no device presence and receive no updates.
 - Each round stores a `scorer_id` (FK → `profiles`) as the enforced write authority.
 
 This one-way data flow must be reflected in RLS policies and client architecture.
 
-### 3a. Scorer writes (online-first)
+### 3a. Scorer writes (instant, synced in the background)
 
-> **Current behaviour, to be replaced.** Waiting for the server on every hole lags on weak signal and conflicts with §1. Target: scores save on the device instantly and sync in the background (single writer, idempotent upserts per participant × hole), with a sync indicator that never shifts the layout. Designed and tested in STATUS → Roadmap #2; this section is rewritten when it ships.
-
-The app targets **reliable scoring while connected**. Disc golf courses can have brief dead spots; the model is **not** hardcore offline sync — it is **wait for the server, then proceed**, with **local draft state** kept in React so a failed save does not wipe the scorer’s inputs.
+Saving a hole **never waits for the network**. Disc golf courses have dead spots; the scorer must be able to keep playing through them.
 
 **Write flow**
 
-1. Scorer saves the current hole → the client **awaits** a batched `hole_scores` **upsert** (all players on that hole) via the browser Supabase client.
-2. **Success** → UI updates from the returned rows (and/or Realtime). The scorer advances to the next hole or completes the round.
-3. **Failure** (no network, RLS, validation, etc.) → an explicit error message is shown; **strokes / OB drafts stay on screen** so the scorer can retry when connectivity returns. No background FIFO queue, no `pending:` optimistic client ids for persistence.
+1. Scorer saves the current hole → the scores go into a per-round queue in `localStorage` (`discore:pending-scores:<roundId>`, `lib/rounds/pending-scores.ts`) and the app advances immediately.
+2. `useScoreSync` (`app/rounds/[roundId]/hooks/use-score-sync.ts`) sends everything waiting as one `hole_scores` upsert (15 s timeout). On success the rows leave the queue — unless they were changed again while in flight.
+3. **Network trouble** (offline, timeout, 401/408/429/5xx) → retry with backoff (2 → 30 s), immediately on the browser `online` event, when the tab becomes visible, and when the scorer taps the badge. **The database refusing** (any other 4xx: RLS, trigger, check) → error toast, scores stay queued, no automatic retry.
+4. **Completing the round needs signal**: the queue is flushed first; if that fails, the round stays active with a "saved on this phone" message. Abandoning, or a finished round, discards the queue.
+
+**Rules that make this safe**
+
+- **Single writer + upsert on participant × hole**: re-sending is always harmless, so the queue holds *the latest value per cell*, not a log of events.
+- **Local wins on screen until confirmed**: the UI renders server rows with queued values on top (`overlayPendingScores`), so a Realtime echo or refresh never shows an older value.
+- **Sync badge** (`sync-status-badge.tsx`): absolutely positioned above the fixed bottom deck, so it never shifts the layout; hidden while everything is synced.
+- The queue resumes after a reload. The round page itself still needs signal to **load** (no service worker; a fully offline app is a later step, only if needed).
 
 **Observers**
 
-- Realtime still delivers `hole_scores` changes after rows land in Postgres (unchanged).
+- Realtime delivers `hole_scores` changes once rows land in Postgres; in a dead spot they lag until the scorer's phone syncs.
 
-**This is not offline-first.** Starting a signed-in round, loading layouts, and saving scores all **require** a working session and network for the write path. Brief outages are tolerated only in the sense that **work in progress remains editable** until a save succeeds. The anonymous trial (`/rounds/trial`) is the exception: scores stay in localStorage until the player signs in and claims a **completed** round.
+The anonymous trial (`/rounds/trial`) keeps everything in localStorage until the player signs in and claims a **completed** round.
 
 **Code placement**
 

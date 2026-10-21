@@ -9,9 +9,9 @@
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
 - **Updated:** 2026-10-21
-- **State:** Hardening done. Product direction agreed and recorded in BLUEPRINT §1 (casual-round alternative, all Estonian courses + user suggestions, one scorer, standalone, never wait while scoring).
-- **Next:** Roadmap #2 instant scoring — explain optimistic saving + sync queue to the owner, agree a short design, then build with offline E2E tests. Check the disc golf skill (#1) for data-model impact first.
-- **In flight:** Roadmap #1 disc golf skill, in a parallel session (`feat/disc-golf-skill`).
+- **State:** Hardening done; product direction in BLUEPRINT §1. Instant scoring built (saves on the phone, syncs in the background, badge only when waiting) — BLUEPRINT §3a.
+- **Next:** Owner tests instant scoring on the course (dead spots, reload mid-round), then Roadmap #2 course suggestions — design talk first.
+- **In flight:** instant scoring PR (`feat/instant-scoring`); disc golf skill (#1) in a parallel session (`feat/disc-golf-skill`).
 
 ---
 
@@ -19,20 +19,20 @@ _Overwritten at the end of every session — describes now, not history (history
 
 Ordered. The security and reliability items from an external code review (Oct 2026) are done.
 
-1. **Disc golf knowledge skill** — `.claude/skills/disc-golf/SKILL.md`: rules that affect scoring (penalties, OB, mandos, drop zones, provisionals), terminology, how other scoring apps (UDisc) handle it, Estonian context. Concise, with sources.
-2. **Instant scoring** — scores save on the device instantly and sync in the background; calm sync indicator that never shifts the layout; Playwright tests with the network switched off. A localStorage outbox existed before and was removed in May 2026 (7c16bd8, reason not recorded) — design it properly this time.
-3. **Course suggestions** — users suggest changes to a course / a new course; owner reviews and applies via seed JSON. Design talk first: entry points, what the user sees afterwards, owner notification, spam protection.
-4. **Architecture docs.** Walkthrough + diagram, data flow of a round (draft → active → complete, Realtime to observers), short decision records: single-scorer model, RLS as authorization, local trial + claim, seed JSON as source of truth, par snapshot, RPCs for atomic writes, sync queue.
-5. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
-6. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
-7. **Stats UX rethink** — concept + UI across Home / History / course stats / finished round. Talk before pixels.
-8. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
-9. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
+1. **Disc golf knowledge skill** — `.claude/skills/disc-golf/SKILL.md`: rules that affect scoring (penalties, OB, mandos, drop zones, provisionals), terminology, common scoring-app conventions, Estonian context. Concise, with sources.
+2. **Course suggestions** — users suggest changes to a course / a new course; owner reviews and applies via seed JSON. Design talk first: entry points, what the user sees afterwards, owner notification, spam protection.
+3. **Architecture docs.** Walkthrough + diagram, data flow of a round (draft → active → complete, Realtime to observers), short decision records: single-scorer model, RLS as authorization, local trial + claim, seed JSON as source of truth, par snapshot, RPCs for atomic writes, sync queue.
+4. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
+5. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
+6. **Stats UX rethink** — concept + UI across Home / History / course stats / finished round. Talk before pixels.
+7. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
+8. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
 
 Not planned: exports or integration with other platforms; competitions/ratings (Phase 6).
 
 ### Smaller debts
 
+- Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
 - `middleware.ts` → `proxy.ts` (Next 16 deprecation; auth-sensitive, isolated change).
 - `getUser()` (network round trip) still used in `app/rounds/[roundId]/page.tsx`, `app/rounds/new/page.tsx`, `app/courses/[slug]/stats/page.tsx`; tab pages use `getClaims()`.
 - Raw database error text reaches users in toasts (e.g. `Participant add failed: … code=…`); map to friendly messages.
@@ -52,7 +52,7 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 
 - **Home** (`app/page.tsx`): continue-round cards, pending invites (Realtime), near-you start, Your stats, recent rounds. Signed out: play-first launchpad and continue card for a local trial.
 - **Play** (`app/courses/`): ~182 parks / ~209 layouts, search + distance sort; course detail with layout picker, About, optional map; `/courses/[slug]/stats` per-layout and per-hole stats.
-- **Rounds** (`app/rounds/[roundId]/`): draft (guests by name, registered players by invite) → active scoring (scorer only, save per hole, OB) → complete or abandon. Observers watch read-only via Realtime. Finished round: scorecard, pool results, one-time insights card.
+- **Rounds** (`app/rounds/[roundId]/`): draft (guests by name, registered players by invite) → active scoring (scorer only, OB; each hole saves instantly and syncs in the background) → complete or abandon. Observers watch read-only via Realtime. Finished round: scorecard, pool results, one-time insights card.
 - **Trial** (`app/rounds/trial/`): signed-out players score in `localStorage` (`discore:local-trial`) with named guests; a **completed** trial is claimed on sign-in/sign-up via `claim_trial` (idempotent on `guest_claim_id`). In-progress or corrupt trials are discarded at claim time.
 - **History** (`app/rounds/`): stats panel + round list; ace log at `/rounds/aces`.
 - **Profile** (`app/auth/`): sign in/up (first + last name required → `profiles.display_name`), details, preferences.

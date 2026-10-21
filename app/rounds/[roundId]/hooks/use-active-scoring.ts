@@ -1,52 +1,36 @@
 "use client";
 
 import { useCallback, useState, type Dispatch, type SetStateAction } from "react";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { getFirstIncompleteHoleIndex } from "@/lib/scoring/stats";
-import { mergeHoleScoresByCell } from "@/lib/rounds/hole-scores";
-import {
-  parseUpsertedHoleScores,
-  upsertHoleScores,
-  type HoleScoreUpsertRow,
-} from "@/lib/rounds/round-active-actions";
-import type { Database } from "@/lib/database.types";
-import { toast } from "sonner";
-import {
-  SAVE_SCORES_TOAST_ID,
-  toastError,
-  toastSaveError,
-} from "@/lib/ui/toast-notify";
+import type { PendingScore } from "@/lib/rounds/pending-scores";
+import { toastError } from "@/lib/ui/toast-notify";
 import type { HoleRow, HoleScoreRow, LastSavedEvent, ParticipantRow } from "../round-types";
 
-type Client = SupabaseClient<Database>;
-
 type Options = {
-  supabase: Client;
   roundId: string;
   isScorer: boolean;
   holes: HoleRow[];
   initialHoleScores: HoleScoreRow[];
   scoringParticipants: ParticipantRow[];
+  /** Server scores with unsynced local values on top. */
   holeScores: HoleScoreRow[];
-  setHoleScores: Dispatch<SetStateAction<HoleScoreRow[]>>;
+  /** Saves on the device and syncs in the background (useScoreSync). */
+  enqueueScores: (rows: PendingScore[]) => void;
   setLastSavedEvent: Dispatch<SetStateAction<LastSavedEvent | null>>;
   setRenderNow: Dispatch<SetStateAction<number>>;
-  setIsSubmitting: (value: boolean) => void;
   onFinalHoleSaved?: () => void;
 };
 
 export function useActiveScoring({
-  supabase,
   roundId,
   isScorer,
   holes,
   initialHoleScores,
   scoringParticipants,
   holeScores,
-  setHoleScores,
+  enqueueScores,
   setLastSavedEvent,
   setRenderNow,
-  setIsSubmitting,
   onFinalHoleSaved,
 }: Options) {
   const [currentHoleIndex, setCurrentHoleIndex] = useState(() =>
@@ -122,7 +106,8 @@ export function useActiveScoring({
     [activeHole]
   );
 
-  const saveCurrentHoleScores = useCallback(async (): Promise<boolean> => {
+  /** Validates the hole and queues it; never waits for the network. */
+  const saveCurrentHoleScores = useCallback((): boolean => {
     if (!isScorer || !activeHole) {
       return false;
     }
@@ -154,37 +139,16 @@ export function useActiveScoring({
       });
     }
 
-    const payload: HoleScoreUpsertRow[] = rowInputs.map((r) => ({
-      round_id: roundId,
-      participant_id: r.participantId,
-      hole_id: activeHole.id,
-      strokes: r.strokes,
-      ob: r.ob,
-      fairway_hit: null,
-    }));
-
-    setIsSubmitting(true);
-
-    const { data, error } = await upsertHoleScores(supabase, payload);
-
-    setIsSubmitting(false);
-
-    if (error) {
-      toastSaveError(`Could not save scores: ${error.message}`);
-      return false;
-    }
-
-    const returned = parseUpsertedHoleScores(data);
-    setHoleScores((prev) => {
-      const without = prev.filter(
-        (score) =>
-          !rowInputs.some(
-            (r) =>
-              r.participantId === score.participant_id && activeHole.id === score.hole_id
-          )
-      );
-      return mergeHoleScoresByCell(without, returned);
-    });
+    enqueueScores(
+      rowInputs.map((r) => ({
+        round_id: roundId,
+        participant_id: r.participantId,
+        hole_id: activeHole.id,
+        strokes: r.strokes,
+        ob: r.ob,
+        fairway_hit: null,
+      }))
+    );
 
     setDraftStrokeInputs((prev) => {
       const next = { ...prev };
@@ -200,8 +164,6 @@ export function useActiveScoring({
       }
       return next;
     });
-
-    toast.dismiss(SAVE_SCORES_TOAST_ID);
 
     queueMicrotask(() => {
       const savedAt = Date.now();
@@ -220,15 +182,13 @@ export function useActiveScoring({
     getStrokeInputValue,
     isObChecked,
     roundId,
-    supabase,
-    setHoleScores,
-    setIsSubmitting,
+    enqueueScores,
     setLastSavedEvent,
     setRenderNow,
   ]);
 
-  const onSaveAndAdvanceHole = useCallback(async () => {
-    const saved = await saveCurrentHoleScores();
+  const onSaveAndAdvanceHole = useCallback(() => {
+    const saved = saveCurrentHoleScores();
     if (!saved || !activeHole) {
       return;
     }

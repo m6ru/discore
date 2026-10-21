@@ -6,6 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { abandonRound, completeRound } from "@/lib/rounds/round-active-actions";
 import type { Database } from "@/lib/database.types";
 import { toastError } from "@/lib/ui/toast-notify";
+import type { SyncPhase } from "./use-score-sync";
 
 type Client = SupabaseClient<Database>;
 
@@ -13,7 +14,9 @@ type Options = {
   supabase: Client;
   roundId: string;
   isScorer: boolean;
-  saveCurrentHoleScores: () => Promise<boolean>;
+  saveCurrentHoleScores: () => boolean;
+  flushScores: () => Promise<SyncPhase>;
+  discardPendingScores: () => void;
   setIsTransitioning: (value: boolean) => void;
   onCompleted?: () => void;
 };
@@ -23,6 +26,8 @@ export function useRoundLifecycle({
   roundId,
   isScorer,
   saveCurrentHoleScores,
+  flushScores,
+  discardPendingScores,
   setIsTransitioning,
   onCompleted,
 }: Options) {
@@ -37,14 +42,26 @@ export function useRoundLifecycle({
       setIsTransitioning(false);
       return;
     }
+    discardPendingScores();
     router.push("/");
     router.refresh();
-  }, [isScorer, supabase, roundId, setIsTransitioning, router]);
+  }, [isScorer, supabase, roundId, setIsTransitioning, discardPendingScores, router]);
 
+  // Completing needs signal: every score must be on the server first.
   const onCompleteRound = useCallback(async () => {
-    const saved = await saveCurrentHoleScores();
+    const saved = saveCurrentHoleScores();
     if (!saved) return;
     setIsTransitioning(true);
+    const phase = await flushScores();
+    if (phase !== "synced") {
+      if (phase === "waiting") {
+        toastError(
+          "No signal. Your scores are saved on this phone — complete the round once you're back online."
+        );
+      }
+      setIsTransitioning(false);
+      return;
+    }
     const { error } = await completeRound(supabase, roundId);
     if (error) {
       toastError(`Complete failed: ${error.message}`);
@@ -54,7 +71,7 @@ export function useRoundLifecycle({
     onCompleted?.();
     router.refresh();
     setIsTransitioning(false);
-  }, [saveCurrentHoleScores, supabase, roundId, setIsTransitioning, router, onCompleted]);
+  }, [saveCurrentHoleScores, flushScores, supabase, roundId, setIsTransitioning, router, onCompleted]);
 
   return { onAbandonRound, onCompleteRound };
 }

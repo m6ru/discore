@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionDialog } from "./confirm-action-dialog";
 
@@ -12,6 +13,8 @@ type Props = {
   isTransitioning: boolean;
   onEditScores: () => void;
   onCompleteRound: () => void;
+  /** Rendered just above the bottom deck. */
+  syncBadge?: ReactNode;
 };
 
 export function RoundCompleteActions({
@@ -19,12 +22,14 @@ export function RoundCompleteActions({
   isTransitioning,
   onEditScores,
   onCompleteRound,
+  syncBadge,
 }: Props) {
   return (
     <div
       className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-3 backdrop-blur supports-[backdrop-filter]:bg-background/80"
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
     >
+      {syncBadge}
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-2">
         <Button
           type="button"

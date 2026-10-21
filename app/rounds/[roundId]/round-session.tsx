@@ -58,7 +58,11 @@ import type {
   RoundStatus,
   RoundSessionProps,
 } from "./round-types";
+import { mergeHoleScoresByCell } from "@/lib/rounds/hole-scores";
+import { overlayPendingScores } from "@/lib/rounds/pending-scores";
+import { SyncStatusBadge } from "./components/sync-status-badge";
 import { useActiveScoring } from "./hooks/use-active-scoring";
+import { useScoreSync } from "./hooks/use-score-sync";
 import { useDraftSetup } from "./hooks/use-draft-setup";
 import { useProfileSearch } from "./hooks/use-profile-search";
 import { useRoundLifecycle } from "./hooks/use-round-lifecycle";
@@ -187,6 +191,35 @@ export function RoundSession({
     setRenderNow: ignoreRenderNow,
   });
 
+  const scoreSync = useScoreSync({
+    supabase,
+    roundId,
+    enabled: isScorer && liveRoundStatus === "active",
+    onSynced: (rows) => setHoleScores((prev) => mergeHoleScoresByCell(prev, rows)),
+  });
+  const { discard: discardPendingScores } = scoreSync;
+
+  // `holeScores` is what the server has; everything on screen uses this view,
+  // where the scorer's unsynced saves win until the server confirms them.
+  const displayHoleScores = useMemo(
+    () => overlayPendingScores(holeScores, scoreSync.pending),
+    [holeScores, scoreSync.pending]
+  );
+
+  useEffect(() => {
+    if (isFinishedRoundStatus(liveRoundStatus)) {
+      discardPendingScores();
+    }
+  }, [liveRoundStatus, discardPendingScores]);
+
+  const syncBadge = (
+    <SyncStatusBadge
+      phase={scoreSync.phase}
+      pendingHoleCount={scoreSync.pendingHoleCount}
+      onRetry={() => void scoreSync.flush()}
+    />
+  );
+
   const scoringParticipants = participants;
 
   const sortedHoles = useMemo(() => sortHolesByNumber(holes), [holes]);
@@ -211,17 +244,15 @@ export function RoundSession({
     onSaveAndAdvanceHole,
     onPreviousHole,
   } = useActiveScoring({
-    supabase,
     roundId,
     isScorer,
     holes: playOrderedHoles,
     initialHoleScores,
     scoringParticipants,
-    holeScores,
-    setHoleScores,
+    holeScores: displayHoleScores,
+    enqueueScores: scoreSync.enqueue,
     setLastSavedEvent: ignoreLastSavedEvent,
     setRenderNow: ignoreRenderNow,
-    setIsSubmitting,
     onFinalHoleSaved: () => setIsEditingScores(false),
   });
 
@@ -230,6 +261,8 @@ export function RoundSession({
     roundId,
     isScorer,
     saveCurrentHoleScores,
+    flushScores: scoreSync.flush,
+    discardPendingScores,
     setIsTransitioning,
     onCompleted: onRoundCompleted,
   });
@@ -313,11 +346,11 @@ export function RoundSession({
 
   const scoreLookup = useMemo(() => {
     const map = new Map<string, number>();
-    for (const row of holeScores) {
+    for (const row of displayHoleScores) {
       map.set(makeScoreLookupKey(row.participant_id, row.hole_id), row.strokes);
     }
     return map;
-  }, [holeScores]);
+  }, [displayHoleScores]);
 
   const allScoresComplete = useMemo(
     () => isSegmentComplete(holeIds, scoringParticipants, scoreLookup),
@@ -338,11 +371,11 @@ export function RoundSession({
 
   const obLookup = useMemo(() => {
     const map = new Map<string, boolean>();
-    for (const row of holeScores) {
+    for (const row of displayHoleScores) {
       map.set(makeScoreLookupKey(row.participant_id, row.hole_id), row.ob);
     }
     return map;
-  }, [holeScores]);
+  }, [displayHoleScores]);
 
   const labelByParticipantId = useMemo(() => {
     const map = new Map<string, string>();
@@ -416,7 +449,7 @@ export function RoundSession({
     const observedIndex = getFirstIncompleteHoleIndex(
       playOrderedHoles,
       scoringParticipants,
-      holeScores
+      displayHoleScores
     );
     return playOrderedHoles[observedIndex] ?? null;
   }, [
@@ -425,7 +458,7 @@ export function RoundSession({
     activeHole,
     playOrderedHoles,
     scoringParticipants,
-    holeScores,
+    displayHoleScores,
   ]);
 
   const buildDisplayScoreLookup = useCallback(() => {
@@ -659,6 +692,7 @@ export function RoundSession({
               onPreviousHole={onPreviousHole}
               onSaveAndAdvanceHole={onSaveAndAdvanceHole}
               hideRunningScores={scoresHidden}
+              syncBadge={syncBadge}
             />
             </>
           ) : (
@@ -707,6 +741,7 @@ export function RoundSession({
           isTransitioning={isTransitioning}
           onEditScores={() => setIsEditingScores(true)}
           onCompleteRound={onCompleteRound}
+          syncBadge={syncBadge}
         />
       ) : null}
     </section>

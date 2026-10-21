@@ -1,6 +1,6 @@
 # Discore
 
-Browser-based PWA for disc golf score tracking. Mobile-first, online-first.
+Browser-based PWA for disc golf score tracking. Mobile-first; scores save instantly and sync in the background.
 One signed-in Scorer per round writes; invited Observers watch live via
 Supabase Realtime.
 
