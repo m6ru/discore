@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,6 +30,8 @@ type Props = {
   onPreviousHole: () => void;
   onSaveAndAdvanceHole: () => void;
   hideRunningScores?: boolean;
+  /** Rendered just above the bottom deck. */
+  syncBadge?: ReactNode;
 };
 
 function parseStrokeValue(raw: string): number | null {
@@ -148,6 +150,7 @@ export function ActiveHoleScoring({
   onPreviousHole,
   onSaveAndAdvanceHole,
   hideRunningScores = false,
+  syncBadge,
 }: Props) {
   const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(
     () => firstParticipantWithoutHoleScore(scoringParticipants, getStrokeInputValue)
@@ -207,6 +210,7 @@ export function ActiveHoleScoring({
         className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-3 backdrop-blur supports-[backdrop-filter]:bg-background/80"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
       >
+        {syncBadge}
         <div className="mx-auto w-full max-w-3xl space-y-3">
           <p className="text-center text-sm font-medium text-foreground">{selectedLabel}</p>
           <CompactStepper

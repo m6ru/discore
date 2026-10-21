@@ -75,12 +75,26 @@ export async function startTestLayout(page: Page): Promise<void> {
  */
 export async function scoreAllHolesAtPar(page: Page, players: string[], holeCount: number): Promise<void> {
   for (let hole = 1; hole <= holeCount; hole++) {
-    await expect(page.getByText(new RegExp(`Hole ${hole} / ${holeCount}`))).toBeVisible();
-    for (const player of players) {
-      await page.getByRole("button", { name: new RegExp(`^\\d+\\. ${player}`) }).click();
-      await page.getByRole("button", { name: "Increase strokes" }).click();
-    }
-    const save = hole < holeCount ? "Save and go to next hole" : "Save scores";
-    await page.getByRole("button", { name: save }).click();
+    await scoreHoleAtPar(page, players, hole, holeCount);
   }
+}
+
+export async function scoreHoleAtPar(page: Page, players: string[], hole: number, holeCount: number): Promise<void> {
+  await expect(page.getByText(new RegExp(`Hole ${hole} / ${holeCount}`))).toBeVisible();
+  for (const player of players) {
+    await page.getByRole("button", { name: new RegExp(`^\\d+\\. ${player}`) }).click();
+    await page.getByRole("button", { name: "Increase strokes" }).click();
+  }
+  const save = hole < holeCount ? "Save and go to next hole" : "Save scores";
+  await page.getByRole("button", { name: save }).click();
+}
+
+/** Score rows the server has for a round (service role, bypasses RLS). */
+export async function countServerScores(roundId: string): Promise<number> {
+  const { count, error } = await admin
+    .from("hole_scores")
+    .select("id", { count: "exact", head: true })
+    .eq("round_id", roundId);
+  if (error) throw error;
+  return count ?? 0;
 }

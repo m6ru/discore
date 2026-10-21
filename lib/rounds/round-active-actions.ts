@@ -13,11 +13,16 @@ export type HoleScoreUpsertRow = {
   fairway_hit: boolean | null;
 };
 
-export async function upsertHoleScores(supabase: Client, payload: HoleScoreUpsertRow[]) {
-  return supabase
+export async function upsertHoleScores(
+  supabase: Client,
+  payload: HoleScoreUpsertRow[],
+  signal?: AbortSignal
+) {
+  const query = supabase
     .from("hole_scores")
     .upsert(payload, { onConflict: "round_id,participant_id,hole_id" })
     .select("id, participant_id, hole_id, strokes, ob, fairway_hit");
+  return signal ? query.abortSignal(signal) : query;
 }
 
 export async function abandonRound(supabase: Client, roundId: string) {
