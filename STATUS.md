@@ -9,7 +9,7 @@
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
 - **Updated:** 2026-10-21
-- **State:** Hardening done; product direction in BLUEPRINT §1. Instant scoring live (BLUEPRINT §3a). Disc golf skill in `.claude/skills/disc-golf/` — load it before scoring, stats or course-data work.
+- **State:** Hardening done; product direction in BLUEPRINT §1. Instant scoring live (BLUEPRINT §3a). `proxy.ts` rename and friendly error messages (`lib/ui/friendly-error.ts`) done. Disc golf skill in `.claude/skills/disc-golf/` — load it before scoring, stats or course-data work.
 - **Decisions (owner, 2026-10-21):** keep the "OB" label as one yes/no per hole (covers mandos and hazards; penalty types only in advanced scoring). An unfinished hole scores par + 4 (PDGA 811 F) — not reachable today, since a round completes only when every hole is scored.
 - **Next:** Roadmap #1 course suggestions — design talk first. Owner field-tests instant scoring on forest courses.
 - **In flight:** nothing.
@@ -35,7 +35,6 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 - Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
 - Later, cheap: per-round par override (tee sign differs from course data); an "unfinished hole" option (par + 4).
 - `getUser()` (network round trip) still used in `app/rounds/[roundId]/page.tsx`, `app/rounds/new/page.tsx`, `app/courses/[slug]/stats/page.tsx`; tab pages use `getClaims()`.
-- Raw database error text reaches users in toasts (e.g. `Participant add failed: … code=…`); map to friendly messages.
 - No `error.tsx` boundaries.
 - `app/rounds/trial/trial-session.tsx` (~740 lines) duplicates much of the signed-in scoring UI.
 - `lib/rounds/round-active-actions.ts` imports from `app/` (wrong direction).
