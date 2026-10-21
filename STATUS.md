@@ -8,9 +8,9 @@
 
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
-- **Updated:** 2026-10-18
-- **State:** Hardening pass done (RLS + integrity, DB/E2E tests, CI, seed pipeline, atomic RPCs). Production has every migration in the repo.
-- **Next:** Roadmap #1 — architecture walkthrough + decision records. Explain each part to the owner before writing it down.
+- **Updated:** 2026-10-21
+- **State:** Hardening pass done (RLS + integrity, DB/E2E tests, CI, seed pipeline, atomic RPCs). Production has every migration in the repo. Page overscroll bounce disabled (accidental pull-to-refresh on iPhone/Brave while scoring).
+- **Next:** Product direction talk (audience, connectivity/offline scoring, course scope, scorer model, export). Scoring waits for the server on every hole save, which lags on weak signal — likely to move up the roadmap. Record the outcome in BLUEPRINT §1 and reorder the roadmap.
 - **In flight:** nothing.
 
 ---
