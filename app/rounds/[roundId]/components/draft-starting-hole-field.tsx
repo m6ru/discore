@@ -12,6 +12,7 @@ import { updateRoundStartingHole } from "@/lib/rounds/round-draft-actions";
 import { toastError } from "@/lib/ui/toast-notify";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Props = {
   supabase: SupabaseClient<Database>;
@@ -46,7 +47,7 @@ export function DraftStartingHoleField({
 
     if (error) {
       onStartingHoleChange(previousHole);
-      toastError(`Could not save starting hole: ${error.message}`);
+      toastError(friendlyError("Could not save the starting hole", error));
     }
   };
 

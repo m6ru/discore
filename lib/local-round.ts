@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { pickOne } from "@/lib/supabase/select-helpers";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Client = SupabaseClient<Database>;
 
@@ -322,7 +323,7 @@ export async function startLocalTrialFromLayout(
     .maybeSingle();
 
   if (layoutError) {
-    return { ok: false, message: `Could not load layout: ${layoutError.message}` };
+    return { ok: false, message: friendlyError("Could not load the layout", layoutError) };
   }
   if (!layout || !layout.is_active) {
     return { ok: false, message: "That layout is not available." };
@@ -335,7 +336,7 @@ export async function startLocalTrialFromLayout(
     .order("hole_number", { ascending: true });
 
   if (holesError) {
-    return { ok: false, message: `Could not load holes: ${holesError.message}` };
+    return { ok: false, message: friendlyError("Could not load the holes", holesError) };
   }
 
   const course = pickOne(layout.courses);
@@ -394,7 +395,7 @@ async function claimLocalTrial(supabase: Client): Promise<ClaimLocalTrialResult>
   } = await supabase.auth.getUser();
 
   if (userError) {
-    return { ok: false, message: `Session check failed: ${userError.message}` };
+    return { ok: false, message: friendlyError("Could not check your session", userError) };
   }
   if (!user) {
     return { ok: true, outcome: "skipped" };
@@ -422,7 +423,7 @@ async function claimLocalTrial(supabase: Client): Promise<ClaimLocalTrialResult>
   });
 
   if (error || !roundId) {
-    return { ok: false, message: `Could not save round: ${error?.message ?? "no round returned"}` };
+    return { ok: false, message: friendlyError("Could not save the round", error) };
   }
 
   clearLocalTrial();

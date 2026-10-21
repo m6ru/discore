@@ -16,6 +16,7 @@ import type { Database } from "@/lib/database.types";
 import type { RoundStatus } from "@/lib/rounds/round-status";
 import { toastError, toastInfo } from "@/lib/ui/toast-notify";
 import type { ProfileSearchResult, UnifiedPlayer } from "../round-types";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Client = SupabaseClient<Database>;
 
@@ -75,7 +76,7 @@ export function useDraftSetup({
           currentUserId
         );
         if (inviteError) {
-          toastError(`Invite failed: ${inviteError.message}`);
+          toastError(friendlyError("Could not send the invite", inviteError));
           setIsSubmitting(false);
           return false;
         }
@@ -88,13 +89,7 @@ export function useDraftSetup({
 
       const { error: guestInsertError } = await addGuestParticipant(supabase, roundId, trimmedName);
       if (guestInsertError) {
-        toastError(
-          [
-            `Participant add failed: ${guestInsertError.message}`,
-            `code=${guestInsertError.code ?? "n/a"}`,
-            `details=${guestInsertError.details ?? "n/a"}`,
-          ].join(" | ")
-        );
+        toastError(friendlyError("Could not add the player", guestInsertError));
         setIsSubmitting(false);
         return false;
       }
@@ -126,7 +121,7 @@ export function useDraftSetup({
       if (player.source === "invite" && player.inviteId) {
         const { error } = await cancelRoundInvitation(supabase, player.inviteId);
         if (error) {
-          toastError(`Remove failed: ${error.message}`);
+          toastError(friendlyError("Could not remove the player", error));
           setIsSubmitting(false);
           return;
         }
@@ -138,7 +133,7 @@ export function useDraftSetup({
       if (player.source === "participant" && player.participantId) {
         const { error: deleteError } = await removeRoundParticipant(supabase, player.participantId);
         if (deleteError) {
-          toastError(`Remove failed: ${deleteError.message}`);
+          toastError(friendlyError("Could not remove the player", deleteError));
           setIsSubmitting(false);
           return;
         }
@@ -166,7 +161,7 @@ export function useDraftSetup({
     setIsTransitioning(true);
     const { error } = await startRound(supabase, roundId);
     if (error) {
-      toastError(`Start failed: ${error.message}`);
+      toastError(friendlyError("Could not start the round", error));
       setIsTransitioning(false);
       return;
     }
@@ -179,7 +174,7 @@ export function useDraftSetup({
     setIsTransitioning(true);
     const { error } = await deleteDraftRound(supabase, roundId);
     if (error) {
-      toastError(`Delete failed: ${error.message}`);
+      toastError(friendlyError("Could not delete the round", error));
       setIsTransitioning(false);
       return;
     }

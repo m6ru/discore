@@ -6,6 +6,7 @@ import type { Database } from "@/lib/database.types";
 import type { RoundStatus } from "@/lib/rounds/round-status";
 import { toastError } from "@/lib/ui/toast-notify";
 import type { ProfileSearchResult } from "../round-types";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Client = SupabaseClient<Database>;
 
@@ -43,7 +44,7 @@ export function useProfileSearch({
         .limit(8);
 
       if (error) {
-        toastError(`Participant lookup failed: ${error.message}`);
+        toastError(friendlyError("Could not search players", error));
         setIsSearching(false);
         return;
       }

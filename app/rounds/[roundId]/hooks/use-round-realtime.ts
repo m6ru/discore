@@ -5,7 +5,6 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { normalizeInviteRows, type InviteRow } from "@/lib/rounds/invite-rows";
 import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
 import type { Database } from "@/lib/database.types";
-import { toastError } from "@/lib/ui/toast-notify";
 import type {
   HoleScoreRow,
   LastSavedEvent,
@@ -45,7 +44,7 @@ export function useRoundRealtime({
       .order("joined_at", { ascending: true });
 
     if (error) {
-      toastError(`Failed to refresh participants: ${error.message}`);
+      console.warn("Refreshing participants failed", error);
       return;
     }
 
@@ -62,7 +61,7 @@ export function useRoundRealtime({
       .order("created_at", { ascending: true });
 
     if (error) {
-      toastError(`Failed to refresh invitations: ${error.message}`);
+      console.warn("Refreshing invitations failed", error);
       return;
     }
 
@@ -77,7 +76,7 @@ export function useRoundRealtime({
       .maybeSingle();
 
     if (error) {
-      toastError(`Failed to refresh round status: ${error.message}`);
+      console.warn("Refreshing round status failed", error);
       return;
     }
 
@@ -93,7 +92,7 @@ export function useRoundRealtime({
       .eq("round_id", roundId);
 
     if (error) {
-      toastError(`Failed to refresh scores: ${error.message}`);
+      console.warn("Refreshing scores failed", error);
       return;
     }
 

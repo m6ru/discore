@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Client = SupabaseClient<Database>;
 
@@ -152,12 +153,7 @@ export async function createDraftRound(
 
     return {
       ok: false,
-      message: [
-        `Round create failed: ${insertError.message}`,
-        `code=${insertError.code ?? "n/a"}`,
-        `details=${insertError.details ?? "n/a"}`,
-        `hint=${insertError.hint ?? "n/a"}`,
-      ].join(" | "),
+      message: friendlyError("Could not create the round", insertError),
     };
   }
 

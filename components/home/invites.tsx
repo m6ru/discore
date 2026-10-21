@@ -12,6 +12,7 @@ import {
 } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { Button } from "@/components/ui/button";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 export type { HomeInvite as InviteWithContext };
 
@@ -37,7 +38,7 @@ export function HomeInvites({ currentUserId, invites }: Props) {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toastError(`Failed to refresh invites: ${error.message}`);
+      console.warn("Refreshing invites failed", error);
       return;
     }
 
@@ -108,7 +109,7 @@ export function HomeInvites({ currentUserId, invites }: Props) {
       });
 
       if (acceptError) {
-        toastError(`Invite acceptance failed: ${acceptError.message}`);
+        toastError(friendlyError("Could not accept the invite", acceptError));
         setBusyId(null);
         return;
       }
@@ -127,7 +128,7 @@ export function HomeInvites({ currentUserId, invites }: Props) {
       .eq("id", invite.id);
 
     if (updateError) {
-      toastError(`Failed to update invite: ${updateError.message}`);
+      toastError(friendlyError("Could not update the invite", updateError));
       setBusyId(null);
       return;
     }
