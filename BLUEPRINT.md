@@ -197,6 +197,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 
 - **Integrity beyond RLS lives in triggers and constraints:** status transitions (`draft → active → completed/abandoned`, no reopening), `layout_id` locked after start, `guest_claim_id` immutable, score participant/hole must belong to the round and its layout, strokes 1–25, and `hole_scores.par` stamped by the database. Course rows with history cannot be deleted (`ON DELETE RESTRICT`).
 - **Every policy, trigger, or function change ships with pgTAP tests** in `supabase/tests/`.
+- **Table grants are explicit.** Supabase no longer auto-grants Data API access on new `public` tables (from 2026-10-30, including `supabase db reset`). Default privileges in the migrations cover `authenticated` and `service_role` for new tables; `anon` and views get explicit `grant select` in the migration that creates them. Without a grant the API returns "permission denied" before RLS is checked.
 - **Multi-step writes are Postgres functions** (`claim_trial`, `accept_invite`) running `SECURITY INVOKER`, so each is one transaction and RLS still applies.
 
 - **`hole_scores` write policy must join to `rounds`** — the policy must verify `auth.uid() = (SELECT scorer_id FROM rounds WHERE id = hole_scores.round_id)`. Never trust a `scorer_id` value sent from the client.
