@@ -64,5 +64,5 @@ Course data is creator-maintained and lives in git — see `supabase/seeds/READM
 | Scoring math      | `lib/scoring/` (pure TS, no React/Next/Supabase, no `any`)         |
 | Round actions     | `lib/rounds/`                                                      |
 | Profiles          | `lib/profiles/`                                                    |
-| Supabase clients  | `lib/supabase/{client,server,middleware,select-helpers}.ts`        |
+| Supabase clients  | `lib/supabase/{client,server,proxy,select-helpers}.ts`        |
 | Migrations        | `supabase/migrations/`                                             |

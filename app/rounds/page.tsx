@@ -25,7 +25,7 @@ type HistoryRound = {
 
 export default async function RoundsHistoryPage() {
   const supabase = await createServerClient();
-  // getClaims() verifies the JWT locally when possible; middleware handles refresh.
+  // getClaims() verifies the JWT locally when possible; proxy.ts handles refresh.
   const { data } = await supabase.auth.getClaims();
 
   if (!data?.claims) {

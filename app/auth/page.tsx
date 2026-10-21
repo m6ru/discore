@@ -11,7 +11,7 @@ type AuthPageProps = {
 export default async function AuthPage({ searchParams }: AuthPageProps) {
   const { message } = await searchParams;
   const supabase = await createServerClient();
-  // getClaims() verifies the JWT locally when possible; middleware handles refresh.
+  // getClaims() verifies the JWT locally when possible; proxy.ts handles refresh.
   const { data: claimsData } = await supabase.auth.getClaims();
   const claims = claimsData?.claims ?? null;
 
