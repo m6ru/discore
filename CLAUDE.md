@@ -64,6 +64,7 @@ When several things are queued, **tell the owner which can run in a parallel ses
 - `next dev` opened as `127.0.0.1` blocks hydration (`allowedDevOrigins`); use `localhost`.
 - Windows: Git Bash rewrites `/paths` passed to node scripts — prefix with `MSYS_NO_PATHCONV=1`.
 - `INSERT … ON CONFLICT` under RLS also needs SELECT rights on conflicting rows; inside RLS-bound functions check existence first instead.
+- Supabase query builders are **lazy**: `void supabase.from(...).update(...)` never sends anything. Always `await` it or chain `.then(...)`, even for fire-and-forget writes.
 - `.insert().select()` (RETURNING) also checks the SELECT policy against the new row; `SECURITY DEFINER` helpers can't see a row inserted in the same statement.
 - `npx supabase start` on a flaky network: `docker pull` the images first (resumable), then start.
 - `lib/database.types.ts` is maintained by hand in the current format; `supabase gen types` output differs in formatting — add new tables/functions in the existing style.

@@ -76,10 +76,11 @@ test("a player suggests a fix, the admin applies it, the player is thanked", asy
   await expect(page.getByText("Fixed — thanks!")).toBeVisible();
   await page.getByRole("button", { name: "Dismiss" }).click();
   await expect(thanks).not.toBeVisible();
-  await expect.poll(async () => {
-    await page.reload();
-    return thanks.isVisible();
-  }).toBe(false);
+  // Dismissing must reach the database, or the card comes back on the next visit.
+  await expect.poll(async () => (await latestSuggestion(player)).thanked_seen_at).not.toBeNull();
+  await page.reload();
+  await page.waitForLoadState("networkidle");
+  await expect(thanks).not.toBeVisible();
 });
 
 test("a player suggests a new course from an empty search", async ({ page }) => {

@@ -22,11 +22,17 @@ export function SuggestionThanks({ items }: Props) {
 
   function dismiss(id: string) {
     setDismissed((prev) => [...prev, id]);
-    // Fire and forget: if it fails, the card simply shows again next time.
+    // Supabase queries are lazy: nothing is sent until the result is awaited or
+    // .then()'d. If it fails, the card simply shows again next time.
     void supabase
       .from("course_suggestions")
       .update({ thanked_seen_at: new Date().toISOString() })
-      .eq("id", id);
+      .eq("id", id)
+      .then(({ error }) => {
+        if (error) {
+          console.warn("Dismissing the suggestion thank-you failed", error);
+        }
+      });
   }
 
   return (
