@@ -42,9 +42,10 @@ Researched 2026-10-21. PDGA rule text is **Official Rules of Disc Golf, rev. 1 J
 ### What this means for Discore
 
 - `strokes` is the **total including penalties** — the number a player says aloud. Never ask casual players to split throws and penalties.
-- The penalty itself is one bit per hole for casual use: the `ob` boolean ("something went wrong here") covers OB, mando and hazard alike. If the label ever changes, "Penalty" is more accurate than "OB"; a per-penalty count or type belongs to opt-in advanced scoring (roadmap #8), not the default flow.
+- The penalty itself is one bit per hole for casual use: the `ob` boolean ("something went wrong here") covers OB, mando and hazard alike. **Decided (owner, 2026-10-21): keep the label "OB"**: it's what Estonian players say, and mandos and hazards are rare enough to fold in. A per-penalty count or type belongs to opt-in advanced scoring (roadmap #8), not the default flow.
 - Provisionals, abandoned throws and relief options are **decisions on the course**, not data. Don't model them.
-- An unfinished casual hole has no correct score. Don't invent par + 4; leave it unscored (or require a score before completing) and keep stats from counting it. If a "fill missing holes" feature is ever needed, par + 4 is the PDGA convention to cite.
+- **Decided (owner, 2026-10-21): an unfinished hole scores par + 4**, as in tournaments ([811 F](https://www.pdga.com/rules/official-rules-disc-golf/811)). It applies when a round is completed with holes unscored for a player; the hole then counts in totals and stats like any other score.
+- Simple input stays the default: no provisionals, relief options or drop zones in the data. A per-round par override (when the tee sign differs from the course data) is a cheap later addition.
 - Strokes 1–25 per hole (DB check) easily covers real play.
 
 ## 3. Terminology (English → Estonian)
