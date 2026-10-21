@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Client = SupabaseClient<Database>;
 
@@ -117,7 +118,7 @@ export async function uploadProfileAvatar(
     .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
 
   if (uploadError) {
-    return { ok: false, message: `Upload failed: ${uploadError.message}` };
+    return { ok: false, message: friendlyError("Could not upload the photo", uploadError) };
   }
 
   const { data } = supabase.storage.from("profile-pictures").getPublicUrl(path);

@@ -7,6 +7,7 @@ import { abandonRound, completeRound } from "@/lib/rounds/round-active-actions";
 import type { Database } from "@/lib/database.types";
 import { toastError } from "@/lib/ui/toast-notify";
 import type { SyncPhase } from "./use-score-sync";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Client = SupabaseClient<Database>;
 
@@ -38,7 +39,7 @@ export function useRoundLifecycle({
     setIsTransitioning(true);
     const { error } = await abandonRound(supabase, roundId);
     if (error) {
-      toastError(`Abandon failed: ${error.message}`);
+      toastError(friendlyError("Could not abandon the round", error));
       setIsTransitioning(false);
       return;
     }
@@ -64,7 +65,7 @@ export function useRoundLifecycle({
     }
     const { error } = await completeRound(supabase, roundId);
     if (error) {
-      toastError(`Complete failed: ${error.message}`);
+      toastError(friendlyError("Could not complete the round", error));
       setIsTransitioning(false);
       return;
     }

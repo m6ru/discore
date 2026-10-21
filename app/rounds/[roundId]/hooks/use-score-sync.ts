@@ -20,6 +20,7 @@ import {
 import type { Database } from "@/lib/database.types";
 import { SAVE_SCORES_TOAST_ID, toastSaveError } from "@/lib/ui/toast-notify";
 import type { HoleScoreRow } from "../round-types";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Client = SupabaseClient<Database>;
 
@@ -97,7 +98,7 @@ export function useScoreSync({ supabase, roundId, enabled, onSynced }: Options) 
           return "waiting";
         }
         setPhase("failed");
-        toastSaveError(`Could not save scores: ${error.message}`);
+        toastSaveError(friendlyError("Could not save scores", error));
         return "failed";
       }
 

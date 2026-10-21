@@ -11,6 +11,7 @@ import { toastError } from "@/lib/ui/toast-notify";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { ROUND_HEADER_TITLE_ID } from "./round-header-actions-slot";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 const TITLE_TEXT_CLASS = "text-xl font-bold tracking-tight sm:text-2xl";
 
@@ -70,7 +71,7 @@ export function DraftRoundTitlePortal({
     setIsSaving(false);
 
     if (error) {
-      toastError(`Could not save round name: ${error.message}`);
+      toastError(friendlyError("Could not save the round name", error));
       cancelEditing();
       return;
     }

@@ -9,6 +9,7 @@ import {
   startLocalTrialFromLayout,
 } from "@/lib/local-round";
 import { toastError } from "@/lib/ui/toast-notify";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 export function useStartDraftRound(layoutId: string) {
   const supabase = useMemo(() => createClient(), []);
@@ -43,7 +44,7 @@ export function useStartDraftRound(layoutId: string) {
       }
 
       if (userError) {
-        toastError(`Session check failed: ${userError.message}`);
+        toastError(friendlyError("Could not check your session", userError));
         return;
       }
 

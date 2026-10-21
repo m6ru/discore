@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { buildDisplayName } from "@/lib/profiles/format-display-name";
 import { uploadProfileAvatar } from "@/lib/profiles/upload-avatar";
+import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Client = SupabaseClient<Database>;
 
@@ -68,7 +69,7 @@ export async function saveProfile(
     .eq("id", userId);
 
   if (error) {
-    return { ok: false, message: `Save failed: ${error.message}` };
+    return { ok: false, message: friendlyError("Could not save your profile", error) };
   }
 
   return { ok: true, avatarUrl: nextAvatarUrl };
