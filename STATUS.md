@@ -9,9 +9,10 @@
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
 - **Updated:** 2026-10-21
-- **State:** Hardening done; product direction in BLUEPRINT §1. Instant scoring built (saves on the phone, syncs in the background, badge only when waiting) — BLUEPRINT §3a.
-- **Next:** Owner tests instant scoring on the course (dead spots, reload mid-round), then Roadmap #2 course suggestions — design talk first.
-- **In flight:** instant scoring PR (`feat/instant-scoring`); disc golf skill (#1) in a parallel session (`feat/disc-golf-skill`).
+- **State:** Hardening done; product direction in BLUEPRINT §1. Instant scoring live (BLUEPRINT §3a). Disc golf skill in `.claude/skills/disc-golf/` — load it before scoring, stats or course-data work.
+- **Decisions (owner, 2026-10-21):** keep the "OB" label as one yes/no per hole (covers mandos and hazards; penalty types only in advanced scoring). An unfinished hole scores par + 4 (PDGA 811 F) — not reachable today, since a round completes only when every hole is scored.
+- **Next:** Roadmap #1 course suggestions — design talk first. Owner field-tests instant scoring on forest courses.
+- **In flight:** nothing.
 
 ---
 
@@ -19,20 +20,20 @@ _Overwritten at the end of every session — describes now, not history (history
 
 Ordered. The security and reliability items from an external code review (Oct 2026) are done.
 
-1. **Disc golf knowledge skill** — `.claude/skills/disc-golf/SKILL.md`: rules that affect scoring (penalties, OB, mandos, drop zones, provisionals), terminology, common scoring-app conventions, Estonian context. Concise, with sources.
-2. **Course suggestions** — users suggest changes to a course / a new course; owner reviews and applies via seed JSON. Design talk first: entry points, what the user sees afterwards, owner notification, spam protection.
-3. **Architecture docs.** Walkthrough + diagram, data flow of a round (draft → active → complete, Realtime to observers), short decision records: single-scorer model, RLS as authorization, local trial + claim, seed JSON as source of truth, par snapshot, RPCs for atomic writes, sync queue.
-4. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
-5. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
-6. **Stats UX rethink** — concept + UI across Home / History / course stats / finished round. Talk before pixels.
-7. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
-8. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
+1. **Course suggestions** — users suggest changes to a course / a new course; owner reviews and applies via seed JSON. Fresh course data is the edge; AM/PRO, colour and seasonal ("2025AM") layouts are common, and a re-set course means a new layout + retiring the old one, never editing played holes. Design talk first: entry points, what the user sees afterwards, owner notification, spam protection.
+2. **Architecture docs.** Walkthrough + diagram, data flow of a round (draft → active → complete, Realtime to observers), short decision records: single-scorer model, RLS as authorization, local trial + claim, seed JSON as source of truth, par snapshot, RPCs for atomic writes, sync queue.
+3. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
+4. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
+5. **Stats UX rethink** — concept + UI across Home / History / course stats / finished round. Talk before pixels.
+6. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
+7. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
 
 Not planned: exports or integration with other platforms; competitions/ratings (Phase 6).
 
 ### Smaller debts
 
 - Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
+- Later, cheap: per-round par override (tee sign differs from course data); an "unfinished hole" option (par + 4).
 - `middleware.ts` → `proxy.ts` (Next 16 deprecation; auth-sensitive, isolated change).
 - `getUser()` (network round trip) still used in `app/rounds/[roundId]/page.tsx`, `app/rounds/new/page.tsx`, `app/courses/[slug]/stats/page.tsx`; tab pages use `getClaims()`.
 - Raw database error text reaches users in toasts (e.g. `Participant add failed: … code=…`); map to friendly messages.
