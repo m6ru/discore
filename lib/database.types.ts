@@ -59,6 +59,7 @@ export type Database = {
           course_id: string | null
           course_name: string | null
           created_at: string
+          hole_id: string | null
           id: string
           kind: string
           layout_id: string | null
@@ -75,6 +76,7 @@ export type Database = {
           course_id?: string | null
           course_name?: string | null
           created_at?: string
+          hole_id?: string | null
           id?: string
           kind: string
           layout_id?: string | null
@@ -91,6 +93,7 @@ export type Database = {
           course_id?: string | null
           course_name?: string | null
           created_at?: string
+          hole_id?: string | null
           id?: string
           kind?: string
           layout_id?: string | null
@@ -109,6 +112,13 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_suggestions_hole_id_fkey"
+            columns: ["hole_id"]
+            isOneToOne: false
+            referencedRelation: "holes"
             referencedColumns: ["id"]
           },
           {

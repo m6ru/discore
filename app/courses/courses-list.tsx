@@ -116,9 +116,20 @@ export function CoursesList({ courses }: Props) {
       />
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          {courses.length === 0 ? "No courses available." : "No courses match your search."}
-        </p>
+        <div className="space-y-1 text-sm text-muted-foreground">
+          <p>{courses.length === 0 ? "No courses available." : "No courses match your search."}</p>
+          {query.trim() ? (
+            <p>
+              Missing a course?{" "}
+              <Link
+                href={`/courses/suggest?name=${encodeURIComponent(query.trim())}`}
+                className="font-medium text-primary underline-offset-4 hover:underline"
+              >
+                Suggest “{query.trim()}”
+              </Link>
+            </p>
+          ) : null}
+        </div>
       ) : (
         <ul className="space-y-2">
           {filtered.map((course) => (

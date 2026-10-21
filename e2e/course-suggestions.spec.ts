@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import zlib from "node:zlib";
 import { devices, expect, test } from "@playwright/test";
-import { COURSE, createUser, ensureTestCourse, makeAdmin, signIn } from "./helpers";
+import { COURSE, createUser, ensureTestCourse, latestSuggestion, makeAdmin, signIn, startTestLayout } from "./helpers";
 
 test.beforeAll(ensureTestCourse);
 
@@ -82,13 +82,15 @@ test("a player suggests a fix, the admin applies it, the player is thanked", asy
   }).toBe(false);
 });
 
-test("a player suggests a new course", async ({ page }) => {
+test("a player suggests a new course from an empty search", async ({ page }) => {
   const player = await createUser("Nils");
   await signIn(page, player);
+  const name = `Forest Park ${randomUUID().slice(0, 6)}`;
 
   await page.goto("/courses");
-  await page.getByRole("link", { name: "Suggest it" }).click();
-  await page.getByLabel("Course name").fill(`Forest Park ${randomUUID().slice(0, 6)}`);
+  await page.getByRole("searchbox").fill(name);
+  await page.getByRole("link", { name: `Suggest “${name}”` }).click();
+  await expect(page.getByLabel("Course name")).toHaveValue(name);
   await page.getByLabel("Location").fill("Testville");
   await page.getByLabel("What you know").fill("9 baskets, all par 3");
   await page.getByRole("button", { name: "Send suggestion" }).click();
@@ -99,4 +101,31 @@ test("signed-out visitors are sent to sign in", async ({ page }) => {
   await page.goto(`/courses/suggest?course=${COURSE.slug}`);
   await page.waitForURL(/\/auth/);
   await expect(page.getByText("Please sign in to suggest a change")).toBeVisible();
+});
+
+test("a scorer reports wrong hole info without leaving the round", async ({ page }) => {
+  const scorer = await createUser("Hugo");
+  await signIn(page, scorer);
+  await startTestLayout(page);
+  await page.waitForURL(/\/rounds\/[0-9a-f-]{36}$/);
+  await page.getByRole("button", { name: "Start round" }).click();
+  await expect(page.getByText(/Hole 1 \/ 2/)).toBeVisible();
+
+  await page.getByRole("button", { name: "Wrong info?" }).click();
+  const sheet = page.getByRole("dialog");
+  await expect(sheet.getByText("Hole 1 — wrong info?")).toBeVisible();
+  await sheet.getByRole("button", { name: "Raise par" }).click();
+  await sheet.getByLabel("Length (m)").fill("75");
+  await sheet.getByLabel("Notes / OB rules").fill("OB: the path on the left");
+  await sheet.getByRole("button", { name: "Send", exact: true }).click();
+
+  await expect(page.getByText("Thanks — we'll review it.")).toBeVisible();
+  await expect(sheet).not.toBeVisible();
+  await expect(page.getByText(/Hole 1 \/ 2/)).toBeVisible();
+
+  const suggestion = await latestSuggestion(scorer);
+  expect(suggestion.kind).toBe("hole_info");
+  expect(suggestion.hole_id).not.toBeNull();
+  expect(suggestion.course_id).not.toBeNull();
+  expect(suggestion.note).toBe('Hole 1: Par 3 → 4 · Length 70 → 75 m\nNotes: "(none)" → "OB: the path on the left"');
 });

@@ -204,7 +204,7 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 | `rounds` | Participant in the round (`round_participants`), invitee, or Scorer. | Own rounds: a `draft`, or a `completed` round carrying a `guest_claim_id` (trial claim). | Scorer only (`scorer_id = auth.uid()`). | Not permitted. |
 | `round_participants` | Members of the same round only. | Scorer adds **guests** (name only) in `draft`; a **registered user** joins only themselves, with a pending invite. Guests may also be added to a just-claimed trial. | Not permitted. | Not permitted. |
 | `hole_scores` | Members of the same round only. | Scorer of an `active` round, or scorer inserting scores for a completed claimed trial (`guest_claim_id` set; hole must belong to the layout). | Scorer of the parent round only (`rounds.scorer_id = auth.uid()`), while `active`. | Not permitted. |
-| `course_suggestions` | Sender (own rows) and admins. | Signed-in users, as themselves, status `new`; photos only from their own storage folder; 10 per day (trigger). | Admins: `status`, `owner_note` (trigger stamps `reviewed_at`). Sender: only `thanked_seen_at`. Content is immutable. | Not permitted. |
+| `course_suggestions` | Sender (own rows) and admins. | Signed-in users, as themselves, status `new`; optional hole must belong to the layout (course derived from the layout); photos only from their own storage folder; 10 per day (trigger). | Admins: `status`, `owner_note` (trigger stamps `reviewed_at`). Sender: only `thanked_seen_at`. Content is immutable. | Not permitted. |
 | `app_admins` | Nobody via the API (RLS, no policies); checked through `is_app_admin()`. | Owner, by hand in the dashboard SQL editor. | — | — |
 
 ### Critical policy implementation notes

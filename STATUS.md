@@ -9,10 +9,10 @@
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
 - **Updated:** 2026-10-21
-- **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions built: `/courses/suggest` (fix or new course, note + up to 3 photos), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home. Disc golf skill in `.claude/skills/disc-golf/`.
+- **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions live: `/courses/suggest` (fix or new course, note + up to 3 photos; "Missing one?" in the course list and on an empty search), "Wrong info?" per hole during a round (edit par/length/notes in place), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home. Disc golf skill in `.claude/skills/disc-golf/`.
 - **Decisions (owner, 2026-10-21):** "OB" stays one yes/no per hole. Unfinished hole = par + 4 (not reachable today). Suggestions: signed-in only; owner reviews by hand (no AI pre-reading); sender is thanked in the app, not by email.
 - **Next:** PR 2 — Telegram ping to the owner on each new suggestion (personal Telegram + bot from @BotFather; Supabase Edge Function + database webhook; token and chat id as Supabase secrets).
-- **In flight:** course suggestions PR (`feat/course-suggestions`) — owner adds themselves to `app_admins` after `db push`.
+- **In flight:** hole suggestions PR (`feat/hole-suggestions`, migration adds `course_suggestions.hole_id`).
 
 ---
 

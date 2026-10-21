@@ -1,6 +1,6 @@
 -- Course suggestions: who can send, read and review. Run with: npx supabase test db
 begin;
-select plan(19);
+select plan(23);
 
 insert into auth.users (id, email, aud, role, raw_user_meta_data) values
   ('a0000000-0000-0000-0000-00000000000a', 'alice@test.local', 'authenticated', 'authenticated', '{"first_name":"Alice","last_name":"Sender"}'),
@@ -15,6 +15,9 @@ insert into public.courses (id, name, location, slug) values
 insert into public.layouts (id, course_id, name, total_par, total_distance_m, slug) values
   ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'Main', 6, 200, 'main'),
   ('20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002', 'Main', 6, 200, 'main');
+insert into public.holes (id, layout_id, hole_number, par, distance_m) values
+  ('30000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 1, 3, 80),
+  ('30000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000002', 1, 3, 80);
 
 create function pg_temp.act_as(uid uuid) returns void language sql as $$
   select set_config('request.jwt.claims',
@@ -45,6 +48,33 @@ select lives_ok(
   $$ insert into public.course_suggestions (id, kind, course_name, location, note)
      values ('50000000-0000-0000-0000-000000000002', 'new_course', 'New Forest Park', 'Somewhere', '9 baskets') $$,
   'a new course needs no course id'
+);
+
+-- From the scoring screen: layout + hole only, the course is filled in.
+select lives_ok(
+  $$ insert into public.course_suggestions (id, kind, layout_id, hole_id, note)
+     values ('50000000-0000-0000-0000-000000000003', 'hole_info',
+             '20000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', 'Par 3 → 4') $$,
+  'a hole suggestion needs only the layout and the hole'
+);
+
+select is(
+  (select course_id from public.course_suggestions where id = '50000000-0000-0000-0000-000000000003'),
+  '10000000-0000-0000-0000-000000000001'::uuid,
+  'the course is derived from the layout'
+);
+
+select throws_ok(
+  $$ insert into public.course_suggestions (kind, layout_id, hole_id, note)
+     values ('hole_info', '20000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002', 'x') $$,
+  'P0001', 'Hole does not belong to this layout',
+  'the hole must belong to the layout'
+);
+
+select throws_ok(
+  $$ update public.course_suggestions set hole_id = null where id = '50000000-0000-0000-0000-000000000003' $$,
+  'P0001', 'A suggestion''s content cannot be changed',
+  'the hole cannot be changed after sending'
 );
 
 select throws_ok(
@@ -125,7 +155,7 @@ select pg_temp.act_as('d0000000-0000-0000-0000-00000000000d');
 
 select is(
   (select count(*)::int from public.course_suggestions),
-  2,
+  3,
   'the admin sees every suggestion'
 );
 
@@ -159,7 +189,7 @@ select lives_ok(
 -- Spam guard
 -- ---------------------------------------------------------------------------
 insert into public.course_suggestions (kind, course_id, note)
-  select 'other', '10000000-0000-0000-0000-000000000001', 'n' || i from generate_series(1, 8) i;
+  select 'other', '10000000-0000-0000-0000-000000000001', 'n' || i from generate_series(1, 7) i;
 
 select throws_ok(
   $$ insert into public.course_suggestions (kind, course_id, note) values ('other', '10000000-0000-0000-0000-000000000001', 'eleventh') $$,
