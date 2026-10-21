@@ -12,7 +12,12 @@ export default async function CoursesPage() {
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
       <header className="space-y-1">
         <h1 className={pageTitleClassName}>Courses</h1>
-        <p className={pageSubtitleClassName}>Pick a course to play.</p>
+        <p className={pageSubtitleClassName}>
+          Pick a course to play. ·{" "}
+          <Link href="/courses/suggest" className="font-medium text-primary underline-offset-4 hover:underline">
+            Missing one?
+          </Link>
+        </p>
       </header>
 
       {coursesError ? (
@@ -23,12 +28,6 @@ export default async function CoursesPage() {
         <CoursesList courses={courses ?? []} />
       )}
 
-      <p className="text-center text-sm text-muted-foreground">
-        Missing a course?{" "}
-        <Link href="/courses/suggest" className="font-medium text-primary underline-offset-4 hover:underline">
-          Suggest it
-        </Link>
-      </p>
     </main>
   );
 }

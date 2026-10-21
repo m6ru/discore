@@ -9,10 +9,10 @@
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
 - **Updated:** 2026-10-21
-- **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions built: `/courses/suggest` (fix or new course, note + up to 3 photos), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home. Disc golf skill in `.claude/skills/disc-golf/`.
+- **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions live: `/courses/suggest` (fix or new course, note + up to 3 photos; "Missing one?" in the course list and on an empty search), "Wrong info?" per hole during a round (edit par/length/notes in place), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home. Disc golf skill in `.claude/skills/disc-golf/`.
 - **Decisions (owner, 2026-10-21):** "OB" stays one yes/no per hole. Unfinished hole = par + 4 (not reachable today). Suggestions: signed-in only; owner reviews by hand (no AI pre-reading); sender is thanked in the app, not by email.
 - **Next:** PR 2 — Telegram ping to the owner on each new suggestion (personal Telegram + bot from @BotFather; Supabase Edge Function + database webhook; token and chat id as Supabase secrets).
-- **In flight:** course suggestions PR (`feat/course-suggestions`) — owner adds themselves to `app_admins` after `db push`.
+- **In flight:** nothing. Vercel **preview** deployments return "Internal Server Error" since around #22 (production is fine) — find the cause before relying on previews again.
 
 ---
 
@@ -31,6 +31,8 @@ Ordered. The security and reliability items from an external code review (Oct 20
 Not planned: exports or integration with other platforms; competitions/ratings (Phase 6).
 
 ### Smaller debts
+
+- Vercel previews: "Internal Server Error" on every page (production works, the same build works locally against production). Read the preview's runtime logs (`npx vercel login` → `npx vercel logs <url>`) or check Preview environment variables.
 
 - Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
 - Later, cheap: per-round par override (tee sign differs from course data); an "unfinished hole" option (par + 4).

@@ -55,6 +55,19 @@ export async function createUser(firstName: string): Promise<TestUser> {
   return { id: data.user!.id, email, firstName, lastName, displayName: `${firstName} ${lastName}` };
 }
 
+/** The user's newest course suggestion (service role). */
+export async function latestSuggestion(user: TestUser) {
+  const { data, error } = await admin
+    .from("course_suggestions")
+    .select("kind, note, hole_id, layout_id, course_id")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 /** Lets the user review course suggestions (`app_admins`). */
 export async function makeAdmin(user: TestUser): Promise<void> {
   const { error } = await admin.from("app_admins").insert({ user_id: user.id });

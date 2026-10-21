@@ -57,12 +57,48 @@ export async function uploadSuggestionPhoto(
   return { ok: true, path };
 }
 
+export type HoleValues = { par: number; distanceM: number; notes: string };
+
+/**
+ * The note for a "Wrong info?" suggestion from the scoring screen: what changed
+ * on the hole, plus the player's comment. null when there's nothing to send.
+ */
+export function describeHoleFix(
+  holeNumber: number,
+  current: HoleValues,
+  proposed: HoleValues,
+  comment: string
+): string | null {
+  const changes: string[] = [];
+  if (proposed.par !== current.par) {
+    changes.push(`Par ${current.par} → ${proposed.par}`);
+  }
+  if (proposed.distanceM !== current.distanceM) {
+    changes.push(`Length ${current.distanceM} → ${proposed.distanceM} m`);
+  }
+  const notesChanged = proposed.notes.trim() !== current.notes.trim();
+  const trimmedComment = comment.trim();
+  if (changes.length === 0 && !notesChanged && !trimmedComment) {
+    return null;
+  }
+
+  const lines = [`Hole ${holeNumber}${changes.length > 0 ? `: ${changes.join(" · ")}` : ""}`];
+  if (notesChanged) {
+    lines.push(`Notes: "${current.notes.trim() || "(none)"}" → "${proposed.notes.trim() || "(none)"}"`);
+  }
+  if (trimmedComment) {
+    lines.push("", trimmedComment);
+  }
+  return lines.join("\n");
+}
+
 export type AgentPromptInput = {
   id: string;
   kind: string;
   courseName: string | null;
   courseSlug: string | null;
   layoutName: string | null;
+  holeNumber: number | null;
   location: string | null;
   note: string;
   createdAt: string;
@@ -78,7 +114,8 @@ export function buildAgentPrompt(s: AgentPromptInput): string {
     s.kind === "new_course"
       ? `New course: ${s.courseName ?? "?"}${s.location ? ` (${s.location})` : ""}`
       : `Course: ${s.courseName ?? "?"}${s.courseSlug ? ` (slug ${s.courseSlug})` : ""}` +
-        (s.layoutName ? ` · Layout: ${s.layoutName}` : " · Layout: not specified");
+        (s.layoutName ? ` · Layout: ${s.layoutName}` : " · Layout: not specified") +
+        (s.holeNumber !== null ? ` · Hole ${s.holeNumber}` : "");
 
   const lines = [
     `Apply this course suggestion from the Discore review page (id ${s.id}).`,

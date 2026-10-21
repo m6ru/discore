@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
 import { SuggestionForm } from "./suggestion-form";
 
 type PageProps = {
-  searchParams: Promise<{ course?: string }>;
+  searchParams: Promise<{ course?: string; name?: string }>;
 };
 
 /** `/courses/suggest?course=<slug>` reports a problem; without `course` suggests a new course. */
 export default async function SuggestPage({ searchParams }: PageProps) {
-  const { course: slug } = await searchParams;
+  const { course: slug, name } = await searchParams;
   const supabase = await createServerClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims ?? null;
@@ -68,7 +68,13 @@ export default async function SuggestPage({ searchParams }: PageProps) {
         </p>
       </header>
 
-      <SuggestionForm userId={claims.sub} course={course} layouts={layouts} backHref={backHref} />
+      <SuggestionForm
+        userId={claims.sub}
+        course={course}
+        layouts={layouts}
+        backHref={backHref}
+        initialCourseName={name?.slice(0, 200) ?? ""}
+      />
     </main>
   );
 }

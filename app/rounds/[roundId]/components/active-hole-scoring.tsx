@@ -32,6 +32,7 @@ type Props = {
   hideRunningScores?: boolean;
   /** Rendered just above the bottom deck. */
   syncBadge?: ReactNode;
+  onSuggestFix?: () => void;
 };
 
 function parseStrokeValue(raw: string): number | null {
@@ -151,6 +152,7 @@ export function ActiveHoleScoring({
   onSaveAndAdvanceHole,
   hideRunningScores = false,
   syncBadge,
+  onSuggestFix,
 }: Props) {
   const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(
     () => firstParticipantWithoutHoleScore(scoringParticipants, getStrokeInputValue)
@@ -191,7 +193,7 @@ export function ActiveHoleScoring({
   return (
     <>
       <div className="space-y-4">
-        <ActiveHoleStatus activeHole={activeHole} holesLength={holesLength} />
+        <ActiveHoleStatus activeHole={activeHole} holesLength={holesLength} onSuggestFix={onSuggestFix} />
         <ScoringPlayerRoster
           scoringParticipants={scoringParticipants}
           leaderboardRows={leaderboardRows}

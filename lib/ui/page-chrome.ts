@@ -14,3 +14,7 @@ export const homeRowMetaClassName = "text-sm text-muted-foreground";
 /** Full-width primary actions on tab screens (Home, Course detail). */
 export const pagePrimaryButtonClassName =
   "min-h-10 w-full rounded-xl text-sm";
+
+/** Multi-line text input matching `components/ui/input`. */
+export const textareaClassName =
+  "min-h-32 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 md:text-sm";

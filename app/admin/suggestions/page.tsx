@@ -42,7 +42,7 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
     supabase
       .from("course_suggestions")
       .select(
-        "id, kind, note, photo_paths, status, owner_note, created_at, course_name, location, courses(name, slug), layouts(name), profiles(display_name)"
+        "id, kind, note, photo_paths, status, owner_note, created_at, course_name, location, courses(name, slug), layouts(name), holes(hole_number), profiles(display_name)"
       )
       .eq("status", status)
       .order("created_at", { ascending: false })
@@ -112,6 +112,7 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
         {(rows ?? []).map((row) => {
           const course = pickOne(row.courses);
           const layout = pickOne(row.layouts);
+          const hole = pickOne(row.holes);
           const sender = pickOne(row.profiles);
           const photoUrls = row.photo_paths.flatMap((p) => {
             const url = urlByPath.get(p);
@@ -132,6 +133,7 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
                       (courseLabel ?? "Unknown course")
                     )}
                     {layout ? <span className="text-muted-foreground"> · {layout.name}</span> : null}
+                    {hole ? <span className="text-muted-foreground"> · Hole {hole.hole_number}</span> : null}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {sender?.display_name ?? "Someone"} · {formatRoundDate(row.created_at)}
@@ -173,6 +175,7 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
                   courseName: courseLabel ?? null,
                   courseSlug: course?.slug ?? null,
                   layoutName: layout?.name ?? null,
+                  holeNumber: hole?.hole_number ?? null,
                   location: row.location,
                   note: row.note,
                   createdAt: row.created_at,

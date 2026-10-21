@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { CircleCheck, ImagePlus, X } from "lucide-react";
+import { useMemo, useState, type FormEvent } from "react";
+import { CircleCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
   COURSE_FIX_KINDS,
@@ -10,15 +10,15 @@ import {
   uploadSuggestionPhoto,
   type CourseFixKind,
 } from "@/lib/courses/course-suggestions";
-import { AVATAR_ACCEPT_ATTR } from "@/lib/profiles/upload-avatar";
 import { friendlyError } from "@/lib/ui/friendly-error";
-import { pagePrimaryButtonClassName } from "@/lib/ui/page-chrome";
+import { pagePrimaryButtonClassName, textareaClassName } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { toastError } from "@/lib/ui/toast-notify";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SuggestionPhotoPicker } from "@/components/courses/suggestion-photo-picker";
 
 type Props = {
   userId: string;
@@ -26,10 +26,9 @@ type Props = {
   course: { id: string; name: string } | null;
   layouts: { id: string; name: string }[];
   backHref: string;
+  /** Pre-fills the new course name (e.g. from an empty course search). */
+  initialCourseName?: string;
 };
-
-const textareaClassName =
-  "min-h-32 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 md:text-sm";
 
 const NOTE_PLACEHOLDER: Record<CourseFixKind | "new_course", string> = {
   hole_info: "e.g. Hole 7 is now par 4, 112 m (new tee sign).",
@@ -41,30 +40,18 @@ const NOTE_PLACEHOLDER: Record<CourseFixKind | "new_course", string> = {
     "Number of baskets, holes (number, par, length) if you know them, a website… A photo of the course board works too.",
 };
 
-export function SuggestionForm({ userId, course, layouts, backHref }: Props) {
+export function SuggestionForm({ userId, course, layouts, backHref, initialCourseName = "" }: Props) {
   const supabase = useMemo(() => createClient(), []);
   const isNewCourse = course === null;
 
   const [kind, setKind] = useState<CourseFixKind>("hole_info");
   const [layoutId, setLayoutId] = useState<string>(layouts.length === 1 ? layouts[0]!.id : "");
-  const [courseName, setCourseName] = useState("");
+  const [courseName, setCourseName] = useState(initialCourseName);
   const [location, setLocation] = useState("");
   const [note, setNote] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [sent, setSent] = useState(false);
-
-  const previews = useMemo(() => photos.map((file) => URL.createObjectURL(file)), [photos]);
-  useEffect(() => () => previews.forEach((url) => URL.revokeObjectURL(url)), [previews]);
-
-  function addPhotos(files: FileList | null) {
-    if (!files) {
-      return;
-    }
-    // Copy now: the input is cleared right after, which empties the live FileList.
-    const added = Array.from(files);
-    setPhotos((prev) => [...prev, ...added].slice(0, SUGGESTION_MAX_PHOTOS));
-  }
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -218,39 +205,7 @@ export function SuggestionForm({ userId, course, layouts, backHref }: Props) {
 
       <div className="space-y-2">
         <p className={sectionHeadingClassName}>Photos (optional, up to {SUGGESTION_MAX_PHOTOS})</p>
-        <div className="flex flex-wrap gap-2">
-          {previews.map((src, index) => (
-            <div key={src} className="relative size-20 overflow-hidden rounded-lg border">
-              {/* eslint-disable-next-line @next/next/no-img-element -- local object URL preview */}
-              <img src={src} alt={`Photo ${index + 1}`} className="size-full object-cover" />
-              <button
-                type="button"
-                aria-label={`Remove photo ${index + 1}`}
-                onClick={() => setPhotos((prev) => prev.filter((_, i) => i !== index))}
-                className="absolute right-1 top-1 rounded-full bg-background/90 p-0.5"
-              >
-                <X className="size-3.5" aria-hidden />
-              </button>
-            </div>
-          ))}
-          {photos.length < SUGGESTION_MAX_PHOTOS ? (
-            <label className="flex size-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed text-xs text-muted-foreground hover:bg-muted/50">
-              <ImagePlus className="size-5" aria-hidden />
-              Add
-              <input
-                type="file"
-                accept={AVATAR_ACCEPT_ATTR}
-                multiple
-                className="sr-only"
-                aria-label="Add photos"
-                onChange={(e) => {
-                  addPhotos(e.target.files);
-                  e.target.value = "";
-                }}
-              />
-            </label>
-          ) : null}
-        </div>
+        <SuggestionPhotoPicker photos={photos} onChange={setPhotos} />
         <p className="text-xs text-muted-foreground">
           Tee signs and course boards are the most useful. Only the Discore team sees them.
         </p>

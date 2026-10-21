@@ -52,6 +52,7 @@ import { PostRoundInsightsCard } from "@/components/stats/post-round-insights";
 import { Button } from "@/components/ui/button";
 import { isFinishedRoundStatus } from "@/lib/rounds/round-status";
 import type {
+  HoleRow,
   HoleScoreRow,
   LastSavedEvent,
   ParticipantRow,
@@ -61,6 +62,7 @@ import type {
 import { mergeHoleScoresByCell } from "@/lib/rounds/hole-scores";
 import { overlayPendingScores } from "@/lib/rounds/pending-scores";
 import { SyncStatusBadge } from "./components/sync-status-badge";
+import { HoleFixSheet } from "./components/hole-fix-sheet";
 import { useActiveScoring } from "./hooks/use-active-scoring";
 import { useScoreSync } from "./hooks/use-score-sync";
 import { useDraftSetup } from "./hooks/use-draft-setup";
@@ -103,6 +105,7 @@ export function RoundSession({
   const [scorecardOpen, setScorecardOpen] = useState(false);
   const [roundInfoOpen, setRoundInfoOpen] = useState(false);
   const [isEditingScores, setIsEditingScores] = useState(false);
+  const [holeFixTarget, setHoleFixTarget] = useState<HoleRow | null>(null);
   const [postRoundInsights, setPostRoundInsights] = useState<PostRoundInsights | null>(null);
   const [showPostRoundInsights, setShowPostRoundInsights] = useState(() => {
     if (typeof window === "undefined") {
@@ -693,10 +696,15 @@ export function RoundSession({
               onSaveAndAdvanceHole={onSaveAndAdvanceHole}
               hideRunningScores={scoresHidden}
               syncBadge={syncBadge}
+              onSuggestFix={() => setHoleFixTarget(activeHole)}
             />
             </>
           ) : (
-            <ActiveHoleStatus activeHole={scorecardActiveHole} holesLength={holes.length} />
+            <ActiveHoleStatus
+              activeHole={scorecardActiveHole}
+              holesLength={holes.length}
+              onSuggestFix={() => setHoleFixTarget(scorecardActiveHole)}
+            />
           )}
         </>
       ) : null}
@@ -745,6 +753,12 @@ export function RoundSession({
         />
       ) : null}
     </section>
+      <HoleFixSheet
+        hole={holeFixTarget}
+        layoutId={layoutId}
+        userId={currentUserId}
+        onClose={() => setHoleFixTarget(null)}
+      />
     </>
   );
 }
