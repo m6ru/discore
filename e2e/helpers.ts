@@ -59,7 +59,7 @@ export async function createUser(firstName: string): Promise<TestUser> {
 export async function latestSuggestion(user: TestUser) {
   const { data, error } = await admin
     .from("course_suggestions")
-    .select("kind, note, hole_id, layout_id, course_id")
+    .select("kind, note, hole_id, layout_id, course_id, thanked_seen_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(1)
