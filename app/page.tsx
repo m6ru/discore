@@ -11,7 +11,7 @@ import { HomeSectionsSkeleton } from "@/components/home/sections-skeleton";
 export default async function HomePage() {
   const supabase = await createServerClient();
   // getClaims() verifies the JWT locally (no Auth round-trip) when the project
-  // uses asymmetric signing keys; the session is already refreshed in middleware.
+  // uses asymmetric signing keys; the session is already refreshed in proxy.ts.
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims ?? null;
 

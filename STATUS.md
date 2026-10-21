@@ -34,7 +34,6 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 
 - Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
 - Later, cheap: per-round par override (tee sign differs from course data); an "unfinished hole" option (par + 4).
-- `middleware.ts` → `proxy.ts` (Next 16 deprecation; auth-sensitive, isolated change).
 - `getUser()` (network round trip) still used in `app/rounds/[roundId]/page.tsx`, `app/rounds/new/page.tsx`, `app/courses/[slug]/stats/page.tsx`; tab pages use `getClaims()`.
 - Raw database error text reaches users in toasts (e.g. `Participant add failed: … code=…`); map to friendly messages.
 - No `error.tsx` boundaries.
@@ -82,7 +81,7 @@ No combined best score across layouts; course page shows last played + total rou
 | Area | Paths |
 |---|---|
 | Scoring math (pure, tested) | `lib/scoring/` |
-| Supabase clients | `lib/supabase/{client,server,middleware}.ts`, root `middleware.ts` |
+| Supabase clients | `lib/supabase/{client,server,proxy}.ts`, root `proxy.ts` |
 | Round UI | `app/rounds/[roundId]/round-session.tsx`, `hooks/`, `components/` |
 | Round writes | `lib/rounds/round-draft-actions.ts`, `round-active-actions.ts`, `hole-scores.ts` |
 | Trial + claim | `lib/local-round.ts`, `app/rounds/trial/` |
