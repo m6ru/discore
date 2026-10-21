@@ -22,6 +22,15 @@ Disc golf scoring PWA for Estonia (Next.js 16 + Supabase). One-person project, w
 - **Production database:** the owner runs `npx supabase db push` themselves in their own terminal. Agents only read production with the owner's help (e.g. a dump the owner runs). When a PR has a migration the app code depends on, push the migration **before** testing the preview (previews use the production database).
 - Before a migration that adds constraints, have the owner run read-only queries on production for rows that would violate it.
 
+## Parallel work
+
+When several things are queued, **tell the owner which can run in a parallel session and which belong in this one**, with a ready-to-paste prompt for each parallel task.
+
+- **Good to parallelize:** research and docs, isolated changes in different files, anything that needs neither local Supabase nor the dev server.
+- **Keep in one session:** work that needs the owner's design input, changes to the same files or the same migration area, anything that runs DB or E2E tests (one local Supabase, E2E on port 3100).
+- Each parallel session gets its own worktree: `git worktree add ../discore-<topic> -b <branch>` (then `npm ci`, copy `.env.local` if it runs the app; `git worktree remove ../discore-<topic>` when done).
+- **Only the main session edits `STATUS.md` → Handoff.** Parallel PRs say in their description what the Handoff should note.
+
 ## Commands
 
 | What | Command |
@@ -47,7 +56,7 @@ Disc golf scoring PWA for Estonia (Next.js 16 + Supabase). One-person project, w
 - Migrations are history: never edit one that has run; add a new one.
 - E2E only ever runs against **local** Supabase (`playwright.config.ts` enforces it).
 - No Phase 6 features (ratings, tournaments) until adoption warrants it.
-- The repo is **public**: no secrets, no personal data, no real people's names in files or commit messages.
+- The repo is **public**: no secrets, no personal data, no real people's names, and no competitor or other scoring-platform names in files, commits or PRs.
 
 ## Gotchas
 

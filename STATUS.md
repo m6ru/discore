@@ -9,9 +9,9 @@
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
 - **Updated:** 2026-10-21
-- **State:** Hardening pass done (RLS + integrity, DB/E2E tests, CI, seed pipeline, atomic RPCs). Production has every migration in the repo. Page overscroll bounce disabled (accidental pull-to-refresh on iPhone/Brave while scoring).
-- **Next:** Product direction talk (audience, connectivity/offline scoring, course scope, scorer model, export). Scoring waits for the server on every hole save, which lags on weak signal — likely to move up the roadmap. Record the outcome in BLUEPRINT §1 and reorder the roadmap.
-- **In flight:** nothing.
+- **State:** Hardening done. Product direction agreed and recorded in BLUEPRINT §1 (casual-round alternative, all Estonian courses + user suggestions, one scorer, standalone, never wait while scoring).
+- **Next:** Roadmap #2 instant scoring — explain optimistic saving + sync queue to the owner, agree a short design, then build with offline E2E tests. Check the disc golf skill (#1) for data-model impact first.
+- **In flight:** Roadmap #1 disc golf skill, in a parallel session (`feat/disc-golf-skill`).
 
 ---
 
@@ -19,12 +19,17 @@ _Overwritten at the end of every session — describes now, not history (history
 
 Ordered. The security and reliability items from an external code review (Oct 2026) are done.
 
-1. **Architecture docs.** Walkthrough + diagram, data flow of a round (draft → active → complete, Realtime to observers), short decision records: single-scorer model, RLS as authorization, local trial + claim, seed JSON as source of truth, par snapshot, RPCs for atomic writes.
-2. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
-3. **State-handling audit.** Review left: some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
-4. **Stats UX rethink** — concept + UI across Home / History / course stats / finished round. Talk before pixels.
-5. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
-6. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
+1. **Disc golf knowledge skill** — `.claude/skills/disc-golf/SKILL.md`: rules that affect scoring (penalties, OB, mandos, drop zones, provisionals), terminology, how other scoring apps (UDisc) handle it, Estonian context. Concise, with sources.
+2. **Instant scoring** — scores save on the device instantly and sync in the background; calm sync indicator that never shifts the layout; Playwright tests with the network switched off. A localStorage outbox existed before and was removed in May 2026 (7c16bd8, reason not recorded) — design it properly this time.
+3. **Course suggestions** — users suggest changes to a course / a new course; owner reviews and applies via seed JSON. Design talk first: entry points, what the user sees afterwards, owner notification, spam protection.
+4. **Architecture docs.** Walkthrough + diagram, data flow of a round (draft → active → complete, Realtime to observers), short decision records: single-scorer model, RLS as authorization, local trial + claim, seed JSON as source of truth, par snapshot, RPCs for atomic writes, sync queue.
+5. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
+6. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
+7. **Stats UX rethink** — concept + UI across Home / History / course stats / finished round. Talk before pixels.
+8. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
+9. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
+
+Not planned: exports or integration with other platforms; competitions/ratings (Phase 6).
 
 ### Smaller debts
 

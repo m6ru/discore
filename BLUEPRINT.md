@@ -4,11 +4,15 @@
 
 ## 1. Project Vision
 
-**Core objective:** Browser-based PWA for disc golf score tracking. Mobile-first UI, but online connection is required — offline play is not a current goal.
+**Core objective:** Browser-based PWA for disc golf score tracking. Mobile-first UI. **Scoring must never make the scorer wait** — a weak or missing signal on the course must not slow down or block entering scores (see §3a for current vs target behaviour).
 
 **Target:** Start as a hobby project for a local Estonian disc golf community. Architecture must support a natural path to a public, scalable product if community adoption warrants it — without rewrites.
 
-**Data source:** Course and layout data is provided and maintained by the app creator. The initial dataset will be sourced from [discgolfirajad.ee](https://discgolfirajad.ee). Users never create or edit course data.
+**Position:** A faster, more convenient alternative for scoring **casual rounds**. Competitions, official ratings and federation events are out of scope; Discore does not export to or integrate with other platforms. It is a standalone app that grows step by step.
+
+**Scorer model:** One person scores the whole card — how disc golf is played. No multi-scorer rounds.
+
+**Data source:** Course and layout data is provided and maintained by the app creator. Coverage is **every course in Estonia** — a player should never arrive at a park that is missing. Users never edit course data directly; they will be able to **suggest** changes and new courses, which the creator reviews and applies through the seed JSON (git stays the single source of truth).
 
 **Product focus:** Discore's value is in the parts a single player controls — **fast, lag-free scoring**, a **clean mobile UI**, and **excellent personal stats** — plus a **frictionless path to try it** (guest scoring today, anonymous scoring later). Advanced stats cover the metrics serious players expect (see §5). Casual/practice scoring for a local community is the beachhead; competitions and ratings come later (Phase 6), only if adoption warrants.
 
@@ -24,7 +28,7 @@
 | Backend | Supabase (PostgreSQL) — Auth + Realtime |
 | Package manager | npm |
 | Local dev | Supabase CLI + `.env.example` for secret management |
-| PWA | Web app manifest only for now; a service worker (e.g. Serwist) is deferred until install-to-home-screen matters. No offline sync required. |
+| PWA | Web app manifest only for now; a service worker (e.g. Serwist) is deferred until install-to-home-screen matters. Background sync of scores is planned (§3a). |
 | Testing | Vitest (pure logic), pgTAP via `supabase test db` (RLS, triggers, functions), Playwright (user flows against local Supabase). All run in GitHub Actions on every PR. |
 | UI primitives | `shadcn/ui` (Radix UI + Tailwind, code copied into `components/ui/`). Theme via CSS variables in `app/globals.css`. The scorecard table stays bespoke. |
 | Icons | `lucide-react` |
@@ -83,6 +87,8 @@ This one-way data flow must be reflected in RLS policies and client architecture
 
 ### 3a. Scorer writes (online-first)
 
+> **Current behaviour, to be replaced.** Waiting for the server on every hole lags on weak signal and conflicts with §1. Target: scores save on the device instantly and sync in the background (single writer, idempotent upserts per participant × hole), with a sync indicator that never shifts the layout. Designed and tested in STATUS → Roadmap #2; this section is rewritten when it ships.
+
 The app targets **reliable scoring while connected**. Disc golf courses can have brief dead spots; the model is **not** hardcore offline sync — it is **wait for the server, then proceed**, with **local draft state** kept in React so a failed save does not wipe the scorer’s inputs.
 
 **Write flow**
@@ -126,7 +132,7 @@ Two strictly separate client instances are required due to Next.js App Router's 
 ## 5. Database Design Principles
 
 - **RLS from day one.** Row Level Security must be enabled on every table at creation. It is not retrofitted later.
-- **Read-only course registry.** Users cannot create or modify courses or layouts. The system operates on a creator-maintained registry seeded from discgolfirajad.ee.
+- **Read-only course registry.** Users cannot create or modify courses or layouts. The system operates on a creator-maintained registry (seed JSON in git).
 - **Distance unit:** Metres only. UI may display a converted feet value but the database stores metres exclusively. Never store both.
 
 ### Table requirements
