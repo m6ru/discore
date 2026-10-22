@@ -67,4 +67,5 @@ When several things are queued, **tell the owner which can run in a parallel ses
 - Supabase query builders are **lazy**: `void supabase.from(...).update(...)` never sends anything. Always `await` it or chain `.then(...)`, even for fire-and-forget writes.
 - `.insert().select()` (RETURNING) also checks the SELECT policy against the new row; `SECURITY DEFINER` helpers can't see a row inserted in the same statement.
 - `npx supabase start` on a flaky network: `docker pull` the images first (resumable), then start.
+- Vercel: a new env var must be set for **Production and Preview** (type *Config* if it is `NEXT_PUBLIC_*`), or previews return 500. Debug a preview with `npx vercel logs --deployment <url> --json` and `MSYS_NO_PATHCONV=1 npx vercel curl /path --deployment <url>` (gets past deployment protection). Agents can't write Vercel env vars; the owner does it in the dashboard.
 - `lib/database.types.ts` is maintained by hand in the current format; `supabase gen types` output differs in formatting — add new tables/functions in the existing style.
