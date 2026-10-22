@@ -11,8 +11,9 @@ _Overwritten at the end of every session — describes now, not history (history
 - **Updated:** 2026-10-22
 - **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions live: `/courses/suggest` (fix or new course, note + up to 3 photos; "Missing one?" in the course list and on an empty search), "Wrong info?" per hole during a round (edit par/length/notes in place), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home. Disc golf skill in `.claude/skills/disc-golf/`.
 - **Decisions (owner, 2026-10-21):** "OB" stays one yes/no per hole. Unfinished hole = par + 4 (not reachable today). Suggestions: signed-in only; owner reviews by hand (no AI pre-reading); sender is thanked in the app, not by email.
-- **Next:** owner picks one: (a) fix Vercel previews (owner runs `npx vercel login` once so the agent can read preview logs), or (b) PR 2 — Telegram ping to the owner on each new suggestion (personal Telegram + bot from @BotFather; Supabase Edge Function + database webhook; token and chat id as Supabase secrets).
-- **In flight:** nothing. Vercel **preview** deployments return "Internal Server Error" since around #22 (production is fine) — find the cause before relying on previews again.
+- **Vercel previews fixed (2026-10-22):** the Supabase env vars existed for Production only; added them for Preview as *Config* vars (a `NEXT_PUBLIC_*` var can't be a Secret). No code change. Vercel CLI is logged in and linked on the PC.
+- **Next:** PR 2 — Telegram ping to the owner on each new suggestion (personal Telegram + bot from @BotFather; Supabase Edge Function + database webhook; token and chat id as Supabase secrets).
+- **In flight:** nothing. Dependabot #15 (vitest patch) waits for the owner's OK.
 
 ---
 
@@ -32,7 +33,6 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 
 ### Smaller debts
 
-- Vercel previews: "Internal Server Error" on every page (production works, the same build works locally against production). Read the preview's runtime logs (`npx vercel login` → `npx vercel logs <url>`) or check Preview environment variables.
 - Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
 - Later, cheap: per-round par override (tee sign differs from course data); an "unfinished hole" option (par + 4).
 - `getUser()` (network round trip) still used in `app/rounds/[roundId]/page.tsx`, `app/rounds/new/page.tsx`, `app/courses/[slug]/stats/page.tsx`; tab pages use `getClaims()`.
