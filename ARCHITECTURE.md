@@ -232,6 +232,12 @@ Short records of the choices that shape the code: what we decided, why, and what
 - **Safe defaults.** With no secrets in Vault (local, CI) the trigger does nothing. Any error is logged as a warning and the suggestion is kept. No secret is ever in git.
 - **Trade-off.** If the ping fails, nobody retries it — fine, because the review page (`/admin/suggestions`) is the real inbox; the ping is only a nudge.
 
+### 4.9 Stats answer questions, compared to your own usual
+
+- **Decision.** Stats are chosen by the question they answer (BLUEPRINT §8a): am I improving, where do I lose strokes, what do I usually take here, plus a few fun moments. A round is explained against the player's **own usual** on each hole, not against par. History on the scoring screen is the scorer's own, and can be hidden.
+- **Why.** Casual players rarely open a stats page, but they look at the scoring screen every hole and the summary after every round — so that is where stats earn their place. "+1 on a hard par 3" is normal for many players; "6 where you usually take 4" is the useful signal. Stats views use `security_invoker`, so RLS keeps each player's history private — the scorer can only see their own.
+- **Trade-off.** A player with no history on a layout gets little until they've played it a couple of times. Detailed metrics (putting, circles) wait for opt-in advanced scoring.
+
 ---
 
 ## 5. How a change is checked

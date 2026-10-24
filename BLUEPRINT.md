@@ -228,6 +228,27 @@ Every table must have RLS enabled. The default posture is **deny all**. Policies
 - **MVP:** Raw score tracking only — strokes relative to par (`+1`, `-2`, `E`, etc.) and cumulative totals.
 - **Future:** The module structure and types must support plugging in weighted ratings and statistical analysis later, without restructuring. No `any` permitted in this directory.
 - **Phase 5 stats aggregation:** history/stats aggregates are computed in Postgres via `player_round_stats` / `player_lifetime_stats` views and `score_bucket()` — not by reducing raw `hole_scores` in JS. Per-round view also powers History list and Home recent rounds (see §2b).
+### 8a. What stats are for (decided with the owner, 2026-10-24)
+
+Every number on screen answers a question a casual player asks; numbers that don't are cut. All of it is computable from today's data (strokes, OB, par snapshot, date, layout, co-players).
+
+| Question | Code | Where it lives |
+|---|---|---|
+| "Am I getting better?" | A | Course stats: small trend line of your rounds on the layout |
+| "What's my best here, how far am I?" | B | Course stats: best, average, gap to best |
+| "Where do I lose strokes?" (with blow-ups: double+, OB) | C + G | Course stats: holes **ranked by strokes lost**, each with its pattern ("OB 1 in 3", "often double"). Finished round: **"Where it went"** — the 1–2 holes that cost the most today |
+| "What do I usually take here?" | D | Scoring screen: one quiet line per hole, `Usually 4 · best 3` |
+| Moments: new best, ace, first birdie on a hole | H | Finished round (first), ace log |
+| Fun numbers: parks played of the catalog, rounds, throws, distance | I + J | Home / History: one short line, not a grid |
+
+Rules:
+- **Compare against the player's own usual, not par**, when explaining a round ("Hole 7: 6, usually 4, OB"). Par stays the headline score (`+3`, `E`).
+- **In-round history (D) is the scorer's own only.** Stats views are private per player (RLS), so a scorer never sees a co-player's history. Changing that is a separate privacy decision.
+- **Opt-out of in-round stats.** A player who wants a "clean card" (competition nerves, just playing) can hide D during a round: a default in Profile plus a per-round switch in the round menu. Hidden means nothing about history on the scoring screen; the finished-round summary stays (it has its own opt-out).
+- **Cut:** duplicate rows (the same buckets as rates *and* counts), the big Rounds/Throws/Meters grid at the top of Home.
+- **Later:** putting %, C1/C2 in regulation, fairways hit — need opt-in advanced scoring (§5) first. Co-player head-to-head (F) and "on pace for best" (E) are parked, not rejected.
+- Charts stay minimal (one trend line); compute aggregates in Postgres views (§2b), not in JS.
+
 - After schema is finalised, generate typed DB interfaces: `supabase gen types typescript` → `/lib/database.types.ts`. Use these types for all Supabase queries.
 
 ---

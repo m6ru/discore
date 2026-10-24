@@ -12,7 +12,8 @@ _Overwritten at the end of every session — describes now, not history (history
 - **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions live: `/courses/suggest` (fix or new course, note + up to 3 photos; "Missing one?" in the course list and on an empty search), "Wrong info?" per hole during a round (edit par/length/notes in place), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home, Telegram ping to the owner per new suggestion (trigger + `pg_net`; bot token and chat id in Supabase Vault as `telegram_bot_token` / `telegram_chat_id`; no secrets → no ping). Disc golf skill in `.claude/skills/disc-golf/`. Architecture walkthrough + decision records in `ARCHITECTURE.md`.
 - **Decisions (owner, 2026-10-21):** "OB" stays one yes/no per hole. Unfinished hole = par + 4 (not reachable today). Suggestions: signed-in only; owner reviews by hand (no AI pre-reading); sender is thanked in the app, not by email.
 - **Vercel previews work again (2026-10-22):** Supabase env vars were Production-only; now also set for Preview (as *Config*). Vercel CLI logged in and linked on the PC.
-- **Next:** Roadmap 1 — presentation (the README diagram can reuse `ARCHITECTURE.md` §1).
+- **Decisions (owner, 2026-10-24):** stats plan in BLUEPRINT §8a (questions A/B/C+G/D/H/I+J; compare to your own usual; in-round history is the scorer's own and can be hidden). The **whole UI gets a redesign soon** — owner finds it too bland; approach (new design system?) not decided yet. Don't polish pixels on current screens before that.
+- **Next:** Roadmap 1 — presentation / redesign. Start with a talk: what feels bland, references the owner likes, then a design language. The README diagram can reuse `ARCHITECTURE.md` §1.
 - **In flight:** nothing.
 
 ---
@@ -23,7 +24,7 @@ Ordered. The security and reliability items from an external code review (Oct 20
 
 1. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
 2. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
-3. **Stats UX rethink** — concept + UI across Home / History / course stats / finished round. Talk before pixels.
+3. **Stats build** — concept decided (BLUEPRINT §8a, 2026-10-24). Build it **in the new design** (after item 1), one screen at a time; start with the finished-round summary, then the scoring-screen line + its opt-out, then course stats, then Home/History.
 4. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
 5. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
 
@@ -68,7 +69,7 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 
 ### Locked product decisions (stats)
 
-No combined best score across layouts; course page shows last played + total rounds; stats entry is a quiet "Your stats" link; ace log is its own route; post-round insights are on by default, opt-out in Profile, shown once after completing.
+The stats plan (what each screen shows and why) is BLUEPRINT §8a. Still true from earlier: no combined best score across layouts; ace log is its own route; post-round insights are on by default, opt-out in Profile, shown once after completing.
 
 ---
 
