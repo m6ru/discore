@@ -8,6 +8,7 @@ Supabase Realtime.
 
 - [`STATUS.md`](STATUS.md) — current state, handoff, roadmap
 - [`BLUEPRINT.md`](BLUEPRINT.md) — architecture and non-negotiable rules
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) — how it fits together: system diagram, life of a round, decision records
 - [`CLAUDE.md`](CLAUDE.md) — workflow and rules for AI coding agents (with [`AGENTS.md`](AGENTS.md))
 
 ## Stack
