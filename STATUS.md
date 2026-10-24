@@ -1,6 +1,6 @@
 # Discore — Status
 
-> Living document: **what is true now** and **what's next**. Rules and architecture live in [BLUEPRINT.md](BLUEPRINT.md), agent workflow in [CLAUDE.md](CLAUDE.md), screen patterns in [DESIGN-PATTERNS.md](DESIGN-PATTERNS.md). Older plans and checklists are in git history.
+> Living document: **what is true now** and **what's next**. Rules live in [BLUEPRINT.md](BLUEPRINT.md), how it fits together and why in [ARCHITECTURE.md](ARCHITECTURE.md), agent workflow in [CLAUDE.md](CLAUDE.md), screen patterns in [DESIGN-PATTERNS.md](DESIGN-PATTERNS.md). Older plans and checklists are in git history.
 
 ---
 
@@ -8,11 +8,11 @@
 
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
-- **Updated:** 2026-10-22
-- **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions live: `/courses/suggest` (fix or new course, note + up to 3 photos; "Missing one?" in the course list and on an empty search), "Wrong info?" per hole during a round (edit par/length/notes in place), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home, Telegram ping to the owner per new suggestion (trigger + `pg_net`; bot token and chat id in Supabase Vault as `telegram_bot_token` / `telegram_chat_id`; no secrets → no ping). Disc golf skill in `.claude/skills/disc-golf/`.
+- **Updated:** 2026-10-24
+- **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions live: `/courses/suggest` (fix or new course, note + up to 3 photos; "Missing one?" in the course list and on an empty search), "Wrong info?" per hole during a round (edit par/length/notes in place), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home, Telegram ping to the owner per new suggestion (trigger + `pg_net`; bot token and chat id in Supabase Vault as `telegram_bot_token` / `telegram_chat_id`; no secrets → no ping). Disc golf skill in `.claude/skills/disc-golf/`. Architecture walkthrough + decision records in `ARCHITECTURE.md`.
 - **Decisions (owner, 2026-10-21):** "OB" stays one yes/no per hole. Unfinished hole = par + 4 (not reachable today). Suggestions: signed-in only; owner reviews by hand (no AI pre-reading); sender is thanked in the app, not by email.
 - **Vercel previews work again (2026-10-22):** Supabase env vars were Production-only; now also set for Preview (as *Config*). Vercel CLI logged in and linked on the PC.
-- **Next:** Roadmap 1 — architecture docs.
+- **Next:** Roadmap 1 — presentation (the README diagram can reuse `ARCHITECTURE.md` §1).
 - **In flight:** nothing.
 
 ---
@@ -21,12 +21,11 @@ _Overwritten at the end of every session — describes now, not history (history
 
 Ordered. The security and reliability items from an external code review (Oct 2026) are done.
 
-1. **Architecture docs.** Walkthrough + diagram, data flow of a round (draft → active → complete, Realtime to observers), short decision records: single-scorer model, RLS as authorization, local trial + claim, seed JSON as source of truth, par snapshot, RPCs for atomic writes, sync queue.
-2. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
-3. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
-4. **Stats UX rethink** — concept + UI across Home / History / course stats / finished round. Talk before pixels.
-5. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
-6. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
+1. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
+2. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
+3. **Stats UX rethink** — concept + UI across Home / History / course stats / finished round. Talk before pixels.
+4. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
+5. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
 
 Not planned: exports or integration with other platforms; competitions/ratings (Phase 6).
 

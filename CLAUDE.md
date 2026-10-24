@@ -8,12 +8,12 @@ Disc golf scoring PWA for Estonia (Next.js 16 + Supabase). One-person project, w
 
 **Start of a session**
 1. `git pull` on `main` (or the branch in progress), then read **`STATUS.md` → Handoff**: state, next step, what is in flight.
-2. Read `BLUEPRINT.md` before architectural decisions or new dependencies; `DESIGN-PATTERNS.md` before UI work.
+2. Read `ARCHITECTURE.md` for how the system fits together (diagram, life of a round, decision records) if this session is new to the codebase. Read `BLUEPRINT.md` before architectural decisions or new dependencies; `DESIGN-PATTERNS.md` before UI work.
 3. Check the machine is ready if you'll run things: `README.md` → *Setting up a machine*.
 
 **End of a session (or when a PR is merged)**
 - **Overwrite** `STATUS.md` → Handoff (a few lines: date, state, next, in flight). Never append a log — history is `git log` and the PRs, and a growing file goes stale and costs context. Do it in the same PR as the work, so `main` always describes itself.
-- Record new decisions or gotchas in the right doc (rules → BLUEPRINT, workflow → this file, state → STATUS).
+- Record new decisions or gotchas in the right doc (rules → BLUEPRINT, the why behind a design choice → ARCHITECTURE decision records, workflow → this file, state → STATUS). When a recorded decision changes, update its ARCHITECTURE record in the same PR.
 
 ## Working with the owner
 
