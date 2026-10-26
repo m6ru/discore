@@ -17,15 +17,14 @@ export default async function NewRoundPage({ searchParams }: PageProps) {
   }
 
   const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims.sub;
 
-  if (!user) {
+  if (!userId) {
     redirect("/auth?message=Please+sign+in+to+continue");
   }
 
-  const existingId = await findInProgressRoundId(supabase, user.id);
+  const existingId = await findInProgressRoundId(supabase, userId);
   if (existingId) {
     redirect(`/rounds/${existingId}`);
   }

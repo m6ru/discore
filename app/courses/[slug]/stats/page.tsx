@@ -261,11 +261,10 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
   const { slug } = await params;
   const { layout: layoutSlug } = await searchParams;
   const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims.sub;
 
-  if (!user) {
+  if (!userId) {
     redirect("/auth?message=Please+sign+in+to+view+your+stats");
   }
 

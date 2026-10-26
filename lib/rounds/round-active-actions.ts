@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { HoleScoreRow } from "@/app/rounds/[roundId]/round-types";
+import type { HoleScoreRow } from "./round-rows";
 import type { Database } from "@/lib/database.types";
 
 type Client = SupabaseClient<Database>;

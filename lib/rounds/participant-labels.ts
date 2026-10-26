@@ -1,4 +1,4 @@
-import type { ParticipantRow, UnifiedPlayer } from "@/app/rounds/[roundId]/round-types";
+import type { ParticipantRow, UnifiedPlayer } from "./round-rows";
 
 /**
  * Resolve a display label for a participant by looking up its `UnifiedPlayer`

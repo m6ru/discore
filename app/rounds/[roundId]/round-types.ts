@@ -1,31 +1,15 @@
 import type { InviteRow } from "@/lib/rounds/invite-rows";
+import type { HoleScoreRow, ParticipantRow } from "@/lib/rounds/round-rows";
 import type { RoundStatus } from "@/lib/rounds/round-status";
 
 export type { RoundStatus };
+export type { HoleScoreRow, ParticipantRow, UnifiedPlayer } from "@/lib/rounds/round-rows";
 export type { LeaderboardEntry as LeaderboardRow } from "@/lib/scoring/leaderboard";
 export type { HoleProgressEntry } from "@/lib/scoring/progress";
-
-export type ParticipantRow = {
-  id: string;
-  user_id: string | null;
-  guest_name: string | null;
-  joined_at: string;
-};
 
 export type ProfileSearchResult = {
   id: string;
   display_name: string;
-};
-
-export type UnifiedPlayer = {
-  key: string;
-  label: string;
-  isPending: boolean;
-  canRemove: boolean;
-  source: "participant" | "invite";
-  participantId?: string;
-  invitedUserId?: string;
-  inviteId?: string;
 };
 
 export type HoleRow = {
@@ -34,15 +18,6 @@ export type HoleRow = {
   par: number;
   distance_m: number;
   notes: string | null;
-};
-
-export type HoleScoreRow = {
-  id: string;
-  participant_id: string;
-  hole_id: string;
-  strokes: number;
-  ob: boolean;
-  fairway_hit: boolean | null;
 };
 
 export type RoundSessionProps = {
