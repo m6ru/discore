@@ -22,8 +22,8 @@ Needed once per machine (Windows PC or MacBook).
 
 | Tool | Windows | macOS |
 |---|---|---|
-| Node.js 24 | `winget install OpenJS.NodeJS.LTS` | `brew install node@24 && brew link --force node@24` |
-| GitHub CLI | `winget install GitHub.cli` | `brew install gh` |
+| Node.js 24 | `winget install OpenJS.NodeJS.LTS` | Node 24 `.pkg` or `.tar.gz` from nodejs.org (Homebrew compiles from source on Intel Macs — hours) |
+| GitHub CLI | `winget install GitHub.cli` | `.pkg` / `.zip` from the GitHub CLI releases page (or `brew install gh` on Apple Silicon) |
 | Docker Desktop (local Supabase, DB + E2E tests) | `wsl --install` (admin), then `winget install Docker.DockerDesktop` | `brew install --cask docker-desktop` |
 
 Then, in the repo:
