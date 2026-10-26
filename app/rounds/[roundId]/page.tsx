@@ -26,11 +26,10 @@ export default async function RoundPage({ params }: RoundPageProps) {
   const { roundId } = await params;
 
   const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const userId = claimsData?.claims.sub;
 
-  if (!user) {
+  if (!userId) {
     redirect("/auth?message=Please+sign+in+to+continue");
   }
 
@@ -107,9 +106,9 @@ export default async function RoundPage({ params }: RoundPageProps) {
     ...hole,
     par: playedPar.get(hole.id) ?? hole.par,
   }));
-  const isScorer = round.scorer_id === user.id;
+  const isScorer = round.scorer_id === userId;
   const isRoundParticipant = safeParticipants.some(
-    (participant) => participant.user_id === user.id,
+    (participant) => participant.user_id === userId,
   );
 
   if (!isScorer && !isRoundParticipant) {
@@ -171,7 +170,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
           roundStatus={roundStatus}
           scorerUserId={round.scorer_id}
           isScorer={isScorer}
-          currentUserId={user.id}
+          currentUserId={userId}
           scorerDisplayName={scorerProfile?.display_name ?? "Scorer"}
           courseName={courseRow?.name ?? "Unknown course"}
           courseSlug={courseRow?.slug ?? null}

@@ -8,7 +8,7 @@
 
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
-- **Updated:** 2026-10-24
+- **Updated:** 2026-10-26
 - **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions live: `/courses/suggest` (fix or new course, note + up to 3 photos; "Missing one?" in the course list and on an empty search), "Wrong info?" per hole during a round (edit par/length/notes in place), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home, Telegram ping to the owner per new suggestion (trigger + `pg_net`; bot token and chat id in Supabase Vault as `telegram_bot_token` / `telegram_chat_id`; no secrets → no ping). Disc golf skill in `.claude/skills/disc-golf/`. Architecture walkthrough + decision records in `ARCHITECTURE.md`.
 - **Decisions (owner, 2026-10-21):** "OB" stays one yes/no per hole. Unfinished hole = par + 4 (not reachable today). Suggestions: signed-in only; owner reviews by hand (no AI pre-reading); sender is thanked in the app, not by email.
 - **Vercel previews work again (2026-10-22):** Supabase env vars were Production-only; now also set for Preview (as *Config*). Vercel CLI logged in and linked on the PC.
@@ -16,6 +16,7 @@ _Overwritten at the end of every session — describes now, not history (history
 - **Redesign direction chosen (owner, 2026-10-24):** of three mockups (Home + scoring screen), the owner picked **"C · Scorecard"**: off-white ground, hardly any filled tiles, thin divider lines, square-ish corners (~6 px, **no pill shapes**), Space Grotesk for headings and big numbers next to Manrope + JetBrains Mono, deep forest green for primary actions, lime accent only for good things (birdie, under par). Signature: a mini scorecard strip (player's scores so far + current hole) on the scoring screen; the forward button names the next player ("Next: Andres"). Owner wants it light, uncrowded, intuitive; keep the scoring screen's structure. Mockups live on a private design canvas (claude.ai); the details are written down in `DESIGN-PATTERNS.md` → Redesign brief.
 - **Next:** owner sends detailed notes on direction C → second canvas round (adjust C, add course detail + finished-round summary) → lock tokens in `globals.css` + rewrite `DESIGN-PATTERNS.md` (+ hidden `/design` page) → roll out one screen per PR, scoring screen first. The README diagram can reuse `ARCHITECTURE.md` §1.
 - **MacBook set up (2026-10-24):** Node 24 + gh from official downloads, `.env.local` and `supabase link` point at production. npm 11 skipped postinstall scripts for `esbuild`, `unrs-resolver` (works anyway; decide later).
+- **Small debts cleared (2026-10-26):** all server pages use `getClaims()`; `lib/` no longer imports from `app/` (shared row types in `lib/rounds/round-rows.ts`); `config.toml` uses `[local_smtp]`, empty seed step off.
 - **In flight:** nothing.
 
 ---
@@ -36,12 +37,9 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 
 - Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
 - Later, cheap: per-round par override (tee sign differs from course data); an "unfinished hole" option (par + 4).
-- `getUser()` (network round trip) still used in `app/rounds/[roundId]/page.tsx`, `app/rounds/new/page.tsx`, `app/courses/[slug]/stats/page.tsx`; tab pages use `getClaims()`.
 - No `error.tsx` boundaries.
 - `app/rounds/trial/trial-session.tsx` (~740 lines) duplicates much of the signed-in scoring UI.
-- `lib/rounds/round-active-actions.ts` imports from `app/` (wrong direction).
 - 5 high **dev-only** npm vulnerabilities (eslint-config-next → micromatch → braces); wait for upstream.
-- `supabase/config.toml`: `[inbucket]` deprecated → `[local_smtp]`; missing `seed.sql` path warning.
 - TypeScript 7 / other majors: Dependabot ignores them until typescript-eslint supports TS 7.
 - Viimsi `details` starts with a stray `.` line (likely a layout workaround); fix during the design pass.
 
