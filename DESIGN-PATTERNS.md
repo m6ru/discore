@@ -8,7 +8,7 @@ North star: **active scorer round** (`app/rounds/[roundId]/`). Works well and is
 
 ## Redesign brief — direction C "Scorecard" (round 2, 2026-11-02)
 
-Chosen by the owner from three mockups (2026-10-24), refined in a second canvas round with the owner (2026-11-02). The reference mockups are the **"C2"** artboards on the private design canvas (claude.ai); the first "C" artboards are outdated. Tokens are not in `globals.css` yet, so the "Locked" section below still describes the code.
+Chosen by the owner from three mockups (2026-10-24), refined in a second canvas round with the owner (2026-11-02). The reference mockups are the **"C2"** artboards on the private design canvas (claude.ai); the first "C" artboards are outdated. **Tokens are live** in `app/globals.css` (whole app recoloured at once); screen layouts follow one screen per PR. Hidden reference page: **`/design`** (not linked, not indexed).
 
 **The redesign changes the look, not the flows.** Before drawing or building a screen, read how it behaves today (links, round lifecycle) and keep that unless the owner decides otherwise.
 
@@ -81,7 +81,8 @@ Each tab route has a `loading.tsx` skeleton for an instant shell while the serve
 
 ## Locked (already in code)
 
-- Emerald primary, light only, Manrope + JetBrains Mono for scores
+- Direction C tokens in `app/globals.css` (forest primary, off-white ground, 6 px `--radius`), light only. Extra colours as Tailwind classes: `bg-good` (lime, good things only), `bg-over`, `bg-over-strong`. Fonts: `font-display` (Space Grotesk) for headings and big numbers, Manrope body, `font-mono` (JetBrains Mono) for scores
+- Badges are square-ish chips (`rounded-md`, 4 px); no new `rounded-full` except avatars and switches
 - Breathable padding, warm copy, icons only for actions
 - shadcn primitives in `components/ui/`, no wrapper layer
 - Bottom tab bar except scorer live round pages (draft/active); shown for observers throughout and scorer after complete
