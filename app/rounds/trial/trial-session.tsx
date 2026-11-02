@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
+import { ChevronLeft, Minus, Plus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -350,6 +350,8 @@ export function TrialSession() {
   );
   const currentPlayerHasScore = strokeValue.trim().length > 0;
   const showNextPlayer = players.length > 1 && !allHoleScoresEntered && currentPlayerHasScore;
+  const selectedIndex = players.findIndex((player) => player.id === selectedPlayer.id);
+  const nextPlayerName = players[(selectedIndex + 1) % players.length]?.name ?? "player";
 
   return (
     <main
@@ -357,24 +359,29 @@ export function TrialSession() {
       style={{ paddingBottom: ACTIVE_BOTTOM_INSET }}
     >
       <TrialHeader trial={trial} onDiscard={onDiscard} />
-      <div className="space-y-2 pt-2">
-        <p className="text-center text-lg font-medium tabular-nums text-foreground">
-          <span className="text-muted-foreground">Hole </span>
-          <span className="font-mono text-xl font-semibold">{activeHole.hole_number}</span>
-          <span className="text-muted-foreground"> / {holes.length}</span>
-          <span className="mx-2 text-muted-foreground">·</span>
-          <span className="text-muted-foreground">Par </span>
-          <span className="font-mono text-lg font-semibold">{activeHole.par}</span>
-          <span className="mx-2 text-muted-foreground">·</span>
-          <span className="font-mono text-lg font-semibold">{activeHole.distance_m}</span>
-          <span className="text-muted-foreground"> m</span>
-        </p>
+      <section className="space-y-3 border-b pb-3.5">
+        <div className="flex items-end justify-between gap-4">
+          <h2 aria-label={`Hole ${activeHole.hole_number} of ${holes.length}`} className="flex flex-col gap-0.5">
+            <span className="text-[13px] font-semibold text-muted-foreground">Hole</span>
+            <span className="font-display text-[52px] font-semibold leading-none tracking-tight">
+              {activeHole.hole_number}
+            </span>
+          </h2>
+          <dl className="flex gap-5 pb-1">
+            <div className="flex flex-col items-end gap-0.5">
+              <dt className="text-[13px] font-semibold text-muted-foreground">Par</dt>
+              <dd className="font-display text-[26px] font-semibold leading-none">{activeHole.par}</dd>
+            </div>
+            <div className="flex flex-col items-end gap-0.5">
+              <dt className="text-[13px] font-semibold text-muted-foreground">Meters</dt>
+              <dd className="font-display text-[26px] font-semibold leading-none">{activeHole.distance_m}</dd>
+            </div>
+          </dl>
+        </div>
         {activeHole.notes ? (
-          <p className="text-center text-sm leading-relaxed text-muted-foreground">
-            {activeHole.notes}
-          </p>
+          <p className="text-sm leading-snug whitespace-pre-line text-foreground/85">{activeHole.notes}</p>
         ) : null}
-      </div>
+      </section>
 
       {players.length > 1 ? (
         <ul className="space-y-1.5">
@@ -416,18 +423,15 @@ export function TrialSession() {
       ) : null}
 
       <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-3 backdrop-blur supports-[backdrop-filter]:bg-background/80"
-        style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
+        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background px-5 pt-3.5"
+        style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
       >
         <div className="mx-auto w-full max-w-3xl space-y-3">
-          {players.length > 1 ? (
-            <p className="text-center text-sm font-medium text-foreground">{selectedPlayer.name}</p>
-          ) : null}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-[minmax(0,1fr)_100px_minmax(0,1fr)] items-center gap-2">
             <Button
               type="button"
               variant="outline"
-              className="min-h-14 rounded-xl text-lg"
+              className="h-18 border-[1.5px] border-foreground shadow-none"
               aria-label="Decrease strokes"
               disabled={!canDecrement}
               onClick={() => {
@@ -437,28 +441,32 @@ export function TrialSession() {
                 setDraftStrokes((prev) => ({ ...prev, [selectedPlayer.id]: String(next) }));
               }}
             >
-              <Minus className="size-6" aria-hidden />
+              <Minus className="size-7" aria-hidden />
             </Button>
-            <div
-              className={cn(
-                "flex min-h-14 items-center justify-center rounded-xl border-2 bg-background",
-                "font-mono text-4xl font-semibold tabular-nums tracking-tight",
-                isImplicitPar ? "text-muted-foreground/35" : "text-foreground"
-              )}
-              aria-live="polite"
-              aria-atomic="true"
-              aria-label={
-                isImplicitPar
-                  ? `Suggested par ${activeHole.par}, tap + or − to set score`
-                  : `Score ${displayValue}`
-              }
-            >
-              {displayValue}
+            <div className="flex min-w-0 flex-col items-center gap-0.5">
+              <span className="max-w-full truncate text-[13px] font-semibold text-muted-foreground">
+                {selectedPlayer.name}
+              </span>
+              <span
+                className={cn(
+                  "font-display text-[52px] font-semibold leading-none tabular-nums",
+                  isImplicitPar ? "text-muted-foreground/35" : "text-foreground"
+                )}
+                aria-live="polite"
+                aria-atomic="true"
+                aria-label={
+                  isImplicitPar
+                    ? `Suggested par ${activeHole.par}, tap + or − to set score`
+                    : `Score ${displayValue}`
+                }
+              >
+                {displayValue}
+              </span>
             </div>
             <Button
               type="button"
               variant="outline"
-              className="min-h-14 rounded-xl text-lg"
+              className="h-18 border-[1.5px] border-foreground bg-accent shadow-none"
               aria-label="Increase strokes"
               disabled={!canIncrement}
               onClick={() => {
@@ -468,14 +476,14 @@ export function TrialSession() {
                 setDraftStrokes((prev) => ({ ...prev, [selectedPlayer.id]: String(next) }));
               }}
             >
-              <Plus className="size-6" aria-hidden />
+              <Plus className="size-7" aria-hidden />
             </Button>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-[72px_72px_minmax(0,1fr)] gap-2">
             <Button
               type="button"
               variant="outline"
-              className="min-h-11 rounded-xl"
+              className="min-h-12 border-input shadow-none"
               aria-label="Previous hole"
               disabled={currentHoleIndex === 0}
               onClick={onPreviousHole}
@@ -485,7 +493,10 @@ export function TrialSession() {
             <Button
               type="button"
               variant={obChecked ? "destructive" : "outline"}
-              className="min-h-11 rounded-xl text-sm font-semibold uppercase tracking-wide"
+              className={cn(
+                "min-h-12 text-sm font-bold tracking-wider shadow-none",
+                !obChecked && "border-input"
+              )}
               aria-pressed={obChecked}
               aria-label={`Toggle OB for ${selectedPlayer.name}`}
               onClick={() =>
@@ -496,23 +507,17 @@ export function TrialSession() {
             </Button>
             <Button
               type="button"
-              variant={showNextPlayer ? "outline" : "default"}
-              className="min-h-11 rounded-xl"
-              aria-label={
-                showNextPlayer
-                  ? "Next player"
-                  : isLastHole
-                    ? "Save scores"
-                    : "Save and go to next hole"
-              }
+              className="min-h-12 min-w-0 text-[15px] font-semibold"
               disabled={!showNextPlayer && !allHoleScoresEntered}
               onClick={onSaveAndAdvance}
             >
-              {showNextPlayer ? (
-                <ChevronDown className="size-5" aria-hidden />
-              ) : (
-                <ChevronRight className="size-5" aria-hidden />
-              )}
+              <span className="truncate">
+                {showNextPlayer
+                  ? `Next: ${nextPlayerName}`
+                  : isLastHole
+                    ? "Save scores"
+                    : "Next hole"}
+              </span>
             </Button>
           </div>
         </div>
