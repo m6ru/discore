@@ -6,17 +6,50 @@ North star: **active scorer round** (`app/rounds/[roundId]/`). Works well and is
 
 ---
 
-## Redesign brief — direction C "Scorecard" (draft, 2026-10-24)
+## Redesign brief — direction C "Scorecard" (round 2, 2026-11-02)
 
-Chosen by the owner from three mockups (Home + active scoring). **Draft:** the owner will send detailed notes; tokens get locked in `globals.css` after a second mockup round. Until then the "Locked" section below still describes the code.
+Chosen by the owner from three mockups (2026-10-24), refined in a second canvas round with the owner (2026-11-02). The reference mockups are the **"C2"** artboards on the private design canvas (claude.ai); the first "C" artboards are outdated. Tokens are not in `globals.css` yet, so the "Locked" section below still describes the code.
+
+**The redesign changes the look, not the flows.** Before drawing or building a screen, read how it behaves today (links, round lifecycle) and keep that unless the owner decides otherwise.
+
+### Look
 
 - **Feel:** light, uncrowded, intuitive. Readable in sunlight (strong text contrast).
-- **Surfaces:** off-white ground `#FAFAF6`, hardly any filled tiles; structure from thin dividers `#E4E3DC` and whitespace.
-- **Color:** ink `#141814`, muted text `#5B615B`, primary (forest) `#1D3A2C` for main actions, lime `#C9E36A` **only for good things** (birdie, under par, active tab marker). Over-par tint `#E9D9C9` (quiet, not alarm red).
+- **Surfaces:** off-white ground `#FAFAF6`, hardly any filled tiles; structure from thin dividers `#E4E3DC` and whitespace. A section that must read as one unit gets a light frame: tint `#F2F1EA`, 1 px divider border, 6 px corners (never a dark filled card).
+- **Color:** ink `#141814`, muted text `#5B615B`, primary (forest) `#1D3A2C` for main actions, lime `#C9E36A` **only for good things** (birdie, under par, new best, active tab marker). Over-par tint `#E9D9C9`, double or worse `#D4B496` (quiet, not alarm red). Destructive actions: text `#A8261B`.
+- **Score tones** (scorecard cells, five levels like today): birdie lime · eagle or ace lime with a 1.5 px forest outline · par no fill · bogey `#E9D9C9` · double or worse `#D4B496`. No legend; the colours speak for themselves.
 - **Shape:** square-ish corners, ~6 px buttons, ~4 px chips. **No pill shapes.**
 - **Type:** Space Grotesk for headings and big numbers; Manrope for body; JetBrains Mono for small tabular numbers.
-- **Scoring screen:** keep today's structure. Mockup adds a **mini scorecard strip** at the top (9×2 cells: selected player's scores so far colored vs par, current hole outlined), big hole number with Par / Meters beside it, roster as a table with column headers (Hole · Tot · ±), stepper with the player's name above the big number, forward button names the next player ("Next: Andres").
-- **Home:** wordmark + greeting, nearest course as large heading + one forest "Start a round" button, stats as a divided strip of three big numbers, recent rounds as divided rows (date · course · ±).
+- **Icons:** ⋯ for "actions on this thing", ✕ for "leave/close"; ☰ is not used.
+
+### Product stance
+
+- **Casual rounds are about playing against yourself, not your mates.** No winner, no places, no medals in a casual round: players always appear in the order they were added. Personal moments ("New best") are shown only to the player they belong to (stats are private per player).
+- If competitions ever come, the same scorecard sorts by score and shows places — a setting on one component, not a second design.
+
+### Screens (C2 artboards)
+
+- **Home:** wordmark + greeting; nearest course in a light framed section (label row "Nearest course · 1.8 km", name, layout count, forest "Start a round" → the course page). With a round in progress, Home shows **Continue round** instead (as today).
+- **Course page:** back arrow → course name → "Last played 12.10 · Total rounds 6" → one line with the map link (left) and **Your stats** (right). **Pick a layout:** each layout is a framed row (name, holes · par · meters) ending in a 44 px forest square with an arrow; the whole row starts the draft. Then About, then "Suggest a fix".
+- **Draft setup** (no tab bar): header "Course · Layout · setting up" with **✕** (opens the round sheet). Round name with a rename pencil. Players as divided rows with status (*You · scorer*, *Invite sent · waiting to accept*, *Guest, no account*), Remove, "+ Add player" and one line on invites vs guests. Starting hole as a select with a hint. **Start round** at the bottom; greyed out with "Waiting for N to accept." while an invite is pending.
+- **Scoring screen** (no tab bar, **no back arrow** — leaving is via the sheet):
+  1. Header: "Course · Layout" + **⋯**.
+  2. **Progress line** at the top: "4 of 18 played" over a slim segmented bar (played forest, current lighter, rest divider grey). It counts holes **played**, not hole numbers, so a round started on hole 7 still fills left to right. The whole row opens the scorecard. Replaces the mini scorecard strip of the first mockup.
+  3. Big hole number with Par / Meters beside it.
+  4. **Hole note** straight under it: info icon, 2 lines max, tap for the full note; hidden when the hole has none.
+  5. Roster as a table (Hole · Tot · ±).
+  6. Stepper: **wide − and +** (score column fixed ~100 px, buttons share the rest, ~120 px each); − outlined, + outlined with a light fill. Player's name above the big number.
+  7. Previous · OB · forward button naming the next player ("Next: Andres").
+- **Round sheet** (bottom sheet, replaces the dropdown and the draft's ✕-delete): round info at the top (course, layout, par, starting hole — replaces the "See info" popup), then rows: **Scorecard ›**, **Hide running totals** (a visible on/off switch), **Wrong info on hole N? ›** (moved here from under the hole note). The destructive action sits apart at the bottom in red with its confirmation kept: **Abandon round** (active) or **Delete draft** (draft). Observers get no sheet; they keep the tab bar.
+- **Finished round** (tab bar visible): header (course · layout · par, round name · date · players) → **Results**: equal rows in play order (name, Tot, ±), your own row may carry a lime "New best" tag → **Scorecard** → **Your round**: one line (new best, the hole that cost the most vs your usual) + "Your stats on <layout> ›".
+- **Scorecard** (finished screen, sheet, anywhere): one row per player, all holes in one line that scrolls sideways — works for any hole count (7, 9, 14, 21 …), **no front/back split**. Only a narrow name column (~60 px) is pinned; Par is a row; **Tot and ± come after the last hole**. Score cells are tall and thin (~20 × 30 px) so ~14 holes fit on a phone. Long names truncate; tapping the name column widens it (as today).
+
+### Open (decide when building)
+
+- A draft can only be left by deleting it (true today too; "Continue round" on Home brings you back).
+- The Home stats strip (Rounds · Usual score · Aces) is close to the grid BLUEPRINT §8a says to cut — maybe one short line instead.
+- §8a's per-round "hide my usual" switch: merge with **Hide running totals** into one "clean card" switch.
+- Not drawn yet: the "Confirm and end round" step after the last hole; ties and many players on the finished screen.
 
 ---
 
