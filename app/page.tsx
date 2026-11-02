@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import { createServerClient } from "@/lib/supabase/server";
 import { getAuthUserFirstName } from "@/lib/auth/get-auth-user-first-name";
-import { getHomePersonalSubtitle } from "@/lib/ui/home-greeting";
-import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
+import { pageSubtitleClassName } from "@/lib/ui/page-chrome";
 import { ClaimTrialOnAuth } from "@/components/home/claim-trial-on-auth";
 import { GuestHomeSections } from "@/components/home/guest-sections";
 import { HomeSections } from "@/components/home/sections";
@@ -14,16 +13,22 @@ export default async function HomePage() {
   // uses asymmetric signing keys; the session is already refreshed in proxy.ts.
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims ?? null;
+  const firstName = claims ? getAuthUserFirstName(claims) : null;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
       <header className="space-y-1">
-        <h1 className={pageTitleClassName}>Discore</h1>
-        <p className={pageSubtitleClassName}>
-          {claims
-            ? getHomePersonalSubtitle(getAuthUserFirstName(claims))
-            : "Score a round — sign in later to save it."}
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="font-display text-xl font-bold tracking-tight">discore</h1>
+          {claims ? (
+            <p className="truncate text-sm text-muted-foreground">
+              {firstName ? `Tere, ${firstName}` : "Tere!"}
+            </p>
+          ) : null}
+        </div>
+        {!claims ? (
+          <p className={pageSubtitleClassName}>Score a round — sign in later to save it.</p>
+        ) : null}
       </header>
 
       {!claims ? (

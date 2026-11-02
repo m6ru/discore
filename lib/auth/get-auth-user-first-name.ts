@@ -4,10 +4,10 @@
  */
 export function getAuthUserFirstName(
   source: { user_metadata?: { first_name?: unknown } | null } | null | undefined
-): string {
+): string | null {
   const raw = source?.user_metadata?.first_name;
   if (typeof raw === "string" && raw.trim()) {
     return raw.trim();
   }
-  return "there";
+  return null;
 }
