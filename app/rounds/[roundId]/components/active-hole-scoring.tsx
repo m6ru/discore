@@ -35,6 +35,7 @@ type Props = {
   onPreviousHole: () => void;
   onSaveAndAdvanceHole: () => void;
   hideRunningScores?: boolean;
+  historyLine?: string | null;
   /** Rendered just above the bottom deck. */
   syncBadge?: ReactNode;
 };
@@ -203,6 +204,7 @@ export function ActiveHoleScoring({
   onPreviousHole,
   onSaveAndAdvanceHole,
   hideRunningScores = false,
+  historyLine = null,
   syncBadge,
 }: Props) {
   const [selectedParticipantId, setSelectedParticipantId] = useState<string | null>(
@@ -251,7 +253,7 @@ export function ActiveHoleScoring({
     <>
       <div className="space-y-4">
         <RoundProgress progress={progress} onOpenScorecard={onOpenScorecard} />
-        <ActiveHoleStatus activeHole={activeHole} holesLength={holesLength} />
+        <ActiveHoleStatus activeHole={activeHole} holesLength={holesLength} historyLine={historyLine} />
         <ScoringPlayerRoster
           scoringParticipants={scoringParticipants}
           leaderboardRows={leaderboardRows}

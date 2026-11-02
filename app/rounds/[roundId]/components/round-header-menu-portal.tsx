@@ -113,12 +113,12 @@ export function RoundHeaderMenuPortal({
         </button>
         <label className={roundSheetRowClassName}>
           <span className="flex-1">
-            <span className="block">Hide running totals</span>
+            <span className="block">Clean card</span>
             <span className="block text-[13px] font-normal text-muted-foreground">
-              Only this hole&apos;s strokes show
+              Hide running totals and your hole history
             </span>
           </span>
-          <Switch checked={scoresHidden} onCheckedChange={onToggleScoresHidden} />
+          <Switch checked={scoresHidden} onCheckedChange={onToggleScoresHidden} aria-label="Clean card" />
         </label>
         {currentHoleNumber !== null ? (
           <button type="button" className={roundSheetRowClassName} onClick={closeThen(onSuggestFix)}>

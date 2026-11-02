@@ -47,8 +47,8 @@ Chosen by the owner from three mockups (2026-10-24), refined in a second canvas 
 ### Open (decide when building)
 
 - A draft can only be left by deleting it (true today too; "Continue round" on Home brings you back).
-- The Home stats strip (Rounds · Usual score · Aces) is close to the grid BLUEPRINT §8a says to cut — maybe one short line instead.
-- §8a's per-round "hide my usual" switch: merge with **Hide running totals** into one "clean card" switch.
+- ~~Home stats strip~~ → decided by the owner (2026-11-02): the C2 strip look with **Rounds played · Total throws · Courses visited**. No aces or usual score on Home.
+- ~~"Hide my usual" vs Hide running totals~~ → decided: one **Clean card** switch in the round sheet hides both. A Profile default is not built yet.
 - Not drawn yet: the "Confirm and end round" step after the last hole; ties and many players on the finished screen.
 
 ---

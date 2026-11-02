@@ -1,20 +1,19 @@
 import type { PlayerGlobalStats } from "@/lib/rounds/load-player-stats";
-import { formatVsPar } from "@/lib/scoring/stats";
 
 type Props = {
   stats: PlayerGlobalStats;
 };
 
-/** One thin strip of figures; the details live on History and course stats. */
+/** The C2 strip: three plain figures between two rules. */
 export function HomeStatsTeaser({ stats }: Props) {
   if (stats.roundsPlayed === 0) {
     return null;
   }
 
   const figures = [
-    { label: "Rounds", value: String(stats.roundsPlayed) },
-    { label: "Best round", value: stats.bestVsPar !== null ? formatVsPar(stats.bestVsPar) : "—" },
-    { label: "Throws", value: String(stats.totalThrows) },
+    { label: "Rounds played", value: stats.roundsPlayed },
+    { label: "Total throws", value: stats.totalThrows },
+    { label: "Courses visited", value: stats.coursesPlayed },
   ];
 
   return (
@@ -23,10 +22,16 @@ export function HomeStatsTeaser({ stats }: Props) {
         {figures.map((figure, index) => (
           <div
             key={figure.label}
-            className={index === 0 ? "flex flex-col-reverse gap-0.5 py-3.5" : "flex flex-col-reverse gap-0.5 border-l py-3.5 pl-3.5"}
+            className={
+              index === 0
+                ? "flex flex-col-reverse gap-0.5 py-3.5"
+                : "flex flex-col-reverse gap-0.5 border-l py-3.5 pl-3.5"
+            }
           >
             <dt className="text-[13px] text-muted-foreground">{figure.label}</dt>
-            <dd className="font-display text-[28px] font-semibold leading-none tabular-nums">{figure.value}</dd>
+            <dd className="font-display text-[28px] font-semibold leading-none tabular-nums">
+              {figure.value.toLocaleString("et-EE")}
+            </dd>
           </div>
         ))}
       </dl>
