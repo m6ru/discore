@@ -2,29 +2,39 @@ import type { PlayerGlobalStats } from "@/lib/rounds/load-player-stats";
 
 type Props = {
   stats: PlayerGlobalStats;
-  /** Courses in the catalog, for "12 of 80 parks". */
-  courseCount: number;
 };
 
-function plural(count: number, one: string, many: string): string {
-  return `${count} ${count === 1 ? one : many}`;
-}
-
-/** One short line of fun numbers (BLUEPRINT §8a, I + J); no grid on Home. */
-export function HomeStatsTeaser({ stats, courseCount }: Props) {
+/** The C2 strip: three plain figures between two rules. */
+export function HomeStatsTeaser({ stats }: Props) {
   if (stats.roundsPlayed === 0) {
     return null;
   }
 
-  const parts = [
-    plural(stats.roundsPlayed, "round", "rounds"),
-    courseCount > 0
-      ? `${stats.coursesPlayed} of ${courseCount} parks`
-      : plural(stats.coursesPlayed, "park", "parks"),
-    stats.aceTotal > 0 ? plural(stats.aceTotal, "ace", "aces") : null,
-  ].filter(Boolean);
+  const figures = [
+    { label: "Rounds", value: stats.roundsPlayed },
+    { label: "Throws", value: stats.totalThrows },
+    { label: "Parks", value: stats.coursesPlayed },
+  ];
 
   return (
-    <p className="border-y py-3 font-mono text-[13px] text-muted-foreground">{parts.join(" · ")}</p>
+    <section aria-label="Your stats">
+      <dl className="grid grid-cols-3 border-y">
+        {figures.map((figure, index) => (
+          <div
+            key={figure.label}
+            className={
+              index === 0
+                ? "flex flex-col-reverse gap-0.5 py-3.5"
+                : "flex flex-col-reverse gap-0.5 border-l py-3.5 pl-3.5"
+            }
+          >
+            <dt className="text-[13px] text-muted-foreground">{figure.label}</dt>
+            <dd className="font-display text-[28px] font-semibold leading-none tabular-nums">
+              {figure.value.toLocaleString("et-EE")}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </section>
   );
 }

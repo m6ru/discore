@@ -25,7 +25,6 @@ export type PlayerGlobalStats = {
   bestVsPar: number | null;
   bestRound: PlayerBestRound | null;
   mostPlayedCourse: PlayerMostPlayedCourse | null;
-  aceTotal: number;
   /** Distinct courses with at least one completed round. */
   coursesPlayed: number;
 };
@@ -115,7 +114,6 @@ export async function loadPlayerStats(
       bestVsPar: data.best_vs_par,
       bestRound,
       mostPlayedCourse,
-      aceTotal: Number(data.ace_total ?? 0),
       coursesPlayed: coursesPlayed ?? 0,
     },
     error: null,
@@ -427,7 +425,6 @@ function emptyStats(): PlayerGlobalStats {
     bestVsPar: null,
     bestRound: null,
     mostPlayedCourse: null,
-    aceTotal: 0,
     coursesPlayed: 0,
   };
 }
