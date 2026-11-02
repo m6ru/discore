@@ -31,6 +31,7 @@ import {
 import {
   ACTIVE_SCORING_BOTTOM_INSET,
   ActiveHoleScoring,
+  type HoleProgress,
 } from "./components/active-hole-scoring";
 import { DraftPlayersPanel } from "./components/draft-players-panel";
 import { DraftSetupDeck } from "./components/draft-setup-deck";
@@ -45,7 +46,6 @@ import {
 } from "./components/round-complete-actions";
 import { ScorecardSection } from "./components/scorecard-section";
 import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
-import { RoundInfoDialog } from "./components/round-info-dialog";
 import { RoundScorecardDialog } from "./components/round-scorecard-dialog";
 import { FinishedRoundStatsLink } from "@/components/stats/finished-round-stats-link";
 import { PostRoundInsightsCard } from "@/components/stats/post-round-insights";
@@ -103,7 +103,6 @@ export function RoundSession({
   const [showAddPlayerForm, setShowAddPlayerForm] = useState(false);
   const [scoresHidden, setScoresHidden] = useState(false);
   const [scorecardOpen, setScorecardOpen] = useState(false);
-  const [roundInfoOpen, setRoundInfoOpen] = useState(false);
   const [isEditingScores, setIsEditingScores] = useState(false);
   const [holeFixTarget, setHoleFixTarget] = useState<HoleRow | null>(null);
   const [postRoundInsights, setPostRoundInsights] = useState<PostRoundInsights | null>(null);
@@ -514,14 +513,39 @@ export function RoundSession({
     isObChecked,
   ]);
 
-  const renderScorecard = (options: { showTitle: boolean; showBorder?: boolean }) => {
+  // Progress line on the scoring screen: holes in play order, done when every
+  // player has a score, so a round started on hole 7 still fills left to right.
+  const holeProgress = useMemo<HoleProgress[]>(
+    () =>
+      playOrderedHoles.map((hole) => {
+        if (hole.id === activeHole?.id) {
+          return "current";
+        }
+        const done =
+          scoringParticipants.length > 0 &&
+          scoringParticipants.every((participant) =>
+            scoreLookup.has(makeScoreLookupKey(participant.id, hole.id))
+          );
+        return done ? "done" : "todo";
+      }),
+    [playOrderedHoles, activeHole, scoringParticipants, scoreLookup]
+  );
+
+  const renderScorecard = (options: { showTitle: boolean }) => {
     const displayScoreLookup = buildDisplayScoreLookup();
-    const displayLeaderboardRows = buildLeaderboard(
-      scoringParticipants,
-      sortedHoles,
-      displayScoreLookup,
-      labelForParticipantId
+    const rowsById = new Map(
+      buildLeaderboard(
+        scoringParticipants,
+        sortedHoles,
+        displayScoreLookup,
+        labelForParticipantId
+      ).map((row) => [row.participantId, row])
     );
+    // Play order, never sorted by score: casual rounds are not ranked.
+    const playOrderRows = scoringParticipants.flatMap((participant) => {
+      const row = rowsById.get(participant.id);
+      return row ? [row] : [];
+    });
 
     return (
       <ScorecardSection
@@ -529,10 +553,9 @@ export function RoundSession({
         sortedHoles={sortedHoles}
         scoreLookup={displayScoreLookup}
         obLookup={buildDisplayObLookup()}
-        leaderboardRows={displayLeaderboardRows}
+        rows={playOrderRows}
         activeHole={scorecardActiveHole}
         showTitle={options.showTitle}
-        showBorder={options.showBorder}
       />
     );
   };
@@ -568,28 +591,21 @@ export function RoundSession({
         show={showHeaderMenu}
         isSubmitting={isSubmitting}
         isTransitioning={isTransitioning}
+        courseName={courseName}
+        layoutName={layoutName}
+        layoutTotalPar={layoutTotalPar}
+        holeCount={holes.length}
+        startingHole={startingHole}
+        currentHoleNumber={showStickySaveBar ? (activeHole?.hole_number ?? null) : null}
         scoresHidden={scoresHidden}
         onToggleScoresHidden={() => setScoresHidden((hidden) => !hidden)}
         onAbandonRound={() => void onAbandonRound()}
         onViewScorecard={() => setScorecardOpen(true)}
-        onViewInfo={() => setRoundInfoOpen(true)}
+        onSuggestFix={() => setHoleFixTarget(activeHole)}
         scorecardDialog={
           <RoundScorecardDialog open={scorecardOpen} onOpenChange={setScorecardOpen}>
             {renderScorecard({ showTitle: false })}
           </RoundScorecardDialog>
-        }
-        infoDialog={
-          <RoundInfoDialog
-            open={roundInfoOpen}
-            onOpenChange={setRoundInfoOpen}
-            roundName={roundName}
-            courseName={courseName}
-            layoutName={layoutName}
-            holeCount={holes.length}
-            layoutTotalPar={layoutTotalPar}
-            startingHole={startingHole}
-            roundStatus={liveRoundStatus}
-          />
         }
       />
       {liveRoundStatus === "draft" ? (
@@ -681,6 +697,8 @@ export function RoundSession({
               key={activeHole.id}
               activeHole={activeHole}
               holesLength={holes.length}
+              progress={holeProgress}
+              onOpenScorecard={() => setScorecardOpen(true)}
               scoringParticipants={scoringParticipants}
               leaderboardRows={leaderboardRows}
               currentHoleIndex={currentHoleIndex}
@@ -696,7 +714,6 @@ export function RoundSession({
               onSaveAndAdvanceHole={onSaveAndAdvanceHole}
               hideRunningScores={scoresHidden}
               syncBadge={syncBadge}
-              onSuggestFix={() => setHoleFixTarget(activeHole)}
             />
             </>
           ) : (

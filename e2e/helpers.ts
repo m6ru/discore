@@ -99,12 +99,12 @@ export async function scoreAllHolesAtPar(page: Page, players: string[], holeCoun
 }
 
 export async function scoreHoleAtPar(page: Page, players: string[], hole: number, holeCount: number): Promise<void> {
-  await expect(page.getByText(new RegExp(`Hole ${hole} / ${holeCount}`))).toBeVisible();
+  await expect(page.getByRole("heading", { name: `Hole ${hole} of ${holeCount}` })).toBeVisible();
   for (const player of players) {
     await page.getByRole("button", { name: new RegExp(`^\\d+\\. ${player}`) }).click();
     await page.getByRole("button", { name: "Increase strokes" }).click();
   }
-  const save = hole < holeCount ? "Save and go to next hole" : "Save scores";
+  const save = hole < holeCount ? "Next hole" : "Save scores";
   await page.getByRole("button", { name: save }).click();
 }
 

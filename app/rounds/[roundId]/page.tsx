@@ -115,8 +115,21 @@ export default async function RoundPage({ params }: RoundPageProps) {
     redirect("/?message=You+must+be+a+round+participant+to+view+this+round");
   }
 
+  // Scoring screen: a slim "Course · Layout" line with ⋯; no back arrow, so
+  // leaving a round always goes through the round sheet.
+  const isScoringHeader = roundStatus === "active" && isScorer;
+
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+      {isScoringHeader ? (
+        <header className="-mr-2 -mb-3 flex items-center gap-2">
+          <p className="min-w-0 flex-1 truncate text-sm font-semibold">
+            {courseRow?.name ?? "Unknown course"}{" "}
+            <span className="font-medium text-muted-foreground">· {layoutRow?.name ?? "Unknown layout"}</span>
+          </p>
+          <div id={ROUND_HEADER_ACTIONS_ID} />
+        </header>
+      ) : (
       <header className="space-y-1">
         <div className="flex items-center justify-between gap-3">
           {roundStatus === "draft" && isScorer ? (
@@ -144,6 +157,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
           <p className="text-sm text-muted-foreground">{finishedDateLabel}</p>
         ) : null}
       </header>
+      )}
 
       {participantsError ? (
         <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">

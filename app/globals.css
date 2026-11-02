@@ -2,26 +2,32 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Direction C "Scorecard" — values from DESIGN-PATTERNS.md → Redesign brief. */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.147 0.004 49.25);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.147 0.004 49.25);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.147 0.004 49.25);
-  --primary: oklch(0.508 0.118 165.612);
-  --primary-foreground: oklch(0.985 0.001 106.423);
-  --secondary: oklch(0.97 0.001 106.424);
-  --secondary-foreground: oklch(0.216 0.006 56.043);
-  --muted: oklch(0.97 0.001 106.424);
-  --muted-foreground: oklch(0.553 0.013 58.071);
-  --accent: oklch(0.97 0.001 106.424);
-  --accent-foreground: oklch(0.216 0.006 56.043);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.923 0.003 48.717);
-  --input: oklch(0.923 0.003 48.717);
-  --ring: oklch(0.508 0.118 165.612);
+  --radius: 0.375rem;
+  --background: #fafaf6;
+  --foreground: #141814;
+  --card: #fafaf6;
+  --card-foreground: #141814;
+  --popover: #fafaf6;
+  --popover-foreground: #141814;
+  --primary: #1d3a2c;
+  --primary-foreground: #fafaf6;
+  --secondary: #f2f1ea;
+  --secondary-foreground: #141814;
+  --muted: #f2f1ea;
+  --muted-foreground: #5b615b;
+  --accent: #edece5;
+  --accent-foreground: #141814;
+  --destructive: #a8261b;
+  --border: #e4e3dc;
+  --input: #d4d3cb;
+  --ring: #1d3a2c;
+  /* Score and moment colours: lime only for good things; over par stays quiet. */
+  --good: #c9e36a;
+  --good-foreground: #141814;
+  --over: #e9d9c9;
+  --over-strong: #d4b496;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -56,6 +62,10 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-good: var(--good);
+  --color-good-foreground: var(--good-foreground);
+  --color-over: var(--over);
+  --color-over-strong: var(--over-strong);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -75,6 +85,7 @@
   --radius-xl: calc(var(--radius) + 4px);
   --font-sans: var(--font-manrope);
   --font-mono: var(--font-jetbrains-mono);
+  --font-display: var(--font-space-grotesk);
 }
 
 @layer base {

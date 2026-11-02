@@ -23,6 +23,6 @@ test("anonymous trial round is saved to history after signing in", async ({ page
 
   await page.goto("/rounds");
   await page.getByRole("link", { name: new RegExp(COURSE.name) }).first().click();
-  await expect(page.getByRole("cell", { name: "Gary" })).toBeVisible();
+  await expect(page.getByRole("rowheader", { name: "Gary" })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem("discore:local-trial"))).toBeNull();
 });
