@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Info } from "lucide-react";
+import { History, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { HoleRow } from "../round-types";
 
@@ -13,10 +13,12 @@ type Props = {
    * sheet from the round menu instead.
    */
   onSuggestFix?: () => void;
+  /** The scorer's own "Usually 4 · best 3" on this hole; hidden with a clean card. */
+  historyLine?: string | null;
 };
 
 /** Hole number with Par / Meters beside it, and the hole's note straight under. */
-export function ActiveHoleStatus({ activeHole, holesLength, onSuggestFix }: Props) {
+export function ActiveHoleStatus({ activeHole, holesLength, onSuggestFix, historyLine }: Props) {
   const [noteExpanded, setNoteExpanded] = useState(false);
 
   if (!activeHole) {
@@ -59,6 +61,14 @@ export function ActiveHoleStatus({ activeHole, holesLength, onSuggestFix }: Prop
             {note}
           </span>
         </button>
+      ) : null}
+      {historyLine ? (
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <History className="size-[18px] shrink-0" aria-hidden />
+          <span>
+            You: <span className="font-mono text-foreground/85">{historyLine}</span>
+          </span>
+        </p>
       ) : null}
       {onSuggestFix ? (
         <button

@@ -6,6 +6,8 @@ import { formatVsPar } from "@/lib/scoring/stats";
 type Props = {
   /** Only for the player who just finished; null otherwise. */
   insights: PostRoundInsights | null;
+  /** Holes that cost the most against the viewer's usual ("Hole 7: 6, usually 4, OB"). */
+  whereItWent?: string[];
   courseSlug: string;
   layoutSlug: string;
   layoutName: string;
@@ -32,7 +34,7 @@ function insightLine(insights: PostRoundInsights): string {
 }
 
 /** "Your round": the viewer's own moment (if any) and their stats on this layout. */
-export function YourRound({ insights, courseSlug, layoutSlug, layoutName }: Props) {
+export function YourRound({ insights, whereItWent = [], courseSlug, layoutSlug, layoutName }: Props) {
   const line = insights ? insightLine(insights) : "";
 
   return (
@@ -41,6 +43,18 @@ export function YourRound({ insights, courseSlug, layoutSlug, layoutName }: Prop
         <p className="text-sm leading-snug text-foreground/85">
           <span className="font-bold text-foreground">Your round:</span> {line}
         </p>
+      ) : null}
+      {whereItWent.length > 0 ? (
+        <div className="text-sm leading-snug text-foreground/85">
+          <p className="font-bold text-foreground">Where it went</p>
+          <ul>
+            {whereItWent.map((line) => (
+              <li key={line} className="font-mono text-[13px]">
+                {line}
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
       <Link
         href={`/courses/${courseSlug}/stats?layout=${layoutSlug}`}

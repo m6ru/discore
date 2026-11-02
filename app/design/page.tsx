@@ -133,7 +133,7 @@ export default function DesignPage() {
           </div>
           <label className="flex min-h-14 items-center gap-3 border-y">
             <span className="flex-1">
-              <span className="block font-semibold">Hide running totals</span>
+              <span className="block font-semibold">Clean card</span>
               <span className="block text-sm text-muted-foreground">Only this hole&apos;s strokes show</span>
             </span>
             <Switch />

@@ -19,6 +19,7 @@ import { getParticipantLabel as labelForParticipant } from "@/lib/rounds/partici
 import { buildUnifiedPlayers } from "@/lib/rounds/unified-players";
 import type { InviteRow } from "@/lib/rounds/invite-rows";
 import {
+  loadPlayerHoleHistory,
   loadPostRoundInsights,
   type PostRoundInsights,
 } from "@/lib/rounds/load-player-stats";
@@ -48,6 +49,7 @@ import { ScorecardSection } from "./components/scorecard-section";
 import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
 import { RoundScorecardDialog } from "./components/round-scorecard-dialog";
 import { YourRound } from "@/components/stats/post-round-insights";
+import { formatHoleHistory, pickWhereItWent, type HoleHistory } from "@/lib/scoring/hole-history";
 import { Button } from "@/components/ui/button";
 import { isFinishedRoundStatus } from "@/lib/rounds/round-status";
 import type {
@@ -116,6 +118,7 @@ export function RoundSession({
       hasPostRoundInsightsPending(roundId)
     );
   });
+  const [holeHistory, setHoleHistory] = useState<ReadonlyMap<string, HoleHistory> | null>(null);
   const ignoreRenderNow: Dispatch<SetStateAction<number>> = useCallback(() => {}, []);
   const ignoreLastSavedEvent: Dispatch<SetStateAction<LastSavedEvent | null>> =
     useCallback(() => {}, []);
@@ -176,6 +179,38 @@ export function RoundSession({
     roundId,
     layoutId,
   ]);
+
+  // The viewer's own per-hole history (BLUEPRINT §8a): the scorer's "Usually"
+  // line while scoring, and "Where it went" once the round is finished.
+  const viewerParticipantId =
+    participants.find((participant) => participant.user_id === currentUserId)?.id ?? null;
+  const historyMode =
+    !viewerParticipantId
+      ? null
+      : isFinishedRoundStatus(liveRoundStatus)
+        ? "finished"
+        : liveRoundStatus === "active" && isScorer
+          ? "active"
+          : null;
+
+  useEffect(() => {
+    if (!historyMode) {
+      return;
+    }
+    let cancelled = false;
+    void loadPlayerHoleHistory(
+      supabase,
+      layoutId,
+      historyMode === "finished" ? roundId : undefined
+    ).then((history) => {
+      if (!cancelled) {
+        setHoleHistory(history);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [historyMode, supabase, layoutId, roundId]);
 
   const { loadParticipants, loadInvites } = useRoundRealtime({
     supabase,
@@ -394,6 +429,24 @@ export function RoundSession({
       (showCompletionUI || !showStickySaveBar));
 
   useTabBarVisibilityOverride(!isScorer || isFinishedRound);
+
+  const whereItWent = useMemo(() => {
+    if (!holeHistory || !viewerParticipantId || !isFinishedRound) {
+      return [];
+    }
+    const holeNumberById = new Map(holes.map((hole) => [hole.id, hole.hole_number]));
+    return pickWhereItWent(
+      holeScores
+        .filter((score) => score.participant_id === viewerParticipantId)
+        .map((score) => ({
+          holeId: score.hole_id,
+          holeNumber: holeNumberById.get(score.hole_id) ?? 0,
+          strokes: score.strokes,
+          ob: score.ob,
+        })),
+      holeHistory
+    );
+  }, [holeHistory, viewerParticipantId, isFinishedRound, holes, holeScores]);
 
   const newBestParticipantId =
     showPostRoundInsights && postRoundInsights?.isNewBest
@@ -723,6 +776,7 @@ export function RoundSession({
               onPreviousHole={onPreviousHole}
               onSaveAndAdvanceHole={onSaveAndAdvanceHole}
               hideRunningScores={scoresHidden}
+              historyLine={scoresHidden ? null : formatHoleHistory(holeHistory?.get(activeHole.id))}
               syncBadge={syncBadge}
             />
             </>
@@ -750,6 +804,7 @@ export function RoundSession({
       {isFinishedRound && courseSlug && layoutSlug ? (
         <YourRound
           insights={showPostRoundInsights ? postRoundInsights : null}
+          whereItWent={whereItWent}
           courseSlug={courseSlug}
           layoutSlug={layoutSlug}
           layoutName={layoutName}

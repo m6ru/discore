@@ -1,3 +1,4 @@
+import type { HoleHistory } from "@/lib/scoring/hole-history";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 
@@ -24,6 +25,9 @@ export type PlayerGlobalStats = {
   bestVsPar: number | null;
   bestRound: PlayerBestRound | null;
   mostPlayedCourse: PlayerMostPlayedCourse | null;
+  aceTotal: number;
+  /** Distinct courses with at least one completed round. */
+  coursesPlayed: number;
 };
 
 export type AceLogEntry = {
@@ -70,7 +74,10 @@ export type PlayerLayoutStats = {
 export async function loadPlayerStats(
   supabase: Client
 ): Promise<{ stats: PlayerGlobalStats; error: string | null }> {
-  const { data, error } = await supabase.from("player_lifetime_stats").select("*").maybeSingle();
+  const [{ data, error }, { count: coursesPlayed }] = await Promise.all([
+    supabase.from("player_lifetime_stats").select("*").maybeSingle(),
+    supabase.from("player_course_stats").select("course_id", { count: "exact", head: true }),
+  ]);
 
   if (error) {
     return { stats: emptyStats(), error: error.message };
@@ -108,6 +115,8 @@ export async function loadPlayerStats(
       bestVsPar: data.best_vs_par,
       bestRound,
       mostPlayedCourse,
+      aceTotal: Number(data.ace_total ?? 0),
+      coursesPlayed: coursesPlayed ?? 0,
     },
     error: null,
   };
@@ -418,5 +427,39 @@ function emptyStats(): PlayerGlobalStats {
     bestVsPar: null,
     bestRound: null,
     mostPlayedCourse: null,
+    aceTotal: 0,
+    coursesPlayed: 0,
   };
+}
+
+/**
+ * The signed-in player's per-hole usual/best on a layout, keyed by hole id.
+ * Pass the finished round's id to compare it against the player's other rounds.
+ */
+export async function loadPlayerHoleHistory(
+  supabase: Client,
+  layoutId: string,
+  excludeRoundId?: string
+): Promise<Map<string, HoleHistory>> {
+  const { data, error } = await supabase.rpc("player_hole_history", {
+    p_layout_id: layoutId,
+    ...(excludeRoundId ? { p_exclude_round_id: excludeRoundId } : {}),
+  });
+
+  // History is a nice-to-have on these screens; without it they simply stay quiet.
+  if (error || !data) {
+    return new Map();
+  }
+
+  return new Map(
+    data.map((row) => [
+      row.hole_id,
+      {
+        timesPlayed: row.times_played,
+        usualStrokes: row.usual_strokes,
+        bestStrokes: row.best_strokes,
+        obCount: row.ob_count,
+      },
+    ])
+  );
 }

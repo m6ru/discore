@@ -91,7 +91,7 @@ export async function HomeSections({ userId }: Props) {
         <NearYouStart courses={nearYouCourses} />
       ) : null}
 
-      {!statsResult.error ? <HomeStatsTeaser stats={statsResult.stats} /> : null}
+      {!statsResult.error ? <HomeStatsTeaser stats={statsResult.stats} courseCount={coursesResult.courses?.length ?? 0} /> : null}
 
       <HomeGetStarted
         hasJoinedRound={data.hasJoinedRound}

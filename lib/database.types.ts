@@ -809,6 +809,16 @@ export type Database = {
         Args: { p_round_id: string; p_user_id: string }
         Returns: boolean
       }
+      player_hole_history: {
+        Args: { p_exclude_round_id?: string; p_layout_id: string }
+        Returns: {
+          best_strokes: number
+          hole_id: string
+          ob_count: number
+          times_played: number
+          usual_strokes: number
+        }[]
+      }
       score_bucket: { Args: { par: number; strokes: number }; Returns: string }
     }
     Enums: {
