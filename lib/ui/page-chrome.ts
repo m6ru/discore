@@ -1,5 +1,5 @@
 /** Shared page chrome — use on tab screens and round route headers. */
-export const pageTitleClassName = "font-display text-2xl font-semibold tracking-tight sm:text-[28px]";
+export const pageTitleClassName = "font-display text-[30px] font-semibold leading-tight tracking-tight";
 
 export const pageSubtitleClassName = "text-sm text-muted-foreground";
 

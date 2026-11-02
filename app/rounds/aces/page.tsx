@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import { formatRoundDisplayDate } from "@/lib/format/round-date";
 import { loadAceLog } from "@/lib/rounds/load-player-stats";
@@ -17,8 +17,15 @@ export default async function AceLogPage() {
   const { aces, error } = await loadAceLog(supabase);
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 p-4 sm:p-8">
       <header className="space-y-1">
+        <Link
+          href="/rounds"
+          aria-label="Back to history"
+          className="-ml-2 inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <ChevronLeft className="size-5" aria-hidden />
+        </Link>
         <h1 className={pageTitleClassName}>Ace log</h1>
         <p className={pageSubtitleClassName}>Every hole-in-one from your completed rounds.</p>
       </header>
@@ -34,22 +41,25 @@ export default async function AceLogPage() {
       ) : null}
 
       {!error && aces.length > 0 ? (
-        <ul className="space-y-2">
+        <ul className="border-t border-foreground">
           {aces.map((ace) => {
             const dateLabel = formatRoundDisplayDate(ace.completedAt, null) ?? "—";
-            const metaParts = [ace.layoutName, dateLabel];
+            const metaParts = [`Hole ${ace.holeNumber}`, ace.layoutName, dateLabel];
 
             return (
               <li key={`${ace.roundId}-${ace.holeNumber}`}>
                 <Link
                   href={`/rounds/${ace.roundId}`}
-                  className="flex items-center justify-between gap-3 rounded-lg border px-4 py-3 transition-colors hover:bg-muted/50"
+                  className="flex items-center gap-3 border-b py-3 transition-colors hover:bg-accent/50"
                 >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">
-                      Hole {ace.holeNumber} – {ace.courseName}
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-md bg-good font-display text-lg font-semibold text-good-foreground">
+                    {ace.holeNumber}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[15px] font-bold">
+                      {ace.courseName}
                     </p>
-                    <p className="mt-0.5 truncate text-sm text-muted-foreground">
+                    <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
                       {metaParts.join(" · ")}
                     </p>
                   </div>
