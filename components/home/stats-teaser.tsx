@@ -11,9 +11,9 @@ export function HomeStatsTeaser({ stats }: Props) {
   }
 
   const figures = [
-    { label: "Rounds", value: stats.roundsPlayed },
-    { label: "Throws", value: stats.totalThrows },
-    { label: "Parks", value: stats.coursesPlayed },
+    { label: "Rounds played", value: stats.roundsPlayed },
+    { label: "Total throws", value: stats.totalThrows },
+    { label: "Courses visited", value: stats.coursesPlayed },
   ];
 
   return (
