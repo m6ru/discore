@@ -7,6 +7,7 @@ import { HomeStatsTeaser } from "@/components/home/stats-teaser";
 import {
   homeFrameClassName,
   homeFrameLabelClassName,
+  homeFrameTitleClassName,
   homeRowMetaClassName,
   pagePrimaryButtonClassName,
 } from "@/lib/ui/page-chrome";
@@ -65,16 +66,13 @@ export async function HomeSections({ userId }: Props) {
               return (
                 <li key={round.id} className={homeFrameClassName}>
                   <p className={homeFrameLabelClassName}>
-                    Round in progress · {isScorer ? "you're scoring" : "watching"}
+                    Round in progress
+                    <span>{isScorer ? "you're scoring" : "watching"}</span>
                   </p>
-                  <div className="min-w-0 space-y-0.5">
-                    <p className="truncate font-display text-[22px] font-semibold leading-tight">
-                      {round.course_name}
-                    </p>
-                    <p className={homeRowMetaClassName}>
-                      {round.layout_name} · started {formatDateTime(round.started_at)}
-                    </p>
-                  </div>
+                  <p className={homeFrameTitleClassName}>{round.course_name}</p>
+                  <p className={homeRowMetaClassName}>
+                    {round.layout_name} · started {formatDateTime(round.started_at)}
+                  </p>
                   <Button asChild size="lg" className={pagePrimaryButtonClassName}>
                     <Link href={`/rounds/${round.id}`}>Continue round</Link>
                   </Button>

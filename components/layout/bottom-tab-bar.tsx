@@ -84,7 +84,7 @@ export function BottomTabBar({ show }: { show: boolean }) {
                 className={cn(
                   "flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 text-xs font-medium transition-colors",
                   active
-                    ? "font-semibold text-primary"
+                    ? "font-bold text-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 )}
                 aria-current={active ? "page" : undefined}
@@ -92,12 +92,15 @@ export function BottomTabBar({ show }: { show: boolean }) {
                 <Icon
                   className={cn(
                     "size-5 shrink-0",
-                    tab.emphasized && "size-6",
-                    active && "fill-primary/15"
+                    tab.emphasized && "size-6"
                   )}
                   aria-hidden
                 />
                 <span className="truncate">{tab.label}</span>
+                <span
+                  className={cn("h-[3px] w-4 rounded-sm", active ? "bg-good" : "bg-transparent")}
+                  aria-hidden
+                />
               </Link>
             </li>
           );

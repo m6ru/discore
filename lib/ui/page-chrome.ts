@@ -4,10 +4,15 @@ export const pageTitleClassName = "font-display text-2xl font-semibold tracking-
 export const pageSubtitleClassName = "text-sm text-muted-foreground";
 
 /** Framed section on Home (nearest course, continue round). */
-export const homeFrameClassName = "space-y-3 rounded-md border bg-card p-4";
+export const homeFrameClassName = "space-y-3.5 rounded-md border bg-secondary px-[18px] pt-4 pb-[18px]";
 
 /** Small label row at the top of a Home frame. */
-export const homeFrameLabelClassName = "text-[13px] font-semibold text-muted-foreground";
+export const homeFrameLabelClassName =
+  "flex items-center justify-between gap-3 border-b pb-3 text-[13px] font-semibold text-muted-foreground";
+
+/** The big name inside a Home frame. */
+export const homeFrameTitleClassName =
+  "truncate font-display text-[30px] font-semibold leading-[1.05] tracking-tight";
 
 /** Home list rows: single body size; weight/color for hierarchy. */
 export const homeRowLinkClassName =

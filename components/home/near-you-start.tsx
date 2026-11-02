@@ -9,9 +9,11 @@ import {
   readDeviceLocation,
 } from "@/lib/courses/distance";
 import { getNearbyCoursesPreference } from "@/lib/courses/nearby-courses";
+import { ArrowRight } from "lucide-react";
 import {
   homeFrameClassName,
   homeFrameLabelClassName,
+  homeFrameTitleClassName,
   homeRowMetaClassName,
   pagePrimaryButtonClassName,
 } from "@/lib/ui/page-chrome";
@@ -31,6 +33,17 @@ type Props = {
 
 function formatLayoutCount(count: number): string {
   return count === 1 ? "1 layout" : `${count} layouts`;
+}
+
+function StartButton({ href }: { href: string }) {
+  return (
+    <Button asChild size="lg" className={`${pagePrimaryButtonClassName} justify-between px-[18px]`}>
+      <Link href={href}>
+        Start a round
+        <ArrowRight className="size-5" aria-hidden />
+      </Link>
+    </Button>
+  );
 }
 
 export function NearYouStart({ courses }: Props) {
@@ -63,24 +76,23 @@ export function NearYouStart({ courses }: Props) {
 
   if (!nearest) {
     return (
-      <Button asChild size="lg" className={pagePrimaryButtonClassName}>
-        <Link href="/courses">Start a round</Link>
-      </Button>
+      <section className={homeFrameClassName}>
+        <h2 className={homeFrameLabelClassName}>Play</h2>
+        <p className={homeFrameTitleClassName}>Pick a course</p>
+        <StartButton href="/courses" />
+      </section>
     );
   }
 
   return (
     <section className={homeFrameClassName}>
       <h2 className={homeFrameLabelClassName}>
-        Nearest course · <span className="font-mono tabular-nums">{formatDistanceKm(nearest.distanceKm)}</span>
+        Nearest course
+        <span className="font-mono tabular-nums">{formatDistanceKm(nearest.distanceKm)}</span>
       </h2>
-      <div className="min-w-0 space-y-0.5">
-        <p className="truncate font-display text-[22px] font-semibold leading-tight">{nearest.name}</p>
-        <p className={homeRowMetaClassName}>{formatLayoutCount(nearest.layoutCount)}</p>
-      </div>
-      <Button asChild size="lg" className={pagePrimaryButtonClassName}>
-        <Link href={`/courses/${nearest.slug}`}>Start a round</Link>
-      </Button>
+      <p className={homeFrameTitleClassName}>{nearest.name}</p>
+      <p className={homeRowMetaClassName}>{formatLayoutCount(nearest.layoutCount)}</p>
+      <StartButton href={`/courses/${nearest.slug}`} />
     </section>
   );
 }

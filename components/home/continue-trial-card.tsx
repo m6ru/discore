@@ -2,16 +2,16 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { loadLocalTrial, type LocalTrialRound } from "@/lib/local-round";
 import { formatRoundDisplayDate } from "@/lib/format/round-date";
 import {
+  homeFrameClassName,
+  homeFrameLabelClassName,
+  homeFrameTitleClassName,
   homeRowMetaClassName,
-  homeRowTitleClassName,
   pagePrimaryButtonClassName,
 } from "@/lib/ui/page-chrome";
-import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 
 export function ContinueTrialCard() {
   const [trial, setTrial] = useState<LocalTrialRound | null>(null);
@@ -29,23 +29,16 @@ export function ContinueTrialCard() {
   const dateLabel = formatRoundDisplayDate(trial.completedAt, trial.startedAt);
 
   return (
-    <section className="space-y-2">
-      <h2 className={sectionHeadingClassName}>
-        {isCompleted ? "Save this round" : trial.status === "setup" ? "Set up round" : "Continue round"}
+    <section className={homeFrameClassName}>
+      <h2 className={homeFrameLabelClassName}>
+        {isCompleted ? "Save this round" : trial.status === "setup" ? "Set up round" : "Round in progress"}
       </h2>
-      <div className="space-y-3 rounded-lg bg-muted/60 px-4 py-3">
-        <div className="flex items-start justify-between gap-3 text-sm">
-          <div className="min-w-0 space-y-0.5">
-            <p className={homeRowTitleClassName}>{trial.courseName}</p>
-            <p className={homeRowMetaClassName}>
-              {trial.layoutName}
-              {dateLabel ? ` · ${dateLabel}` : null}
-            </p>
-          </div>
-          <Badge variant="secondary" className="shrink-0">
-            Trial
-          </Badge>
-        </div>
+      <div className="space-y-3.5">
+        <p className={homeFrameTitleClassName}>{trial.courseName}</p>
+        <p className={homeRowMetaClassName}>
+          {trial.layoutName}
+          {dateLabel ? ` · ${dateLabel}` : null} · not saved yet
+        </p>
         {isCompleted ? (
           <div className="space-y-2">
             <Button asChild size="lg" className={pagePrimaryButtonClassName}>
