@@ -52,14 +52,19 @@ export function DraftStartingHoleField({
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="shrink-0 text-sm text-muted-foreground">Starting from:</span>
+    <div className="flex items-center justify-between gap-3 border-t pt-3.5">
+      <span className="min-w-0">
+        <span className="block text-base font-semibold">Starting hole</span>
+        <span className="block text-[13px] text-muted-foreground">
+          For shotgun starts or a busy first tee
+        </span>
+      </span>
       <Select
         value={String(startingHole)}
         onValueChange={(next) => void saveStartingHole(next)}
         disabled={disabled || isSaving}
       >
-        <SelectTrigger className="min-h-10 flex-1" aria-label="Starting hole">
+        <SelectTrigger className="min-h-11 w-28 shrink-0 font-mono font-semibold" aria-label="Starting hole">
           <SelectValue placeholder="Hole 1" />
         </SelectTrigger>
         <SelectContent>

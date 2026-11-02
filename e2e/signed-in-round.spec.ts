@@ -11,7 +11,7 @@ test("signed-in scorer plays a round with a guest and completes it", async ({ pa
   await page.waitForURL(/\/rounds\/[0-9a-f-]{36}$/);
   await expect(page.getByRole("button", { name: "Start round" })).toBeVisible();
 
-  await page.getByRole("button", { name: "+ Add another player" }).click();
+  await page.getByRole("button", { name: "Add another player" }).click();
   await page.getByRole("textbox", { name: "Player name" }).fill("Gary");
   await page.getByRole("button", { name: "Add player" }).click();
   await expect(page.getByText("Gary")).toBeVisible();
