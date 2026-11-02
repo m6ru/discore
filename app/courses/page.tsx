@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createServerClient } from "@/lib/supabase/server";
 import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
-import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
+import { pageTitleClassName } from "@/lib/ui/page-chrome";
 import { CoursesList } from "./courses-list";
 
 export default async function CoursesPage() {
@@ -9,15 +9,12 @@ export default async function CoursesPage() {
   const { courses, error: coursesError } = await loadCourseSummaries(supabase);
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
-      <header className="space-y-1">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 p-4 sm:p-8">
+      <header className="flex items-baseline justify-between gap-3">
         <h1 className={pageTitleClassName}>Courses</h1>
-        <p className={pageSubtitleClassName}>
-          Pick a course to play. ·{" "}
-          <Link href="/courses/suggest" className="font-medium text-primary underline-offset-4 hover:underline">
-            Missing one?
-          </Link>
-        </p>
+        <Link href="/courses/suggest" className="shrink-0 text-sm font-semibold text-primary">
+          Missing one?
+        </Link>
       </header>
 
       {coursesError ? (

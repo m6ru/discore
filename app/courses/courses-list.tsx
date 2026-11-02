@@ -15,7 +15,7 @@ import {
   setNearbyCoursesPreference,
 } from "@/lib/courses/nearby-courses";
 import type { CourseSummary } from "@/lib/courses/types";
-import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 type Props = {
   courses: CourseSummary[];
@@ -103,17 +103,22 @@ export function CoursesList({ courses }: Props) {
     [courses, sortByDistance, coords]
   );
 
+  const isByDistance = sortByDistance && coords !== null;
   const filtered = useMemo(() => filterCoursesByQuery(sorted, query), [sorted, query]);
 
   return (
     <div className="space-y-4">
-      <Input
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search by name or location"
-        aria-label="Search courses by name or location"
-      />
+      <label className="flex h-12 items-center gap-2.5 rounded-md border border-input bg-card px-3.5 focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/30">
+        <Search className="size-[18px] shrink-0 text-muted-foreground" aria-hidden />
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by name or town"
+          aria-label="Search courses by name or location"
+          className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted-foreground"
+        />
+      </label>
 
       {filtered.length === 0 ? (
         <div className="space-y-1 text-sm text-muted-foreground">
@@ -131,28 +136,34 @@ export function CoursesList({ courses }: Props) {
           ) : null}
         </div>
       ) : (
-        <ul className="space-y-2">
-          {filtered.map((course) => (
-            <li key={course.id}>
-              <Link
-                href={`/courses/${course.slug}`}
-                className="block rounded-lg border px-4 py-3 transition-colors hover:bg-muted/50"
-              >
-                <div className="flex items-baseline justify-between gap-3">
-                  <p className="min-w-0 truncate font-medium">{course.name}</p>
+        <section>
+          <div className="flex items-center justify-between gap-3 border-b border-foreground pb-2 text-[13px] text-muted-foreground">
+            <span className="font-semibold">{isByDistance ? "Nearest first" : "A–Z"}</span>
+            {isByDistance ? <span>Distance</span> : null}
+          </div>
+          <ul>
+            {filtered.map((course) => (
+              <li key={course.id}>
+                <Link
+                  href={`/courses/${course.slug}`}
+                  className="flex items-center gap-3 border-b py-[13px] transition-colors hover:bg-accent/50"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-base font-bold">{course.name}</span>
+                    <span className="mt-0.5 block truncate text-[13px] text-muted-foreground">
+                      {formatListMeta(course)}
+                    </span>
+                  </span>
                   {course.distanceKm !== null ? (
-                    <span className="shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
+                    <span className="shrink-0 font-mono text-sm font-semibold tabular-nums">
                       {formatDistanceKm(course.distanceKm)}
                     </span>
                   ) : null}
-                </div>
-                <p className="mt-0.5 truncate text-sm text-muted-foreground">
-                  {formatListMeta(course)}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   );
