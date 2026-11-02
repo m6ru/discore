@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { useStartDraftRound } from "@/components/rounds/use-start-draft-round";
 import { cn } from "@/lib/utils";
 
@@ -22,38 +23,41 @@ function formatHoleCount(count: number): string {
 }
 
 function formatLayoutMeta(layout: CourseLayoutOption): string {
-  const parts = [
+  return [
     layout.holeCount > 0 ? formatHoleCount(layout.holeCount) : null,
-    `Par ${layout.totalPar}`,
-  ].filter(Boolean);
-  return parts.join(" · ");
+    `par ${layout.totalPar}`,
+    layout.totalDistanceM > 0 ? `${layout.totalDistanceM.toLocaleString()} m` : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
+/** The whole framed row starts a draft; the forest square is its visual cue. */
 function LayoutStartCard({ layout }: { layout: CourseLayoutOption }) {
   const { startDraftRound, isSubmitting } = useStartDraftRound(layout.id);
 
   return (
-    <li className="overflow-hidden rounded-lg border">
+    <li className="overflow-hidden rounded-md border bg-card">
       <button
         type="button"
         disabled={isSubmitting}
         onClick={() => void startDraftRound()}
         className={cn(
-          "block w-full px-4 py-3 text-left transition-colors",
-          "hover:bg-muted/50 disabled:pointer-events-none disabled:opacity-60"
+          "flex w-full items-center gap-3 py-3 pr-3 pl-4 text-left transition-colors",
+          "hover:bg-accent/60 disabled:pointer-events-none disabled:opacity-60"
         )}
       >
-        <div className="flex items-baseline justify-between gap-3">
-          <p className="min-w-0 truncate font-medium">
-            {isSubmitting ? "Creating..." : layout.name}
-          </p>
-          <span className="shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
-            {layout.totalDistanceM.toLocaleString()} m
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[17px] font-semibold">
+            {isSubmitting ? "Creating…" : layout.name}
           </span>
-        </div>
-        <p className="mt-0.5 truncate text-sm text-muted-foreground">
-          {formatLayoutMeta(layout)}
-        </p>
+          <span className="mt-0.5 block truncate font-mono text-[13px] text-muted-foreground">
+            {formatLayoutMeta(layout)}
+          </span>
+        </span>
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <ArrowRight className="size-5" aria-hidden />
+        </span>
       </button>
       {layout.mapUrl ? (
         <div className="border-t px-4 py-2">

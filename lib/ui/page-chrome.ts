@@ -1,7 +1,13 @@
 /** Shared page chrome — use on tab screens and round route headers. */
-export const pageTitleClassName = "text-xl font-bold tracking-tight sm:text-2xl";
+export const pageTitleClassName = "font-display text-2xl font-semibold tracking-tight sm:text-[28px]";
 
 export const pageSubtitleClassName = "text-sm text-muted-foreground";
+
+/** Framed section on Home (nearest course, continue round). */
+export const homeFrameClassName = "space-y-3 rounded-md border bg-card p-4";
+
+/** Small label row at the top of a Home frame. */
+export const homeFrameLabelClassName = "text-[13px] font-semibold text-muted-foreground";
 
 /** Home list rows: single body size; weight/color for hierarchy. */
 export const homeRowLinkClassName =
@@ -13,7 +19,7 @@ export const homeRowMetaClassName = "text-sm text-muted-foreground";
 
 /** Full-width primary actions on tab screens (Home, Course detail). */
 export const pagePrimaryButtonClassName =
-  "min-h-10 w-full rounded-xl text-sm";
+  "min-h-12 w-full text-[15px] font-semibold";
 
 /** Multi-line text input matching `components/ui/input`. */
 export const textareaClassName =
