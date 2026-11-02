@@ -5,18 +5,17 @@ import { loadHomeData } from "@/lib/home/load-home-data";
 import { loadPlayerStats } from "@/lib/rounds/load-player-stats";
 import { HomeStatsTeaser } from "@/components/home/stats-teaser";
 import {
+  homeFrameClassName,
+  homeFrameLabelClassName,
   homeRowMetaClassName,
-  homeRowTitleClassName,
   pagePrimaryButtonClassName,
 } from "@/lib/ui/page-chrome";
-import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { HomeInvites } from "@/components/home/invites";
 import { SuggestionThanks } from "@/components/home/suggestion-thanks";
 import { HomeRecentRounds } from "@/components/home/recent-rounds";
 import { HomeGetStarted } from "@/components/home/get-started";
 import { NearYouStart } from "@/components/home/near-you-start";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 function formatDateTime(iso: string | null): string {
   if (!iso) {
@@ -58,26 +57,23 @@ export async function HomeSections({ userId }: Props) {
     <>
       {data.activeRounds.length > 0 ? (
         <section className="space-y-2">
-          <h2 className={sectionHeadingClassName}>Continue round</h2>
+          <h2 className="sr-only">Continue round</h2>
           <ul className="space-y-2">
             {data.activeRounds.map((round) => {
               const isScorer = round.scorer_id === userId;
 
               return (
-                <li
-                  key={round.id}
-                  className="space-y-3 rounded-lg bg-muted/60 px-4 py-3"
-                >
-                  <div className="flex items-start justify-between gap-3 text-sm">
-                    <div className="min-w-0 space-y-0.5">
-                      <p className={homeRowTitleClassName}>{round.course_name}</p>
-                      <p className={homeRowMetaClassName}>
-                        {round.layout_name} · started {formatDateTime(round.started_at)}
-                      </p>
-                    </div>
-                    <Badge variant={isScorer ? "default" : "secondary"} className="shrink-0">
-                      {isScorer ? "Scorer" : "Observer"}
-                    </Badge>
+                <li key={round.id} className={homeFrameClassName}>
+                  <p className={homeFrameLabelClassName}>
+                    Round in progress · {isScorer ? "you're scoring" : "watching"}
+                  </p>
+                  <div className="min-w-0 space-y-0.5">
+                    <p className="truncate font-display text-[22px] font-semibold leading-tight">
+                      {round.course_name}
+                    </p>
+                    <p className={homeRowMetaClassName}>
+                      {round.layout_name} · started {formatDateTime(round.started_at)}
+                    </p>
                   </div>
                   <Button asChild size="lg" className={pagePrimaryButtonClassName}>
                     <Link href={`/rounds/${round.id}`}>Continue round</Link>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import Image from "next/image";
 import fs from "node:fs";
 import path from "node:path";
@@ -7,13 +7,6 @@ import { notFound } from "next/navigation";
 import { formatRoundDate } from "@/lib/format/round-date";
 import { loadPlayerCourseStats } from "@/lib/rounds/load-player-stats";
 import { createServerClient } from "@/lib/supabase/server";
-import {
-  homeRowMetaClassName,
-  pageSubtitleClassName,
-  pageTitleClassName,
-} from "@/lib/ui/page-chrome";
-import { sectionHeadingClassName } from "@/lib/ui/section-heading";
-import { cn } from "@/lib/utils";
 import { CourseLayoutPicker } from "./course-layout-picker";
 
 type PageProps = {
@@ -81,48 +74,62 @@ export default async function CourseDetailPage({ params }: PageProps) {
       mapUrl: layout.map_url,
     })) ?? [];
 
+  const lastPlayed = courseStats ? formatRoundDate(courseStats.lastPlayedAt) : null;
   const showAbout =
-    course.location.trim().length > 0 ||
+    headerMeta !== null ||
+    (!mapsUrl && course.location.trim().length > 0) ||
     Boolean(course.details?.trim()) ||
-    mapsUrl !== null ||
     mapImageSrc !== null;
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
-      <header className="space-y-1">
-        <div className="flex items-start justify-between gap-3">
-          <h1 className={cn(pageTitleClassName, "min-w-0 flex-1")}>{course.name}</h1>
-          <Link
-            href="/courses"
-            aria-label="Back to courses"
-            className="-mr-2 inline-flex shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <ChevronLeft className="size-5" aria-hidden />
-          </Link>
-        </div>
-        {headerMeta ? <p className={pageSubtitleClassName}>{headerMeta}</p> : null}
+      <header className="space-y-2">
+        <Link
+          href="/courses"
+          aria-label="Back to courses"
+          className="-ml-2 inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <ChevronLeft className="size-5" aria-hidden />
+        </Link>
+        <h1 className="font-display text-[30px] font-semibold leading-tight tracking-tight">
+          {course.name}
+        </h1>
         {courseStats ? (
-          <p className={homeRowMetaClassName}>
-            {formatRoundDate(courseStats.lastPlayedAt)
-              ? `Last played ${formatRoundDate(courseStats.lastPlayedAt)} · `
-              : null}
-            Total rounds: {courseStats.roundsPlayed}
+          <p className="text-sm text-muted-foreground">
+            {lastPlayed ? `Last played ${lastPlayed} · ` : null}
+            Total rounds {courseStats.roundsPlayed}
           </p>
+        ) : null}
+        {mapsUrl || claims ? (
+          <div className="flex items-center justify-between gap-3 pt-1">
+            {mapsUrl ? (
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-h-11 min-w-0 items-center gap-1.5 text-sm font-medium text-foreground/85 hover:text-foreground"
+              >
+                <MapPin className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                <span className="truncate">{course.location.trim() || "Open in maps"}</span>
+              </a>
+            ) : (
+              <span />
+            )}
+            {claims ? (
+              <Link
+                href={`/courses/${slug}/stats`}
+                className="flex min-h-11 shrink-0 items-center gap-0.5 text-sm font-semibold text-primary"
+              >
+                Your stats
+                <ChevronRight className="size-4" aria-hidden />
+              </Link>
+            ) : null}
+          </div>
         ) : null}
       </header>
 
       <section className="space-y-3">
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className={sectionHeadingClassName}>Layouts</h2>
-          {claims ? (
-            <Link
-              href={`/courses/${slug}/stats`}
-              className="shrink-0 text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              Your stats
-            </Link>
-          ) : null}
-        </div>
+        <h2 className="font-display text-lg font-semibold">Pick a layout</h2>
 
         {layoutsError ? (
           <p className="rounded-lg border bg-muted p-3 text-sm text-muted-foreground">
@@ -141,23 +148,11 @@ export default async function CourseDetailPage({ params }: PageProps) {
 
       {showAbout ? (
         <section className="space-y-3">
-          <h2 className={sectionHeadingClassName}>About</h2>
+          <h2 className="font-display text-lg font-semibold">About</h2>
           <div className="space-y-3 text-sm text-muted-foreground">
-            {course.location.trim().length > 0 ? (
-              <div>
-                {mapsUrl ? (
-                  <a
-                    href={mapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline underline-offset-4 hover:text-foreground"
-                  >
-                    {course.location.trim()}
-                  </a>
-                ) : (
-                  <p>{course.location.trim()}</p>
-                )}
-              </div>
+            {headerMeta ? <p>{headerMeta}</p> : null}
+            {!mapsUrl && course.location.trim().length > 0 ? (
+              <p>{course.location.trim()}</p>
             ) : null}
             {course.details?.trim() ? (
               <p className="whitespace-pre-line">{course.details.trim()}</p>

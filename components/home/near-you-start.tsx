@@ -10,11 +10,11 @@ import {
 } from "@/lib/courses/distance";
 import { getNearbyCoursesPreference } from "@/lib/courses/nearby-courses";
 import {
+  homeFrameClassName,
+  homeFrameLabelClassName,
   homeRowMetaClassName,
-  homeRowTitleClassName,
   pagePrimaryButtonClassName,
 } from "@/lib/ui/page-chrome";
-import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { Button } from "@/components/ui/button";
 
 export type NearYouCourse = {
@@ -70,22 +70,17 @@ export function NearYouStart({ courses }: Props) {
   }
 
   return (
-    <section className="space-y-2">
-      <h2 className={sectionHeadingClassName}>Nearest course</h2>
-      <div className="space-y-3 rounded-lg bg-muted/60 px-4 py-3">
-        <div className="min-w-0 space-y-0.5">
-          <div className="flex items-baseline justify-between gap-3">
-            <p className={`min-w-0 truncate ${homeRowTitleClassName}`}>{nearest.name}</p>
-            <span className="shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
-              {formatDistanceKm(nearest.distanceKm)}
-            </span>
-          </div>
-          <p className={homeRowMetaClassName}>{formatLayoutCount(nearest.layoutCount)}</p>
-        </div>
-        <Button asChild size="lg" className={pagePrimaryButtonClassName}>
-          <Link href={`/courses/${nearest.slug}`}>Start a round</Link>
-        </Button>
+    <section className={homeFrameClassName}>
+      <h2 className={homeFrameLabelClassName}>
+        Nearest course · <span className="font-mono tabular-nums">{formatDistanceKm(nearest.distanceKm)}</span>
+      </h2>
+      <div className="min-w-0 space-y-0.5">
+        <p className="truncate font-display text-[22px] font-semibold leading-tight">{nearest.name}</p>
+        <p className={homeRowMetaClassName}>{formatLayoutCount(nearest.layoutCount)}</p>
       </div>
+      <Button asChild size="lg" className={pagePrimaryButtonClassName}>
+        <Link href={`/courses/${nearest.slug}`}>Start a round</Link>
+      </Button>
     </section>
   );
 }
