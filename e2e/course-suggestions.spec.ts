@@ -110,9 +110,10 @@ test("a scorer reports wrong hole info without leaving the round", async ({ page
   await startTestLayout(page);
   await page.waitForURL(/\/rounds\/[0-9a-f-]{36}$/);
   await page.getByRole("button", { name: "Start round" }).click();
-  await expect(page.getByText(/Hole 1 \/ 2/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hole 1 of 2" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Wrong info?" }).click();
+  await page.getByRole("button", { name: "Round menu" }).click();
+  await page.getByRole("button", { name: /Wrong info on hole 1\?/ }).click();
   const sheet = page.getByRole("dialog");
   await expect(sheet.getByText("Hole 1 — wrong info?")).toBeVisible();
   await sheet.getByRole("button", { name: "Raise par" }).click();
@@ -122,7 +123,7 @@ test("a scorer reports wrong hole info without leaving the round", async ({ page
 
   await expect(page.getByText("Thanks — we'll review it.")).toBeVisible();
   await expect(sheet).not.toBeVisible();
-  await expect(page.getByText(/Hole 1 \/ 2/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hole 1 of 2" })).toBeVisible();
 
   const suggestion = await latestSuggestion(scorer);
   expect(suggestion.kind).toBe("hole_info");

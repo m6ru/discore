@@ -28,7 +28,7 @@ export function RoundScorecardDialog({ open, onOpenChange, children }: Props) {
         <header className="shrink-0 px-4 pt-4 pb-2 sm:px-8 sm:pt-6 sm:pb-2.5">
           <div className="flex items-center justify-between gap-3">
             <DialogHeader className="min-w-0 flex-1 gap-0 p-0 text-left">
-              <DialogTitle className="text-xl font-bold tracking-tight sm:text-2xl">
+              <DialogTitle className="font-display text-2xl font-semibold tracking-tight">
                 Scorecard
               </DialogTitle>
               <DialogDescription className="sr-only">Full round scorecard</DialogDescription>

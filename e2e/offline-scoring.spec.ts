@@ -51,7 +51,7 @@ test("unsynced scores survive a page reload", async ({ page }) => {
   await expect(page.getByRole("button", { name: /Waiting for signal · 1 hole/ })).toBeVisible();
 
   await page.reload();
-  await expect(page.getByText(/Hole 1 \/ 2/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hole 1 of 2" })).toBeVisible();
   await expect(page.getByRole("button", { name: /Waiting for signal · 1 hole/ })).toBeVisible();
   expect(await countServerScores(roundId)).toBe(0);
 
