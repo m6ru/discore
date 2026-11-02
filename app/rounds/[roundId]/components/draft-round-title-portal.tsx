@@ -13,7 +13,7 @@ import type { Database } from "@/lib/database.types";
 import { ROUND_HEADER_TITLE_ID } from "./round-header-actions-slot";
 import { friendlyError } from "@/lib/ui/friendly-error";
 
-const TITLE_TEXT_CLASS = "text-xl font-bold tracking-tight sm:text-2xl";
+const TITLE_TEXT_CLASS = "font-display text-[30px] font-semibold leading-tight tracking-tight";
 
 function getTitleTarget(): HTMLElement | null {
   return document.getElementById(ROUND_HEADER_TITLE_ID);
@@ -117,7 +117,7 @@ export function DraftRoundTitlePortal({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-7 shrink-0 text-muted-foreground"
+            className="size-11 shrink-0 text-muted-foreground"
             onClick={startEditing}
             disabled={disabled || isSaving}
             aria-label="Edit round name"

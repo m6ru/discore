@@ -1,11 +1,11 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ConfirmActionDialog } from "./confirm-action-dialog";
 import { ROUND_HEADER_ACTIONS_ID } from "./round-header-actions-slot";
+import { RoundSheet } from "./round-sheet";
 
 function getActionsTarget(): HTMLElement | null {
   return document.getElementById(ROUND_HEADER_ACTIONS_ID);
@@ -14,14 +14,24 @@ function getActionsTarget(): HTMLElement | null {
 type Props = {
   show: boolean;
   isTransitioning: boolean;
+  courseName: string;
+  layoutName: string;
+  layoutTotalPar: number;
+  holeCount: number;
   onDeleteDraft: () => void;
 };
 
+/** ✕ in the draft header: the same round sheet, with Delete draft. */
 export function DraftHeaderActionsPortal({
   show,
   isTransitioning,
+  courseName,
+  layoutName,
+  layoutTotalPar,
+  holeCount,
   onDeleteDraft,
 }: Props) {
+  const [sheetOpen, setSheetOpen] = useState(false);
   const target = useSyncExternalStore(
     () => () => {},
     getActionsTarget,
@@ -33,25 +43,39 @@ export function DraftHeaderActionsPortal({
   }
 
   return createPortal(
-    <ConfirmActionDialog
-      title="Delete this draft?"
-      description="This removes the round and everyone you invited. You can't bring it back."
-      confirmLabel="Delete draft"
-      onConfirm={onDeleteDraft}
-      disabled={isTransitioning}
-      trigger={
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="size-9 shrink-0 text-muted-foreground"
-          disabled={isTransitioning}
-          aria-label="Delete draft"
-        >
-          <X className="size-5" strokeWidth={2} aria-hidden />
-        </Button>
-      }
-    />,
+    <>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="size-11 shrink-0 text-foreground"
+        disabled={isTransitioning}
+        aria-label="Close or delete this draft"
+        onClick={() => setSheetOpen(true)}
+      >
+        <X className="size-[22px]" strokeWidth={2} aria-hidden />
+      </Button>
+      <RoundSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        courseName={courseName}
+        details={
+          <>
+            {layoutName} · {holeCount} holes · par{" "}
+            <span className="font-mono font-semibold text-foreground">{layoutTotalPar}</span>
+            <span className="block">Not started yet</span>
+          </>
+        }
+        destructive={{
+          label: "Delete draft",
+          hint: "Removes the round and its invites. Asks first.",
+          confirmTitle: "Delete this draft?",
+          confirmDescription: "This removes the round and everyone you invited. You can't bring it back.",
+          onConfirm: onDeleteDraft,
+        }}
+        disabled={isTransitioning}
+      />
+    </>,
     target
   );
 }

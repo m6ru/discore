@@ -1,10 +1,8 @@
 import { notFound, redirect } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { createServerClient } from "@/lib/supabase/server";
 import { pickOne } from "@/lib/supabase/select-helpers";
 import {
   formatStatusLabel,
-  statusBadgeVariant,
 } from "@/lib/rounds/format-round-status";
 import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
 import { formatRoundDisplayName } from "@/lib/rounds/round-display-name";
@@ -118,45 +116,54 @@ export default async function RoundPage({ params }: RoundPageProps) {
   // Scoring screen: a slim "Course · Layout" line with ⋯; no back arrow, so
   // leaving a round always goes through the round sheet.
   const isScoringHeader = roundStatus === "active" && isScorer;
+  // Draft setup: the same slim line (with ✕), then the editable round name.
+  const isDraftSetupHeader = roundStatus === "draft" && isScorer;
+  const isFinished = isFinishedRoundStatus(roundStatus);
+  const courseLine = (
+    <>
+      {courseRow?.name ?? "Unknown course"}{" "}
+      <span className="font-medium text-muted-foreground">· {layoutRow?.name ?? "Unknown layout"}</span>
+    </>
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
-      {isScoringHeader ? (
-        <header className="-mr-2 -mb-3 flex items-center gap-2">
-          <p className="min-w-0 flex-1 truncate text-sm font-semibold">
-            {courseRow?.name ?? "Unknown course"}{" "}
-            <span className="font-medium text-muted-foreground">· {layoutRow?.name ?? "Unknown layout"}</span>
-          </p>
-          <div id={ROUND_HEADER_ACTIONS_ID} />
-        </header>
-      ) : (
-      <header className="space-y-1">
-        <div className="flex items-center justify-between gap-3">
-          {roundStatus === "draft" && isScorer ? (
-            <div id={ROUND_HEADER_TITLE_ID} className="min-w-0 flex-1" />
-          ) : (
-            <h1 className="min-w-0 flex-1 text-xl font-bold tracking-tight sm:text-2xl">
-              {formatRoundDisplayName(round.name)}
-            </h1>
-          )}
-          <div className="flex shrink-0 items-center gap-2">
-            {isFinishedRoundStatus(roundStatus) ? (
-              <Badge variant={statusBadgeVariant(round.status)}>
-                {formatStatusLabel(round.status)}
-              </Badge>
-            ) : null}
+      {isScoringHeader || isDraftSetupHeader ? (
+        <header className={isScoringHeader ? "-mr-2 -mb-3" : "-mr-2 space-y-1"}>
+          <div className="flex items-center gap-2">
+            <p className="min-w-0 flex-1 truncate text-sm font-semibold">
+              {courseLine}
+              {isDraftSetupHeader ? (
+                <span className="font-medium text-muted-foreground"> · setting up</span>
+              ) : null}
+            </p>
             <div id={ROUND_HEADER_ACTIONS_ID} />
           </div>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          {courseRow?.name ?? "Unknown course"}
-          <span> · </span>
-          {layoutRow?.name ?? "Unknown layout"}
-        </p>
-        {finishedDateLabel ? (
-          <p className="text-sm text-muted-foreground">{finishedDateLabel}</p>
-        ) : null}
-      </header>
+          {isDraftSetupHeader ? <div id={ROUND_HEADER_TITLE_ID} className="min-w-0 pr-2" /> : null}
+        </header>
+      ) : isFinished ? (
+        <header className="space-y-1">
+          <p className="truncate text-sm font-semibold">{courseLine}</p>
+          <h1 className="font-display text-[30px] font-semibold leading-tight tracking-tight">
+            {formatRoundDisplayName(round.name)}
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {[
+              finishedDateLabel,
+              formatStatusLabel(round.status),
+              `${safeParticipants.length} ${safeParticipants.length === 1 ? "player" : "players"}`,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        </header>
+      ) : (
+        <header className="space-y-1">
+          <p className="truncate text-sm font-semibold">{courseLine}</p>
+          <h1 className="font-display text-[30px] font-semibold leading-tight tracking-tight">
+            {formatRoundDisplayName(round.name)}
+          </h1>
+        </header>
       )}
 
       {participantsError ? (

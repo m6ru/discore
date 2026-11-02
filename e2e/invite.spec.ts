@@ -20,7 +20,7 @@ test("scorer invites a registered friend who accepts", async ({ browser }) => {
   await scorerPage.waitForURL(/\/rounds\/[0-9a-f-]{36}$/);
   const roundUrl = scorerPage.url();
 
-  await scorerPage.getByRole("button", { name: "+ Add another player" }).click();
+  await scorerPage.getByRole("button", { name: "Add another player" }).click();
   await scorerPage.getByRole("textbox", { name: "Player name" }).fill(friend.displayName);
   await scorerPage.getByRole("button", { name: friend.displayName }).click();
   await scorerPage.getByRole("button", { name: "Add player" }).click();

@@ -1,86 +1,54 @@
-"use client";
-
 import Link from "next/link";
-import { X } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { PostRoundInsights } from "@/lib/rounds/load-player-stats";
 import { formatVsPar } from "@/lib/scoring/stats";
-import { Button } from "@/components/ui/button";
-import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 
 type Props = {
-  insights: PostRoundInsights;
-  onDismiss: () => void;
+  /** Only for the player who just finished; null otherwise. */
+  insights: PostRoundInsights | null;
+  courseSlug: string;
+  layoutSlug: string;
+  layoutName: string;
 };
 
-function deltaVsPar(thisVsPar: number, otherVsPar: number): string {
-  return formatVsPar(thisVsPar - otherVsPar);
+function insightLine(insights: PostRoundInsights): string {
+  const parts: string[] = [];
+  if (insights.isFirstOnLayout) {
+    parts.push(`First round on ${insights.layoutName}.`);
+  } else if (insights.isNewBest) {
+    parts.push(`New best on ${insights.layoutName}.`);
+  } else if (insights.lastRound) {
+    const delta = insights.vsPar - insights.lastRound.vsPar;
+    parts.push(
+      delta === 0
+        ? `Same as your last round here (${formatVsPar(insights.lastRound.vsPar)}).`
+        : `${Math.abs(delta)} ${delta < 0 ? "better" : "more"} than your last round here (${formatVsPar(insights.lastRound.vsPar)}).`
+    );
+  }
+  if (insights.aceCount > 0) {
+    parts.push(insights.aceCount === 1 ? "1 ace!" : `${insights.aceCount} aces!`);
+  }
+  return parts.join(" ");
 }
 
-export function PostRoundInsightsCard({ insights, onDismiss }: Props) {
-  const statsHref =
-    insights.courseSlug && insights.layoutSlug
-      ? `/courses/${insights.courseSlug}/stats?layout=${insights.layoutSlug}`
-      : null;
-
-  const headline = insights.isFirstOnLayout
-    ? "First round on this layout"
-    : insights.isNewBest
-      ? "New best on this layout"
-      : "Round complete";
+/** "Your round": the viewer's own moment (if any) and their stats on this layout. */
+export function YourRound({ insights, courseSlug, layoutSlug, layoutName }: Props) {
+  const line = insights ? insightLine(insights) : "";
 
   return (
-    <section className="space-y-2 rounded-lg bg-muted/60 px-4 py-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 space-y-1">
-          <h2 className={sectionHeadingClassName}>{headline}</h2>
-          <p className="font-mono text-2xl font-semibold tabular-nums">
-            {formatVsPar(insights.vsPar)}
-          </p>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="-mr-1 -mt-1 size-8 shrink-0 text-muted-foreground"
-          onClick={onDismiss}
-          aria-label="Dismiss insights"
-        >
-          <X className="size-4" aria-hidden />
-        </Button>
-      </div>
-
-      <ul className="space-y-1 text-sm text-muted-foreground">
-        {insights.aceCount > 0 ? (
-          <li>
-            {insights.aceCount === 1
-              ? "1 ace this round"
-              : `${insights.aceCount} aces this round`}
-          </li>
-        ) : null}
-        {!insights.isNewBest && insights.lastRound ? (
-          <li>
-            <span className="font-mono font-medium tabular-nums text-foreground">
-              {deltaVsPar(insights.vsPar, insights.lastRound.vsPar)}
-            </span>
-            {" vs last ("}
-            <span className="font-mono tabular-nums">
-              {formatVsPar(insights.lastRound.vsPar)}
-            </span>
-            {")"}
-          </li>
-        ) : null}
-      </ul>
-
-      {statsHref ? (
-        <p className="pt-1 text-sm">
-          <Link
-            href={statsHref}
-            className="font-medium text-primary underline-offset-4 hover:underline"
-          >
-            All stats on {insights.layoutName}
-          </Link>
+    <section className="space-y-1.5 border-t pt-3">
+      {line ? (
+        <p className="text-sm leading-snug text-foreground/85">
+          <span className="font-bold text-foreground">Your round:</span> {line}
         </p>
       ) : null}
+      <Link
+        href={`/courses/${courseSlug}/stats?layout=${layoutSlug}`}
+        className="flex min-h-11 items-center justify-between text-[15px] font-semibold text-primary"
+      >
+        Your stats on {layoutName}
+        <ChevronRight className="size-[18px]" aria-hidden />
+      </Link>
     </section>
   );
 }

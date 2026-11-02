@@ -34,7 +34,7 @@ import {
   type HoleProgress,
 } from "./components/active-hole-scoring";
 import { DraftPlayersPanel } from "./components/draft-players-panel";
-import { DraftSetupDeck } from "./components/draft-setup-deck";
+import { DRAFT_SETUP_BOTTOM_INSET, DraftSetupDeck } from "./components/draft-setup-deck";
 import { DraftStartingHoleField } from "./components/draft-starting-hole-field";
 import { DraftHeaderActionsPortal } from "./components/draft-header-actions-portal";
 import { DraftRoundTitlePortal } from "./components/draft-round-title-portal";
@@ -47,8 +47,7 @@ import {
 import { ScorecardSection } from "./components/scorecard-section";
 import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
 import { RoundScorecardDialog } from "./components/round-scorecard-dialog";
-import { FinishedRoundStatsLink } from "@/components/stats/finished-round-stats-link";
-import { PostRoundInsightsCard } from "@/components/stats/post-round-insights";
+import { YourRound } from "@/components/stats/post-round-insights";
 import { Button } from "@/components/ui/button";
 import { isFinishedRoundStatus } from "@/lib/rounds/round-status";
 import type {
@@ -130,12 +129,6 @@ export function RoundSession({
     setShowPostRoundInsights(true);
   }, [isScorer, roundId]);
 
-  const dismissPostRoundInsights = useCallback(() => {
-    clearPostRoundInsightsPending(roundId);
-    setShowPostRoundInsights(false);
-    setPostRoundInsights(null);
-  }, [roundId]);
-
   useEffect(() => {
     if (
       !showPostRoundInsights ||
@@ -165,6 +158,8 @@ export function RoundSession({
         setPostRoundInsights(null);
         return;
       }
+      // Shown once: a reload of the finished round no longer carries the moment.
+      clearPostRoundInsightsPending(roundId);
       setPostRoundInsights(insights);
     })();
 
@@ -400,6 +395,11 @@ export function RoundSession({
 
   useTabBarVisibilityOverride(!isScorer || isFinishedRound);
 
+  const newBestParticipantId =
+    showPostRoundInsights && postRoundInsights?.isNewBest
+      ? (participants.find((participant) => participant.user_id === currentUserId)?.id ?? null)
+      : null;
+
   const teePositionByParticipantId = useMemo(
     () =>
       buildTeePositionMap(
@@ -575,6 +575,10 @@ export function RoundSession({
       <DraftHeaderActionsPortal
         show={liveRoundStatus === "draft" && isScorer}
         isTransitioning={isTransitioning}
+        courseName={courseName}
+        layoutName={layoutName}
+        layoutTotalPar={layoutTotalPar}
+        holeCount={holes.length}
         onDeleteDraft={() => void onDeleteDraft()}
       />
     <section
@@ -584,7 +588,9 @@ export function RoundSession({
           ? { paddingBottom: ACTIVE_SCORING_BOTTOM_INSET }
           : showCompletionUI
             ? { paddingBottom: ROUND_COMPLETE_BOTTOM_INSET }
-            : undefined
+            : liveRoundStatus === "draft" && isScorer
+              ? { paddingBottom: DRAFT_SETUP_BOTTOM_INSET }
+              : undefined
       }
     >
       <RoundHeaderMenuPortal
@@ -613,6 +619,8 @@ export function RoundSession({
           <DraftPlayersPanel
             unifiedPlayers={unifiedPlayers}
             isScorer={isScorer}
+            scorerUserId={scorerUserId}
+            currentUserId={currentUserId}
             isSubmitting={isSubmitting}
             showAddForm={showAddPlayerForm}
             participantName={participantName}
@@ -664,6 +672,8 @@ export function RoundSession({
                 isTransitioning={isTransitioning}
                 hasPendingInvite={hasPendingInvite}
                 pendingInviteLabels={pendingInviteLabels}
+                playerCount={unifiedPlayers.length}
+                startingHole={startingHole}
                 onStartRound={() => void onStartRound()}
               />
             </>
@@ -726,34 +736,20 @@ export function RoundSession({
         </>
       ) : null}
 
-      {isFinishedRound && showScorecardAtBottom
-        ? renderScorecard({ showTitle: true })
-        : null}
-
-      {showPostRoundInsights && postRoundInsights ? (
-        <PostRoundInsightsCard
-          insights={postRoundInsights}
-          onDismiss={dismissPostRoundInsights}
-        />
-      ) : null}
-
       {showPoolResults ? (
         <RoundResults
           scoringParticipants={scoringParticipants}
           leaderboardByParticipantId={leaderboardByParticipantId}
           getParticipantLabel={getParticipantLabel}
+          newBestParticipantId={newBestParticipantId}
         />
       ) : null}
 
-      {!isFinishedRound && showScorecardAtBottom
-        ? renderScorecard({ showTitle: true })
-        : null}
+      {showScorecardAtBottom ? renderScorecard({ showTitle: true }) : null}
 
-      {isFinishedRound &&
-      courseSlug &&
-      layoutSlug &&
-      !(showPostRoundInsights && postRoundInsights) ? (
-        <FinishedRoundStatsLink
+      {isFinishedRound && courseSlug && layoutSlug ? (
+        <YourRound
+          insights={showPostRoundInsights ? postRoundInsights : null}
           courseSlug={courseSlug}
           layoutSlug={layoutSlug}
           layoutName={layoutName}
