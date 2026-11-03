@@ -98,7 +98,7 @@ test("a player suggests a new course from an empty search", async ({ page }) => 
 
   // The course board photo is the proof; without a photo it isn't sent.
   await page.getByRole("button", { name: "Send suggestion" }).click();
-  await expect(page.getByText("Please add a photo of the course board.")).toBeVisible();
+  await expect(page.getByText("Please add a photo of the course board or a layout map.")).toBeVisible();
   await page.getByLabel("Add the course board photo").setInputFiles({ name: "board.png", mimeType: "image/png", buffer: PHOTO });
   await expect(page.getByRole("img", { name: "Photo 1" })).toBeVisible();
   await page.getByRole("button", { name: "Send suggestion" }).click();

@@ -115,7 +115,7 @@ export function SuggestionForm({ userId, course, layouts, knownCourses, backHref
         return;
       }
       if (allPhotos.length === 0) {
-        toastError("Please add a photo of the course board.");
+        toastError("Please add a photo of the course board or a layout map.");
         return;
       }
     } else if (!note.trim()) {
@@ -210,7 +210,7 @@ export function SuggestionForm({ userId, course, layouts, knownCourses, backHref
         {backLink}
         <h1 className={pageTitleClassName}>{isNewCourse ? "Suggest a course" : "Suggest a fix"}</h1>
         <p className="text-[15px] text-foreground/80">
-          {isNewCourse ? "Tell us where it is. A photo of the course board does the rest." : course.name}
+          {isNewCourse ? "Tell us where it is. A photo of the course board or map does the rest." : course.name}
         </p>
       </header>
 
@@ -534,7 +534,7 @@ function BoardSlot({ file, onChange }: { file: File | null; onChange: (file: Fil
       <div className="flex min-h-[72px] items-center gap-3 rounded-md border border-input bg-card p-2.5 pr-3.5">
         {/* eslint-disable-next-line @next/next/no-img-element -- local object URL preview */}
         <img src={preview} alt="Photo 1" className="size-14 shrink-0 rounded object-cover" />
-        <span className="flex-1 font-semibold">Course board</span>
+        <span className="flex-1 font-semibold">Course board or map</span>
         <button
           type="button"
           aria-label="Remove the course board photo"
@@ -551,8 +551,8 @@ function BoardSlot({ file, onChange }: { file: File | null; onChange: (file: Fil
     <label className="flex min-h-[72px] cursor-pointer items-center gap-3 rounded-md border border-dashed border-primary bg-[#f1f4e6] px-3.5 py-3">
       <Camera className="size-[22px] shrink-0 text-primary" aria-hidden />
       <span className="flex flex-col gap-0.5">
-        <span className="font-semibold">Course board</span>
-        <span className="text-[13px] text-foreground/80">The map at the first tee. This one helps most.</span>
+        <span className="font-semibold">Course board or map</span>
+        <span className="text-[13px] text-foreground/80">The board at the first tee, or a screenshot of the layout. This helps most.</span>
       </span>
       <input
         type="file"
