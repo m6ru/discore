@@ -45,7 +45,8 @@ Chosen by the owner from three mockups (2026-10-24), refined in a second canvas 
   5. Roster as a table (Hole · Tot · ±).
   6. Stepper: **wide − and +** (score column fixed ~100 px, buttons share the rest, ~120 px each); − outlined, + outlined with a light fill. Player's name above the big number.
   7. Previous · OB · forward button naming the next player ("Next: Andres").
-- **Round sheet** (bottom sheet, replaces the dropdown and the draft's ✕-delete): round info at the top (course, layout, par, starting hole — replaces the "See info" popup), then rows: **Scorecard ›**, **Hide running totals** (a visible on/off switch), **Wrong info on hole N? ›** (moved here from under the hole note). The destructive action sits apart at the bottom in red with its confirmation kept: **Abandon round** (active) or **Delete draft** (draft). Observers get no sheet; they keep the tab bar.
+- **Review step** (after the last hole is saved, still the scoring header with ⋯): progress line full ("18 of 18 played"); **All holes played** + "Check the card. Tap a hole to edit. Scores lock when you confirm the round."; the scorecard, where tapping a hole opens it for editing and saving it comes back here; **Totals** as equal rows in play order. Bottom deck: outlined **‹ Hole 18** (back to the last hole in play order) and dark **Confirm round ✓**. The popup stays because scores lock for good (RLS only allows edits while active): "Confirm the round?" · "Scores can't be changed after this." · **Back to card** / **Confirm**.
+- **Round sheet** (bottom sheet, replaces the dropdown and the draft's ✕-delete): round info at the top (course, layout, par, starting hole — replaces the "See info" popup), then rows: **Scorecard ›**, **Hide running totals** (a visible on/off switch), **Wrong info on hole N? ›** (moved here from under the hole note). The destructive action sits apart at the bottom in red with its confirmation kept: **Abandon round** (active) or **Delete draft** (draft); neither has a hint line under it. Observers get no sheet; they keep the tab bar.
 - **Finished round** (tab bar visible): header (course · layout · par, round name · date · players) → **Results**: equal rows in play order (name, Tot, ±), your own row may carry a lime "New best" tag → **Scorecard** → **Your round**: one line (new best, the hole that cost the most vs your usual) + "Your stats on <layout> ›".
 - **Scorecard** (finished screen, sheet, anywhere): one row per player, all holes in one line that scrolls sideways — works for any hole count (7, 9, 14, 21 …), **no front/back split**. Only a narrow name column (~60 px) is pinned; Par is a row; **Tot and ± come after the last hole**. Score cells are tall and thin (~20 × 30 px) so ~14 holes fit on a phone. Long names truncate; tapping the name column widens it (as today).
 
@@ -54,7 +55,8 @@ Chosen by the owner from three mockups (2026-10-24), refined in a second canvas 
 - A draft can only be left by deleting it (true today too; "Continue round" on Home brings you back).
 - ~~Home stats strip~~ → decided by the owner (2026-11-02): the C2 strip look with **Rounds played · Total throws · Courses visited**. No aces or usual score on Home.
 - ~~"Hide my usual" vs Hide running totals~~ → decided: one **Clean card** switch in the round sheet hides both. Profile has **Clean card by default** (per device).
-- Not drawn yet: the "Confirm and end round" step after the last hole; ties and many players on the finished screen.
+- ~~Confirm and end round step~~ → built as the review step above (2026-11-03).
+- ~~Ties and many players on the finished screen~~ → closed (2026-11-03): casual rounds have no places or winner, so equal scores are just equal rows; big groups only make the lists longer and the scorecard already scrolls sideways.
 
 ---
 

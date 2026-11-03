@@ -19,6 +19,9 @@ type Props = {
   title: string;
   description: string;
   confirmLabel: string;
+  cancelLabel?: string;
+  /** Puts the two buttons side by side, also on phones. */
+  sideBySide?: boolean;
   onConfirm: () => void;
   confirmVariant?: React.ComponentProps<typeof Button>["variant"];
   disabled?: boolean;
@@ -29,6 +32,8 @@ export function ConfirmActionDialog({
   title,
   description,
   confirmLabel,
+  cancelLabel = "Cancel",
+  sideBySide = false,
   onConfirm,
   confirmVariant = "destructive",
   disabled,
@@ -43,8 +48,8 @@ export function ConfirmActionDialog({
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogFooter className={sideBySide ? "grid grid-cols-2 sm:grid" : undefined}>
+          <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
           <AlertDialogAction variant={confirmVariant} onClick={() => void onConfirm()}>
             {confirmLabel}
           </AlertDialogAction>

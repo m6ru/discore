@@ -18,8 +18,16 @@ test("signed-in scorer plays a round with a guest and completes it", async ({ pa
 
   await page.getByRole("button", { name: "Start round" }).click();
   await scoreAllHolesAtPar(page, [scorer.firstName, "Gary"], 2);
-  await page.getByRole("button", { name: "Confirm and end round" }).click();
-  await page.getByRole("alertdialog").getByRole("button", { name: "Complete round" }).click();
+
+  // The review step: tapping a hole opens it, saving it comes back here.
+  await expect(page.getByRole("heading", { name: "All holes played" })).toBeVisible();
+  await page.getByRole("button", { name: "Edit hole 1" }).click();
+  await expect(page.getByRole("heading", { name: "Hole 1 of 2" })).toBeVisible();
+  await page.getByRole("button", { name: "Save scores" }).click();
+  await expect(page.getByRole("heading", { name: "All holes played" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Confirm round" }).click();
+  await page.getByRole("alertdialog").getByRole("button", { name: "Confirm" }).click();
   await expect(page.getByText("Completed")).toBeVisible();
 
   // History only lists finished rounds.

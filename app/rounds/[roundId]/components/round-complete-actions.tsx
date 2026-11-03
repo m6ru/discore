@@ -1,17 +1,20 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { Check, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmActionDialog } from "./confirm-action-dialog";
 
 /** Scroll padding so content clears the fixed bottom completion deck. */
 export const ROUND_COMPLETE_BOTTOM_INSET =
-  "calc(8rem + env(safe-area-inset-bottom, 0px))";
+  "calc(6.5rem + env(safe-area-inset-bottom, 0px))";
 
 type Props = {
   isSubmitting: boolean;
   isTransitioning: boolean;
-  onEditScores: () => void;
+  /** The last hole in play order, which the back button returns to. */
+  lastHoleNumber: number;
+  onBackToLastHole: () => void;
   onCompleteRound: () => void;
   /** Rendered just above the bottom deck. */
   syncBadge?: ReactNode;
@@ -20,42 +23,47 @@ type Props = {
 export function RoundCompleteActions({
   isSubmitting,
   isTransitioning,
-  onEditScores,
+  lastHoleNumber,
+  onBackToLastHole,
   onCompleteRound,
   syncBadge,
 }: Props) {
+  const disabled = isSubmitting || isTransitioning;
+
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-3 backdrop-blur supports-[backdrop-filter]:bg-background/80"
-      style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
+      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-5 pt-3.5 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+      style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
     >
       {syncBadge}
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-2">
+      <div className="mx-auto grid w-full max-w-3xl grid-cols-[96px_minmax(0,1fr)] gap-2.5">
         <Button
           type="button"
           variant="outline"
-          size="lg"
-          className="min-h-11 w-full rounded-xl"
-          disabled={isSubmitting || isTransitioning}
-          onClick={onEditScores}
+          className="min-h-14 gap-1.5 text-[15px] font-semibold"
+          disabled={disabled}
+          onClick={onBackToLastHole}
         >
-          Edit scores
+          <ChevronLeft className="size-[18px]" aria-hidden />
+          Hole {lastHoleNumber}
         </Button>
         <ConfirmActionDialog
-          title="End this round?"
-          description="Final scores will be saved for everyone. You'll find this round in your history."
-          confirmLabel="Complete round"
+          title="Confirm the round?"
+          description="Scores can't be changed after this."
+          confirmLabel="Confirm"
+          cancelLabel="Back to card"
+          sideBySide
           confirmVariant="default"
           onConfirm={onCompleteRound}
-          disabled={isSubmitting || isTransitioning}
+          disabled={disabled}
           trigger={
             <Button
               type="button"
-              size="lg"
-              className="min-h-11 w-full rounded-xl"
-              disabled={isSubmitting || isTransitioning}
+              className="min-h-14 justify-between px-[18px] text-base font-semibold"
+              disabled={disabled}
             >
-              {isTransitioning ? "Working..." : "Confirm and end round"}
+              {isTransitioning ? "Working..." : "Confirm round"}
+              <Check className="size-5" aria-hidden />
             </Button>
           }
         />

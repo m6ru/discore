@@ -73,7 +73,7 @@ function getNextParticipantId(participants: ParticipantRow[], currentId: string)
 }
 
 /** "4 of 18 played" over a slim bar; tapping it opens the scorecard. */
-function RoundProgress({
+export function RoundProgress({
   progress,
   onOpenScorecard,
 }: {

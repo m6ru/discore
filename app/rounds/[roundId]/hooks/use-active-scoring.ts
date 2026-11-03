@@ -19,6 +19,8 @@ type Options = {
   setLastSavedEvent: Dispatch<SetStateAction<LastSavedEvent | null>>;
   setRenderNow: Dispatch<SetStateAction<number>>;
   onFinalHoleSaved?: () => void;
+  /** Fixing one hole from the review step: saving goes back to the review instead of on. */
+  returnAfterSave?: boolean;
 };
 
 export function useActiveScoring({
@@ -32,6 +34,7 @@ export function useActiveScoring({
   setLastSavedEvent,
   setRenderNow,
   onFinalHoleSaved,
+  returnAfterSave = false,
 }: Options) {
   const [currentHoleIndex, setCurrentHoleIndex] = useState(() =>
     getFirstIncompleteHoleIndex(holes, scoringParticipants, initialHoleScores)
@@ -193,17 +196,24 @@ export function useActiveScoring({
       return;
     }
 
-    if (isLastHole) {
+    if (isLastHole || returnAfterSave) {
       onFinalHoleSaved?.();
       return;
     }
 
     setCurrentHoleIndex((index) => Math.min(index + 1, holes.length - 1));
-  }, [saveCurrentHoleScores, activeHole, isLastHole, holes.length, onFinalHoleSaved]);
+  }, [saveCurrentHoleScores, activeHole, isLastHole, returnAfterSave, holes.length, onFinalHoleSaved]);
 
   const onPreviousHole = useCallback(() => {
     setCurrentHoleIndex((index) => Math.max(index - 1, 0));
   }, []);
+
+  const goToHole = useCallback(
+    (index: number) => {
+      setCurrentHoleIndex(Math.min(Math.max(index, 0), holes.length - 1));
+    },
+    [holes.length]
+  );
 
   const onNextHole = useCallback(() => {
     setCurrentHoleIndex((index) => Math.min(index + 1, holes.length - 1));
@@ -221,5 +231,6 @@ export function useActiveScoring({
     onSaveAndAdvanceHole,
     onPreviousHole,
     onNextHole,
+    goToHole,
   };
 }
