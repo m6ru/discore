@@ -71,12 +71,16 @@ export type PlayerLayoutStats = {
 };
 
 /** Lifetime global stats for History block and Home teaser (Stats v2). */
+/** `coursesPlayed` costs an extra request; only Home shows it. */
 export async function loadPlayerStats(
-  supabase: Client
+  supabase: Client,
+  { withCoursesPlayed = false }: { withCoursesPlayed?: boolean } = {}
 ): Promise<{ stats: PlayerGlobalStats; error: string | null }> {
   const [{ data, error }, { count: coursesPlayed }] = await Promise.all([
     supabase.from("player_lifetime_stats").select("*").maybeSingle(),
-    supabase.from("player_course_stats").select("course_id", { count: "exact", head: true }),
+    withCoursesPlayed
+      ? supabase.from("player_course_stats").select("course_id", { count: "exact", head: true })
+      : Promise.resolve({ count: 0 }),
   ]);
 
   if (error) {

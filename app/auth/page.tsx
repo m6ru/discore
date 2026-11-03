@@ -19,22 +19,24 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
   const { data: claimsData } = await supabase.auth.getClaims();
   const claims = claimsData?.claims ?? null;
 
-  const { data: profile } = claims
-    ? await supabase
-        .from("profiles")
-        .select("first_name, last_name, display_name, gender, birth_year, city, avatar_url")
-        .eq("id", claims.sub)
-        .maybeSingle()
-    : { data: null };
-
-  // Owner-only: link to the course-suggestion review with the number waiting.
-  const { data: isAdmin } = claims ? await supabase.rpc("is_app_admin") : { data: false };
-  const { count: newSuggestions } = isAdmin
-    ? await supabase
-        .from("course_suggestions")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "new")
-    : { count: null };
+  // One wave. Owner-only: a link to the course-suggestion review with the
+  // number waiting. A non-admin's count is their own new suggestions (RLS),
+  // so it is only used when the admin check says yes.
+  const [{ data: profile }, { data: isAdmin }, { count: suggestionCount }] = claims
+    ? await Promise.all([
+        supabase
+          .from("profiles")
+          .select("first_name, last_name, display_name, gender, birth_year, city, avatar_url")
+          .eq("id", claims.sub)
+          .maybeSingle(),
+        supabase.rpc("is_app_admin"),
+        supabase
+          .from("course_suggestions")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "new"),
+      ])
+    : [{ data: null }, { data: false }, { count: null }];
+  const newSuggestions = isAdmin ? suggestionCount : null;
 
   const email = claims?.email ?? "";
   const metadataFirstName =

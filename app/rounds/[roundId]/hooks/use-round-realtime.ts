@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, type Dispatch, type SetStateAction } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { normalizeInviteRows, type InviteRow } from "@/lib/rounds/invite-rows";
+import { INVITE_SELECT, normalizeInviteRows, type InviteRow } from "@/lib/rounds/invite-rows";
+import { normalizeParticipantRows, PARTICIPANT_SELECT } from "@/lib/rounds/round-rows";
 import { isRoundStatus, type RoundStatus } from "@/lib/rounds/round-status";
 import type { Database } from "@/lib/database.types";
 import type {
@@ -22,6 +23,8 @@ type Options = {
   setInvites: SetState<InviteRow[]>;
   setHoleScores: SetState<HoleScoreRow[]>;
   setRoundStatus: SetState<RoundStatus>;
+  setRoundName: SetState<string | null>;
+  setStartingHole: SetState<number>;
   setLastSavedEvent: SetState<LastSavedEvent | null>;
   setRenderNow: SetState<number>;
 };
@@ -33,13 +36,15 @@ export function useRoundRealtime({
   setInvites,
   setHoleScores,
   setRoundStatus,
+  setRoundName,
+  setStartingHole,
   setLastSavedEvent,
   setRenderNow,
 }: Options) {
   const loadParticipants = useCallback(async () => {
     const { data, error } = await supabase
       .from("round_participants")
-      .select("id, user_id, guest_name, joined_at")
+      .select(PARTICIPANT_SELECT)
       .eq("round_id", roundId)
       .order("joined_at", { ascending: true });
 
@@ -48,15 +53,13 @@ export function useRoundRealtime({
       return;
     }
 
-    setParticipants((data ?? []) as ParticipantRow[]);
+    setParticipants(normalizeParticipantRows(data));
   }, [supabase, roundId, setParticipants]);
 
   const loadInvites = useCallback(async () => {
     const { data, error } = await supabase
       .from("round_invitations")
-      .select(
-        "id, invited_user_id, status, created_at, profiles!round_invitations_invited_user_id_fkey(display_name)"
-      )
+      .select(INVITE_SELECT)
       .eq("round_id", roundId)
       .order("created_at", { ascending: true });
 
@@ -99,9 +102,10 @@ export function useRoundRealtime({
     setHoleScores((data ?? []) as HoleScoreRow[]);
   }, [supabase, roundId, setHoleScores]);
 
-  // Single refresh for low-frequency collaboration data. Called on every
-  // postgres_changes event for participants/invites/rounds, and on every
-  // resync trigger (subscription start, tab visibility).
+  // Full resync of the low-frequency collaboration data on subscription start
+  // and tab visibility: closes the gap since the server render (which can come
+  // from the 30 s client router cache) and covers dropped sockets. Single
+  // events only reload their own table.
   const refreshRoundMeta = useCallback(async () => {
     await Promise.all([loadParticipants(), loadInvites(), loadRoundStatus()]);
   }, [loadParticipants, loadInvites, loadRoundStatus]);
@@ -111,23 +115,32 @@ export function useRoundRealtime({
       .channel(`round-session:${roundId}`)
       .on(
         "postgres_changes",
+        // Filtered DELETE events never arrive, so whoever deletes updates their own list.
         { event: "*", schema: "public", table: "round_participants", filter: `round_id=eq.${roundId}` },
         () => {
-          void refreshRoundMeta();
+          void loadParticipants();
         }
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "round_invitations", filter: `round_id=eq.${roundId}` },
         () => {
-          void refreshRoundMeta();
+          void loadInvites();
         }
       )
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "rounds", filter: `id=eq.${roundId}` },
-        () => {
-          void refreshRoundMeta();
+        (payload) => {
+          // The payload carries the whole row: no reload needed.
+          const next = payload.new as { status?: unknown; name?: unknown; starting_hole?: unknown } | null;
+          if (typeof next?.status !== "string" || !isRoundStatus(next.status)) {
+            void loadRoundStatus();
+            return;
+          }
+          setRoundStatus(next.status);
+          if (typeof next.name === "string" || next.name === null) setRoundName(next.name);
+          if (typeof next.starting_hole === "number") setStartingHole(next.starting_hole);
         }
       )
       .on(
@@ -210,11 +223,17 @@ export function useRoundRealtime({
     supabase,
     roundId,
     refreshRoundMeta,
+    loadParticipants,
+    loadInvites,
+    loadRoundStatus,
     loadHoleScores,
     setHoleScores,
+    setRoundStatus,
+    setRoundName,
+    setStartingHole,
     setLastSavedEvent,
     setRenderNow,
   ]);
 
-  return { loadParticipants, loadInvites, loadHoleScores };
+  return { loadHoleScores };
 }

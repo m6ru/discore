@@ -24,10 +24,11 @@ _Overwritten at the end of every session — describes now, not history (history
 - **Admin suggestions (2026-11-03):** drawn as C2 artboards (New cards, Applied rows), owner approved, built. No migration.
 - **Phone polish (2026-11-03):** owner notes from real use. Round header = course on one line, layout under it ("setting up" dropped; scoring and trial too). Setup lost "You · scorer", the starting-hole hint and the caption under Start round. Course page: Your stats on the back-arrow row. Home frames: course name 22 px, wraps to two lines.
 - **Redesign done (2026-11-03):** every screen is in the C2 design. Small fixes from real use go straight to code; the canvas is not updated for those (`DESIGN-PATTERNS.md` is).
-- **Next (owner, 2026-11-03):** roadmap item 2, the **state-handling audit**. The plan in [`PLAN-STATE-HANDLING.md`](PLAN-STATE-HANDLING.md) is **verified and corrected** (today's request counts in it; measure again with `MEASURE_REQUESTS=1 npx playwright test request-counts --workers=1`). Next step: owner reads it, then build PR 1 (code only, no `db push`). Found on the way: observers see other registered players as "Registered user (uuid)" (PR 1 fixes it); Realtime never delivers filtered `DELETE` events. After it, a **security review learned together with the owner**: research how to test a Supabase + Next.js app, then attack it as a signed-in user against **local** Supabase only (other users' data, writes, functions, storage, Realtime, limits, secrets in git history) and a dashboard checklist for the owner (email confirmation, passwords, rate limits). Open privacy question for that review: any signed-in user can read every profile (city, birth year, gender) for the invite search.
+- **State-handling audit done (2026-11-03):** the verified plan was built in one code-only PR (no migration). Round page = one request; setup actions update from the write's reply; Realtime reloads only the changed table and reads round changes from the message; course page, course stats, Profile, Home and History load in one wave; tapping a layout skips the Auth call and the double render. Fixed on the way: observers saw other registered players as "Registered user (uuid)". `e2e/request-counts.spec.ts` guards the phone's request counts (ARCHITECTURE §4.10).
+- **Next (owner, 2026-11-03):** a **security review learned together with the owner**: research how to test a Supabase + Next.js app, then attack it as a signed-in user against **local** Supabase only (other users' data, writes, functions, storage, Realtime, limits, secrets in git history) and a dashboard checklist for the owner (email confirmation, passwords, rate limits). Open privacy question for that review: any signed-in user can read every profile (city, birth year, gender) for the invite search.
 - **MacBook set up (2026-10-24):** Node 24 + gh from official downloads, `.env.local` and `supabase link` point at production. npm 11 skipped postinstall scripts for `esbuild`, `unrs-resolver` (works anyway; decide later).
 - **Small debts cleared (2026-10-26):** all server pages use `getClaims()`; `lib/` no longer imports from `app/` (shared row types in `lib/rounds/round-rows.ts`); `config.toml` uses `[local_smtp]`, empty seed step off.
-- **In flight:** nothing.
+- **In flight:** the state-handling PR, waiting for the owner to test the preview (no `db push` needed).
 
 ---
 
@@ -36,9 +37,9 @@ _Overwritten at the end of every session — describes now, not history (history
 Ordered. The security and reliability items from an external code review (Oct 2026) are done.
 
 1. **Presentation.** The design language is done (C2, every screen, 2026-11-03). Left: landing page for visitors; README with screenshots, what it does, and an architecture diagram.
-2. **State-handling audit.** Plan verified 2026-11-03 in [`PLAN-STATE-HANDLING.md`](PLAN-STATE-HANDLING.md) (round page load, draft actions, Home/History second waits, what must not be removed).
+2. **State-handling audit** — done (2026-11-03): page loads and setup actions wait less; see ARCHITECTURE §4.10.
 3. **Stats build** — done (2026-11-02/03): every question in BLUEPRINT §8a is on screen, in the new design.
-4. **Security review** (owner, 2026-11-03) — after item 2; see Handoff → Next.
+4. **Security review** (owner, 2026-11-03) — next; see Handoff → Next.
 5. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
 6. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
 

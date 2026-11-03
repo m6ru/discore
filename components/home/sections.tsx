@@ -41,7 +41,7 @@ export async function HomeSections({ userId }: Props) {
   const [data, coursesResult, statsResult] = await Promise.all([
     loadHomeData(supabase, userId),
     loadCourseSummaries(supabase),
-    loadPlayerStats(supabase),
+    loadPlayerStats(supabase, { withCoursesPlayed: true }),
   ]);
 
   const nearYouCourses = (coursesResult.courses ?? [])

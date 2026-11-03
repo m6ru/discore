@@ -223,13 +223,15 @@ export function RoundSession({
     };
   }, [historyMode, supabase, layoutId, roundId]);
 
-  const { loadParticipants, loadInvites } = useRoundRealtime({
+  useRoundRealtime({
     supabase,
     roundId,
     setParticipants,
     setInvites,
     setHoleScores,
     setRoundStatus: setLiveRoundStatus,
+    setRoundName,
+    setStartingHole,
     setLastSavedEvent: ignoreLastSavedEvent,
     setRenderNow: ignoreRenderNow,
   });
@@ -326,8 +328,8 @@ export function RoundSession({
     isScorer,
     currentUserId,
     courseSlug,
-    loadParticipants,
-    loadInvites,
+    setParticipants,
+    setInvites,
     setIsSubmitting,
     setIsTransitioning,
   });

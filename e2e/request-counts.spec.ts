@@ -2,12 +2,37 @@ import { devices, expect, test } from "@playwright/test";
 import { COURSE, createUser, ensureTestCourse, scoreHoleAtPar, signIn } from "./helpers";
 import { countRequests, formatCounts, type RequestCount } from "./request-count";
 
-// Records how many Supabase requests each common action makes (browser and
-// Next server). Not an assertion yet: run it alone so the gateway log only
-// holds this test's requests:
+// Guards how many Supabase requests each common action makes from the phone
+// (counted per page, so safe in parallel). Budgets allow one late Realtime
+// echo. Server counts come from the shared gateway log, so they're only
+// printed when the test runs alone:
 //   MEASURE_REQUESTS=1 npx playwright test request-counts --workers=1
-test.skip(!process.env.MEASURE_REQUESTS, "set MEASURE_REQUESTS=1 to record request counts");
 test.beforeAll(ensureTestCourse);
+
+// Phone-side requests per action (2026-11-03, after PR 1 of the state-handling plan).
+const BROWSER_BUDGET: Record<string, number> = {
+  "open Home (empty)": 2,
+  "tap layout → draft": 7,
+  "open draft round": 5,
+  "add guest": 3,
+  "remove guest": 2,
+  "search + pick + invite": 4,
+  "cancel invite (remove invitee)": 3,
+  "invitee accepts (scorer's screen)": 4,
+  "remove accepted player": 4,
+  "start round": 4,
+  "open active round": 6,
+  "score hole 1 (Next hole)": 1,
+  "score hole 2 (Save scores)": 1,
+  "confirm round": 7,
+  "open finished round": 6,
+  "open Home (1 round)": 2,
+  "open History": 0,
+  "open course page": 0,
+  "open course stats": 0,
+  "open Profile": 0,
+  "open Courses list": 0,
+};
 
 test("request counts per action", async ({ page, browser }) => {
   test.setTimeout(180_000);
@@ -130,6 +155,11 @@ test("request counts per action", async ({ page, browser }) => {
   }
 
   const report = formatCounts(counts);
-  console.log(`\nSupabase requests per action\n${report}\n`);
+  if (process.env.MEASURE_REQUESTS) {
+    console.log(`\nSupabase requests per action\n${report}\n`);
+  }
   await test.info().attach("request-counts.txt", { body: report, contentType: "text/plain" });
+  for (const { action, browser } of counts) {
+    expect.soft(browser.length, `${action}: ${browser.join(", ")}`).toBeLessThanOrEqual(BROWSER_BUDGET[action]);
+  }
 });

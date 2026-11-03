@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parseHomeParticipantRounds } from "./parse-participant-rounds";
 
 describe("parseHomeParticipantRounds", () => {
-  it("splits active and recent completed rounds", () => {
+  it("picks the active rounds", () => {
     const result = parseHomeParticipantRounds([
       {
         rounds: {
@@ -42,10 +42,9 @@ describe("parseHomeParticipantRounds", () => {
     expect(result.hasJoinedRound).toBe(true);
     expect(result.activeRounds).toHaveLength(1);
     expect(result.activeRounds[0]?.id).toBe("active-1");
-    expect(result.recentRounds.map((round) => round.id)).toEqual(["done-2", "done-1"]);
   });
 
-  it("marks draft participation as joined without recent completed rows", () => {
+  it("marks draft participation as joined", () => {
     const result = parseHomeParticipantRounds([
       {
         rounds: {
@@ -62,6 +61,5 @@ describe("parseHomeParticipantRounds", () => {
 
     expect(result.hasJoinedRound).toBe(true);
     expect(result.activeRounds).toHaveLength(0);
-    expect(result.recentRounds).toHaveLength(0);
   });
 });
