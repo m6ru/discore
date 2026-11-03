@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import zlib from "node:zlib";
 import { devices, expect, test } from "@playwright/test";
-import { COURSE, createUser, ensureTestCourse, latestSuggestion, makeAdmin, signIn, startTestLayout } from "./helpers";
+import { COURSE, courseWithCoords, createUser, ensureTestCourse, latestSuggestion, makeAdmin, signIn, startTestLayout } from "./helpers";
 
 test.beforeAll(ensureTestCourse);
 
@@ -39,12 +39,12 @@ test("a player suggests a fix, the admin applies it, the player is thanked", asy
 
   await page.goto(`/courses/${COURSE.slug}`);
   await page.getByRole("link", { name: "Suggest a fix" }).click();
-  await page.getByRole("button", { name: "Hole par or length" }).click();
-  await page.getByLabel("Details").fill(note);
+  await page.getByRole("radio", { name: /Hole info is wrong/ }).check();
+  await page.getByLabel("What's changed?").fill(note);
   await page.getByLabel("Add photos").setInputFiles({ name: "tee.png", mimeType: "image/png", buffer: PHOTO });
   await expect(page.getByRole("img", { name: "Photo 1" })).toBeVisible();
   await page.getByRole("button", { name: "Send suggestion" }).click();
-  await expect(page.getByText("Thanks — we'll review it.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Thanks, got it" })).toBeVisible();
 
   // Normal users can't open the review page.
   // (Streaming has already sent 200, so check what's on screen, not the status.)
@@ -92,10 +92,60 @@ test("a player suggests a new course from an empty search", async ({ page }) => 
   await page.getByRole("searchbox").fill(name);
   await page.getByRole("link", { name: `Suggest “${name}”` }).click();
   await expect(page.getByLabel("Course name")).toHaveValue(name);
-  await page.getByLabel("Location").fill("Testville");
-  await page.getByLabel("What you know").fill("9 baskets, all par 3");
+  await page.getByRole("button", { name: "Type the town instead" }).click();
+  await page.getByLabel("Where is it?").fill("Testville");
+  await page.getByRole("button", { name: "Fewer baskets" }).click();
+
+  // The course board photo is the proof; without a photo it isn't sent.
   await page.getByRole("button", { name: "Send suggestion" }).click();
-  await expect(page.getByText("Thanks — we'll review it.")).toBeVisible();
+  await expect(page.getByText("Please add a photo of the course board.")).toBeVisible();
+  await page.getByLabel("Add the course board photo").setInputFiles({ name: "board.png", mimeType: "image/png", buffer: PHOTO });
+  await expect(page.getByRole("img", { name: "Photo 1" })).toBeVisible();
+  await page.getByRole("button", { name: "Send suggestion" }).click();
+  await expect(page.getByRole("heading", { name: "Thanks, got it" })).toBeVisible();
+  await expect(page.getByText(`We'll check it and add ${name}.`)).toBeVisible();
+
+  const suggestion = await latestSuggestion(player);
+  expect(suggestion.kind).toBe("new_course");
+  expect(suggestion.location).toBe("Testville");
+  expect(suggestion.basket_count).toBe(17);
+  expect(suggestion.lat).toBeNull();
+  expect(suggestion.photo_paths).toHaveLength(1);
+});
+
+test("a player at the course sends its position and sees courses already nearby", async ({ browser, baseURL }) => {
+  const known = await courseWithCoords();
+  const context = await browser.newContext({
+    ...devices["iPhone 13"],
+    baseURL,
+    geolocation: { latitude: known.lat + 0.001, longitude: known.lng },
+    permissions: ["geolocation"],
+  });
+  const page = await context.newPage();
+  const player = await createUser("Oskar");
+  await signIn(page, player);
+
+  await page.goto("/courses/suggest");
+  await page.getByLabel("Course name").fill("Brand New Park");
+  await page.getByRole("button", { name: "Use where you are now" }).click();
+  await expect(page.getByText("Where you are now")).toBeVisible();
+  const nearby = page.getByRole("region", { name: "Already in the app nearby" });
+  await expect(nearby.getByRole("link", { name: new RegExp(known.name) })).toBeVisible();
+
+  await page.getByLabel("Add photos").setInputFiles([
+    { name: "tee1.png", mimeType: "image/png", buffer: PHOTO },
+    { name: "tee2.png", mimeType: "image/png", buffer: PHOTO },
+  ]);
+  await expect(page.getByText("2 photos · we'll let you know when it's added")).toBeVisible();
+  await page.getByRole("button", { name: "Send suggestion" }).click();
+  await expect(page.getByRole("heading", { name: "Thanks, got it" })).toBeVisible();
+
+  const suggestion = await latestSuggestion(player);
+  expect(suggestion.lat).toBeCloseTo(known.lat + 0.001, 5);
+  expect(suggestion.lng).toBeCloseTo(known.lng, 5);
+  expect(suggestion.basket_count).toBe(18);
+  expect(suggestion.photo_paths).toHaveLength(2);
+  await context.close();
 });
 
 test("signed-out visitors are sent to sign in", async ({ page }) => {

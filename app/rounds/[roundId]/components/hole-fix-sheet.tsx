@@ -177,7 +177,7 @@ function HoleFixForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="hole-fix-comment">Comment (optional)</Label>
+        <Label htmlFor="hole-fix-comment">Comment</Label>
         <textarea
           id="hole-fix-comment"
           value={comment}
@@ -189,7 +189,7 @@ function HoleFixForm({
       </div>
 
       <div className="space-y-2">
-        <Label>Photo of the tee sign (optional)</Label>
+        <Label>Photo of the tee sign</Label>
         <SuggestionPhotoPicker photos={photos} onChange={setPhotos} />
       </div>
 

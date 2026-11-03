@@ -1,6 +1,6 @@
 -- Course suggestions: who can send, read and review. Run with: npx supabase test db
 begin;
-select plan(23);
+select plan(29);
 
 insert into auth.users (id, email, aud, role, raw_user_meta_data) values
   ('a0000000-0000-0000-0000-00000000000a', 'alice@test.local', 'authenticated', 'authenticated', '{"first_name":"Alice","last_name":"Sender"}'),
@@ -50,6 +50,12 @@ select lives_ok(
   'a new course needs no course id'
 );
 
+select lives_ok(
+  $$ insert into public.course_suggestions (id, kind, course_name, lat, lng, basket_count, note)
+     values ('50000000-0000-0000-0000-000000000004', 'new_course', 'Pine Park', 58.354, 26.781, 18, '') $$,
+  'a new course can be sent with coordinates, a basket count and no note'
+);
+
 -- From the scoring screen: layout + hole only, the course is filled in.
 select lives_ok(
   $$ insert into public.course_suggestions (id, kind, layout_id, hole_id, note)
@@ -87,6 +93,38 @@ select throws_ok(
   $$ insert into public.course_suggestions (kind, note) values ('new_course', 'x') $$,
   'P0001', 'A new course needs a name',
   'a new course needs a name'
+);
+
+select throws_ok(
+  $$ insert into public.course_suggestions (kind, course_name, note) values ('new_course', 'Nowhere Park', '') $$,
+  'P0001', 'A new course needs a location',
+  'a new course needs a town or coordinates'
+);
+
+select throws_ok(
+  $$ insert into public.course_suggestions (kind, course_name, lat, note) values ('new_course', 'Half Park', 58.3, '') $$,
+  'P0001', 'Location needs both latitude and longitude',
+  'coordinates come in pairs'
+);
+
+select throws_ok(
+  $$ insert into public.course_suggestions (kind, course_id, note) values ('other', '10000000-0000-0000-0000-000000000001', '  ') $$,
+  'P0001', 'Please add a short note',
+  'a fix needs a note'
+);
+
+select throws_ok(
+  $$ insert into public.course_suggestions (kind, course_id, note, photo_paths)
+     values ('other', '10000000-0000-0000-0000-000000000001', 'x',
+             array(select 'a0000000-0000-0000-0000-00000000000a/' || i || '.jpg' from generate_series(1, 7) i)) $$,
+  '23514', null,
+  'at most 6 photos'
+);
+
+select throws_ok(
+  $$ update public.course_suggestions set basket_count = 12 where id = '50000000-0000-0000-0000-000000000004' $$,
+  'P0001', 'A suggestion''s content cannot be changed',
+  'the basket count cannot be changed after sending'
 );
 
 select throws_ok(
@@ -155,7 +193,7 @@ select pg_temp.act_as('d0000000-0000-0000-0000-00000000000d');
 
 select is(
   (select count(*)::int from public.course_suggestions),
-  3,
+  4,
   'the admin sees every suggestion'
 );
 
@@ -189,7 +227,7 @@ select lives_ok(
 -- Spam guard
 -- ---------------------------------------------------------------------------
 insert into public.course_suggestions (kind, course_id, note)
-  select 'other', '10000000-0000-0000-0000-000000000001', 'n' || i from generate_series(1, 7) i;
+  select 'other', '10000000-0000-0000-0000-000000000001', 'n' || i from generate_series(1, 6) i;
 
 select throws_ok(
   $$ insert into public.course_suggestions (kind, course_id, note) values ('other', '10000000-0000-0000-0000-000000000001', 'eleventh') $$,

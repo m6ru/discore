@@ -1,7 +1,7 @@
 -- Telegram ping on new course suggestions. Run with: npx supabase test db
 -- pg_net only sends after commit; this test rolls back, so nothing leaves the machine.
 begin;
-select plan(7);
+select plan(8);
 
 insert into auth.users (id, email, aud, role, raw_user_meta_data) values
   ('a0000000-0000-0000-0000-00000000000a', 'alice@test.local', 'authenticated', 'authenticated', '{"first_name":"Alice","last_name":"Sender"}');
@@ -88,6 +88,22 @@ select matches(
   (select (b::jsonb)->>'text' from pg_temp.queued() b),
   'New course\nForest Park \(Somewhere\)',
   'a new course ping names the suggested course and place'
+);
+
+delete from net.http_request_queue;
+
+select pg_temp.act_as('a0000000-0000-0000-0000-00000000000a');
+set local role authenticated;
+
+insert into public.course_suggestions (kind, course_name, lat, lng, basket_count, note)
+values ('new_course', 'Pine Park', 58.354, 26.781, 18, '');
+
+reset role;
+
+select matches(
+  (select (b::jsonb)->>'text' from pg_temp.queued() b),
+  'Pine Park · 18 baskets\nhttps://maps.google.com/\?q=58.354,26.781\nFrom: Alice Sender\n\nhttps',
+  'a new course ping has the basket count and a map link, and no empty note'
 );
 
 -- ---------------------------------------------------------------------------

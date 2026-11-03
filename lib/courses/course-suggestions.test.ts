@@ -9,6 +9,9 @@ const base = {
   layoutName: "Main",
   holeNumber: null,
   location: null,
+  lat: null,
+  lng: null,
+  basketCount: null,
   note: "Hole 7 is par 4 now",
   createdAt: "2026-10-22T10:00:00Z",
   photoUrls: [],
@@ -47,6 +50,22 @@ describe("buildAgentPrompt", () => {
     });
     expect(prompt).toContain("New course: Forest Park (Somewhere)");
     expect(prompt).toContain("- https://example.test/a.jpg");
+  });
+
+  it("gives a new course's coordinates and basket count, and says when there is no note", () => {
+    const prompt = buildAgentPrompt({
+      ...base,
+      kind: "new_course",
+      courseName: "Pine Park",
+      courseSlug: null,
+      layoutName: null,
+      lat: 58.354,
+      lng: 26.781,
+      basketCount: 18,
+      note: "",
+    });
+    expect(prompt).toContain("New course: Pine Park · Coordinates: 58.354, 26.781 · Baskets: 18");
+    expect(prompt).toContain("Note:\n(none)");
   });
 });
 

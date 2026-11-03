@@ -59,7 +59,7 @@ export async function createUser(firstName: string): Promise<TestUser> {
 export async function latestSuggestion(user: TestUser) {
   const { data, error } = await admin
     .from("course_suggestions")
-    .select("kind, note, hole_id, layout_id, course_id, thanked_seen_at")
+    .select("kind, note, hole_id, layout_id, course_id, thanked_seen_at, location, lat, lng, basket_count, photo_paths")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -116,4 +116,17 @@ export async function countServerScores(roundId: string): Promise<number> {
     .eq("round_id", roundId);
   if (error) throw error;
   return count ?? 0;
+}
+
+/** A seeded course with coordinates, for "Is it one of these?". */
+export async function courseWithCoords(): Promise<{ name: string; lat: number; lng: number }> {
+  const { data, error } = await admin
+    .from("courses")
+    .select("name, lat, lng")
+    .not("lat", "is", null)
+    .not("lng", "is", null)
+    .limit(1)
+    .single();
+  if (error) throw error;
+  return { name: data.name, lat: data.lat!, lng: data.lng! };
 }
