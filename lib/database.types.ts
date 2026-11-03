@@ -56,13 +56,16 @@ export type Database = {
       }
       course_suggestions: {
         Row: {
+          basket_count: number | null
           course_id: string | null
           course_name: string | null
           created_at: string
           hole_id: string | null
           id: string
           kind: string
+          lat: number | null
           layout_id: string | null
+          lng: number | null
           location: string | null
           note: string
           owner_note: string | null
@@ -73,13 +76,16 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          basket_count?: number | null
           course_id?: string | null
           course_name?: string | null
           created_at?: string
           hole_id?: string | null
           id?: string
           kind: string
+          lat?: number | null
           layout_id?: string | null
+          lng?: number | null
           location?: string | null
           note: string
           owner_note?: string | null
@@ -90,13 +96,16 @@ export type Database = {
           user_id?: string
         }
         Update: {
+          basket_count?: number | null
           course_id?: string | null
           course_name?: string | null
           created_at?: string
           hole_id?: string | null
           id?: string
           kind?: string
+          lat?: number | null
           layout_id?: string | null
+          lng?: number | null
           location?: string | null
           note?: string
           owner_note?: string | null

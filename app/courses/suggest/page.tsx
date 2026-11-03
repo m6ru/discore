@@ -1,10 +1,7 @@
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
+import { loadCourseSummaries } from "@/lib/courses/load-course-summaries";
 import { createServerClient } from "@/lib/supabase/server";
-import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
-import { cn } from "@/lib/utils";
-import { SuggestionForm } from "./suggestion-form";
+import { SuggestionForm, type NearbyCandidate } from "./suggestion-form";
 
 type PageProps = {
   searchParams: Promise<{ course?: string; name?: string }>;
@@ -23,6 +20,7 @@ export default async function SuggestPage({ searchParams }: PageProps) {
 
   let course: { id: string; name: string; slug: string } | null = null;
   let layouts: { id: string; name: string }[] = [];
+  let knownCourses: NearbyCandidate[] = [];
 
   if (slug) {
     const { data: courseRow } = await supabase
@@ -42,37 +40,24 @@ export default async function SuggestPage({ searchParams }: PageProps) {
       .eq("is_active", true)
       .order("name", { ascending: true });
     layouts = layoutRows ?? [];
+  } else {
+    // For "Is it one of these?" once the phone's position is known.
+    const { courses } = await loadCourseSummaries(supabase);
+    knownCourses = (courses ?? []).flatMap((c) =>
+      c.lat !== null && c.lng !== null
+        ? [{ name: c.name, slug: c.slug, location: c.location, lat: c.lat, lng: c.lng }]
+        : []
+    );
   }
 
-  const backHref = course ? `/courses/${course.slug}` : "/courses";
-
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
-      <header className="space-y-1">
-        <div className="flex items-start justify-between gap-3">
-          <h1 className={cn(pageTitleClassName, "min-w-0 flex-1")}>
-            {course ? "Suggest a fix" : "Suggest a new course"}
-          </h1>
-          <Link
-            href={backHref}
-            aria-label="Back"
-            className="-mr-2 inline-flex shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <ChevronLeft className="size-5" aria-hidden />
-          </Link>
-        </div>
-        <p className={pageSubtitleClassName}>
-          {course
-            ? `${course.name} — tell us what's changed. A photo of the tee sign helps most.`
-            : "A course that's missing? Tell us where it is and what you know about it."}
-        </p>
-      </header>
-
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col p-4 sm:p-8">
       <SuggestionForm
         userId={claims.sub}
         course={course}
         layouts={layouts}
-        backHref={backHref}
+        knownCourses={knownCourses}
+        backHref={course ? `/courses/${course.slug}` : "/courses"}
         initialCourseName={name?.slice(0, 200) ?? ""}
       />
     </main>

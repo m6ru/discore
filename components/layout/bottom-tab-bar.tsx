@@ -43,6 +43,10 @@ const TABS: TabItem[] = [
 ];
 
 export function shouldShowTabBar(pathname: string): boolean {
+  // The suggestion form has its own Send deck at the bottom.
+  if (pathname === "/courses/suggest") {
+    return false;
+  }
   if (
     pathname.startsWith("/rounds/") &&
     pathname !== "/rounds/new" &&

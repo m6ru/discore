@@ -42,7 +42,7 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
     supabase
       .from("course_suggestions")
       .select(
-        "id, kind, note, photo_paths, status, owner_note, created_at, course_name, location, courses(name, slug), layouts(name), holes(hole_number), profiles(display_name)"
+        "id, kind, note, photo_paths, status, owner_note, created_at, course_name, location, lat, lng, basket_count, courses(name, slug), layouts(name), holes(hole_number), profiles(display_name)"
       )
       .eq("status", status)
       .order("created_at", { ascending: false })
@@ -138,6 +138,20 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
                   <p className="text-sm text-muted-foreground">
                     {sender?.display_name ?? "Someone"} · {formatRoundDate(row.created_at)}
                     {row.location ? ` · ${row.location}` : ""}
+                    {row.basket_count !== null ? ` · ${row.basket_count} baskets` : ""}
+                    {row.lat !== null && row.lng !== null ? (
+                      <>
+                        {" · "}
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${row.lat},${row.lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-primary"
+                        >
+                          Map
+                        </a>
+                      </>
+                    ) : null}
                   </p>
                 </div>
                 <Badge variant="secondary" className="shrink-0">
@@ -145,7 +159,7 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
                 </Badge>
               </div>
 
-              <p className="whitespace-pre-line text-sm">{row.note}</p>
+              {row.note ? <p className="whitespace-pre-line text-sm">{row.note}</p> : null}
 
               {photoUrls.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
@@ -177,6 +191,9 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
                   layoutName: layout?.name ?? null,
                   holeNumber: hole?.hole_number ?? null,
                   location: row.location,
+                  lat: row.lat,
+                  lng: row.lng,
+                  basketCount: row.basket_count,
                   note: row.note,
                   createdAt: row.created_at,
                   photoUrls,

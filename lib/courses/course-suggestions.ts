@@ -6,16 +6,19 @@ import { friendlyError } from "@/lib/ui/friendly-error";
 type Client = SupabaseClient<Database>;
 
 export const SUGGESTION_PHOTO_BUCKET = "course-suggestion-photos";
-export const SUGGESTION_MAX_PHOTOS = 3;
+export const SUGGESTION_MAX_PHOTOS = 6;
 const PHOTO_MAX_DIMENSION = 1600;
 
-/** Kinds offered on a course page ("Something's wrong?"). */
+/**
+ * Kinds offered on a course page ("What's wrong?"). `label` is the short name on the
+ * review page and in the ping; `question` and `hint` are what the sender sees.
+ */
 export const COURSE_FIX_KINDS = [
-  { value: "hole_info", label: "Hole par or length" },
-  { value: "layout_changed", label: "Layout changed or re-set" },
-  { value: "new_layout", label: "New layout" },
-  { value: "course_closed", label: "Course closed" },
-  { value: "other", label: "Something else" },
+  { value: "hole_info", label: "Hole par or length", question: "Hole info is wrong", hint: "Par, length or the note" },
+  { value: "layout_changed", label: "Layout changed or re-set", question: "Layout has changed", hint: "Holes moved, new baskets" },
+  { value: "new_layout", label: "New layout", question: "There's a new layout", hint: null },
+  { value: "course_closed", label: "Course closed", question: "Course is closed", hint: null },
+  { value: "other", label: "Something else", question: "Something else", hint: null },
 ] as const;
 
 export type CourseFixKind = (typeof COURSE_FIX_KINDS)[number]["value"];
@@ -100,6 +103,9 @@ export type AgentPromptInput = {
   layoutName: string | null;
   holeNumber: number | null;
   location: string | null;
+  lat: number | null;
+  lng: number | null;
+  basketCount: number | null;
   note: string;
   createdAt: string;
   photoUrls: string[];
@@ -112,7 +118,9 @@ export type AgentPromptInput = {
 export function buildAgentPrompt(s: AgentPromptInput): string {
   const where =
     s.kind === "new_course"
-      ? `New course: ${s.courseName ?? "?"}${s.location ? ` (${s.location})` : ""}`
+      ? `New course: ${s.courseName ?? "?"}${s.location ? ` (${s.location})` : ""}` +
+        (s.lat !== null && s.lng !== null ? ` · Coordinates: ${s.lat}, ${s.lng}` : "") +
+        (s.basketCount !== null ? ` · Baskets: ${s.basketCount}` : "")
       : `Course: ${s.courseName ?? "?"}${s.courseSlug ? ` (slug ${s.courseSlug})` : ""}` +
         (s.layoutName ? ` · Layout: ${s.layoutName}` : " · Layout: not specified") +
         (s.holeNumber !== null ? ` · Hole ${s.holeNumber}` : "");
@@ -126,7 +134,7 @@ export function buildAgentPrompt(s: AgentPromptInput): string {
     `Sent: ${s.createdAt.slice(0, 10)}`,
     "",
     "Note:",
-    s.note,
+    s.note || "(none)",
   ];
 
   if (s.photoUrls.length > 0) {
