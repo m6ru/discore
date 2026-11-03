@@ -28,7 +28,8 @@ _Overwritten at the end of every session — describes now, not history (history
 - **Next (owner, 2026-11-03):** a **security review learned together with the owner**: research how to test a Supabase + Next.js app, then attack it as a signed-in user against **local** Supabase only (other users' data, writes, functions, storage, Realtime, limits, secrets in git history) and a dashboard checklist for the owner (email confirmation, passwords, rate limits). Open privacy question for that review: any signed-in user can read every profile (city, birth year, gender) for the invite search.
 - **MacBook set up (2026-10-24):** Node 24 + gh from official downloads, `.env.local` and `supabase link` point at production. npm 11 skipped postinstall scripts for `esbuild`, `unrs-resolver` (works anyway; decide later).
 - **Small debts cleared (2026-10-26):** all server pages use `getClaims()`; `lib/` no longer imports from `app/` (shared row types in `lib/rounds/round-rows.ts`); `config.toml` uses `[local_smtp]`, empty seed step off.
-- **In flight:** the state-handling PR, waiting for the owner to test the preview (no `db push` needed).
+- **Draft setup (owner, 2026-11-03):** hint under Add another player is "Players with an account get an invite. Others join as guests."; Delete draft deletes on tap (no popup), Abandon round keeps its confirmation (DESIGN-PATTERNS).
+- **In flight:** nothing. State-handling (#52) and the draft fixes (#53) are merged and live.
 
 ---
 
