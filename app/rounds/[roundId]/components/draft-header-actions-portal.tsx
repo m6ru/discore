@@ -68,7 +68,6 @@ export function DraftHeaderActionsPortal({
         }
         destructive={{
           label: "Delete draft",
-          hint: "Removes the round and its invites. Asks first.",
           confirmTitle: "Delete this draft?",
           confirmDescription: "This removes the round and everyone you invited. You can't bring it back.",
           onConfirm: onDeleteDraft,
