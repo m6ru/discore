@@ -463,3 +463,36 @@ export async function loadPlayerHoleHistory(
     ])
   );
 }
+
+export type PlayerLayoutRound = {
+  roundId: string;
+  completedAt: string | null;
+  vsPar: number;
+};
+
+/** The player's completed rounds on one layout, oldest first (course stats trend). */
+export async function loadPlayerLayoutRounds(
+  supabase: Client,
+  layoutId: string
+): Promise<{ rounds: PlayerLayoutRound[]; error: string | null }> {
+  const { data, error } = await supabase
+    .from("player_round_stats")
+    .select("round_id, completed_at, vs_par")
+    .eq("layout_id", layoutId)
+    .eq("status", "completed")
+    .gt("holes_scored", 0)
+    .order("completed_at", { ascending: true, nullsFirst: true });
+
+  if (error) {
+    return { rounds: [], error: error.message };
+  }
+
+  return {
+    rounds: (data ?? []).flatMap((row) =>
+      row.round_id && row.vs_par !== null
+        ? [{ roundId: row.round_id, completedAt: row.completed_at, vsPar: row.vs_par }]
+        : []
+    ),
+    error: null,
+  };
+}

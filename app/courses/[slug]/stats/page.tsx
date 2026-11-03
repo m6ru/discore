@@ -1,22 +1,28 @@
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { formatRoundDate } from "@/lib/format/round-date";
 import {
   loadPlayerCourseStats,
   loadPlayerLayoutHoleStats,
+  loadPlayerLayoutRounds,
   loadPlayerLayoutStatsForCourse,
   type PlayerLayoutHoleStats,
+  type PlayerLayoutRound,
   type PlayerLayoutStats,
   type ScoreBucketKey,
 } from "@/lib/rounds/load-player-stats";
+import {
+  formatAverageVsPar,
+  formatHolePattern,
+  formatTrend,
+  holeLossTone,
+  rankHolesByLoss,
+  type HoleLossInput,
+} from "@/lib/scoring/layout-stats";
 import { formatVsPar } from "@/lib/scoring/stats";
 import { createServerClient } from "@/lib/supabase/server";
-import {
-  homeRowMetaClassName,
-  pageSubtitleClassName,
-  pageTitleClassName,
-} from "@/lib/ui/page-chrome";
+import { homeRowMetaClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { cn } from "@/lib/utils";
 
@@ -31,46 +37,55 @@ type LayoutOption = {
   name: string;
 };
 
-function formatAvgVsPar(value: number): string {
-  const rounded = Math.round(value * 10) / 10;
-  if (rounded === 0) {
-    return "E";
-  }
-  return rounded > 0 ? `+${rounded}` : String(rounded);
-}
+type HoleRow = HoleLossInput & { holeId: string };
 
-function formatRate(count: number, total: number): string {
-  if (total === 0) {
-    return "—";
-  }
-  const pct = Math.round((count / total) * 1000) / 10;
-  return `${pct}%`;
-}
+/** Holes shown under "Where you lose strokes" before "All N holes". */
+const TOP_LOSS_HOLES = 3;
 
-function usualBucketLabel(bucket: ScoreBucketKey): string {
+function usualStrokes(bucket: ScoreBucketKey, par: number): number | null {
   switch (bucket) {
     case "ace":
-      return "Ace";
+      return 1;
     case "eagle":
-      return "Eagle";
+      return par - 2;
     case "birdie":
-      return "Birdie";
+      return par - 1;
     case "par":
-      return "Par";
+      return par;
     case "bogey":
-      return "Bogey";
+      return par + 1;
     case "doublePlus":
-      return "Double+";
+      return null;
   }
 }
 
-function courseSummaryLine(roundsPlayed: number, lastPlayedAt: string | null): string {
-  const lastPlayed = formatRoundDate(lastPlayedAt);
-  const roundsPart = `Total rounds: ${roundsPlayed}`;
-  return lastPlayed ? `Last played ${lastPlayed} · ${roundsPart}` : roundsPart;
+function toHoleRow(hole: PlayerLayoutHoleStats): HoleRow {
+  return {
+    holeId: hole.holeId,
+    holeNumber: hole.holeNumber,
+    par: hole.par,
+    timesPlayed: hole.timesPlayed,
+    avgVsPar: hole.avgVsPar,
+    obCount: hole.obCount,
+    doublePlusCount: hole.distribution.doublePlus,
+    usualStrokes: usualStrokes(hole.usualBucket, hole.par),
+  };
 }
 
-function LayoutPicker({
+/** "12.10" */
+function formatShortDate(iso: string | null): string | null {
+  if (!iso) {
+    return null;
+  }
+  const d = new Date(iso);
+  return `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function percent(count: number, total: number): number {
+  return total === 0 ? 0 : Math.round((count / total) * 100);
+}
+
+function LayoutTabs({
   layouts,
   courseSlug,
   selectedLayoutId,
@@ -80,26 +95,26 @@ function LayoutPicker({
   selectedLayoutId: string | undefined;
 }) {
   return (
-    <div className="flex w-full rounded-lg border bg-muted/40 p-1">
+    <nav aria-label="Layout" className="flex rounded-md border bg-secondary p-[3px]">
       {layouts.map((layout) => {
         const isSelected = layout.id === selectedLayoutId;
-
         return (
           <Link
             key={layout.id}
             href={`/courses/${courseSlug}/stats?layout=${layout.slug}`}
+            aria-current={isSelected ? "page" : undefined}
             className={cn(
-              "flex min-w-0 flex-1 items-center justify-center rounded-md px-2 py-2 text-center text-sm transition-colors",
+              "flex min-h-10 min-w-0 flex-1 items-center justify-center rounded-sm px-2 text-sm transition-colors",
               isSelected
-                ? "bg-background font-medium text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-card font-bold text-foreground shadow-xs"
+                : "font-medium text-muted-foreground hover:text-foreground"
             )}
           >
             <span className="truncate">{layout.name}</span>
           </Link>
         );
       })}
-    </div>
+    </nav>
   );
 }
 
@@ -123,137 +138,218 @@ function pickSelectedLayout(
   return withRounds ?? layouts[0]!;
 }
 
+/** Score vs par per round, oldest left; the dashed line is par, the lime dot your best. */
+function TrendChart({ rounds }: { rounds: PlayerLayoutRound[] }) {
+  const width = 350;
+  const height = 120;
+  const values = rounds.map((round) => round.vsPar);
+  const top = Math.max(0, ...values);
+  const bottom = Math.min(0, ...values);
+  const span = top - bottom || 1;
+  const x = (index: number) =>
+    rounds.length === 1 ? width / 2 : 20 + (index * (width - 40)) / (rounds.length - 1);
+  const y = (value: number) => 18 + ((top - value) / span) * (height - 40);
+  const best = Math.min(...values);
+  const bestIndex = values.lastIndexOf(best);
+  const last = values.length - 1;
+
+  return (
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="h-auto w-full overflow-visible"
+      role="img"
+      aria-label={`Score versus par over ${rounds.length} rounds: ${values.map(formatVsPar).join(", ")}`}
+    >
+      <line x1="0" x2={width} y1={y(0)} y2={y(0)} className="stroke-input" strokeDasharray="4 4" />
+      <text x={width} y={y(0) - 4} textAnchor="end" className="fill-muted-foreground font-mono text-[11px]">
+        par
+      </text>
+      <polyline
+        points={values.map((value, index) => `${x(index)},${y(value)}`).join(" ")}
+        fill="none"
+        className="stroke-primary"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      {values.map((value, index) => (
+        <circle
+          key={rounds[index]!.roundId}
+          cx={x(index)}
+          cy={y(value)}
+          r={index === bestIndex ? 6 : 4}
+          className={cn("stroke-primary", index === bestIndex ? "fill-good" : "fill-background")}
+          strokeWidth="2"
+        />
+      ))}
+      <text x={x(0)} y={y(values[0]!) - 9} textAnchor="middle" className="fill-muted-foreground font-mono text-[11px]">
+        {formatVsPar(values[0]!)}
+      </text>
+      {last > 0 ? (
+        <text
+          x={x(last)}
+          y={y(values[last]!) + 19}
+          textAnchor="middle"
+          className="fill-foreground font-mono text-[11px] font-semibold"
+        >
+          {formatVsPar(values[last]!)}
+        </text>
+      ) : null}
+    </svg>
+  );
+}
+
+const toneClassName = {
+  good: "bg-good text-good-foreground",
+  over: "bg-over",
+  overStrong: "bg-over-strong",
+} as const;
+
+function HoleLossRow({ hole }: { hole: HoleRow }) {
+  const tone = holeLossTone(hole.avgVsPar);
+  return (
+    <li className="flex items-center gap-3 border-b py-[11px]">
+      <span
+        className={cn(
+          "flex size-[34px] shrink-0 items-center justify-center rounded-sm font-display text-base font-semibold",
+          tone ? toneClassName[tone] : "border"
+        )}
+      >
+        {hole.holeNumber}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[15px] font-bold">
+          Hole {hole.holeNumber} · par {hole.par}
+        </span>
+        <span className="block truncate text-[13px] text-muted-foreground">{formatHolePattern(hole)}</span>
+      </span>
+      <span className="shrink-0 font-mono text-base font-semibold tabular-nums">
+        {hole.avgVsPar !== null ? formatAverageVsPar(hole.avgVsPar) : "—"}
+      </span>
+    </li>
+  );
+}
+
 function LayoutStatsBody({
   stats,
   holeStats,
+  rounds,
 }: {
   stats: PlayerLayoutStats;
   holeStats: PlayerLayoutHoleStats[];
+  rounds: PlayerLayoutRound[];
 }) {
   const { distribution, holesPlayed } = stats;
-  const distributionRows = [
-    { key: "ace", label: "Ace", count: distribution.ace },
-    ...(distribution.eagle > 0
-      ? [{ key: "eagle", label: "Eagle", count: distribution.eagle }]
-      : []),
-    { key: "birdie", label: "Birdie", count: distribution.birdie },
-    { key: "par", label: "Par", count: distribution.par },
-    { key: "bogey", label: "Bogey", count: distribution.bogey },
-    { key: "double", label: "Double+", count: distribution.doublePlus },
-  ];
+  const holes = holeStats.map(toHoleRow);
+  const losing = rankHolesByLoss(holes).slice(0, TOP_LOSS_HOLES);
+  const trend = formatTrend(rounds.map((round) => round.vsPar));
+  const bestRound = stats.bestRoundId ? rounds.find((round) => round.roundId === stats.bestRoundId) : null;
+  const bestDate = formatShortDate(bestRound?.completedAt ?? null);
+
+  const mix = [
+    { key: "birdie", label: "Birdie+", className: "bg-good", count: distribution.ace + distribution.eagle + distribution.birdie },
+    { key: "par", label: "Par", className: "bg-card", count: distribution.par },
+    { key: "bogey", label: "Bogey", className: "bg-over", count: distribution.bogey },
+    { key: "double", label: "Double+", className: "bg-over-strong", count: distribution.doublePlus },
+  ].map((part) => ({ ...part, pct: percent(part.count, holesPlayed) }));
 
   return (
-    <div className="space-y-4">
-      <section className="space-y-3 rounded-lg border px-4 py-3">
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3 [&_dd]:ml-0">
-          <div className="text-center">
-            <dt className={homeRowMetaClassName}>Times played</dt>
-            <dd className="font-mono text-base font-semibold tabular-nums">{stats.roundsPlayed}</dd>
-          </div>
-          <div className="text-center">
-            <dt className={homeRowMetaClassName}>Best</dt>
-            <dd className="font-mono text-base font-semibold tabular-nums">
+    <>
+      <section aria-label="Best, average, rounds">
+        <dl className="grid grid-cols-3 border-y">
+          <div className="flex flex-col-reverse gap-0.5 py-3.5">
+            <dt className="text-[13px] text-muted-foreground">
+              {stats.bestRoundId ? (
+                <Link href={`/rounds/${stats.bestRoundId}`} className="inline-flex items-center hover:text-foreground">
+                  Best{bestDate ? ` · ${bestDate}` : ""}
+                  <ChevronRight className="size-3.5" aria-hidden />
+                </Link>
+              ) : (
+                "Best"
+              )}
+            </dt>
+            <dd className="font-display text-[28px] font-semibold leading-none tabular-nums">
               {stats.bestVsPar !== null ? formatVsPar(stats.bestVsPar) : "—"}
             </dd>
-            {stats.bestRoundId ? (
-              <dd className="mt-0.5">
-                <Link
-                  href={`/rounds/${stats.bestRoundId}`}
-                  className="text-sm text-primary underline-offset-4 hover:underline"
-                >
-                  View round
-                </Link>
-              </dd>
-            ) : null}
           </div>
-          <div className="text-center">
-            <dt className={homeRowMetaClassName}>Average</dt>
-            <dd className="font-mono text-base font-semibold tabular-nums">
-              {stats.avgVsPar !== null ? formatAvgVsPar(stats.avgVsPar) : "—"}
+          <div className="flex flex-col-reverse gap-0.5 border-l py-3.5 pl-3.5">
+            <dt className="text-[13px] text-muted-foreground">Average</dt>
+            <dd className="font-display text-[28px] font-semibold leading-none tabular-nums">
+              {stats.avgVsPar !== null ? formatAverageVsPar(stats.avgVsPar) : "—"}
+            </dd>
+          </div>
+          <div className="flex flex-col-reverse gap-0.5 border-l py-3.5 pl-3.5">
+            <dt className="text-[13px] text-muted-foreground">Rounds</dt>
+            <dd className="font-display text-[28px] font-semibold leading-none tabular-nums">
+              {stats.roundsPlayed}
             </dd>
           </div>
         </dl>
-
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t pt-3 sm:grid-cols-5 [&_dd]:ml-0">
-          <div className="text-center">
-            <dt className={homeRowMetaClassName}>Birdie</dt>
-            <dd className="font-mono text-sm font-semibold tabular-nums">
-              {formatRate(distribution.birdie, holesPlayed)}
-            </dd>
-          </div>
-          <div className="text-center">
-            <dt className={homeRowMetaClassName}>Par</dt>
-            <dd className="font-mono text-sm font-semibold tabular-nums">
-              {formatRate(distribution.par, holesPlayed)}
-            </dd>
-          </div>
-          <div className="text-center">
-            <dt className={homeRowMetaClassName}>Bogey</dt>
-            <dd className="font-mono text-sm font-semibold tabular-nums">
-              {formatRate(distribution.bogey, holesPlayed)}
-            </dd>
-          </div>
-          <div className="text-center">
-            <dt className={homeRowMetaClassName}>Double+</dt>
-            <dd className="font-mono text-sm font-semibold tabular-nums">
-              {formatRate(distribution.doublePlus, holesPlayed)}
-            </dd>
-          </div>
-          <div className="text-center">
-            <dt className={homeRowMetaClassName}>OB</dt>
-            <dd className="font-mono text-sm font-semibold tabular-nums">
-              {formatRate(stats.obHolesTotal, holesPlayed)}
-            </dd>
-          </div>
-        </dl>
-
-        <div
-          className={cn(
-            "grid gap-2 border-t pt-3 justify-items-center text-center",
-            distribution.eagle > 0 ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-5"
-          )}
-        >
-          {distributionRows.map((row) => (
-            <div key={row.key} className="min-w-0 w-full">
-              <p className="truncate text-xs text-muted-foreground">{row.label}</p>
-              <p className="font-mono text-sm font-semibold tabular-nums">{row.count}</p>
-            </div>
-          ))}
-        </div>
       </section>
 
-      {holeStats.length > 0 ? (
+      {rounds.length >= 2 ? (
         <section className="space-y-2">
-          <h2 className={sectionHeadingClassName}>Per hole</h2>
-          <ul className="divide-y rounded-lg border">
-            {holeStats.map((hole) => {
-              const obRate = formatRate(hole.obCount, hole.timesPlayed);
-              const avgLabel =
-                hole.avgVsPar !== null ? formatAvgVsPar(hole.avgVsPar) : "—";
-
-              return (
-                <li key={hole.holeId} className="flex items-baseline justify-between gap-3 px-4 py-3">
-                  <div className="min-w-0">
-                    <p className="font-medium">
-                      Hole {hole.holeNumber}
-                      <span className="text-muted-foreground"> · Par {hole.par}</span>
-                    </p>
-                    <p className={cn(homeRowMetaClassName, "mt-0.5")}>
-                      Usually {usualBucketLabel(hole.usualBucket).toLowerCase()}
-                      <span> · Avg {avgLabel}</span>
-                      {hole.obCount > 0 ? <span> · OB {obRate}</span> : null}
-                    </p>
-                  </div>
-                  <p className="shrink-0 font-mono text-sm tabular-nums text-muted-foreground">
-                    {hole.timesPlayed}×
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className={sectionHeadingClassName}>Your rounds here</h2>
+            <span className="text-[13px] text-muted-foreground">oldest → newest</span>
+          </div>
+          <TrendChart rounds={rounds} />
+          {trend ? <p className="text-sm text-foreground/85">{trend}</p> : null}
         </section>
       ) : null}
-    </div>
+
+      {holes.length > 0 ? (
+        <section>
+          <div className="flex items-baseline justify-between gap-3 border-b border-foreground pb-1.5">
+            <h2 className={sectionHeadingClassName}>Where you lose strokes</h2>
+            <span className="text-[13px] text-muted-foreground">avg vs par</span>
+          </div>
+          {losing.length > 0 ? (
+            <ul>
+              {losing.map((hole) => (
+                <HoleLossRow key={hole.holeId} hole={hole} />
+              ))}
+            </ul>
+          ) : (
+            <p className={cn(homeRowMetaClassName, "border-b py-3")}>No hole costs you strokes on average. Nice.</p>
+          )}
+          <details className="group">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between text-[15px] font-semibold text-primary [&::-webkit-details-marker]:hidden">
+              All {holes.length} holes
+              <ChevronDown className="size-[18px] transition-transform group-open:rotate-180" aria-hidden />
+            </summary>
+            <ul className="border-t">
+              {holes.map((hole) => (
+                <HoleLossRow key={hole.holeId} hole={hole} />
+              ))}
+            </ul>
+          </details>
+        </section>
+      ) : null}
+
+      {holesPlayed > 0 ? (
+        <section className="space-y-2">
+          <h2 className={sectionHeadingClassName}>Score mix</h2>
+          <div
+            role="img"
+            aria-label={mix.map((part) => `${part.label} ${part.pct}%`).join(", ")}
+            className="flex h-3.5 overflow-hidden rounded-sm border"
+          >
+            {mix.map((part) =>
+              part.pct > 0 ? (
+                <span key={part.key} className={part.className} style={{ width: `${part.pct}%` }} />
+              ) : null
+            )}
+          </div>
+          <div className="flex justify-between text-[13px] text-muted-foreground">
+            {mix.map((part) => (
+              <span key={part.key}>
+                {part.label} <b className="font-mono text-foreground">{part.pct}%</b>
+              </span>
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </>
   );
 }
 
@@ -303,80 +399,76 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
     layoutStatsResult.byLayoutId
   );
 
-  const holeStatsResult = selectedLayout
-    ? await loadPlayerLayoutHoleStats(supabase, selectedLayout.id)
-    : { holes: [], error: null };
+  const [holeStatsResult, roundsResult] = selectedLayout
+    ? await Promise.all([
+        loadPlayerLayoutHoleStats(supabase, selectedLayout.id),
+        loadPlayerLayoutRounds(supabase, selectedLayout.id),
+      ])
+    : [
+        { holes: [], error: null },
+        { rounds: [], error: null },
+      ];
 
   const loadError =
     layoutsError?.message ??
     courseStatsResult.error ??
     layoutStatsResult.error ??
     holeStatsResult.error ??
+    roundsResult.error ??
     null;
 
   const selectedStats = selectedLayout
     ? (layoutStatsResult.byLayoutId.get(selectedLayout.id) ?? null)
     : null;
+  const lastPlayed = courseStatsResult.stats
+    ? formatRoundDate(courseStatsResult.stats.lastPlayedAt)
+    : null;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
-      <header className="space-y-1">
-        <div className="flex items-start justify-between gap-3">
-          <h1 className={cn(pageTitleClassName, "min-w-0 flex-1")}>Your stats</h1>
-          <Link
-            href={`/courses/${slug}`}
-            aria-label="Back to course"
-            className="-mr-2 inline-flex shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <ChevronLeft className="size-5" aria-hidden />
-          </Link>
-        </div>
-        <p className={pageSubtitleClassName}>{course.name}</p>
-        {courseStatsResult.stats ? (
-          <p className={homeRowMetaClassName}>
-            {courseSummaryLine(
-              courseStatsResult.stats.roundsPlayed,
-              courseStatsResult.stats.lastPlayedAt
-            )}
-          </p>
-        ) : (
-          <p className={homeRowMetaClassName}>No completed rounds at this course yet.</p>
-        )}
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 p-4 sm:p-8">
+      <header className="space-y-1.5">
+        <Link
+          href={`/courses/${slug}`}
+          aria-label="Back to course"
+          className="-ml-2 inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <ChevronLeft className="size-5" aria-hidden />
+        </Link>
+        <p className="text-[13px] font-semibold text-muted-foreground">Your stats</p>
+        <h1 className={pageTitleClassName}>{course.name}</h1>
+        <p className="text-sm text-muted-foreground">
+          {courseStatsResult.stats
+            ? `${lastPlayed ? `Last played ${lastPlayed} · ` : ""}Total rounds ${courseStatsResult.stats.roundsPlayed}`
+            : "No completed rounds at this course yet."}
+        </p>
       </header>
 
       {loadError ? (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+        <p className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
           Failed to load stats: {loadError}
         </p>
       ) : null}
 
-      {!loadError ? (
-        <section className="space-y-3">
-          {layoutOptions.length === 0 ? (
-            <p className={homeRowMetaClassName}>No active layouts for this course.</p>
-          ) : (
-            <>
-              <h2 className={sectionHeadingClassName}>Layout</h2>
-              <LayoutPicker
-                layouts={layoutOptions}
-                courseSlug={slug}
-                selectedLayoutId={selectedLayout?.id}
-              />
-            </>
-          )}
-        </section>
+      {!loadError && layoutOptions.length === 0 ? (
+        <p className={homeRowMetaClassName}>No active layouts for this course.</p>
+      ) : null}
+
+      {!loadError && layoutOptions.length > 1 ? (
+        <LayoutTabs layouts={layoutOptions} courseSlug={slug} selectedLayoutId={selectedLayout?.id} />
       ) : null}
 
       {!loadError && selectedLayout ? (
-        <section className="space-y-2">
-          {selectedStats ? (
-            <LayoutStatsBody stats={selectedStats} holeStats={holeStatsResult.holes} />
-          ) : (
-            <p className={homeRowMetaClassName}>
-              No completed rounds on this layout yet. Start a round from the course page.
-            </p>
-          )}
-        </section>
+        selectedStats ? (
+          <LayoutStatsBody
+            stats={selectedStats}
+            holeStats={holeStatsResult.holes}
+            rounds={roundsResult.rounds}
+          />
+        ) : (
+          <p className={homeRowMetaClassName}>
+            No completed rounds on this layout yet. Start a round from the course page.
+          </p>
+        )
       ) : null}
     </main>
   );
