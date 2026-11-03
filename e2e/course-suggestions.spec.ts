@@ -67,6 +67,8 @@ test("a player suggests a fix, the admin applies it, the player is thanked", asy
   await card.getByLabel("Note to the sender").fill("Fixed — thanks!");
   await card.getByRole("button", { name: "Applied", exact: true }).click();
   await expect(card).not.toBeVisible();
+  await ownerPage.getByRole("link", { name: /^Applied/ }).click();
+  await expect(ownerPage.getByRole("listitem").filter({ hasText: "“Fixed — thanks!”" }).first()).toBeVisible();
   await ownerContext.close();
 
   // The player sees the thank-you on Home until dismissed.
