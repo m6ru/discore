@@ -52,6 +52,28 @@ export function DraftStartingHoleField({
   };
 
   return (
+    <StartingHoleField
+      holeNumbers={holeNumbers}
+      startingHole={startingHole}
+      disabled={disabled || isSaving}
+      onChange={(hole) => void saveStartingHole(String(hole))}
+    />
+  );
+}
+
+/** The "Starting hole" row itself; the trial keeps the value on the phone instead. */
+export function StartingHoleField({
+  holeNumbers,
+  startingHole,
+  disabled = false,
+  onChange,
+}: {
+  holeNumbers: number[];
+  startingHole: number;
+  disabled?: boolean;
+  onChange: (hole: number) => void;
+}) {
+  return (
     <div className="flex items-center justify-between gap-3 border-t pt-3.5">
       <span className="min-w-0">
         <span className="block text-base font-semibold">Starting hole</span>
@@ -61,8 +83,8 @@ export function DraftStartingHoleField({
       </span>
       <Select
         value={String(startingHole)}
-        onValueChange={(next) => void saveStartingHole(next)}
-        disabled={disabled || isSaving}
+        onValueChange={(next) => onChange(Number(next))}
+        disabled={disabled}
       >
         <SelectTrigger className="min-h-11 w-28 shrink-0 font-mono font-semibold" aria-label="Starting hole">
           <SelectValue placeholder="Hole 1" />

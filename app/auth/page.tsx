@@ -7,11 +7,11 @@ import { AccountPanel, type AccountView } from "./account-panel";
 import { AuthForm } from "./auth-form";
 
 type AuthPageProps = {
-  searchParams: Promise<{ message?: string; view?: string }>;
+  searchParams: Promise<{ message?: string; view?: string; mode?: string }>;
 };
 
 export default async function AuthPage({ searchParams }: AuthPageProps) {
-  const { message, view: viewParam } = await searchParams;
+  const { message, view: viewParam, mode } = await searchParams;
   const view: AccountView =
     viewParam === "edit" || viewParam === "password" ? viewParam : "menu";
   const supabase = await createServerClient();
@@ -102,7 +102,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
           initialAvatarUrl={profile?.avatar_url ?? ""}
         />
       ) : (
-        <AuthForm message={message ?? null} />
+        <AuthForm message={message ?? null} initialMode={mode === "sign-up" ? "sign-up" : "sign-in"} />
       )}
     </main>
   );

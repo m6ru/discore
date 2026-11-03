@@ -793,6 +793,7 @@ export type Database = {
           p_players: Json
           p_scores: Json
           p_started_at: string
+          p_starting_hole?: number
         }
         Returns: string
       }

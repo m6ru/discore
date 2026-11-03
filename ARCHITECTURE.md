@@ -171,7 +171,7 @@ Guests have no phone presence; they just appear on the scorecard.
 
 ### 3.5 The trial (signed out)
 
-A visitor can score a round without an account (`/rounds/trial`). Everything lives in `localStorage` (`discore:local-trial`) — the database never sees it. When they sign in or sign up, a **completed** trial is sent to the `claim_trial` function, which creates the round, the guests and every score in one transaction. See §4.3.
+A visitor can score a round without an account (`/rounds/trial`). Everything lives in `localStorage` (`discore:local-trial`) — the database never sees it. When they sign in or sign up, a **completed** trial is sent to the `claim_trial` function, which creates the round (with the trial's starting hole), the guests and every score in one transaction. See §4.3. The trial screen reuses the signed-in round's parts (progress line, roster, stepper, review, scorecard); only the storage differs.
 
 ---
 
@@ -197,7 +197,7 @@ Short records of the choices that shape the code: what we decided, why, and what
 - **Decision.** Signed-out players score in `localStorage`. Only a **completed** trial is saved, by `claim_trial`, when they sign in. In-progress or broken trials are dropped at that point.
 - **Why.** Trying the app should take zero steps — no account, no database rows for strangers. Anonymous visitors have no write access to any table, which keeps the database clean and safe.
 - **Safe to repeat.** Each trial has a random `claimId`; the round stores it as `guest_claim_id`. If the claim runs twice (double tap, reload, slow network), the second call just returns the round already saved.
-- **Trade-off.** A trial lives on one phone and is lost if the browser storage is cleared. The trial screen (`app/rounds/trial/trial-session.tsx`) also duplicates much of the signed-in scoring UI (listed under debts in STATUS).
+- **Trade-off.** A trial lives on one phone and is lost if the browser storage is cleared.
 
 ### 4.4 Course data lives in git, as JSON
 

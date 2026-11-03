@@ -3,21 +3,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, Minus, Plus } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { ArrowRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useTabBarVisibilityOverride } from "@/components/layout/tab-bar-visibility";
 import {
   addGuestPlayer,
@@ -28,35 +15,40 @@ import {
   saveLocalTrial,
   setScorerName,
   startLocalTrialPlay,
-  type LocalTrialHole,
-  type LocalTrialPlayer,
   type LocalTrialRound,
   type LocalTrialScore,
 } from "@/lib/local-round";
+import { formatRoundDisplayDate } from "@/lib/format/round-date";
+import type { ParticipantRow } from "@/lib/rounds/round-rows";
+import { orderHolesForPlay } from "@/lib/scoring/hole-order";
 import { buildLeaderboard } from "@/lib/scoring/leaderboard";
-import { formatVsPar, getFirstIncompleteHoleIndex } from "@/lib/scoring/stats";
+import { getFirstIncompleteHoleIndex } from "@/lib/scoring/stats";
+import { buildTeePositionMap } from "@/lib/scoring/tee-order";
 import { makeScoreLookupKey, type HoleScore } from "@/lib/scoring/types";
-import {
-  pagePrimaryButtonClassName,
-  pageSubtitleClassName,
-  pageTitleClassName,
-} from "@/lib/ui/page-chrome";
-import { sectionHeadingClassName } from "@/lib/ui/section-heading";
+import { pageTitleClassName } from "@/lib/ui/page-chrome";
 import { toastError } from "@/lib/ui/toast-notify";
-import { cn } from "@/lib/utils";
+import {
+  ACTIVE_SCORING_BOTTOM_INSET,
+  ActiveHoleScoring,
+  RoundProgress,
+  type HoleProgress,
+} from "../[roundId]/components/active-hole-scoring";
+import { ConfirmActionDialog } from "../[roundId]/components/confirm-action-dialog";
+import { DRAFT_SETUP_BOTTOM_INSET, DraftSetupDeck } from "../[roundId]/components/draft-setup-deck";
+import { StartingHoleField } from "../[roundId]/components/draft-starting-hole-field";
+import {
+  ROUND_COMPLETE_BOTTOM_INSET,
+  RoundCompleteActions,
+} from "../[roundId]/components/round-complete-actions";
+import { RoundResults } from "../[roundId]/components/round-results";
+import { RoundScorecardDialog } from "../[roundId]/components/round-scorecard-dialog";
+import { ScorecardSection } from "../[roundId]/components/scorecard-section";
 
-const STROKE_MIN = 1;
-const STROKE_MAX = 25;
-const ACTIVE_BOTTOM_INSET = "calc(12rem + env(safe-area-inset-bottom, 0px))";
-const COMPLETE_BOTTOM_INSET = "calc(8rem + env(safe-area-inset-bottom, 0px))";
-
-function scoreLookupFrom(scores: LocalTrialScore[]) {
-  const map = new Map<string, number>();
-  for (const score of scores) {
-    map.set(makeScoreLookupKey(score.playerId, score.holeId), score.strokes);
-  }
-  return map;
-}
+/**
+ * The signed-out round, kept on the phone (lib/local-round). Same steps and
+ * parts as a signed-in round — setup, scoring, review, finished — without
+ * invites, the round sheet or stats; signing in saves it (claim_trial).
+ */
 
 function toHoleScores(scores: LocalTrialScore[]): HoleScore[] {
   return scores.map((score) => ({
@@ -66,188 +58,265 @@ function toHoleScores(scores: LocalTrialScore[]): HoleScore[] {
   }));
 }
 
-function parseStrokeValue(raw: string): number | null {
-  const trimmed = raw.trim();
-  if (!trimmed) {
-    return null;
-  }
-  const strokes = Number(trimmed);
-  if (!Number.isInteger(strokes)) {
-    return null;
-  }
-  return strokes;
-}
-
-function getNextPlayerId(players: LocalTrialPlayer[], currentId: string): string {
-  const index = players.findIndex((player) => player.id === currentId);
-  if (index === -1) {
-    return players[0]!.id;
-  }
-  return players[(index + 1) % players.length]!.id;
+/** Trial players in the shape the shared round parts take. */
+function toParticipantRows(trial: LocalTrialRound): ParticipantRow[] {
+  return trial.players.map((player) => ({
+    id: player.id,
+    user_id: null,
+    guest_name: player.name,
+    joined_at: trial.startedAt,
+  }));
 }
 
 export function TrialSession() {
   const router = useRouter();
   const [trial, setTrial] = useState<LocalTrialRound | null | undefined>(undefined);
-  const [readyToComplete, setReadyToComplete] = useState(false);
+  const [isEditingScores, setIsEditingScores] = useState(false);
   const [currentHoleIndex, setCurrentHoleIndex] = useState(0);
-  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [scorecardOpen, setScorecardOpen] = useState(false);
   const [draftStrokes, setDraftStrokes] = useState<Record<string, string>>({});
   const [draftOb, setDraftOb] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const loaded = loadLocalTrial();
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate from localStorage
     setTrial(loaded);
     if (!loaded) {
       router.replace("/");
       return;
     }
     if (loaded.status === "active") {
-      const startIndex = getFirstIncompleteHoleIndex(
-        loaded.holes,
-        loaded.players,
-        toHoleScores(loaded.scores)
+      setCurrentHoleIndex(
+        getFirstIncompleteHoleIndex(
+          orderHolesForPlay(loaded.holes, loaded.startingHole),
+          loaded.players,
+          toHoleScores(loaded.scores)
+        )
       );
-      setCurrentHoleIndex(startIndex);
-      const hole = loaded.holes[startIndex];
-      const first = hole
-        ? loaded.players.find(
-            (player) =>
-              !loaded.scores.some(
-                (score) => score.holeId === hole.id && score.playerId === player.id
-              )
-          )
-        : loaded.players[0];
-      setSelectedPlayerId(first?.id ?? loaded.players[0]?.id ?? null);
     }
   }, [router]);
 
-  const holes = trial?.holes ?? [];
-  const players = trial?.players ?? [];
-  const isSetup = trial?.status === "setup";
   const isFinished = trial?.status === "completed";
   useTabBarVisibilityOverride(Boolean(isFinished));
 
-  const activeHole = holes[currentHoleIndex] ?? null;
-  const isLastHole = activeHole ? currentHoleIndex === holes.length - 1 : false;
-
-  const getStrokeInputValue = (playerId: string): string => {
-    if (!activeHole) {
-      return "";
+  const participants = useMemo(() => (trial ? toParticipantRows(trial) : []), [trial]);
+  const playHoles = useMemo(
+    () => (trial ? orderHolesForPlay(trial.holes, trial.startingHole) : []),
+    [trial]
+  );
+  const scoreLookup = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const score of trial?.scores ?? []) {
+      map.set(makeScoreLookupKey(score.playerId, score.holeId), score.strokes);
     }
-    const draft = draftStrokes[playerId];
-    if (draft !== undefined) {
-      return draft;
-    }
-    const saved = trial?.scores.find(
-      (score) => score.holeId === activeHole.id && score.playerId === playerId
-    );
-    return saved ? String(saved.strokes) : "";
-  };
-
-  const isObChecked = (playerId: string): boolean => {
-    if (!activeHole) {
-      return false;
-    }
-    const draft = draftOb[playerId];
-    if (draft !== undefined) {
-      return draft;
-    }
-    return (
-      trial?.scores.find(
-        (score) => score.holeId === activeHole.id && score.playerId === playerId
-      )?.ob ?? false
-    );
-  };
-
-  const selectedPlayer =
-    players.find((player) => player.id === selectedPlayerId) ?? players[0] ?? null;
-
-  const leaderboard = useMemo(() => {
-    if (!trial) {
-      return [];
-    }
-    const lookup = scoreLookupFrom(trial.scores);
-    return buildLeaderboard(trial.players, trial.holes, lookup, (id) => {
-      return trial.players.find((player) => player.id === id)?.name || "Player";
-    });
+    return map;
   }, [trial]);
+  const obLookup = useMemo(() => {
+    const map = new Map<string, boolean>();
+    for (const score of trial?.scores ?? []) {
+      map.set(makeScoreLookupKey(score.playerId, score.holeId), score.ob);
+    }
+    return map;
+  }, [trial]);
+  const labelById = useMemo(
+    () => new Map((trial?.players ?? []).map((player) => [player.id, player.name || "Player"])),
+    [trial]
+  );
+  const leaderboardRows = useMemo(
+    () =>
+      trial
+        ? buildLeaderboard(participants, trial.holes, scoreLookup, (id) => labelById.get(id) ?? "Player")
+        : [],
+    [trial, participants, scoreLookup, labelById]
+  );
+  const leaderboardById = useMemo(
+    () => new Map(leaderboardRows.map((row) => [row.participantId, row])),
+    [leaderboardRows]
+  );
+  // Play order, never sorted by score: casual rounds are not ranked.
+  const playOrderRows = participants.flatMap((participant) => {
+    const row = leaderboardById.get(participant.id);
+    return row ? [row] : [];
+  });
+
+  if (trial === undefined || !trial) {
+    return null;
+  }
+
+  const activeHole = playHoles[currentHoleIndex] ?? null;
+  const isLastHole = currentHoleIndex === playHoles.length - 1;
+  const allScored = isLocalTrialFullyScored(trial);
+  const getParticipantLabel = (participant: ParticipantRow) =>
+    labelById.get(participant.id) ?? "Player";
 
   function persist(next: LocalTrialRound) {
     saveLocalTrial(next);
     setTrial(next);
   }
 
-  function saveCurrentHole(): boolean {
-    if (!trial || !activeHole) {
+  function onDiscard() {
+    clearLocalTrial();
+    router.replace("/");
+  }
+
+  const header = (suffix: string) => (
+    <header className="-mr-2 -mb-3 flex items-center gap-2">
+      <p className="min-w-0 flex-1 truncate text-sm font-semibold">
+        {trial.courseName}{" "}
+        <span className="font-medium text-muted-foreground">
+          · {trial.layoutName} · {suffix}
+        </span>
+      </p>
+      <ConfirmActionDialog
+        title="Discard this round?"
+        description="The scores are only on this phone. They can't be brought back."
+        confirmLabel="Discard"
+        cancelLabel="Keep playing"
+        sideBySide
+        onConfirm={onDiscard}
+        trigger={
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-11 shrink-0 text-foreground"
+            aria-label="Discard this round"
+          >
+            <X className="size-[22px]" strokeWidth={2} aria-hidden />
+          </Button>
+        }
+      />
+    </header>
+  );
+
+  const renderScorecard = (options: { showTitle: boolean; onHoleSelect?: (holeId: string) => void }) => (
+    <ScorecardSection
+      roundStatus={isFinished ? "completed" : "active"}
+      sortedHoles={trial.holes}
+      scoreLookup={scoreLookup}
+      obLookup={obLookup}
+      rows={playOrderRows}
+      activeHole={options.onHoleSelect ? null : activeHole}
+      showTitle={options.showTitle}
+      onHoleSelect={options.onHoleSelect ? (hole) => options.onHoleSelect!(hole.id) : undefined}
+    />
+  );
+
+  if (trial.status === "setup") {
+    return <TrialSetup trial={trial} persist={persist} header={header("trial · setting up")} />;
+  }
+
+  if (isFinished) {
+    const dateLabel = formatRoundDisplayDate(trial.completedAt, trial.startedAt);
+    return (
+      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+        <header className="space-y-1">
+          <p className="truncate text-sm font-semibold">
+            {trial.courseName}{" "}
+            <span className="font-medium text-muted-foreground">· {trial.layoutName}</span>
+          </p>
+          <h1 className={pageTitleClassName}>Trial round</h1>
+          <p className="text-sm text-muted-foreground">
+            {[dateLabel, `${participants.length} ${participants.length === 1 ? "player" : "players"}`]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        </header>
+        <RoundResults
+          scoringParticipants={participants}
+          leaderboardByParticipantId={leaderboardById}
+          getParticipantLabel={getParticipantLabel}
+        />
+        {renderScorecard({ showTitle: true })}
+        <section aria-labelledby="save-trial" className="space-y-3 rounded-md border border-foreground p-4">
+          <div className="space-y-1">
+            <h2 id="save-trial" className="font-display text-lg font-semibold">
+              Save this round
+            </h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              It&apos;s only on this phone. With an account it goes to your history and counts in your
+              stats.
+            </p>
+          </div>
+          <Button asChild className="min-h-13 w-full justify-between px-4 text-base font-semibold">
+            <Link href="/auth?mode=sign-up">
+              Create an account
+              <ArrowRight className="size-5" aria-hidden />
+            </Link>
+          </Button>
+          <div className="flex items-center justify-between">
+            <Link href="/auth" className="flex min-h-11 items-center text-sm font-semibold">
+              I have an account
+            </Link>
+            <ConfirmActionDialog
+              title="Discard this round?"
+              description="It's only on this phone. Discarding removes it for good."
+              confirmLabel="Discard"
+              sideBySide
+              onConfirm={onDiscard}
+              trigger={
+                <button type="button" className="min-h-11 text-sm font-semibold text-destructive">
+                  Discard
+                </button>
+              }
+            />
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  const holeKey = (playerId: string) => `${activeHole?.id}:${playerId}`;
+
+  const getStrokeInputValue = (playerId: string): string => {
+    if (!activeHole) {
+      return "";
+    }
+    const draft = draftStrokes[holeKey(playerId)];
+    if (draft !== undefined) {
+      return draft;
+    }
+    const saved = scoreLookup.get(makeScoreLookupKey(playerId, activeHole.id));
+    return saved !== undefined ? String(saved) : "";
+  };
+
+  const isObChecked = (playerId: string): boolean => {
+    if (!activeHole) {
       return false;
     }
+    return draftOb[holeKey(playerId)] ?? obLookup.get(makeScoreLookupKey(playerId, activeHole.id)) ?? false;
+  };
 
-    const nextScores: LocalTrialScore[] = trial.scores.filter(
-      (score) => score.holeId !== activeHole.id
-    );
-
+  function onSaveAndAdvanceHole() {
+    if (!trial || !activeHole) {
+      return;
+    }
+    const nextScores = trial.scores.filter((score) => score.holeId !== activeHole.id);
     for (const player of trial.players) {
-      const raw = getStrokeInputValue(player.id);
-      const strokes = parseStrokeValue(raw);
-      if (strokes === null || strokes < STROKE_MIN || strokes > STROKE_MAX) {
-        toastError(`Enter valid strokes (${STROKE_MIN}-${STROKE_MAX}) for every player.`);
-        return false;
+      const strokes = Number(getStrokeInputValue(player.id).trim());
+      if (!Number.isInteger(strokes) || strokes < 1 || strokes > 25) {
+        toastError(`Enter valid strokes (1-25) for every player on hole ${activeHole.hole_number}.`);
+        return;
       }
-      nextScores.push({
-        holeId: activeHole.id,
-        playerId: player.id,
-        strokes,
-        ob: isObChecked(player.id),
-      });
+      nextScores.push({ holeId: activeHole.id, playerId: player.id, strokes, ob: isObChecked(player.id) });
     }
-
     persist({ ...trial, scores: nextScores });
-    setDraftStrokes({});
-    setDraftOb({});
-    return true;
+    const savedKeys = new Set(trial.players.map((player) => holeKey(player.id)));
+    const withoutSaved = <T,>(drafts: Record<string, T>) =>
+      Object.fromEntries(Object.entries(drafts).filter(([key]) => !savedKeys.has(key)));
+    setDraftStrokes(withoutSaved);
+    setDraftOb(withoutSaved);
+
+    // From the review (or the last hole) saving goes back to the review.
+    if (isLastHole || isEditingScores) {
+      setIsEditingScores(false);
+      return;
+    }
+    setCurrentHoleIndex((index) => Math.min(index + 1, playHoles.length - 1));
   }
 
-  function onSaveAndAdvance() {
-    const allEntered = players.every((player) => getStrokeInputValue(player.id).trim().length > 0);
-    const currentHasScore = selectedPlayer
-      ? getStrokeInputValue(selectedPlayer.id).trim().length > 0
-      : false;
-    const showNextPlayer = players.length > 1 && !allEntered && currentHasScore;
-
-    if (showNextPlayer && selectedPlayer) {
-      setSelectedPlayerId(getNextPlayerId(players, selectedPlayer.id));
-      return;
-    }
-
-    if (!saveCurrentHole()) {
-      return;
-    }
-    if (isLastHole) {
-      setReadyToComplete(true);
-      return;
-    }
-    const nextIndex = Math.min(currentHoleIndex + 1, holes.length - 1);
-    setCurrentHoleIndex(nextIndex);
-    const nextHole = holes[nextIndex];
-    const first = nextHole
-      ? players.find(
-          (player) =>
-            !trial?.scores.some(
-              (score) => score.holeId === nextHole.id && score.playerId === player.id
-            )
-        )
-      : players[0];
-    setSelectedPlayerId(first?.id ?? players[0]?.id ?? null);
-  }
-
-  function onPreviousHole() {
-    setDraftStrokes({});
-    setDraftOb({});
-    const nextIndex = Math.max(currentHoleIndex - 1, 0);
-    setCurrentHoleIndex(nextIndex);
-    setSelectedPlayerId(players[0]?.id ?? null);
+  function editHoleFromReview(holeId: string) {
+    setCurrentHoleIndex(Math.max(0, playHoles.findIndex((hole) => hole.id === holeId)));
+    setIsEditingScores(true);
   }
 
   function onComplete() {
@@ -256,272 +325,96 @@ export function TrialSession() {
       toastError("Score every hole for every player before completing.");
       return;
     }
-    persist({
-      ...latest,
-      status: "completed",
-      completedAt: new Date().toISOString(),
-    });
-    setReadyToComplete(false);
+    persist({ ...latest, status: "completed", completedAt: new Date().toISOString() });
   }
 
-  function onDiscard() {
-    clearLocalTrial();
-    router.replace("/");
-  }
+  const scorecardDialog = (
+    <RoundScorecardDialog open={scorecardOpen} onOpenChange={setScorecardOpen}>
+      {renderScorecard({ showTitle: false })}
+    </RoundScorecardDialog>
+  );
 
-  if (trial === undefined || !trial) {
-    return null;
-  }
-
-  if (isSetup) {
-    return <TrialSetup trial={trial} persist={persist} onDiscard={onDiscard} />;
-  }
-
-  if (isFinished || readyToComplete) {
+  if (allScored && !isEditingScores) {
+    const lastHole = playHoles.at(-1);
     return (
       <main
-        className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8"
-        style={readyToComplete ? { paddingBottom: COMPLETE_BOTTOM_INSET } : undefined}
+        className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-[18px] p-4 sm:p-8"
+        style={{ paddingBottom: ROUND_COMPLETE_BOTTOM_INSET }}
       >
-        {isFinished ? (
-          <header className="space-y-1">
-            <h1 className={pageTitleClassName}>{trial.courseName}</h1>
-            <p className={pageSubtitleClassName}>{trial.layoutName} · trial round</p>
-          </header>
-        ) : (
-          <TrialHeader trial={trial} onDiscard={onDiscard} />
-        )}
-        <PlayerTotals rows={leaderboard} />
-        <CompletedHoleList holes={trial.holes} players={trial.players} scores={trial.scores} />
-        {isFinished ? (
-          <div className="space-y-2">
-            <Button asChild size="lg" className={pagePrimaryButtonClassName}>
-              <Link href="/auth">Create account to save this round</Link>
-            </Button>
-            <DiscardButton
-              title="Discard this round?"
-              description="This trial stays on this device until you create an account. Discarding removes it."
-              onConfirm={onDiscard}
-            />
-          </div>
-        ) : (
-          <div
-            className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-4 pt-3 backdrop-blur supports-[backdrop-filter]:bg-background/80"
-            style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))" }}
-          >
-            <div className="mx-auto flex w-full max-w-3xl flex-col gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                className="min-h-11 w-full rounded-xl"
-                onClick={() => setReadyToComplete(false)}
-              >
-                Edit scores
-              </Button>
-              <Button
-                type="button"
-                size="lg"
-                className="min-h-11 w-full rounded-xl"
-                onClick={onComplete}
-              >
-                Complete round
-              </Button>
-            </div>
-          </div>
-        )}
+        {header("trial")}
+        <RoundProgress
+          progress={playHoles.map(() => "done")}
+          onOpenScorecard={() => setScorecardOpen(true)}
+        />
+        <div className="space-y-1.5">
+          <h1 className={pageTitleClassName}>All holes played</h1>
+          <p className="text-[15px] text-muted-foreground">
+            Check the card. Tap a hole to edit. Scores lock when you confirm the round.
+          </p>
+        </div>
+        {renderScorecard({ showTitle: false, onHoleSelect: editHoleFromReview })}
+        <RoundResults
+          scoringParticipants={participants}
+          leaderboardByParticipantId={leaderboardById}
+          getParticipantLabel={getParticipantLabel}
+          variant="totals"
+        />
+        <RoundCompleteActions
+          isSubmitting={false}
+          isTransitioning={false}
+          lastHoleNumber={lastHole?.hole_number ?? playHoles.length}
+          onBackToLastHole={() => editHoleFromReview(lastHole?.id ?? "")}
+          onCompleteRound={onComplete}
+        />
+        {scorecardDialog}
       </main>
     );
   }
 
-  if (!activeHole || !selectedPlayer) {
+  if (!activeHole) {
     return null;
   }
 
-  const strokeValue = getStrokeInputValue(selectedPlayer.id);
-  const obChecked = isObChecked(selectedPlayer.id);
-  const parsed = parseStrokeValue(strokeValue);
-  const isImplicitPar = parsed === null;
-  const displayValue = parsed ?? activeHole.par;
-  const canDecrement = isImplicitPar ? activeHole.par > STROKE_MIN : parsed > STROKE_MIN;
-  const canIncrement = isImplicitPar ? activeHole.par < STROKE_MAX : parsed < STROKE_MAX;
-  const allHoleScoresEntered = players.every(
-    (player) => getStrokeInputValue(player.id).trim().length > 0
-  );
-  const currentPlayerHasScore = strokeValue.trim().length > 0;
-  const showNextPlayer = players.length > 1 && !allHoleScoresEntered && currentPlayerHasScore;
-  const selectedIndex = players.findIndex((player) => player.id === selectedPlayer.id);
-  const nextPlayerName = players[(selectedIndex + 1) % players.length]?.name ?? "player";
+  const progress: HoleProgress[] = playHoles.map((hole) => {
+    if (hole.id === activeHole.id) {
+      return "current";
+    }
+    return trial.players.every((player) => scoreLookup.has(makeScoreLookupKey(player.id, hole.id)))
+      ? "done"
+      : "todo";
+  });
 
   return (
     <main
       className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8"
-      style={{ paddingBottom: ACTIVE_BOTTOM_INSET }}
+      style={{ paddingBottom: ACTIVE_SCORING_BOTTOM_INSET }}
     >
-      <TrialHeader trial={trial} onDiscard={onDiscard} />
-      <section className="space-y-3 border-b pb-3.5">
-        <div className="flex items-end justify-between gap-4">
-          <h2 aria-label={`Hole ${activeHole.hole_number} of ${holes.length}`} className="flex flex-col gap-0.5">
-            <span className="text-[13px] font-semibold text-muted-foreground">Hole</span>
-            <span className="font-display text-[52px] font-semibold leading-none tracking-tight">
-              {activeHole.hole_number}
-            </span>
-          </h2>
-          <dl className="flex gap-5 pb-1">
-            <div className="flex flex-col items-end gap-0.5">
-              <dt className="text-[13px] font-semibold text-muted-foreground">Par</dt>
-              <dd className="font-display text-[26px] font-semibold leading-none">{activeHole.par}</dd>
-            </div>
-            <div className="flex flex-col items-end gap-0.5">
-              <dt className="text-[13px] font-semibold text-muted-foreground">Meters</dt>
-              <dd className="font-display text-[26px] font-semibold leading-none">{activeHole.distance_m}</dd>
-            </div>
-          </dl>
-        </div>
-        {activeHole.notes ? (
-          <p className="text-sm leading-snug whitespace-pre-line text-foreground/85">{activeHole.notes}</p>
-        ) : null}
-      </section>
-
-      {players.length > 1 ? (
-        <ul className="space-y-1.5">
-          {players.map((player, index) => {
-            const holeRaw = getStrokeInputValue(player.id).trim();
-            const stats = leaderboard.find((row) => row.participantId === player.id);
-            const isSelected = player.id === selectedPlayer.id;
-            return (
-              <li key={player.id}>
-                <button
-                  type="button"
-                  onClick={() => setSelectedPlayerId(player.id)}
-                  className={cn(
-                    "flex w-full items-center gap-2 rounded-lg border py-2 pl-3 pr-4 text-left text-sm transition-colors",
-                    isSelected
-                      ? "border-primary bg-primary/5"
-                      : "border-border bg-background hover:bg-muted/50"
-                  )}
-                  aria-pressed={isSelected}
-                >
-                  <span className="min-w-0 flex-1 truncate font-medium">
-                    <span className="text-muted-foreground tabular-nums">{index + 1}.</span>{" "}
-                    {player.name}
-                  </span>
-                  <span className="font-mono text-sm tabular-nums text-muted-foreground">
-                    {holeRaw || "—"}
-                    {isObChecked(player.id) ? (
-                      <span className="ml-1 text-destructive">OB</span>
-                    ) : null}
-                  </span>
-                  <span className="font-mono text-sm tabular-nums">
-                    {stats && stats.thru > 0 ? formatVsPar(stats.vsPar) : "—"}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-
-      <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background px-5 pt-3.5"
-        style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
-      >
-        <div className="mx-auto w-full max-w-3xl space-y-3">
-          <div className="grid grid-cols-[minmax(0,1fr)_100px_minmax(0,1fr)] items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="h-18 border-[1.5px] border-foreground shadow-none"
-              aria-label="Decrease strokes"
-              disabled={!canDecrement}
-              onClick={() => {
-                const next = isImplicitPar
-                  ? Math.max(STROKE_MIN, activeHole.par - 1)
-                  : Math.max(STROKE_MIN, (parsed ?? activeHole.par) - 1);
-                setDraftStrokes((prev) => ({ ...prev, [selectedPlayer.id]: String(next) }));
-              }}
-            >
-              <Minus className="size-7" aria-hidden />
-            </Button>
-            <div className="flex min-w-0 flex-col items-center gap-0.5">
-              <span className="max-w-full truncate text-[13px] font-semibold text-muted-foreground">
-                {selectedPlayer.name}
-              </span>
-              <span
-                className={cn(
-                  "font-display text-[52px] font-semibold leading-none tabular-nums",
-                  isImplicitPar ? "text-muted-foreground/35" : "text-foreground"
-                )}
-                aria-live="polite"
-                aria-atomic="true"
-                aria-label={
-                  isImplicitPar
-                    ? `Suggested par ${activeHole.par}, tap + or − to set score`
-                    : `Score ${displayValue}`
-                }
-              >
-                {displayValue}
-              </span>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              className="h-18 border-[1.5px] border-foreground bg-accent shadow-none"
-              aria-label="Increase strokes"
-              disabled={!canIncrement}
-              onClick={() => {
-                const next = isImplicitPar
-                  ? activeHole.par
-                  : Math.min(STROKE_MAX, (parsed ?? activeHole.par) + 1);
-                setDraftStrokes((prev) => ({ ...prev, [selectedPlayer.id]: String(next) }));
-              }}
-            >
-              <Plus className="size-7" aria-hidden />
-            </Button>
-          </div>
-          <div className="grid grid-cols-[72px_72px_minmax(0,1fr)] gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="min-h-12 border-input shadow-none"
-              aria-label="Previous hole"
-              disabled={currentHoleIndex === 0}
-              onClick={onPreviousHole}
-            >
-              <ChevronLeft className="size-5" aria-hidden />
-            </Button>
-            <Button
-              type="button"
-              variant={obChecked ? "destructive" : "outline"}
-              className={cn(
-                "min-h-12 text-sm font-bold tracking-wider shadow-none",
-                !obChecked && "border-input"
-              )}
-              aria-pressed={obChecked}
-              aria-label={`Toggle OB for ${selectedPlayer.name}`}
-              onClick={() =>
-                setDraftOb((prev) => ({ ...prev, [selectedPlayer.id]: !obChecked }))
-              }
-            >
-              OB
-            </Button>
-            <Button
-              type="button"
-              className="min-h-12 min-w-0 text-[15px] font-semibold"
-              disabled={!showNextPlayer && !allHoleScoresEntered}
-              onClick={onSaveAndAdvance}
-            >
-              <span className="truncate">
-                {showNextPlayer
-                  ? `Next: ${nextPlayerName}`
-                  : isLastHole
-                    ? "Save scores"
-                    : "Next hole"}
-              </span>
-            </Button>
-          </div>
-        </div>
-      </div>
+      {header("trial")}
+      <ActiveHoleScoring
+        key={activeHole.id}
+        activeHole={activeHole}
+        holesLength={playHoles.length}
+        progress={progress}
+        onOpenScorecard={() => setScorecardOpen(true)}
+        scoringParticipants={participants}
+        leaderboardRows={leaderboardRows}
+        currentHoleIndex={currentHoleIndex}
+        isLastHole={isLastHole || isEditingScores}
+        isSubmitting={false}
+        getParticipantLabel={getParticipantLabel}
+        teePositionByParticipantId={buildTeePositionMap(playHoles, currentHoleIndex, participants, scoreLookup)}
+        getStrokeInputValue={getStrokeInputValue}
+        isObChecked={isObChecked}
+        onStrokeChange={(playerId, value) =>
+          setDraftStrokes((prev) => ({ ...prev, [holeKey(playerId)]: value }))
+        }
+        onObToggle={(playerId, checked) =>
+          setDraftOb((prev) => ({ ...prev, [holeKey(playerId)]: checked }))
+        }
+        onPreviousHole={() => setCurrentHoleIndex((index) => Math.max(index - 1, 0))}
+        onSaveAndAdvanceHole={onSaveAndAdvanceHole}
+      />
+      {scorecardDialog}
     </main>
   );
 }
@@ -529,19 +422,15 @@ export function TrialSession() {
 function TrialSetup({
   trial,
   persist,
-  onDiscard,
+  header,
 }: {
   trial: LocalTrialRound;
   persist: (next: LocalTrialRound) => void;
-  onDiscard: () => void;
+  header: React.ReactNode;
 }) {
   const [guestName, setGuestName] = useState("");
   const scorer = trial.players.find((player) => player.isScorer);
   const guests = trial.players.filter((player) => !player.isScorer);
-
-  function persistPlayers(players: LocalTrialPlayer[]) {
-    persist({ ...trial, players });
-  }
 
   function onAddGuest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -550,7 +439,7 @@ function TrialSetup({
       toastError(result.message);
       return;
     }
-    persistPlayers(result.players);
+    persist({ ...trial, players: result.players });
     setGuestName("");
   }
 
@@ -564,181 +453,84 @@ function TrialSetup({
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
-      <TrialHeader trial={trial} onDiscard={onDiscard} />
+    <main
+      className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8"
+      style={{ paddingBottom: DRAFT_SETUP_BOTTOM_INSET }}
+    >
+      {header}
+      <div className="space-y-1.5 pt-3">
+        <h1 className={pageTitleClassName}>Trial round</h1>
+        <p className="text-[15px] text-muted-foreground">
+          No account needed. The round stays on this phone until you save it.
+        </p>
+      </div>
 
-      <section className="space-y-3">
-        <h2 className={sectionHeadingClassName}>Players</h2>
-        <div className="space-y-2">
-          <Label htmlFor="trial-scorer-name">Your name</Label>
-          <Input
-            id="trial-scorer-name"
+      <section>
+        <h2 className="mb-1.5 font-display text-lg font-semibold">Players</h2>
+        <label className="flex min-h-13 items-center gap-2.5 border-b">
+          <span className="sr-only">Your name</span>
+          <input
             value={scorer?.name ?? ""}
-            onChange={(event) => persistPlayers(setScorerName(trial.players, event.target.value))}
+            onChange={(event) =>
+              persist({ ...trial, players: setScorerName(trial.players, event.target.value) })
+            }
             maxLength={80}
             autoComplete="given-name"
             placeholder="Your name"
+            aria-label="Your name"
+            className="min-w-0 flex-1 bg-transparent text-base font-bold outline-none placeholder:font-semibold placeholder:text-muted-foreground"
           />
-        </div>
-
-        {guests.length > 0 ? (
-          <ul className="divide-y rounded-lg border">
-            {guests.map((guest) => (
-              <li key={guest.id} className="flex min-h-11 items-center gap-2 px-3 text-sm">
-                <span className="min-w-0 flex-1 truncate font-medium">{guest.name}</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 shrink-0 px-2 text-muted-foreground"
-                  onClick={() => persistPlayers(removeGuestPlayer(trial.players, guest.id))}
-                >
-                  Remove
-                </Button>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-
-        <form onSubmit={onAddGuest} className="flex gap-2">
-          <Input
+          <span className="shrink-0 text-[13px] text-muted-foreground">You · scorer</span>
+        </label>
+        {guests.map((guest) => (
+          <div key={guest.id} className="flex min-h-13 items-center gap-2.5 border-b">
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-base font-semibold">{guest.name}</span>
+              <span className="block text-[13px] text-muted-foreground">Guest</span>
+            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              className="min-h-11 shrink-0 px-2 font-semibold text-muted-foreground"
+              onClick={() => persist({ ...trial, players: removeGuestPlayer(trial.players, guest.id) })}
+            >
+              Remove
+            </Button>
+          </div>
+        ))}
+        <form onSubmit={onAddGuest} className="flex min-h-13 items-center gap-2.5 border-b text-primary">
+          <input
             value={guestName}
             onChange={(event) => setGuestName(event.target.value)}
             maxLength={80}
-            placeholder="Add a player"
+            placeholder="+ Add player"
             aria-label="Guest name"
+            className="min-w-0 flex-1 bg-transparent text-base font-semibold text-foreground outline-none placeholder:text-primary"
           />
-          <Button type="submit" variant="outline" className="shrink-0">
-            Add
-          </Button>
+          {guestName.trim() ? (
+            <Button type="submit" variant="ghost" className="min-h-11 shrink-0 px-2 font-semibold text-primary">
+              Add
+            </Button>
+          ) : null}
         </form>
       </section>
 
-      <Button type="button" size="lg" className={pagePrimaryButtonClassName} onClick={onStart}>
-        Start round
-      </Button>
-    </main>
-  );
-}
-
-function TrialHeader({
-  trial,
-  onDiscard,
-}: {
-  trial: LocalTrialRound;
-  onDiscard: () => void;
-}) {
-  return (
-    <header className="flex items-start justify-between gap-3">
-      <div className="min-w-0 space-y-1">
-        <h1 className={pageTitleClassName}>{trial.courseName}</h1>
-        <p className={pageSubtitleClassName}>{trial.layoutName} · trial</p>
-      </div>
-      <DiscardButton
-        title="Discard this round?"
-        description="Scores are only on this device. Discarding cannot be undone."
-        onConfirm={onDiscard}
-        compact
+      <StartingHoleField
+        holeNumbers={trial.holes.map((hole) => hole.hole_number)}
+        startingHole={trial.startingHole}
+        onChange={(hole) => persist({ ...trial, startingHole: hole })}
       />
-    </header>
-  );
-}
 
-function PlayerTotals({
-  rows,
-}: {
-  rows: { participantId: string; label: string; totalStrokes: number; vsPar: number; thru: number }[];
-}) {
-  return (
-    <ul className="divide-y rounded-lg border">
-      {rows.map((row) => (
-        <li key={row.participantId} className="flex items-baseline justify-between gap-3 px-4 py-2 text-sm">
-          <span className="min-w-0 truncate font-medium">{row.label}</span>
-          <span className="font-mono tabular-nums">
-            {row.thru > 0 ? row.totalStrokes : "—"}{" "}
-            <span className="text-muted-foreground">
-              ({row.thru > 0 ? formatVsPar(row.vsPar) : "—"})
-            </span>
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function CompletedHoleList({
-  holes,
-  players,
-  scores,
-}: {
-  holes: LocalTrialHole[];
-  players: LocalTrialPlayer[];
-  scores: LocalTrialScore[];
-}) {
-  return (
-    <ul className="divide-y rounded-lg border">
-      {holes.map((hole) => (
-        <li key={hole.id} className="space-y-1 px-4 py-2 text-sm">
-          <p className="text-muted-foreground">
-            Hole {hole.hole_number}
-            <span className="ml-2">Par {hole.par}</span>
-          </p>
-          <div className="flex flex-wrap gap-x-4 gap-y-1">
-            {players.map((player) => {
-              const score = scores.find(
-                (row) => row.holeId === hole.id && row.playerId === player.id
-              );
-              return (
-                <span key={player.id} className="font-mono tabular-nums">
-                  <span className="font-sans text-muted-foreground">{player.name} </span>
-                  {score ? score.strokes : "—"}
-                  {score?.ob ? <span className="ml-1 text-destructive">OB</span> : null}
-                </span>
-              );
-            })}
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function DiscardButton({
-  title,
-  description,
-  onConfirm,
-  compact = false,
-}: {
-  title: string;
-  description: string;
-  onConfirm: () => void;
-  compact?: boolean;
-}) {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        {compact ? (
-          <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground">
-            Discard
-          </Button>
-        ) : (
-          <Button type="button" variant="outline" size="lg" className={pagePrimaryButtonClassName}>
-            Discard round
-          </Button>
-        )}
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={onConfirm}>
-            Discard
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      <DraftSetupDeck
+        roundStatus="draft"
+        isScorer
+        isTransitioning={false}
+        hasPendingInvite={false}
+        pendingInviteLabels={[]}
+        playerCount={trial.players.length}
+        startingHole={trial.startingHole}
+        onStartRound={onStart}
+      />
+    </main>
   );
 }

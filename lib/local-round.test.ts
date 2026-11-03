@@ -27,6 +27,7 @@ function completedTrial(overrides: Partial<LocalTrialRound> = {}): LocalTrialRou
     courseName: "Test Park",
     courseSlug: "test-park",
     layoutName: "White",
+    startingHole: 1,
     startedAt: "2026-08-17T08:00:00.000Z",
     completedAt: "2026-08-17T09:30:00.000Z",
     holes: HOLES,
@@ -68,6 +69,14 @@ describe("parseLocalTrial", () => {
     });
     expect(parsed?.players).toEqual([{ id: "trial", name: "You", isScorer: true }]);
     expect(parsed?.scores[0]).toEqual({ holeId: "h1", playerId: "trial", strokes: 3, ob: false });
+  });
+
+  it("keeps a starting hole on the layout and falls back to 1 otherwise", () => {
+    expect(parseLocalTrial(completedTrial({ startingHole: 2 }))?.startingHole).toBe(2);
+    expect(parseLocalTrial(completedTrial({ startingHole: 99 }))?.startingHole).toBe(1);
+    const legacy: Partial<LocalTrialRound> = completedTrial();
+    delete legacy.startingHole;
+    expect(parseLocalTrial(legacy)?.startingHole).toBe(1);
   });
 
   it("rejects a wrong version or empty holes", () => {
