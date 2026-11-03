@@ -136,7 +136,8 @@ test("a player at the course sends its position and sees courses already nearby"
     { name: "tee1.png", mimeType: "image/png", buffer: PHOTO },
     { name: "tee2.png", mimeType: "image/png", buffer: PHOTO },
   ]);
-  await expect(page.getByText("2 photos · we'll let you know when it's added")).toBeVisible();
+  await expect(page.getByRole("img", { name: "Photo 2" })).toBeVisible();
+  await expect(page.getByText("We'll let you know when it's added")).toBeVisible();
   await page.getByRole("button", { name: "Send suggestion" }).click();
   await expect(page.getByRole("heading", { name: "Thanks, got it" })).toBeVisible();
 

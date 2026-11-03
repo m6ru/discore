@@ -477,9 +477,7 @@ export function SuggestionForm({ userId, course, layouts, knownCourses, backHref
           </Button>
           <p className="text-center text-[13px] text-muted-foreground">
             {isNewCourse
-              ? allPhotos.length > 0
-                ? `${allPhotos.length} ${allPhotos.length === 1 ? "photo" : "photos"} · we'll let you know when it's added`
-                : "We'll let you know when it's added"
+              ? "We'll let you know when it's added"
               : "We'll let you know when it's fixed"}
           </p>
         </div>
