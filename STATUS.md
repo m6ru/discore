@@ -22,7 +22,9 @@ _Overwritten at the end of every session — describes now, not history (history
 - **Trial round (2026-11-03):** drawn as C2 artboards (setup with starting hole, scoring, discard popup, review, finished with a Save this round box), owner approved, built on the signed-in round's components. Migration `20261103120000_claim_trial_starting_hole.sql`: `claim_trial` takes `p_starting_hole` (default 1, must be on the layout). **The owner must `npx supabase db push` before testing the preview.**
 - **Suggestion form (2026-11-03):** drawn as C2 artboards (Suggest a course, Suggest a fix, Thanks), owner approved (baskets default 18, no "optional" labels, a photo is required for a new course). New course: name, "Use where you are now" (phone GPS, not photo GPS: iPhones strip it) or type the town, "Is it one of these?" for courses within 3 km, baskets stepper, a Course board slot + more photos, optional note. Migration `20261103130000_course_suggestions_location_baskets.sql`: `lat`/`lng`/`basket_count` columns, 6 photos, note optional for a new course, ping has a map link. **The owner must `npx supabase db push` before testing the preview.**
 - **Admin suggestions (2026-11-03):** drawn as C2 artboards (New cards, Applied rows), owner approved, built. No migration.
-- **Next:** every screen is now in the C2 design. Ask the owner what is next (roadmap below).
+- **Phone polish (2026-11-03):** owner notes from real use. Round header = course on one line, layout under it ("setting up" dropped; scoring and trial too). Setup lost "You · scorer", the starting-hole hint and the caption under Start round. Course page: Your stats on the back-arrow row. Home frames: course name 22 px, wraps to two lines.
+- **Redesign done (2026-11-03):** every screen is in the C2 design. Small fixes from real use go straight to code; the canvas is not updated for those (`DESIGN-PATTERNS.md` is).
+- **Next (owner, 2026-11-03):** roadmap item 2, the **state-handling audit**. After it, a **security review learned together with the owner**: research how to test a Supabase + Next.js app, then attack it as a signed-in user against **local** Supabase only (other users' data, writes, functions, storage, Realtime, limits, secrets in git history) and a dashboard checklist for the owner (email confirmation, passwords, rate limits). Open privacy question for that review: any signed-in user can read every profile (city, birth year, gender) for the invite search.
 - **MacBook set up (2026-10-24):** Node 24 + gh from official downloads, `.env.local` and `supabase link` point at production. npm 11 skipped postinstall scripts for `esbuild`, `unrs-resolver` (works anyway; decide later).
 - **Small debts cleared (2026-10-26):** all server pages use `getClaims()`; `lib/` no longer imports from `app/` (shared row types in `lib/rounds/round-rows.ts`); `config.toml` uses `[local_smtp]`, empty seed step off.
 - **In flight:** nothing.
@@ -33,11 +35,12 @@ _Overwritten at the end of every session — describes now, not history (history
 
 Ordered. The security and reliability items from an external code review (Oct 2026) are done.
 
-1. **Presentation.** Design language (colors, type, components) with a proper design pass; landing page for visitors; README with screenshots, what it does, and an architecture diagram.
+1. **Presentation.** The design language is done (C2, every screen, 2026-11-03). Left: landing page for visitors; README with screenshots, what it does, and an architecture diagram.
 2. **State-handling audit.** Some flows do several browser ↔ database round trips. Claim and accept are fixed; audit the rest (draft setup, round page loads, stats pages) for chatty or sequential requests.
-3. **Stats build** — concept decided (BLUEPRINT §8a, 2026-10-24). Build it **in the new design** (after item 1), one screen at a time; start with the finished-round summary, then the scoring-screen line + its opt-out, then course stats, then Home/History.
-4. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
-5. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
+3. **Stats build** — done (2026-11-02/03): every question in BLUEPRINT §8a is on screen, in the new design.
+4. **Security review** (owner, 2026-11-03) — after item 2; see Handoff → Next.
+5. **Advanced scoring** — opt-in per round: fairway hit, C1/C2 in regulation, putting. Input UX is the main risk; keep casual rounds fast.
+6. **Course content (ongoing)** — per-park seasonal updates via JSON; map PNGs; known gaps (Kõrvemaa PRO 18, Järve Talu "20x" to confirm).
 
 Not planned: exports or integration with other platforms; competitions/ratings (Phase 6).
 
@@ -57,9 +60,9 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 **Shippable hobby app** for the Estonian disc golf community: pick a course, score a round with guests or invited friends, observers watch live, history and personal stats.
 
 - **Home** (`app/page.tsx`): continue-round cards, pending invites (Realtime), near-you start, Your stats, recent rounds. Signed out: play-first launchpad and continue card for a local trial.
-- **Play** (`app/courses/`): ~182 parks / ~209 layouts, search + distance sort; course detail with layout picker, About, optional map; `/courses/[slug]/stats` per-layout and per-hole stats.
-- **Rounds** (`app/rounds/[roundId]/`): draft (guests by name, registered players by invite) → active scoring (scorer only, OB; each hole saves instantly and syncs in the background) → complete or abandon. Observers watch read-only via Realtime. Finished round: scorecard, pool results, one-time insights card.
-- **Trial** (`app/rounds/trial/`): signed-out players score in `localStorage` (`discore:local-trial`) with named guests; a **completed** trial is claimed on sign-in/sign-up via `claim_trial` (idempotent on `guest_claim_id`). In-progress or corrupt trials are discarded at claim time.
+- **Play** (`app/courses/`): ~182 parks / ~209 layouts, search + distance sort; course detail with layout picker, About, optional map; `/courses/[slug]/stats` per-layout and per-hole stats; `/courses/suggest` for fixes and new courses.
+- **Rounds** (`app/rounds/[roundId]/`): draft (guests by name, registered players by invite) → active scoring (scorer only, OB; each hole saves instantly and syncs in the background) → review step (edit any hole, then Confirm round) or abandon. Observers watch read-only via Realtime. Finished round: Results, scorecard, "Where it went", Your round line.
+- **Trial** (`app/rounds/trial/`): signed-out players score in `localStorage` (`discore:local-trial`) with named guests and a starting hole, on the same screens as a signed-in round; a **completed** trial is claimed on sign-in/sign-up via `claim_trial` (idempotent on `guest_claim_id`). In-progress or corrupt trials are discarded at claim time.
 - **History** (`app/rounds/`): stats panel + round list; ace log at `/rounds/aces`.
 - **Profile** (`app/auth/`): sign in/up (first + last name required → `profiles.display_name`), details, preferences.
 
