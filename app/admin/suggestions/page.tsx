@@ -9,11 +9,9 @@ import {
   suggestionKindLabel,
   type SuggestionStatus,
 } from "@/lib/courses/course-suggestions";
-import { formatRoundDate } from "@/lib/format/round-date";
-import { pageSubtitleClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
+import { pageTitleClassName } from "@/lib/ui/page-chrome";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { SuggestionReviewActions } from "./review-actions";
+import { MoveBackToNew, SuggestionReviewActions } from "./review-actions";
 
 const STATUSES: { value: SuggestionStatus; label: string }[] = [
   { value: "new", label: "New" },
@@ -64,38 +62,53 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
     (signed ?? []).flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : []))
   );
 
+  const items = (rows ?? []).map((row) => {
+    const course = pickOne(row.courses);
+    const layout = pickOne(row.layouts);
+    const hole = pickOne(row.holes);
+    const photoUrls = row.photo_paths.flatMap((p) => {
+      const url = urlByPath.get(p);
+      return url ? [url] : [];
+    });
+    const courseLabel = (row.kind === "new_course" ? row.course_name : course?.name) ?? "Unknown course";
+    const where = [layout?.name, hole ? `Hole ${hole.hole_number}` : null].filter(Boolean).join(" · ");
+    return { row, course, layout, hole, photoUrls, courseLabel, where, sender: pickOne(row.profiles) };
+  });
+
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
-      <header className="space-y-1">
-        <div className="flex items-start justify-between gap-3">
-          <h1 className={cn(pageTitleClassName, "min-w-0 flex-1")}>Course suggestions</h1>
-          <Link
-            href="/auth"
-            aria-label="Back to profile"
-            className="-mr-2 inline-flex shrink-0 rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <ChevronLeft className="size-5" aria-hidden />
-          </Link>
-        </div>
-        <p className={pageSubtitleClassName}>
-          Apply accepted ones through the seed JSON (Copy for agent), push, then mark them applied.
-        </p>
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-[18px] p-4 sm:p-8">
+      <header className="space-y-2.5">
+        <Link
+          href="/auth"
+          aria-label="Back to profile"
+          className="-ml-3 inline-flex size-11 items-center justify-center rounded-md text-foreground transition-colors hover:bg-accent"
+        >
+          <ChevronLeft className="size-[22px]" aria-hidden />
+        </Link>
+        <h1 className={pageTitleClassName}>Course suggestions</h1>
+        <p className="text-sm text-muted-foreground">Copy for agent, apply it in a PR, then mark it applied.</p>
       </header>
 
-      <nav className="flex gap-2" aria-label="Filter by status">
-        {STATUSES.map((s, index) => (
-          <Link
-            key={s.value}
-            href={`/admin/suggestions?status=${s.value}`}
-            aria-current={s.value === status ? "page" : undefined}
-            className={cn(
-              "rounded-full border px-3 py-1 text-sm",
-              s.value === status ? "border-primary bg-primary/10 font-medium" : "text-muted-foreground"
-            )}
-          >
-            {s.label} <span className="font-mono tabular-nums">{counts[index]?.count ?? 0}</span>
-          </Link>
-        ))}
+      <nav className="flex gap-[22px] border-b" aria-label="Filter by status">
+        {STATUSES.map((s, index) => {
+          const active = s.value === status;
+          return (
+            <Link
+              key={s.value}
+              href={`/admin/suggestions?status=${s.value}`}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "flex min-h-11 flex-col justify-center gap-1.5 pt-1 text-[15px]",
+                active ? "font-bold text-foreground" : "font-medium text-muted-foreground"
+              )}
+            >
+              <span>
+                {s.label} <span className="font-mono tabular-nums">{counts[index]?.count ?? 0}</span>
+              </span>
+              <span className={cn("h-[3px] rounded-full", active ? "bg-good" : "bg-transparent")} />
+            </Link>
+          );
+        })}
       </nav>
 
       {error ? (
@@ -104,89 +117,75 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
         </p>
       ) : null}
 
-      {!error && (rows ?? []).length === 0 ? (
+      {!error && items.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nothing here.</p>
       ) : null}
 
-      <ul className="space-y-4">
-        {(rows ?? []).map((row) => {
-          const course = pickOne(row.courses);
-          const layout = pickOne(row.layouts);
-          const hole = pickOne(row.holes);
-          const sender = pickOne(row.profiles);
-          const photoUrls = row.photo_paths.flatMap((p) => {
-            const url = urlByPath.get(p);
-            return url ? [url] : [];
-          });
-          const courseLabel = row.kind === "new_course" ? row.course_name : course?.name;
-
-          return (
-            <li key={row.id} className="space-y-3 rounded-lg border px-4 py-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 space-y-0.5">
-                  <p className="font-medium">
-                    {course ? (
-                      <Link href={`/courses/${course.slug}`} className="underline-offset-4 hover:underline">
-                        {courseLabel}
-                      </Link>
-                    ) : (
-                      (courseLabel ?? "Unknown course")
-                    )}
-                    {layout ? <span className="text-muted-foreground"> · {layout.name}</span> : null}
-                    {hole ? <span className="text-muted-foreground"> · Hole {hole.hole_number}</span> : null}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {sender?.display_name ?? "Someone"} · {formatRoundDate(row.created_at)}
-                    {row.location ? ` · ${row.location}` : ""}
-                    {row.basket_count !== null ? ` · ${row.basket_count} baskets` : ""}
-                    {row.lat !== null && row.lng !== null ? (
-                      <>
-                        {" · "}
-                        <a
-                          href={`https://www.google.com/maps/search/?api=1&query=${row.lat},${row.lng}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-medium text-primary"
-                        >
-                          Map
-                        </a>
-                      </>
-                    ) : null}
-                  </p>
-                </div>
-                <Badge variant="secondary" className="shrink-0">
+      {status === "new" ? (
+        <ul className="space-y-3.5">
+          {items.map(({ row, course, layout, hole, photoUrls, courseLabel, where, sender }) => (
+            <li key={row.id} className="space-y-3 rounded-md border border-input p-4">
+              <div className="flex items-baseline justify-between gap-2.5">
+                <span className="text-xs font-bold uppercase tracking-[0.06em] text-primary">
                   {suggestionKindLabel(row.kind)}
-                </Badge>
+                </span>
+                <span className="shrink-0 text-[13px] text-muted-foreground">{shortDate(row.created_at)}</span>
+              </div>
+              <div className="space-y-1">
+                <h2 className="font-display text-xl font-semibold tracking-tight">
+                  {course ? (
+                    <Link href={`/courses/${course.slug}`} className="underline-offset-4 hover:underline">
+                      {courseLabel}
+                    </Link>
+                  ) : (
+                    courseLabel
+                  )}
+                  {where ? <span className="font-medium text-muted-foreground"> · {where}</span> : null}
+                </h2>
+                <p className="text-[13px] text-muted-foreground">
+                  From {sender?.display_name ?? "someone"}
+                  {row.location ? ` · ${row.location}` : ""}
+                  {row.basket_count !== null ? (
+                    <>
+                      {" · "}
+                      <span className="font-mono">{row.basket_count}</span> baskets
+                    </>
+                  ) : null}
+                  {row.lat !== null && row.lng !== null ? (
+                    <>
+                      {" · "}
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${row.lat},${row.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold text-primary"
+                      >
+                        Map
+                      </a>
+                    </>
+                  ) : null}
+                </p>
               </div>
 
-              {row.note ? <p className="whitespace-pre-line text-sm">{row.note}</p> : null}
+              {row.note ? <p className="whitespace-pre-line text-[15px] leading-normal">{row.note}</p> : null}
 
               {photoUrls.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-4 gap-2">
                   {photoUrls.map((url, index) => (
-                    <a key={url} href={url} target="_blank" rel="noopener noreferrer">
+                    <a key={url} href={url} target="_blank" rel="noopener noreferrer" className="aspect-square">
                       {/* eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL */}
-                      <img
-                        src={url}
-                        alt={`Photo ${index + 1}`}
-                        className="size-24 rounded-lg border object-cover"
-                      />
+                      <img src={url} alt={`Photo ${index + 1}`} className="size-full rounded-md bg-muted object-cover" />
                     </a>
                   ))}
                 </div>
               ) : null}
 
-              {row.owner_note ? (
-                <p className="text-sm text-muted-foreground">Your note: {row.owner_note}</p>
-              ) : null}
-
               <SuggestionReviewActions
                 id={row.id}
-                status={row.status as SuggestionStatus}
                 agentPrompt={buildAgentPrompt({
                   id: row.id,
                   kind: row.kind,
-                  courseName: courseLabel ?? null,
+                  courseName: courseLabel,
                   courseSlug: course?.slug ?? null,
                   layoutName: layout?.name ?? null,
                   holeNumber: hole?.hole_number ?? null,
@@ -200,9 +199,32 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
                 })}
               />
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      ) : (
+        <ul className="-mt-1">
+          {items.map(({ row, courseLabel, where }) => (
+            <li key={row.id} className="flex flex-col gap-1 border-b py-3.5">
+              <div className="flex items-baseline justify-between gap-2.5">
+                <span className="font-semibold">
+                  {courseLabel}
+                  {where ? <span className="font-medium text-muted-foreground"> · {where}</span> : null}
+                </span>
+                <span className="shrink-0 text-[13px] text-muted-foreground">{shortDate(row.created_at)}</span>
+              </div>
+              <span className="text-[13px] text-muted-foreground">
+                {suggestionKindLabel(row.kind)}
+                {row.owner_note ? ` · “${row.owner_note}”` : ""}
+              </span>
+              <MoveBackToNew id={row.id} />
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
+}
+
+function shortDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
