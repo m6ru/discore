@@ -25,4 +25,17 @@ test("signed-in scorer plays a round with a guest and completes it", async ({ pa
   // History only lists finished rounds.
   await page.goto("/rounds");
   await expect(page.getByRole("link", { name: new RegExp(COURSE.name) }).first()).toBeVisible();
+
+  // The round shows up in the player's own stats for the course.
+  await page.goto(`/courses/${COURSE.slug}/stats`);
+  await expect(page.getByRole("heading", { name: COURSE.name })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Score mix" })).toBeVisible();
+  await expect(page.getByRole("img", { name: /Par 100%/ })).toBeVisible();
+
+  // Profile sub-pages open from the menu and lead back to it.
+  await page.goto("/auth");
+  await page.getByRole("link", { name: /Edit profile/ }).click();
+  await expect(page.getByRole("heading", { name: "Edit profile" })).toBeVisible();
+  await page.getByRole("link", { name: "Back to profile" }).click();
+  await expect(page.getByRole("heading", { name: "Profile" })).toBeVisible();
 });

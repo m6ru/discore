@@ -33,6 +33,9 @@ Chosen by the owner from three mockups (2026-10-24), refined in a second canvas 
 - **Course page:** back arrow → course name → "Last played 12.10 · Total rounds 6" → one line with the map link (left) and **Your stats** (right). **Pick a layout:** each layout is a framed row (name, holes · par · meters) ending in a 44 px forest square with an arrow; the whole row starts the draft. Then About, then "Suggest a fix".
 - **Courses list:** title "Courses" with **Missing one?** on the right; a 48 px search box with a magnifier; a label row ("Nearest first" + "Distance", or "A–Z") over divided rows (bold name, "town · layouts · terrain", distance in mono on the right).
 - **History:** title; two panel boxes (**Best round** → that round, **Aces** → ace log; each only when it has data); rounds grouped by month ("October 2026 · 4 rounds"), rows of date · course with "layout · N players / solo" · ± (lime when under par, "Abandoned" in grey). Lifetime numbers live on Home, not here. Ace log: same divided rows with a lime hole-number square and a back arrow.
+- **Course stats** (`/courses/[slug]/stats`, BLUEPRINT §8a A/B/C+G): back arrow, "Your stats", course name, "Last played · Total rounds"; layout tabs only with 2+ layouts; strip Best (→ round) · Average · Rounds; **Your rounds here** — a small line of score vs par per round (dashed par line, best as a lime dot) and one sentence comparing the last rounds with the first; **Where you lose strokes** — top 3 holes by average over par, each with its pattern ("OB 2 in 6 · often double", else "Usually 5"), then "All N holes" expands the full list; **Score mix** — one bar (birdie+ lime, par white, bogey, double+) with percentages. No duplicate rates and counts.
+- **Profile** (`/auth`): title, hero (photo or initials square, name, city · email); **Account** rows Edit profile › and Change password › (`?view=edit` / `?view=password`, own screen with a back arrow); **Settings** switches Location, Your round summary, Clean card by default; Sign out as a red outlined button. Admin-only Course suggestions row stays at the top.
+- **Sign in** (signed out `/auth`): wordmark; "Sign in" (or "Create an account") + one line on why; email and password; dark **Sign in →**; "or" rule; outlined **Create an account** that switches the form. No trial pitch here — Home covers it.
 - **Draft setup** (no tab bar): header "Course · Layout · setting up" with **✕** (opens the round sheet). Round name with a rename pencil. Players as divided rows with status (*You · scorer*, *Invite sent · waiting to accept*, *Guest, no account*), Remove, "+ Add player" and one line on invites vs guests. Starting hole as a select with a hint. **Start round** at the bottom; greyed out with "Waiting for N to accept." while an invite is pending.
 - **Scoring screen** (no tab bar, **no back arrow** — leaving is via the sheet):
   1. Header: "Course · Layout" + **⋯**.
@@ -50,7 +53,7 @@ Chosen by the owner from three mockups (2026-10-24), refined in a second canvas 
 
 - A draft can only be left by deleting it (true today too; "Continue round" on Home brings you back).
 - ~~Home stats strip~~ → decided by the owner (2026-11-02): the C2 strip look with **Rounds played · Total throws · Courses visited**. No aces or usual score on Home.
-- ~~"Hide my usual" vs Hide running totals~~ → decided: one **Clean card** switch in the round sheet hides both. A Profile default is not built yet.
+- ~~"Hide my usual" vs Hide running totals~~ → decided: one **Clean card** switch in the round sheet hides both. Profile has **Clean card by default** (per device).
 - Not drawn yet: the "Confirm and end round" step after the last hole; ties and many players on the finished screen.
 
 ---

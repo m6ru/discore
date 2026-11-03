@@ -1,21 +1,19 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { createServerClient } from "@/lib/supabase/server";
 import { buildDisplayName } from "@/lib/profiles/format-display-name";
-import {
-  homeRowLinkClassName,
-  pageSubtitleClassName,
-  pageTitleClassName,
-} from "@/lib/ui/page-chrome";
-import { AccountPanel } from "./account-panel";
+import { pageTitleClassName } from "@/lib/ui/page-chrome";
+import { AccountPanel, type AccountView } from "./account-panel";
 import { AuthForm } from "./auth-form";
 
 type AuthPageProps = {
-  searchParams: Promise<{ message?: string }>;
+  searchParams: Promise<{ message?: string; view?: string }>;
 };
 
 export default async function AuthPage({ searchParams }: AuthPageProps) {
-  const { message } = await searchParams;
+  const { message, view: viewParam } = await searchParams;
+  const view: AccountView =
+    viewParam === "edit" || viewParam === "password" ? viewParam : "menu";
   const supabase = await createServerClient();
   // getClaims() verifies the JWT locally when possible; proxy.ts handles refresh.
   const { data: claimsData } = await supabase.auth.getClaims();
@@ -57,19 +55,32 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
-      <header className="space-y-1">
-        <h1 className={pageTitleClassName}>{claims ? "Profile" : "Sign in"}</h1>
-        <p className={pageSubtitleClassName}>
-          {claims ? "Your account and preferences." : "Sign in or create an account."}
-        </p>
-      </header>
+      {!claims ? (
+        <p className="font-display text-xl font-bold tracking-tight">discore</p>
+      ) : view === "menu" ? (
+        <h1 className={pageTitleClassName}>Profile</h1>
+      ) : (
+        <header className="space-y-1">
+          <Link
+            href="/auth"
+            aria-label="Back to profile"
+            className="-ml-2 inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <ChevronLeft className="size-5" aria-hidden />
+          </Link>
+          <h1 className={pageTitleClassName}>{view === "edit" ? "Edit profile" : "Change password"}</h1>
+        </header>
+      )}
 
-      {isAdmin ? (
-        <Link href="/admin/suggestions" className={homeRowLinkClassName}>
-          <span className="font-medium">Course suggestions</span>
+      {isAdmin && view === "menu" ? (
+        <Link
+          href="/admin/suggestions"
+          className="flex min-h-12 items-center justify-between gap-3 rounded-md border bg-secondary px-4 text-sm"
+        >
+          <span className="font-semibold">Course suggestions</span>
           <span className="flex items-center gap-2 text-muted-foreground">
             {newSuggestions ? (
-              <span className="rounded-full bg-primary px-2 py-0.5 font-mono text-xs tabular-nums text-primary-foreground">
+              <span className="rounded-sm bg-primary px-2 py-0.5 font-mono text-xs tabular-nums text-primary-foreground">
                 {newSuggestions} new
               </span>
             ) : null}
@@ -80,6 +91,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
 
       {claims ? (
         <AccountPanel
+          view={view}
           email={email}
           displayName={displayName}
           initialFirstName={profile?.first_name?.trim() || metadataFirstName}

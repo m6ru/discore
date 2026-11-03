@@ -49,6 +49,7 @@ import { ScorecardSection } from "./components/scorecard-section";
 import { RoundHeaderMenuPortal } from "./components/round-header-menu-portal";
 import { RoundScorecardDialog } from "./components/round-scorecard-dialog";
 import { YourRound } from "@/components/stats/post-round-insights";
+import { isCleanCardDefault } from "@/lib/rounds/clean-card-preference";
 import { formatHoleHistory, pickWhereItWent, type HoleHistory } from "@/lib/scoring/hole-history";
 import { Button } from "@/components/ui/button";
 import { isFinishedRoundStatus } from "@/lib/rounds/round-status";
@@ -120,6 +121,14 @@ export function RoundSession({
   });
   const [holeHistory, setHoleHistory] = useState<ReadonlyMap<string, HoleHistory> | null>(null);
   const ignoreRenderNow: Dispatch<SetStateAction<number>> = useCallback(() => {}, []);
+
+  // Clean card by default (Profile): read after mount, localStorage is client-only.
+  useEffect(() => {
+    if (isCleanCardDefault()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate from localStorage
+      setScoresHidden(true);
+    }
+  }, []);
   const ignoreLastSavedEvent: Dispatch<SetStateAction<LastSavedEvent | null>> =
     useCallback(() => {}, []);
 
