@@ -1,6 +1,6 @@
 -- claim_trial / accept_invite: all-or-nothing writes. Run with: npx supabase test db
 begin;
-select plan(14);
+select plan(16);
 
 insert into auth.users (id, email, aud, role, raw_user_meta_data) values
   ('a0000000-0000-0000-0000-00000000000a', 'alice@test.local', 'authenticated', 'authenticated', '{"first_name":"Alice","last_name":"Scorer"}'),
@@ -119,6 +119,25 @@ select throws_ok(
        '[{"player_id":"ghost","hole_id":"30000000-0000-0000-0000-000000000001","strokes":3,"ob":false}]') $$,
   'P0001', 'Trial has a score for an unknown player.',
   'a score for an unknown player is rejected'
+);
+
+select public.claim_trial('70000000-0000-0000-0000-000000000006', '20000000-0000-0000-0000-000000000001',
+     now(), now(), array['30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002']::uuid[],
+     '[{"id":"p1","name":"Alice","is_scorer":true}]', '[]', 2::smallint);
+
+select is(
+  (select r.starting_hole from public.rounds r
+   where r.guest_claim_id = '70000000-0000-0000-0000-000000000006'),
+  2::smallint,
+  'claim_trial keeps the trial starting hole'
+);
+
+select throws_ok(
+  $$ select public.claim_trial('70000000-0000-0000-0000-000000000007', '20000000-0000-0000-0000-000000000001',
+       now(), now(), array['30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002']::uuid[],
+       '[{"id":"p1","name":"Alice","is_scorer":true}]', '[]', 9::smallint) $$,
+  'P0001', 'Starting hole is not on this layout.',
+  'a starting hole that is not on the layout is rejected'
 );
 
 reset role;

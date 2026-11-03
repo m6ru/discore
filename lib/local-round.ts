@@ -44,6 +44,8 @@ export type LocalTrialRound = {
   courseName: string;
   courseSlug: string | null;
   layoutName: string;
+  /** Hole number play starts on (as a normal draft). Trials saved before this field start on 1. */
+  startingHole: number;
   startedAt: string;
   completedAt: string | null;
   holes: LocalTrialHole[];
@@ -172,6 +174,12 @@ export function parseLocalTrial(raw: unknown): LocalTrialRound | null {
     holes.push(parsed);
   }
 
+  const startingHole =
+    typeof value.startingHole === "number" &&
+    holes.some((hole) => hole.hole_number === value.startingHole)
+      ? value.startingHole
+      : 1;
+
   const migrated = migrateLegacyPlayers(value.players);
   if (!migrated) {
     return null;
@@ -194,6 +202,7 @@ export function parseLocalTrial(raw: unknown): LocalTrialRound | null {
     courseName: value.courseName,
     courseSlug: value.courseSlug,
     layoutName: value.layoutName,
+    startingHole,
     startedAt: value.startedAt,
     completedAt: value.completedAt,
     holes,
@@ -304,6 +313,7 @@ export function createLocalTrial(input: {
     courseName: input.courseName,
     courseSlug: input.courseSlug,
     layoutName: input.layoutName,
+    startingHole: 1,
     startedAt: new Date().toISOString(),
     completedAt: null,
     holes: [...input.holes].sort((a, b) => a.hole_number - b.hole_number),
@@ -420,6 +430,7 @@ async function claimLocalTrial(supabase: Client): Promise<ClaimLocalTrialResult>
       strokes: score.strokes,
       ob: score.ob,
     })),
+    p_starting_hole: local.startingHole,
   });
 
   if (error || !roundId) {

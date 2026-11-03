@@ -13,8 +13,10 @@ test("anonymous trial round is saved to history after signing in", async ({ page
   await page.getByRole("button", { name: "Start round" }).click();
 
   await scoreAllHolesAtPar(page, ["Kris", "Gary"], 2);
-  await page.getByRole("button", { name: "Complete round" }).click();
-  await expect(page.getByRole("link", { name: "Create account to save this round" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "All holes played" })).toBeVisible();
+  await page.getByRole("button", { name: "Confirm round" }).click();
+  await page.getByRole("alertdialog").getByRole("button", { name: "Confirm" }).click();
+  await expect(page.getByRole("link", { name: "Create an account" })).toBeVisible();
 
   // Signing in claims the trial (claim_trial RPC) and clears it from the browser.
   const user = await createUser("Kris");

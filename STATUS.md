@@ -19,7 +19,8 @@ _Overwritten at the end of every session — describes now, not history (history
 - **Courses list + History (2026-11-02):** drawn as C2 artboards with the owner, then built: divided rows, month groups, Best round / Aces boxes (the ace log is finally linked), player count per round. Page titles are 30 px display font everywhere.
 - **Course stats, Profile, Sign in (2026-11-03):** drawn as C2 artboards, owner approved (sign-in: trial pitch dropped, Create an account as an outlined button), then built. Course stats = §8a A/B/C+G (trend chart, where you lose strokes, score mix) from existing views, no migration. Profile split into menu / `?view=edit` / `?view=password`; new **Clean card by default** switch (localStorage, `lib/rounds/clean-card-preference.ts`).
 - **Review step (2026-11-03):** after the last hole the scorer sees "All holes played", the card (tap a hole to edit it, saving returns to the review), Totals, and **‹ Hole N** / **Confirm round** with a "Confirm the round?" popup (kept on purpose: scores lock). Ties / many players item closed, no work needed.
-- **Next:** every screen and step from the brief is in direction C. Smaller screens not drawn yet: course suggestion form, admin suggestions, trial round setup (the trial still ends with its own "Complete round" button).
+- **Trial round (2026-11-03):** drawn as C2 artboards (setup with starting hole, scoring, discard popup, review, finished with a Save this round box), owner approved, built on the signed-in round's components. Migration `20261103120000_claim_trial_starting_hole.sql`: `claim_trial` takes `p_starting_hole` (default 1, must be on the layout). **The owner must `npx supabase db push` before testing the preview.**
+- **Next:** smaller screens not drawn yet: course suggestion form, admin suggestions.
 - **MacBook set up (2026-10-24):** Node 24 + gh from official downloads, `.env.local` and `supabase link` point at production. npm 11 skipped postinstall scripts for `esbuild`, `unrs-resolver` (works anyway; decide later).
 - **Small debts cleared (2026-10-26):** all server pages use `getClaims()`; `lib/` no longer imports from `app/` (shared row types in `lib/rounds/round-rows.ts`); `config.toml` uses `[local_smtp]`, empty seed step off.
 - **In flight:** nothing.
@@ -43,7 +44,6 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 - Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
 - Later, cheap: per-round par override (tee sign differs from course data); an "unfinished hole" option (par + 4).
 - No `error.tsx` boundaries.
-- `app/rounds/trial/trial-session.tsx` (~740 lines) duplicates much of the signed-in scoring UI.
 - 5 high **dev-only** npm vulnerabilities (eslint-config-next → micromatch → braces); wait for upstream.
 - TypeScript 7 / other majors: Dependabot ignores them until typescript-eslint supports TS 7.
 - Viimsi `details` starts with a stray `.` line (likely a layout workaround); fix during the design pass.

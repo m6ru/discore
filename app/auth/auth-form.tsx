@@ -16,12 +16,14 @@ type AuthMode = "sign-in" | "sign-up";
 
 type Props = {
   message: string | null;
+  /** `/auth?mode=sign-up` opens on Create an account (the trial save box links there). */
+  initialMode?: AuthMode;
 };
 
-export function AuthForm({ message }: Props) {
+export function AuthForm({ message, initialMode = "sign-in" }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
-  const [mode, setMode] = useState<AuthMode>("sign-in");
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
