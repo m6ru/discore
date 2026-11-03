@@ -32,8 +32,10 @@ import {
 import {
   ACTIVE_SCORING_BOTTOM_INSET,
   ActiveHoleScoring,
+  RoundProgress,
   type HoleProgress,
 } from "./components/active-hole-scoring";
+import { pageTitleClassName } from "@/lib/ui/page-chrome";
 import { DraftPlayersPanel } from "./components/draft-players-panel";
 import { DRAFT_SETUP_BOTTOM_INSET, DraftSetupDeck } from "./components/draft-setup-deck";
 import { DraftStartingHoleField } from "./components/draft-starting-hole-field";
@@ -284,6 +286,7 @@ export function RoundSession({
     saveCurrentHoleScores,
     onSaveAndAdvanceHole,
     onPreviousHole,
+    goToHole,
   } = useActiveScoring({
     roundId,
     isScorer,
@@ -295,6 +298,7 @@ export function RoundSession({
     setLastSavedEvent: ignoreLastSavedEvent,
     setRenderNow: ignoreRenderNow,
     onFinalHoleSaved: () => setIsEditingScores(false),
+    returnAfterSave: isEditingScores,
   });
 
   const { onAbandonRound, onCompleteRound } = useRoundLifecycle({
@@ -429,13 +433,15 @@ export function RoundSession({
   const showStickySaveBar =
     liveRoundStatus === "active" && isScorer && canScore && showScoringUI;
 
-  const showScorecardAtBottom = !showStickySaveBar && liveRoundStatus !== "draft";
+  const showScorecardAtBottom =
+    !showStickySaveBar && !showCompletionUI && liveRoundStatus !== "draft";
   const isFinishedRound = isFinishedRoundStatus(liveRoundStatus);
   const showPoolResults =
     isFinishedRound ||
     (liveRoundStatus === "active" &&
       isScorer &&
-      (showCompletionUI || !showStickySaveBar));
+      !showCompletionUI &&
+      !showStickySaveBar);
 
   useTabBarVisibilityOverride(!isScorer || isFinishedRound);
 
@@ -593,7 +599,16 @@ export function RoundSession({
     [playOrderedHoles, activeHole, scoringParticipants, scoreLookup]
   );
 
-  const renderScorecard = (options: { showTitle: boolean }) => {
+  /** Review step: fix one hole, then saving it comes back here. */
+  const editHoleFromReview = (holeId: string) => {
+    goToHole(playOrderedHoles.findIndex((hole) => hole.id === holeId));
+    setIsEditingScores(true);
+  };
+
+  const renderScorecard = (options: {
+    showTitle: boolean;
+    onHoleSelect?: (hole: HoleRow) => void;
+  }) => {
     const displayScoreLookup = buildDisplayScoreLookup();
     const rowsById = new Map(
       buildLeaderboard(
@@ -616,8 +631,9 @@ export function RoundSession({
         scoreLookup={displayScoreLookup}
         obLookup={buildDisplayObLookup()}
         rows={playOrderRows}
-        activeHole={scorecardActiveHole}
+        activeHole={options.onHoleSelect ? null : scorecardActiveHole}
         showTitle={options.showTitle}
+        onHoleSelect={options.onHoleSelect}
       />
     );
   };
@@ -774,7 +790,7 @@ export function RoundSession({
               scoringParticipants={scoringParticipants}
               leaderboardRows={leaderboardRows}
               currentHoleIndex={currentHoleIndex}
-              isLastHole={isLastHole}
+              isLastHole={isLastHole || isEditingScores}
               isSubmitting={isSubmitting}
               getParticipantLabel={getParticipantLabel}
               teePositionByParticipantId={teePositionByParticipantId}
@@ -797,6 +813,28 @@ export function RoundSession({
             />
           )}
         </>
+      ) : null}
+
+      {showCompletionUI ? (
+        <div className="space-y-[18px]">
+          <RoundProgress
+            progress={playOrderedHoles.map(() => "done")}
+            onOpenScorecard={() => setScorecardOpen(true)}
+          />
+          <div className="space-y-1.5">
+            <h1 className={pageTitleClassName}>All holes played</h1>
+            <p className="text-[15px] text-muted-foreground">
+              Check the card. Tap a hole to edit. Scores lock when you confirm the round.
+            </p>
+          </div>
+          {renderScorecard({ showTitle: false, onHoleSelect: (hole) => editHoleFromReview(hole.id) })}
+          <RoundResults
+            scoringParticipants={scoringParticipants}
+            leaderboardByParticipantId={leaderboardByParticipantId}
+            getParticipantLabel={getParticipantLabel}
+            variant="totals"
+          />
+        </div>
       ) : null}
 
       {showPoolResults ? (
@@ -824,7 +862,8 @@ export function RoundSession({
         <RoundCompleteActions
           isSubmitting={isSubmitting}
           isTransitioning={isTransitioning}
-          onEditScores={() => setIsEditingScores(true)}
+          lastHoleNumber={playOrderedHoles.at(-1)?.hole_number ?? holes.length}
+          onBackToLastHole={() => editHoleFromReview(playOrderedHoles.at(-1)?.id ?? "")}
           onCompleteRound={onCompleteRound}
           syncBadge={syncBadge}
         />

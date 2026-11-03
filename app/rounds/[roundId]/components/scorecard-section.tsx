@@ -17,6 +17,8 @@ type Props = {
   rows: LeaderboardRow[];
   activeHole: HoleRow | null;
   showTitle?: boolean;
+  /** Makes each hole column a tap target (the review step uses it to edit a hole). */
+  onHoleSelect?: (hole: HoleRow) => void;
 };
 
 function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
@@ -55,6 +57,7 @@ export function ScorecardSection({
   rows,
   activeHole,
   showTitle = true,
+  onHoleSelect,
 }: Props) {
   const [namesExpanded, setNamesExpanded] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -106,15 +109,26 @@ export function ScorecardSection({
                     ref={isCurrent ? activeHoleHeaderRef : undefined}
                     className="w-[22px] min-w-[22px] px-px pb-1.5 text-center text-xs font-semibold text-muted-foreground"
                   >
-                    <span
-                      className={cn(
-                        "mx-auto flex h-5 w-5 items-center justify-center rounded-[3px]",
-                        isCurrent && "text-foreground ring-[1.5px] ring-foreground"
-                      )}
-                      aria-current={isCurrent ? "step" : undefined}
-                    >
-                      {hole.hole_number}
-                    </span>
+                    {onHoleSelect ? (
+                      <button
+                        type="button"
+                        className="mx-auto flex h-6 w-5 items-center justify-center rounded-[3px] hover:bg-secondary hover:text-foreground"
+                        aria-label={`Edit hole ${hole.hole_number}`}
+                        onClick={() => onHoleSelect(hole)}
+                      >
+                        {hole.hole_number}
+                      </button>
+                    ) : (
+                      <span
+                        className={cn(
+                          "mx-auto flex h-5 w-5 items-center justify-center rounded-[3px]",
+                          isCurrent && "text-foreground ring-[1.5px] ring-foreground"
+                        )}
+                        aria-current={isCurrent ? "step" : undefined}
+                      >
+                        {hole.hole_number}
+                      </span>
+                    )}
                   </th>
                 );
               })}
@@ -166,7 +180,12 @@ export function ScorecardSection({
                       const tone = holeScoreTone(strokes, hole.par);
 
                       return (
-                        <td key={hole.id} className="border-b px-px py-[3px]">
+                        <td
+                          key={hole.id}
+                          className={cn("border-b px-px py-[3px]", onHoleSelect && "cursor-pointer")}
+                          // Mouse/touch shortcut; the hole number above is the keyboard target.
+                          onClick={onHoleSelect ? () => onHoleSelect(hole) : undefined}
+                        >
                           <span
                             className={cn(
                               "mx-auto flex h-[30px] w-5 items-center justify-center rounded-[3px] font-semibold",

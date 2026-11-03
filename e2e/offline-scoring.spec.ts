@@ -25,8 +25,8 @@ test("scoring never waits for the network; completing waits for signal", async (
   await expect(badge).toBeVisible();
   await expect.poll(() => countServerScores(roundId)).toBe(1);
 
-  await page.getByRole("button", { name: "Confirm and end round" }).click();
-  await page.getByRole("alertdialog").getByRole("button", { name: "Complete round" }).click();
+  await page.getByRole("button", { name: "Confirm round" }).click();
+  await page.getByRole("alertdialog").getByRole("button", { name: "Confirm" }).click();
   await expect(page.getByText(/No signal\. Your scores are saved on this phone/)).toBeVisible();
   await expect(page.getByText("Completed")).not.toBeVisible();
 
@@ -35,8 +35,8 @@ test("scoring never waits for the network; completing waits for signal", async (
   await expect(badge).not.toBeVisible();
   await expect.poll(() => countServerScores(roundId)).toBe(2);
 
-  await page.getByRole("button", { name: "Confirm and end round" }).click();
-  await page.getByRole("alertdialog").getByRole("button", { name: "Complete round" }).click();
+  await page.getByRole("button", { name: "Confirm round" }).click();
+  await page.getByRole("alertdialog").getByRole("button", { name: "Confirm" }).click();
   await expect(page.getByText("Completed")).toBeVisible();
 });
 

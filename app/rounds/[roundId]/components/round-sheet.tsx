@@ -35,7 +35,7 @@ type Props = {
   /** Set apart at the bottom in red; always confirms first. */
   destructive: {
     label: string;
-    hint: string;
+    hint?: string;
     confirmTitle: string;
     confirmDescription: string;
     onConfirm: () => void;
@@ -101,7 +101,9 @@ export function RoundSheet({
           >
             {destructive.label}
           </Button>
-          <p className="mt-2 text-center text-[13px] text-muted-foreground">{destructive.hint}</p>
+          {destructive.hint ? (
+            <p className="mt-2 text-center text-[13px] text-muted-foreground">{destructive.hint}</p>
+          ) : null}
         </DialogContent>
       </Dialog>
 

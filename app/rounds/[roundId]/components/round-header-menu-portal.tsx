@@ -99,7 +99,6 @@ export function RoundHeaderMenuPortal({
         }
         destructive={{
           label: "Abandon round",
-          hint: "Asks before it does anything.",
           confirmTitle: "Abandon this round?",
           confirmDescription: "Scores won't be saved to history. You can always start a new round later.",
           onConfirm: onAbandonRound,
