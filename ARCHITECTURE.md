@@ -43,7 +43,7 @@ flowchart LR
 
 What each arrow means in plain words:
 
-- **Opening a page.** The browser asks Vercel for a page. `proxy.ts` runs first and refreshes the login cookie if needed. Then a **server component** (React code that runs on Vercel, not the phone) loads the data for that page from Supabase and sends finished HTML to the phone. Example: `app/rounds/[roundId]/page.tsx` loads the round, players, holes and scores.
+- **Opening a page.** The browser asks Vercel for a page. `proxy.ts` runs first and refreshes the login cookie if needed. Then a **server component** (React code that runs on Vercel, not the phone) loads the data for that page from Supabase and sends finished HTML to the phone. Example: `app/rounds/[roundId]/page.tsx` loads the round, players, holes and scores in **one** request (§4.10).
 - **Doing something** (saving a score, inviting a friend, starting a round). The **client component** on the phone talks to Supabase **directly** through PostgREST, a ready-made REST API that Supabase puts in front of Postgres. There is no custom backend server in between: Vercel serves pages; it does not relay writes.
 - **Watching live.** Supabase Realtime keeps a websocket open to the phone and pushes a message whenever a row the user may see changes. That is how observers see scores appear.
 - **The database sends messages on its own.** One trigger uses `pg_net` to call Telegram when a course suggestion arrives (§4.8).
@@ -105,12 +105,12 @@ stateDiagram-v2
 
 ### 3.1 Draft — setting up the card
 
-The scorer picks a layout (`/rounds/new`) and lands on the round page in **draft**. Here they:
+The scorer taps a layout on the course page and lands on the round page in **draft**. Here they:
 
 - add **guests** by name → a `round_participants` row with `guest_name`;
 - **invite** registered friends → a `round_invitations` row. The friend sees it on Home (live, via Realtime) and accepts or declines. Accepting calls the `accept_invite` function, which marks the invite accepted **and** adds them as a participant in one go (§4.6).
 
-The scorer's own screen updates live as friends accept, because it listens to `round_participants` and `round_invitations` changes. **Start** is allowed once no invite is still pending; it sets `status = 'active'` (`lib/rounds/round-draft-actions.ts`). From then on the layout is locked and nobody can join.
+Each change the scorer makes updates their screen from the database's reply to that write (no reload). Their screen also updates live as friends accept, because it listens to `round_participants` and `round_invitations` changes. **Start** is allowed once no invite is still pending; it sets `status = 'active'` (`lib/rounds/round-draft-actions.ts`). From then on the layout is locked and nobody can join.
 
 ### 3.2 Active — scoring a hole
 
@@ -156,10 +156,10 @@ Registered players on the card who are not scoring are **observers**. They open 
 | Table | Why |
 |---|---|
 | `hole_scores` | new scores appear as they land |
-| `rounds` | status changes (started, finished) |
-| `round_participants`, `round_invitations` | who is on the card (mostly in draft) |
+| `rounds` | status, name and starting hole, read straight from the message |
+| `round_participants`, `round_invitations` | who is on the card (mostly in draft); each reloads only its own list |
 
-Realtime only sends rows the user is **allowed to read** (it uses the same RLS rules), so nobody can listen in on a round they are not part of. Websockets drop on mobile data, so the page also **reloads everything** when the subscription (re)connects and when the tab becomes visible again. If the scorer is in a dead spot, observers simply see the scores a bit later, when the scorer's phone syncs.
+Realtime only sends rows the user is **allowed to read** (it uses the same RLS rules), so nobody can listen in on a round they are not part of. Two catches: a **deleted** row never arrives on a filtered channel, so whoever deletes updates their own screen; and an observer can read only their **own** invite, so players' names come from `profiles`, not from invites. Websockets drop on mobile data, and a page can come from the 30-second client cache, so the page also **reloads everything** when the subscription (re)connects and when the tab becomes visible again. If the scorer is in a dead spot, observers simply see the scores a bit later, when the scorer's phone syncs.
 
 Guests have no phone presence; they just appear on the scorecard.
 
@@ -238,6 +238,13 @@ Short records of the choices that shape the code: what we decided, why, and what
 - **Why.** Casual players rarely open a stats page, but they look at the scoring screen every hole and the summary after every round — so that is where stats earn their place. "+1 on a hard par 3" is normal for many players; "6 where you usually take 4" is the useful signal. Stats views use `security_invoker`, so RLS keeps each player's history private — the scorer can only see their own.
 - **Trade-off.** A player with no history on a layout gets little until they've played it a couple of times. Detailed metrics (putting, circles) wait for opt-in advanced scoring.
 
+### 4.10 Fewer requests that wait for each other
+
+- **Decision.** A page loads what it needs in as few waves as possible: one embedded select where rows belong together (the round page asks for the round with its layout, holes, players, invites and scores at once), `Promise.all` where they don't. Writes return their row (`.insert().select()`) and the screen updates from it. Realtime events reload only the table that changed.
+- **Why.** Every request goes to Stockholm and back, 300 ms or more on weak 4G at a course, and requests that wait for each other add up. Measured 2026-11-03: the round page went from 6 server requests in 2 waves to 1, adding a guest from 5 requests to 2. `e2e/request-counts.spec.ts` fails if the phone's counts grow again; `MEASURE_REQUESTS=1 npx playwright test request-counts --workers=1` prints both sides.
+- **Kept on purpose.** `router.push` + `router.refresh()` after abandon, delete, accept or sign-in: `refresh()` clears **every** page in the 30-second client cache (so Home can't show "Continue round" after abandoning), at the price of rendering the next page twice. Opening a brand-new draft skips it (a new URL is never cached). The resync on reconnect / tab visible stays (§3.3).
+- **Trade-off.** One embedded query fails as a whole; the round page then shows "Failed to load round", which is what any one failed query showed before.
+
 ---
 
 ## 5. How a change is checked
@@ -248,6 +255,6 @@ Every PR runs three CI jobs (GitHub Actions), and `main` only accepts a PR when 
 |---|---|
 | `check` | types, lint, unit tests (`lib/scoring` and friends), course JSON has a seed migration, the app builds |
 | `database` | all migrations replay from scratch; pgTAP tests prove the RLS rules and triggers |
-| `e2e` | Playwright clicks through real flows (sign in, score a round, …) against a local Supabase |
+| `e2e` | Playwright clicks through real flows (sign in, score a round, …) against a local Supabase, and checks the phone's request counts per action (§4.10) |
 
 Then the owner tries the **Vercel preview** of the PR on a phone, and it is merged. Migrations are pushed to production by the owner (`npx supabase db push`) — before testing the preview when the app code depends on them, since previews use the production database.

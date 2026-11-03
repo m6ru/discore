@@ -41,3 +41,7 @@ export function normalizeInviteRows(raw: RawInviteRow[] | null | undefined): Inv
     };
   });
 }
+
+/** Select for `round_invitations` on the round screen, invitee's name included. */
+export const INVITE_SELECT =
+  "id, invited_user_id, status, created_at, profiles!round_invitations_invited_user_id_fkey(display_name)";

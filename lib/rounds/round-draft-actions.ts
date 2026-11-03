@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { friendlyError } from "@/lib/ui/friendly-error";
+import { INVITE_SELECT } from "@/lib/rounds/invite-rows";
+import { PARTICIPANT_SELECT } from "@/lib/rounds/round-rows";
 
 type Client = SupabaseClient<Database>;
 
@@ -10,11 +12,15 @@ export async function sendRoundInvite(
   invitedUserId: string,
   invitedBy: string
 ) {
-  return supabase.from("round_invitations").insert({
-    round_id: roundId,
-    invited_user_id: invitedUserId,
-    invited_by: invitedBy,
-  });
+  return supabase
+    .from("round_invitations")
+    .insert({
+      round_id: roundId,
+      invited_user_id: invitedUserId,
+      invited_by: invitedBy,
+    })
+    .select(INVITE_SELECT)
+    .single();
 }
 
 export async function addGuestParticipant(
@@ -22,18 +28,26 @@ export async function addGuestParticipant(
   roundId: string,
   guestName: string
 ) {
-  return supabase.from("round_participants").insert({
-    round_id: roundId,
-    guest_name: guestName,
-  });
+  return supabase
+    .from("round_participants")
+    .insert({
+      round_id: roundId,
+      guest_name: guestName,
+    })
+    .select(PARTICIPANT_SELECT)
+    .single();
 }
 
 export async function cancelRoundInvitation(supabase: Client, inviteId: string) {
-  return supabase.from("round_invitations").update({ status: "cancelled" }).eq("id", inviteId);
+  return supabase
+    .from("round_invitations")
+    .update({ status: "cancelled" })
+    .eq("id", inviteId)
+    .select("id");
 }
 
 export async function removeRoundParticipant(supabase: Client, participantId: string) {
-  return supabase.from("round_participants").delete().eq("id", participantId);
+  return supabase.from("round_participants").delete().eq("id", participantId).select("id");
 }
 
 export async function cancelInvitesForUser(
@@ -46,7 +60,8 @@ export async function cancelInvitesForUser(
     .update({ status: "cancelled" })
     .eq("round_id", roundId)
     .eq("invited_user_id", invitedUserId)
-    .in("status", ["pending", "accepted"]);
+    .in("status", ["pending", "accepted"])
+    .select("id");
 }
 
 export async function startRound(supabase: Client, roundId: string) {

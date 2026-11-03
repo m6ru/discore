@@ -64,11 +64,14 @@ export function buildUnifiedPlayers(input: BuildUnifiedPlayersInput): UnifiedPla
       continue;
     }
 
+    // Observers can only read their own invite (RLS), so the participant's own
+    // profile name comes first; the invite's is a fallback.
     rows.push({
       key: `user-${participant.id}`,
       label:
-        inviteNameByUserId.get(participant.user_id ?? "") ??
-        `Registered user (${participant.user_id})`,
+        participant.display_name ||
+        inviteNameByUserId.get(participant.user_id ?? "") ||
+        "Player",
       isPending: false,
       canRemove: roundStatus === "draft" && isScorer,
       source: "participant",

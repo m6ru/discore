@@ -5,10 +5,11 @@ import { useStartDraftRound } from "./use-start-draft-round";
 
 type Props = {
   layoutId: string;
+  userId: string;
 };
 
-export function CreateRoundForm({ layoutId }: Props) {
-  const { startDraftRound, isSubmitting } = useStartDraftRound(layoutId);
+export function CreateRoundForm({ layoutId, userId }: Props) {
+  const { startDraftRound, isSubmitting } = useStartDraftRound(layoutId, userId);
 
   return (
     <Button

@@ -4,7 +4,8 @@ import { pickOne } from "@/lib/supabase/select-helpers";
 import {
   formatStatusLabel,
 } from "@/lib/rounds/format-round-status";
-import { normalizeInviteRows } from "@/lib/rounds/invite-rows";
+import { INVITE_SELECT, normalizeInviteRows } from "@/lib/rounds/invite-rows";
+import { normalizeParticipantRows, PARTICIPANT_SELECT } from "@/lib/rounds/round-rows";
 import { formatRoundDisplayName } from "@/lib/rounds/round-display-name";
 import {
   isFinishedRoundStatus,
@@ -31,12 +32,22 @@ export default async function RoundPage({ params }: RoundPageProps) {
     redirect("/auth?message=Please+sign+in+to+continue");
   }
 
+  // One request: the round with everything the screen needs. RLS applies to
+  // each embedded table, so observers get the same rows as separate queries.
   const { data: round, error: roundError } = await supabase
     .from("rounds")
     .select(
-      "id, name, status, started_at, completed_at, scorer_id, layout_id, starting_hole, layouts(name, slug, total_par, total_distance_m, courses(name, slug))"
+      `id, name, status, started_at, completed_at, scorer_id, layout_id, starting_hole,
+      layouts(name, slug, total_par, total_distance_m, courses(name, slug), holes(id, hole_number, par, distance_m, notes)),
+      scorer:profiles!rounds_scorer_id_fkey(display_name),
+      round_participants!round_participants_round_id_fkey(${PARTICIPANT_SELECT}),
+      round_invitations(${INVITE_SELECT}),
+      hole_scores!hole_scores_round_id_fkey(id, participant_id, hole_id, strokes, ob, fairway_hit, par)`
     )
     .eq("id", roundId)
+    .order("joined_at", { referencedTable: "round_participants", ascending: true })
+    .order("created_at", { referencedTable: "round_invitations", ascending: true })
+    .order("hole_number", { referencedTable: "layouts.holes", ascending: true })
     .maybeSingle();
 
   if (roundError) {
@@ -54,58 +65,26 @@ export default async function RoundPage({ params }: RoundPageProps) {
   }
 
   const roundStatus: RoundStatus = isRoundStatus(round.status) ? round.status : "draft";
-
-  // Independent reads given `round.id` / `round.layout_id` / `round.scorer_id`.
-  const [
-    { data: participants, error: participantsError },
-    { data: invites, error: invitesError },
-    { data: holes, error: holesError },
-    { data: existingScores, error: existingScoresError },
-    { data: scorerProfile },
-  ] = await Promise.all([
-    supabase
-      .from("round_participants")
-      .select("id, user_id, guest_name, joined_at")
-      .eq("round_id", round.id)
-      .order("joined_at", { ascending: true }),
-    supabase
-      .from("round_invitations")
-      .select(
-        "id, invited_user_id, status, created_at, profiles!round_invitations_invited_user_id_fkey(display_name)"
-      )
-      .eq("round_id", round.id)
-      .order("created_at", { ascending: true }),
-    supabase
-      .from("holes")
-      .select("id, hole_number, par, distance_m, notes")
-      .eq("layout_id", round.layout_id)
-      .order("hole_number", { ascending: true }),
-    supabase
-      .from("hole_scores")
-      .select("id, participant_id, hole_id, strokes, ob, fairway_hit, par")
-      .eq("round_id", round.id),
-    supabase
-      .from("profiles")
-      .select("display_name")
-      .eq("id", round.scorer_id)
-      .maybeSingle(),
-  ]);
+  const participants = normalizeParticipantRows(round.round_participants);
+  const invites = round.round_invitations;
+  const existingScores = round.hole_scores;
+  const scorerProfile = pickOne(round.scorer);
 
   const layoutRow = pickOne(round.layouts);
   const courseRow = pickOne(layoutRow?.courses);
+  const holes = layoutRow?.holes ?? [];
   const finishedDateLabel = isFinishedRoundStatus(roundStatus)
     ? formatRoundDisplayDate(round.completed_at, round.started_at)
     : null;
-  const safeParticipants = participants ?? [];
   // Scores keep the par they were played at; a later par correction in the
   // course data must not change how a finished scorecard reads.
-  const playedPar = new Map((existingScores ?? []).map((score) => [score.hole_id, score.par]));
-  const displayHoles = (holes ?? []).map((hole) => ({
+  const playedPar = new Map(existingScores.map((score) => [score.hole_id, score.par]));
+  const displayHoles = holes.map((hole) => ({
     ...hole,
     par: playedPar.get(hole.id) ?? hole.par,
   }));
   const isScorer = round.scorer_id === userId;
-  const isRoundParticipant = safeParticipants.some(
+  const isRoundParticipant = participants.some(
     (participant) => participant.user_id === userId,
   );
 
@@ -150,7 +129,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
             {[
               finishedDateLabel,
               formatStatusLabel(round.status),
-              `${safeParticipants.length} ${safeParticipants.length === 1 ? "player" : "players"}`,
+              `${participants.length} ${participants.length === 1 ? "player" : "players"}`,
             ]
               .filter(Boolean)
               .join(" · ")}
@@ -165,45 +144,27 @@ export default async function RoundPage({ params }: RoundPageProps) {
         </header>
       )}
 
-      {participantsError ? (
-        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-          Failed to load participants: {participantsError.message}
-        </p>
-      ) : invitesError ? (
-        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-          Failed to load invitations: {invitesError.message}
-        </p>
-      ) : holesError ? (
-        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-          Failed to load holes: {holesError.message}
-        </p>
-      ) : existingScoresError ? (
-        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
-          Failed to load scores: {existingScoresError.message}
-        </p>
-      ) : (
-        <RoundSession
-          key={round.id}
-          roundId={round.id}
-          roundName={round.name}
-          startingHole={round.starting_hole}
-          roundStatus={roundStatus}
-          scorerUserId={round.scorer_id}
-          isScorer={isScorer}
-          currentUserId={userId}
-          scorerDisplayName={scorerProfile?.display_name ?? "Scorer"}
-          courseName={courseRow?.name ?? "Unknown course"}
-          courseSlug={courseRow?.slug ?? null}
-          layoutId={round.layout_id}
-          layoutName={layoutRow?.name ?? "Unknown layout"}
-          layoutSlug={layoutRow?.slug ?? null}
-          layoutTotalPar={layoutRow?.total_par ?? 0}
-          initialParticipants={safeParticipants}
-          initialInvites={normalizeInviteRows(invites ?? [])}
-          holes={displayHoles as HoleRow[]}
-          initialHoleScores={(existingScores ?? []) as HoleScoreRow[]}
-        />
-      )}
+      <RoundSession
+        key={round.id}
+        roundId={round.id}
+        roundName={round.name}
+        startingHole={round.starting_hole}
+        roundStatus={roundStatus}
+        scorerUserId={round.scorer_id}
+        isScorer={isScorer}
+        currentUserId={userId}
+        scorerDisplayName={scorerProfile?.display_name ?? "Scorer"}
+        courseName={courseRow?.name ?? "Unknown course"}
+        courseSlug={courseRow?.slug ?? null}
+        layoutId={round.layout_id}
+        layoutName={layoutRow?.name ?? "Unknown layout"}
+        layoutSlug={layoutRow?.slug ?? null}
+        layoutTotalPar={layoutRow?.total_par ?? 0}
+        initialParticipants={participants}
+        initialInvites={normalizeInviteRows(invites)}
+        holes={displayHoles as HoleRow[]}
+        initialHoleScores={existingScores as HoleScoreRow[]}
+      />
     </main>
   );
 }

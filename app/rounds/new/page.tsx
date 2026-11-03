@@ -52,7 +52,7 @@ export default async function NewRoundPage({ searchParams }: PageProps) {
         </p>
       </header>
 
-      <CreateRoundForm layoutId={layout.id} />
+      <CreateRoundForm layoutId={layout.id} userId={userId} />
 
       <div className="flex flex-wrap gap-4 text-sm">
         {course?.slug ? (

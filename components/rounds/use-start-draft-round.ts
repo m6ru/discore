@@ -9,9 +9,13 @@ import {
   startLocalTrialFromLayout,
 } from "@/lib/local-round";
 import { toastError } from "@/lib/ui/toast-notify";
-import { friendlyError } from "@/lib/ui/friendly-error";
 
-export function useStartDraftRound(layoutId: string) {
+/**
+ * `userId` comes from the server page (getClaims), so a tap needs no Auth
+ * round trip; null starts a signed-out trial. A session that expired since the
+ * page rendered fails at the insert (RLS) and shows the error toast.
+ */
+export function useStartDraftRound(layoutId: string, userId: string | null) {
   const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,13 +24,7 @@ export function useStartDraftRound(layoutId: string) {
     setIsSubmitting(true);
 
     try {
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      // Unsigned players have no session; getUser() reports that as an error.
-      if (!user) {
+      if (!userId) {
         const existing = loadLocalTrial();
         if (existing?.status === "setup" || existing?.status === "active") {
           router.push("/rounds/trial");
@@ -43,12 +41,7 @@ export function useStartDraftRound(layoutId: string) {
         return;
       }
 
-      if (userError) {
-        toastError(friendlyError("Could not check your session", userError));
-        return;
-      }
-
-      const result = await createDraftRound(supabase, layoutId, user.id, roundName);
+      const result = await createDraftRound(supabase, layoutId, userId, roundName);
 
       if (!result.ok) {
         if (result.existingRoundId) {
@@ -60,12 +53,13 @@ export function useStartDraftRound(layoutId: string) {
         return;
       }
 
+      // A new URL is never in the client cache, and no other page shows
+      // drafts, so no refresh (it would render the round page twice).
       router.push(`/rounds/${result.roundId}`);
-      router.refresh();
     } finally {
       setIsSubmitting(false);
     }
-  }, [layoutId, router, supabase]);
+  }, [layoutId, userId, router, supabase]);
 
   return { startDraftRound, isSubmitting };
 }

@@ -16,6 +16,8 @@ export type CourseLayoutOption = {
 
 type Props = {
   layouts: CourseLayoutOption[];
+  /** Signed-in user from the server page; null starts a trial. */
+  userId: string | null;
 };
 
 function formatHoleCount(count: number): string {
@@ -33,8 +35,8 @@ function formatLayoutMeta(layout: CourseLayoutOption): string {
 }
 
 /** The whole framed row starts a draft; the forest square is its visual cue. */
-function LayoutStartCard({ layout }: { layout: CourseLayoutOption }) {
-  const { startDraftRound, isSubmitting } = useStartDraftRound(layout.id);
+function LayoutStartCard({ layout, userId }: { layout: CourseLayoutOption; userId: string | null }) {
+  const { startDraftRound, isSubmitting } = useStartDraftRound(layout.id, userId);
 
   return (
     <li className="overflow-hidden rounded-md border bg-card">
@@ -75,7 +77,7 @@ function LayoutStartCard({ layout }: { layout: CourseLayoutOption }) {
   );
 }
 
-export function CourseLayoutPicker({ layouts }: Props) {
+export function CourseLayoutPicker({ layouts, userId }: Props) {
   if (layouts.length === 0) {
     return null;
   }
@@ -83,7 +85,7 @@ export function CourseLayoutPicker({ layouts }: Props) {
   return (
     <ul className="space-y-2">
       {layouts.map((layout) => (
-        <LayoutStartCard key={layout.id} layout={layout} />
+        <LayoutStartCard key={layout.id} layout={layout} userId={userId} />
       ))}
     </ul>
   );

@@ -25,21 +25,16 @@ export default async function SuggestPage({ searchParams }: PageProps) {
   if (slug) {
     const { data: courseRow } = await supabase
       .from("courses")
-      .select("id, name, slug")
+      .select("id, name, slug, layouts(id, name)")
       .eq("slug", slug)
+      .eq("layouts.is_active", true)
+      .order("name", { referencedTable: "layouts", ascending: true })
       .maybeSingle();
     if (!courseRow) {
       notFound();
     }
-    course = courseRow;
-
-    const { data: layoutRows } = await supabase
-      .from("layouts")
-      .select("id, name")
-      .eq("course_id", courseRow.id)
-      .eq("is_active", true)
-      .order("name", { ascending: true });
-    layouts = layoutRows ?? [];
+    course = { id: courseRow.id, name: courseRow.name, slug: courseRow.slug };
+    layouts = courseRow.layouts;
   } else {
     // For "Is it one of these?" once the phone's position is known.
     const { courses } = await loadCourseSummaries(supabase);

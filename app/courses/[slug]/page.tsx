@@ -36,26 +36,25 @@ export default async function CourseDetailPage({ params }: PageProps) {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims ?? null;
 
-  const { data: course, error: courseError } = await supabase
-    .from("courses")
-    .select("id, name, slug, location, lat, lng, terrain_type, difficulty_tier, details")
-    .eq("slug", slug)
-    .maybeSingle();
+  // One wave: the course with its active layouts, and the player's stats by slug.
+  const [{ data: course, error: courseError }, { stats: courseStats }] = await Promise.all([
+    supabase
+      .from("courses")
+      .select(
+        "id, name, slug, location, lat, lng, terrain_type, difficulty_tier, details, layouts(id, name, slug, total_par, total_distance_m, map_url, holes(count))"
+      )
+      .eq("slug", slug)
+      .eq("layouts.is_active", true)
+      .order("name", { referencedTable: "layouts", ascending: true })
+      .maybeSingle(),
+    claims ? loadPlayerCourseStats(supabase, slug) : Promise.resolve({ stats: null }),
+  ]);
 
   if (courseError || !course) {
     notFound();
   }
 
-  const { data: layouts, error: layoutsError } = await supabase
-    .from("layouts")
-    .select("id, name, slug, total_par, total_distance_m, map_url, holes(count)")
-    .eq("course_id", course.id)
-    .eq("is_active", true)
-    .order("name", { ascending: true });
-
-  const { stats: courseStats } = claims
-    ? await loadPlayerCourseStats(supabase, slug)
-    : { stats: null };
+  const layouts = course.layouts;
 
   const mapsUrl =
     course.lat !== null && course.lng !== null
@@ -65,14 +64,14 @@ export default async function CourseDetailPage({ params }: PageProps) {
   const headerMeta = courseHeaderMeta(course);
   const mapImageSrc = courseMapSrc(course.slug);
   const layoutOptions =
-    layouts?.map((layout) => ({
+    layouts.map((layout) => ({
       id: layout.id,
       name: layout.name,
       holeCount: holeCountFromRelation(layout.holes),
       totalPar: layout.total_par,
       totalDistanceM: layout.total_distance_m,
       mapUrl: layout.map_url,
-    })) ?? [];
+    }));
 
   const lastPlayed = courseStats ? formatRoundDate(courseStats.lastPlayedAt) : null;
   const showAbout =
@@ -126,18 +125,12 @@ export default async function CourseDetailPage({ params }: PageProps) {
       <section className="space-y-3">
         <h2 className="font-display text-lg font-semibold">Pick a layout</h2>
 
-        {layoutsError ? (
-          <p className="rounded-lg border bg-muted p-3 text-sm text-muted-foreground">
-            Failed to load layouts: {layoutsError.message}
-          </p>
-        ) : null}
-
-        {!layoutsError && layoutOptions.length === 0 ? (
+        {layoutOptions.length === 0 ? (
           <p className="text-sm text-muted-foreground">No active layouts for this course.</p>
         ) : null}
 
-        {!layoutsError && layoutOptions.length > 0 ? (
-          <CourseLayoutPicker layouts={layoutOptions} />
+        {layoutOptions.length > 0 ? (
+          <CourseLayoutPicker layouts={layoutOptions} userId={claims?.sub ?? null} />
         ) : null}
       </section>
 

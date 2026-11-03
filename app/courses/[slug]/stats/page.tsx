@@ -364,34 +364,29 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
     redirect("/auth?message=Please+sign+in+to+view+your+stats");
   }
 
-  const { data: course, error: courseError } = await supabase
-    .from("courses")
-    .select("id, name, slug")
-    .eq("slug", slug)
-    .maybeSingle();
+  // The stats views are keyed by slug, so they load together with the course.
+  const [{ data: course, error: courseError }, courseStatsResult, layoutStatsResult] =
+    await Promise.all([
+      supabase
+        .from("courses")
+        .select("id, name, slug, layouts(id, name, slug)")
+        .eq("slug", slug)
+        .eq("layouts.is_active", true)
+        .order("name", { referencedTable: "layouts", ascending: true })
+        .maybeSingle(),
+      loadPlayerCourseStats(supabase, slug),
+      loadPlayerLayoutStatsForCourse(supabase, slug),
+    ]);
 
   if (courseError || !course) {
     notFound();
   }
 
-  const [{ data: layouts, error: layoutsError }, courseStatsResult, layoutStatsResult] =
-    await Promise.all([
-      supabase
-        .from("layouts")
-        .select("id, name, slug")
-        .eq("course_id", course.id)
-        .eq("is_active", true)
-        .order("name", { ascending: true }),
-      loadPlayerCourseStats(supabase, slug),
-      loadPlayerLayoutStatsForCourse(supabase, slug),
-    ]);
-
-  const layoutOptions: LayoutOption[] =
-    layouts?.map((layout) => ({
-      id: layout.id,
-      slug: layout.slug,
-      name: layout.name,
-    })) ?? [];
+  const layoutOptions: LayoutOption[] = course.layouts.map((layout) => ({
+    id: layout.id,
+    slug: layout.slug,
+    name: layout.name,
+  }));
 
   const selectedLayout = pickSelectedLayout(
     layoutOptions,
@@ -410,7 +405,6 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
       ];
 
   const loadError =
-    layoutsError?.message ??
     courseStatsResult.error ??
     layoutStatsResult.error ??
     holeStatsResult.error ??

@@ -29,7 +29,8 @@ export function useProfileSearch({
 
   useEffect(() => {
     const query = participantName.trim();
-    if (roundStatus !== "draft" || query.length < 2) {
+    // Picking a result writes its name into the field: nothing new to search.
+    if (roundStatus !== "draft" || query.length < 2 || query === selectedProfile?.display_name) {
       return;
     }
 

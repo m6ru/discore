@@ -10,13 +10,17 @@ import type { HomeData, HomeInvite, HomeRecentRound, HomeSuggestionThanks } from
 
 type Client = SupabaseClient<Database>;
 
+const HOME_RECENT_ROUND_LIMIT = 3;
+
 const PARTICIPATION_ROUND_STATUSES = ["active", "completed", "draft", "abandoned"] as const;
 
 export async function loadHomeData(
   supabase: Client,
   userId: string
 ): Promise<HomeData> {
-  const [profileResult, invitesResult, participationResult, thanksResult] = await Promise.all([
+  // One wave: recent rounds come straight from the player's own stats view
+  // (course, layout, dates and totals), so nothing waits for another query.
+  const [profileResult, invitesResult, participationResult, thanksResult, recentResult] = await Promise.all([
     supabase
       .from("profiles")
       .select("first_name, display_name, avatar_url, city")
@@ -47,10 +51,15 @@ export async function loadHomeData(
       .is("thanked_seen_at", null)
       .order("reviewed_at", { ascending: false })
       .limit(3),
+    supabase
+      .from("player_round_stats")
+      .select("round_id, layout_id, status, started_at, completed_at, course_name, layout_name, total_strokes, vs_par, holes_scored")
+      .order("completed_at", { ascending: false, nullsFirst: false })
+      .limit(HOME_RECENT_ROUND_LIMIT),
   ]);
 
   const profile = profileResult.data;
-  const { activeRounds, recentRounds, hasJoinedRound } = parseHomeParticipantRounds(
+  const { activeRounds, hasJoinedRound } = parseHomeParticipantRounds(
     participationResult.data ?? []
   );
 
@@ -76,45 +85,33 @@ export async function loadHomeData(
     ownerNote: row.owner_note,
   }));
 
-  const recentRoundsWithScores = await attachScoresToRecentRounds(
-    supabase,
-    recentRounds
-  );
+  const recentRounds: HomeRecentRound[] = (recentResult.data ?? []).flatMap((row) => {
+    if (!row.round_id || !row.layout_id || (row.status !== "completed" && row.status !== "abandoned")) {
+      return [];
+    }
+    const scored = (row.holes_scored ?? 0) > 0;
+    return [
+      {
+        id: row.round_id,
+        layoutId: row.layout_id,
+        courseName: row.course_name ?? "Unknown course",
+        layoutName: row.layout_name ?? "Unknown layout",
+        status: row.status,
+        completedAt: row.completed_at,
+        startedAt: row.started_at,
+        totalStrokes: scored ? row.total_strokes : null,
+        vsPar: scored ? row.vs_par : null,
+      },
+    ];
+  });
 
   return {
     profile,
     invites,
     activeRounds,
-    recentRounds: recentRoundsWithScores,
+    recentRounds,
     hasJoinedRound,
     profileOnboardingComplete: profile ? isProfileOnboardingComplete(profile) : false,
     suggestionThanks,
   };
-}
-
-async function attachScoresToRecentRounds(
-  supabase: Client,
-  rounds: HomeRecentRound[]
-): Promise<HomeRecentRound[]> {
-  if (rounds.length === 0) {
-    return rounds;
-  }
-
-  const { data } = await supabase
-    .from("player_round_stats")
-    .select("round_id, total_strokes, vs_par, holes_scored")
-    .in(
-      "round_id",
-      rounds.map((round) => round.id)
-    );
-
-  const byRoundId = new Map((data ?? []).map((row) => [row.round_id, row]));
-
-  return rounds.map((round) => {
-    const stats = byRoundId.get(round.id);
-    if (!stats || (stats.holes_scored ?? 0) === 0) {
-      return round;
-    }
-    return { ...round, totalStrokes: stats.total_strokes, vsPar: stats.vs_par };
-  });
 }

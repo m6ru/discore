@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useState, type Dispatch, type SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
@@ -14,8 +14,10 @@ import {
 } from "@/lib/rounds/round-draft-actions";
 import type { Database } from "@/lib/database.types";
 import type { RoundStatus } from "@/lib/rounds/round-status";
+import { normalizeInviteRows, type InviteRow } from "@/lib/rounds/invite-rows";
+import { normalizeParticipantRows } from "@/lib/rounds/round-rows";
 import { toastError, toastInfo } from "@/lib/ui/toast-notify";
-import type { ProfileSearchResult, UnifiedPlayer } from "../round-types";
+import type { ParticipantRow, ProfileSearchResult, UnifiedPlayer } from "../round-types";
 import { friendlyError } from "@/lib/ui/friendly-error";
 
 type Client = SupabaseClient<Database>;
@@ -27,8 +29,8 @@ type Options = {
   isScorer: boolean;
   currentUserId: string;
   courseSlug: string | null;
-  loadParticipants: () => Promise<void>;
-  loadInvites: () => Promise<void>;
+  setParticipants: Dispatch<SetStateAction<ParticipantRow[]>>;
+  setInvites: Dispatch<SetStateAction<InviteRow[]>>;
   setIsSubmitting: (value: boolean) => void;
   setIsTransitioning: (value: boolean) => void;
 };
@@ -40,8 +42,8 @@ export function useDraftSetup({
   isScorer,
   currentUserId,
   courseSlug,
-  loadParticipants,
-  loadInvites,
+  setParticipants,
+  setInvites,
   setIsSubmitting,
   setIsTransitioning,
 }: Options) {
@@ -69,7 +71,7 @@ export function useDraftSetup({
       setIsSubmitting(true);
 
       if (selectedProfile) {
-        const { error: inviteError } = await sendRoundInvite(
+        const { data: invite, error: inviteError } = await sendRoundInvite(
           supabase,
           roundId,
           selectedProfile.id,
@@ -82,12 +84,13 @@ export function useDraftSetup({
         }
         setParticipantName("");
         clearSearchSelection();
-        await loadInvites();
+        // The written row is the answer; the Realtime echo only reaches other phones.
+        setInvites((prev) => upsertById(prev, normalizeInviteRows([invite])));
         setIsSubmitting(false);
         return true;
       }
 
-      const { error: guestInsertError } = await addGuestParticipant(supabase, roundId, trimmedName);
+      const { data: guest, error: guestInsertError } = await addGuestParticipant(supabase, roundId, trimmedName);
       if (guestInsertError) {
         toastError(friendlyError("Could not add the player", guestInsertError));
         setIsSubmitting(false);
@@ -96,7 +99,7 @@ export function useDraftSetup({
 
       setParticipantName("");
       clearSearchSelection();
-      await loadParticipants();
+      setParticipants((prev) => upsertById(prev, normalizeParticipantRows([guest])));
       setIsSubmitting(false);
       return true;
     },
@@ -107,8 +110,8 @@ export function useDraftSetup({
       supabase,
       roundId,
       currentUserId,
-      loadInvites,
-      loadParticipants,
+      setInvites,
+      setParticipants,
       setIsSubmitting,
     ]
   );
@@ -119,29 +122,43 @@ export function useDraftSetup({
       setIsSubmitting(true);
 
       if (player.source === "invite" && player.inviteId) {
-        const { error } = await cancelRoundInvitation(supabase, player.inviteId);
-        if (error) {
+        const inviteId = player.inviteId;
+        const { data, error } = await cancelRoundInvitation(supabase, inviteId);
+        if (error || !data?.length) {
           toastError(friendlyError("Could not remove the player", error));
           setIsSubmitting(false);
           return;
         }
-        await loadInvites();
+        setInvites((prev) =>
+          prev.map((invite) => (invite.id === inviteId ? { ...invite, status: "cancelled" } : invite))
+        );
         setIsSubmitting(false);
         return;
       }
 
       if (player.source === "participant" && player.participantId) {
-        const { error: deleteError } = await removeRoundParticipant(supabase, player.participantId);
-        if (deleteError) {
+        const participantId = player.participantId;
+        // A delete never comes back through Realtime, so this screen updates itself.
+        const { data, error: deleteError } = await removeRoundParticipant(supabase, participantId);
+        if (deleteError || !data?.length) {
           toastError(friendlyError("Could not remove the player", deleteError));
           setIsSubmitting(false);
           return;
         }
-        if (player.invitedUserId) {
-          await cancelInvitesForUser(supabase, roundId, player.invitedUserId);
+        setParticipants((prev) => prev.filter((participant) => participant.id !== participantId));
+        const invitedUserId = player.invitedUserId;
+        if (invitedUserId) {
+          // Otherwise their accepted invite would show them again.
+          await cancelInvitesForUser(supabase, roundId, invitedUserId);
+          setInvites((prev) =>
+            prev.map((invite) =>
+              invite.invited_user_id === invitedUserId &&
+              (invite.status === "pending" || invite.status === "accepted")
+                ? { ...invite, status: "cancelled" }
+                : invite
+            )
+          );
         }
-        await loadParticipants();
-        await loadInvites();
         setIsSubmitting(false);
       }
     },
@@ -150,8 +167,8 @@ export function useDraftSetup({
       roundStatus,
       supabase,
       roundId,
-      loadInvites,
-      loadParticipants,
+      setInvites,
+      setParticipants,
       setIsSubmitting,
     ]
   );
@@ -190,4 +207,9 @@ export function useDraftSetup({
     onStartRound,
     onDeleteDraft,
   };
+}
+
+function upsertById<T extends { id: string }>(rows: T[], incoming: T[]): T[] {
+  const ids = new Set(incoming.map((row) => row.id));
+  return [...rows.filter((row) => !ids.has(row.id)), ...incoming];
 }

@@ -184,7 +184,7 @@ async function loadHistoryRounds(
   const { data, error } = await supabase
     .from("player_round_stats")
     .select(
-      "round_id, status, started_at, completed_at, course_name, layout_name, layout_hole_count, total_strokes, vs_par, holes_scored"
+      "round_id, status, started_at, completed_at, course_name, layout_name, layout_hole_count, total_strokes, vs_par, holes_scored, round_participants(count)"
     )
     .in("status", [...PAST_ROUND_STATUSES])
     .order("completed_at", { ascending: false, nullsFirst: false });
@@ -193,18 +193,6 @@ async function loadHistoryRounds(
     return { rounds: [], error: error.message };
   }
 
-  // One extra query for "3 players" / "solo"; members can read their rounds' participants (RLS).
-  const roundIds = (data ?? []).flatMap((row) => (row.round_id ? [row.round_id] : []));
-  const { data: participantRows } = roundIds.length
-    ? await supabase.from("round_participants").select("round_id").in("round_id", roundIds)
-    : { data: [] };
-  const playerCountByRound = new Map<string, number>();
-  for (const participant of participantRows ?? []) {
-    playerCountByRound.set(
-      participant.round_id,
-      (playerCountByRound.get(participant.round_id) ?? 0) + 1
-    );
-  }
 
   const rounds: HistoryRound[] = (data ?? []).map((row) => ({
     id: row.round_id!,
@@ -212,7 +200,8 @@ async function loadHistoryRounds(
     courseName: row.course_name ?? "Unknown course",
     layoutName: row.layout_name ?? "Unknown layout",
     playedAt: row.completed_at ?? row.started_at,
-    playerCount: playerCountByRound.get(row.round_id!) ?? 1,
+    // "3 players" / "solo": members can count their rounds' participants (RLS).
+    playerCount: row.round_participants[0]?.count ?? 1,
     totalStrokes: row.total_strokes,
     vsPar: row.vs_par,
     thru: row.holes_scored ?? 0,
