@@ -12,7 +12,7 @@ export const homeFrameLabelClassName =
 
 /** The big name inside a Home frame. */
 export const homeFrameTitleClassName =
-  "truncate font-display text-[30px] font-semibold leading-[1.05] tracking-tight";
+  "line-clamp-2 font-display text-[22px] font-semibold leading-tight tracking-tight";
 
 /** Home list rows: single body size; weight/color for hierarchy. */
 export const homeRowLinkClassName =

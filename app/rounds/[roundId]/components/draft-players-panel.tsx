@@ -10,7 +10,7 @@ function playerStatus(
   player: UnifiedPlayer,
   scorerUserId: string,
   currentUserId: string
-): string {
+): string | null {
   if (player.key.startsWith("guest-")) {
     return "Guest, no account";
   }
@@ -18,7 +18,8 @@ function playerStatus(
     return "Invite sent · waiting to accept";
   }
   if (player.invitedUserId === scorerUserId) {
-    return player.invitedUserId === currentUserId ? "You · scorer" : "Scorer";
+    // You know you are the one scoring; others see who is.
+    return player.invitedUserId === currentUserId ? null : "Scorer";
   }
   return player.invitedUserId === currentUserId ? "You · joined" : "Joined";
 }
@@ -44,15 +45,17 @@ function PlayerRows({
         <div key={player.key} className={ROW_CLASS}>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-base font-semibold">{player.label}</span>
-            <span
-              className={
-                player.isPending
-                  ? "block text-[13px] text-[#8a5a1c]"
-                  : "block text-[13px] text-muted-foreground"
-              }
-            >
-              {playerStatus(player, scorerUserId, currentUserId)}
-            </span>
+            {playerStatus(player, scorerUserId, currentUserId) ? (
+              <span
+                className={
+                  player.isPending
+                    ? "block text-[13px] text-[#8a5a1c]"
+                    : "block text-[13px] text-muted-foreground"
+                }
+              >
+                {playerStatus(player, scorerUserId, currentUserId)}
+              </span>
+            ) : null}
           </span>
           {player.canRemove ? (
             <Button

@@ -750,8 +750,6 @@ export function RoundSession({
                 isTransitioning={isTransitioning}
                 hasPendingInvite={hasPendingInvite}
                 pendingInviteLabels={pendingInviteLabels}
-                playerCount={unifiedPlayers.length}
-                startingHole={startingHole}
                 onStartRound={() => void onStartRound()}
               />
             </>

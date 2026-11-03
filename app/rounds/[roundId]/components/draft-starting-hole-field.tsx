@@ -75,12 +75,7 @@ export function StartingHoleField({
 }) {
   return (
     <div className="flex items-center justify-between gap-3 border-t pt-3.5">
-      <span className="min-w-0">
-        <span className="block text-base font-semibold">Starting hole</span>
-        <span className="block text-[13px] text-muted-foreground">
-          For shotgun starts or a busy first tee
-        </span>
-      </span>
+      <span className="min-w-0 text-base font-semibold">Starting hole</span>
       <Select
         value={String(startingHole)}
         onValueChange={(next) => onChange(Number(next))}

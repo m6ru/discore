@@ -160,10 +160,10 @@ export function TrialSession() {
 
   const header = (suffix: string) => (
     <header className="-mr-2 -mb-3 flex items-center gap-2">
-      <p className="min-w-0 flex-1 truncate text-sm font-semibold">
-        {trial.courseName}{" "}
-        <span className="font-medium text-muted-foreground">
-          · {trial.layoutName} · {suffix}
+      <p className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate text-sm font-semibold">{trial.courseName}</span>
+        <span className="truncate text-[13px] text-muted-foreground">
+          {trial.layoutName} · {suffix}
         </span>
       </p>
       <ConfirmActionDialog
@@ -202,7 +202,7 @@ export function TrialSession() {
   );
 
   if (trial.status === "setup") {
-    return <TrialSetup trial={trial} persist={persist} header={header("trial · setting up")} />;
+    return <TrialSetup trial={trial} persist={persist} header={header("trial")} />;
   }
 
   if (isFinished) {
@@ -480,7 +480,6 @@ function TrialSetup({
             aria-label="Your name"
             className="min-w-0 flex-1 bg-transparent text-base font-bold outline-none placeholder:font-semibold placeholder:text-muted-foreground"
           />
-          <span className="shrink-0 text-[13px] text-muted-foreground">You · scorer</span>
         </label>
         {guests.map((guest) => (
           <div key={guest.id} className="flex min-h-13 items-center gap-2.5 border-b">
@@ -527,8 +526,6 @@ function TrialSetup({
         isTransitioning={false}
         hasPendingInvite={false}
         pendingInviteLabels={[]}
-        playerCount={trial.players.length}
-        startingHole={trial.startingHole}
         onStartRound={onStart}
       />
     </main>
