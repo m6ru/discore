@@ -131,11 +131,10 @@ export default async function RoundPage({ params }: RoundPageProps) {
       {isScoringHeader || isDraftSetupHeader ? (
         <header className={isScoringHeader ? "-mr-2 -mb-3" : "-mr-2 space-y-1"}>
           <div className="flex items-center gap-2">
-            <p className="min-w-0 flex-1 truncate text-sm font-semibold">
-              {courseLine}
-              {isDraftSetupHeader ? (
-                <span className="font-medium text-muted-foreground"> · setting up</span>
-              ) : null}
+            {/* Course on one line, layout under it: long names never squeeze each other. */}
+            <p className="flex min-w-0 flex-1 flex-col">
+              <span className="truncate text-sm font-semibold">{courseRow?.name ?? "Unknown course"}</span>
+              <span className="truncate text-[13px] text-muted-foreground">{layoutRow?.name ?? "Unknown layout"}</span>
             </p>
             <div id={ROUND_HEADER_ACTIONS_ID} />
           </div>

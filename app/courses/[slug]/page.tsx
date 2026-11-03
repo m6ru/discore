@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { ChevronLeft, MapPin } from "lucide-react";
 import Image from "next/image";
 import fs from "node:fs";
 import path from "node:path";
@@ -84,13 +84,23 @@ export default async function CourseDetailPage({ params }: PageProps) {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
       <header className="space-y-2">
-        <Link
-          href="/courses"
-          aria-label="Back to courses"
-          className="-ml-2 inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-        >
-          <ChevronLeft className="size-5" aria-hidden />
-        </Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link
+            href="/courses"
+            aria-label="Back to courses"
+            className="-ml-2 inline-flex size-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          >
+            <ChevronLeft className="size-5" aria-hidden />
+          </Link>
+          {claims ? (
+            <Link
+              href={`/courses/${slug}/stats`}
+              className="flex min-h-11 shrink-0 items-center text-sm font-semibold text-primary"
+            >
+              Your stats
+            </Link>
+          ) : null}
+        </div>
         <h1 className="font-display text-[30px] font-semibold leading-tight tracking-tight">
           {course.name}
         </h1>
@@ -100,31 +110,16 @@ export default async function CourseDetailPage({ params }: PageProps) {
             Total rounds {courseStats.roundsPlayed}
           </p>
         ) : null}
-        {mapsUrl || claims ? (
-          <div className="flex items-center justify-between gap-3 pt-1">
-            {mapsUrl ? (
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex min-h-11 min-w-0 items-center gap-1.5 text-sm font-medium text-foreground/85 hover:text-foreground"
-              >
-                <MapPin className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-                <span className="truncate">{course.location.trim() || "Open in maps"}</span>
-              </a>
-            ) : (
-              <span />
-            )}
-            {claims ? (
-              <Link
-                href={`/courses/${slug}/stats`}
-                className="flex min-h-11 shrink-0 items-center gap-0.5 text-sm font-semibold text-primary"
-              >
-                Your stats
-                <ChevronRight className="size-4" aria-hidden />
-              </Link>
-            ) : null}
-          </div>
+        {mapsUrl ? (
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-11 min-w-0 items-center gap-1.5 pt-1 text-sm font-medium text-foreground/85 hover:text-foreground"
+          >
+            <MapPin className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+            <span className="truncate">{course.location.trim() || "Open in maps"}</span>
+          </a>
         ) : null}
       </header>
 

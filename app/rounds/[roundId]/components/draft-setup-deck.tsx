@@ -13,8 +13,6 @@ type Props = {
   isTransitioning: boolean;
   hasPendingInvite: boolean;
   pendingInviteLabels: string[];
-  playerCount: number;
-  startingHole: number;
   onStartRound: () => void;
 };
 
@@ -37,8 +35,6 @@ export function DraftSetupDeck({
   isTransitioning,
   hasPendingInvite,
   pendingInviteLabels,
-  playerCount,
-  startingHole,
   onStartRound,
 }: Props) {
   if (roundStatus !== "draft" || !isScorer) {
@@ -60,11 +56,11 @@ export function DraftSetupDeck({
           {isTransitioning ? "Working…" : "Start round"}
           {!hasPendingInvite ? <ArrowRight className="size-5" aria-hidden /> : null}
         </Button>
-        <p className="text-center text-[13px] text-muted-foreground">
-          {hasPendingInvite
-            ? formatPendingMessage(pendingInviteLabels)
-            : `${playerCount} ${playerCount === 1 ? "player" : "players"} · starting on hole ${startingHole}`}
-        </p>
+        {hasPendingInvite ? (
+          <p className="text-center text-[13px] text-muted-foreground">
+            {formatPendingMessage(pendingInviteLabels)}
+          </p>
+        ) : null}
       </div>
     </div>
   );
