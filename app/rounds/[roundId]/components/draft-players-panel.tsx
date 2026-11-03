@@ -197,7 +197,7 @@ export function DraftPlayersPanel({
             Add another player
           </button>
           <p className="pt-2 text-[13px] text-muted-foreground">
-            Friends with a discore account get an invite. Anyone else plays as a guest.
+            Players with an account get an invite. Others join as guests.
           </p>
         </>
       ) : null}
