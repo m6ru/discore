@@ -32,12 +32,14 @@ type Props = {
   details: ReactNode;
   /** The round's actions, as rows. */
   children?: ReactNode;
-  /** Set apart at the bottom in red; always confirms first. */
+  /**
+   * Set apart at the bottom in red. With `confirm` it asks first (something
+   * is lost for good); without, the tap does it.
+   */
   destructive: {
     label: string;
     hint?: string;
-    confirmTitle: string;
-    confirmDescription: string;
+    confirm?: { title: string; description: string };
     onConfirm: () => void;
   };
   disabled?: boolean;
@@ -96,7 +98,11 @@ export function RoundSheet({
             disabled={disabled}
             onClick={() => {
               onOpenChange(false);
-              setConfirmOpen(true);
+              if (destructive.confirm) {
+                setConfirmOpen(true);
+              } else {
+                destructive.onConfirm();
+              }
             }}
           >
             {destructive.label}
@@ -110,8 +116,8 @@ export function RoundSheet({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{destructive.confirmTitle}</AlertDialogTitle>
-            <AlertDialogDescription>{destructive.confirmDescription}</AlertDialogDescription>
+            <AlertDialogTitle>{destructive.confirm?.title}</AlertDialogTitle>
+            <AlertDialogDescription>{destructive.confirm?.description}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>

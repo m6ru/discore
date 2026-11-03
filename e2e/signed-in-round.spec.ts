@@ -47,3 +47,14 @@ test("signed-in scorer plays a round with a guest and completes it", async ({ pa
   await page.getByRole("link", { name: "Back to profile" }).click();
   await expect(page.getByRole("heading", { name: "Profile" })).toBeVisible();
 });
+
+test("a draft is deleted from the ✕ sheet in one tap", async ({ page }) => {
+  const scorer = await createUser("Alice");
+  await signIn(page, scorer);
+  await startTestLayout(page);
+  await page.waitForURL(/\/rounds\/[0-9a-f-]{36}$/);
+
+  await page.getByRole("button", { name: "Close or delete this draft" }).click();
+  await page.getByRole("button", { name: "Delete draft" }).click();
+  await page.waitForURL(`/courses/${COURSE.slug}`);
+});

@@ -197,7 +197,7 @@ export function DraftPlayersPanel({
             Add another player
           </button>
           <p className="pt-2 text-[13px] text-muted-foreground">
-            Type a name. Players with an account get an invite; anyone else joins as a guest.
+            Players with an account get an invite. Others join as guests.
           </p>
         </>
       ) : null}
