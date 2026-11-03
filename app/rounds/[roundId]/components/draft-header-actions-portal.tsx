@@ -63,13 +63,11 @@ export function DraftHeaderActionsPortal({
           <>
             {layoutName} · {holeCount} holes · par{" "}
             <span className="font-mono font-semibold text-foreground">{layoutTotalPar}</span>
-            <span className="block">Not started yet</span>
           </>
         }
         destructive={{
+          // No scores yet, so nothing to lose: the sheet is the one confirm step.
           label: "Delete draft",
-          confirmTitle: "Delete this draft?",
-          confirmDescription: "This removes the round and everyone you invited. You can't bring it back.",
           onConfirm: onDeleteDraft,
         }}
         disabled={isTransitioning}
