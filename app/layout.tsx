@@ -24,11 +24,15 @@ export const metadata: Metadata = {
   title: "Discore",
   description: "Discore disc golf score tracking app.",
   manifest: "/manifest.webmanifest",
+  // Home-screen app on iPhone: the page draws under the status bar (white clock);
+  // the forest strip in the body keeps the clock readable on every page.
+  appleWebApp: { statusBarStyle: "black-translucent" },
 };
 
-/** Phone status bar / browser chrome: the light ground; `/` overrides it with the forest band. */
+/** Forest status bar everywhere: browser chrome via theme-color, home-screen app via the strip. */
 export const viewport: Viewport = {
-  themeColor: "#fafaf6",
+  themeColor: "#1d3a2c",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -41,7 +45,9 @@ export default function RootLayout({
       lang="en"
       className={`${manrope.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col pt-[env(safe-area-inset-top)]">
+        {/* Status bar strip: zero height in a browser tab, the clock's height in the home-screen app. */}
+        <div aria-hidden className="fixed inset-x-0 top-0 z-[60] h-[env(safe-area-inset-top)] bg-primary" />
         <AppChrome>{children}</AppChrome>
         <Toaster
           position="bottom-center"
