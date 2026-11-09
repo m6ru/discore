@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { AppChrome } from "@/components/layout/app-chrome";
 import { Toaster } from "@/components/ui/sonner";
@@ -24,6 +24,11 @@ export const metadata: Metadata = {
   title: "Discore",
   description: "Discore disc golf score tracking app.",
   manifest: "/manifest.webmanifest",
+};
+
+/** Phone status bar / browser chrome: the light ground; `/` overrides it with the forest band. */
+export const viewport: Viewport = {
+  themeColor: "#fafaf6",
 };
 
 export default function RootLayout({

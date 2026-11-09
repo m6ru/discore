@@ -29,6 +29,8 @@ export type NearYouCourse = {
 
 type Props = {
   courses: NearYouCourse[];
+  /** Without a known location: a framed "Pick a course" (Home) or just the button (landing). */
+  fallback?: "frame" | "button";
 };
 
 function formatLayoutCount(count: number): string {
@@ -46,7 +48,7 @@ function StartButton({ href }: { href: string }) {
   );
 }
 
-export function NearYouStart({ courses }: Props) {
+export function NearYouStart({ courses, fallback = "frame" }: Props) {
   const [nearest, setNearest] = useState<(NearYouCourse & { distanceKm: number }) | null>(null);
 
   useEffect(() => {
@@ -75,6 +77,9 @@ export function NearYouStart({ courses }: Props) {
   }, [courses]);
 
   if (!nearest) {
+    if (fallback === "button") {
+      return <StartButton href="/courses" />;
+    }
     return (
       <section className={homeFrameClassName}>
         <h2 className={homeFrameLabelClassName}>Play</h2>

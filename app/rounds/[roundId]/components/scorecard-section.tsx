@@ -24,8 +24,9 @@ type Props = {
 function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
   switch (tone) {
     case "ace":
+      return "bg-ace";
     case "eagle":
-      return "bg-good ring-[1.5px] ring-inset ring-primary";
+      return "bg-eagle";
     case "birdie":
       return "bg-good";
     case "bogey":

@@ -24,15 +24,18 @@ const colors = [
   { name: "good (lime)", hex: "#C9E36A", className: "bg-good" },
   { name: "over", hex: "#E9D9C9", className: "bg-over" },
   { name: "over-strong", hex: "#D4B496", className: "bg-over-strong" },
+  { name: "eagle", hex: "#6FA6D9", className: "bg-eagle" },
+  { name: "ace", hex: "#FFE566", className: "bg-ace" },
   { name: "destructive", hex: "#A8261B", className: "bg-destructive" },
 ];
 
 const scoreTones = [
-  { label: "Eagle or ace", score: 1, className: "bg-good ring-[1.5px] ring-inset ring-primary" },
-  { label: "Birdie", score: 2, className: "bg-good" },
-  { label: "Par", score: 3, className: "" },
-  { label: "Bogey", score: 4, className: "bg-over" },
-  { label: "Double or worse", score: 5, className: "bg-over-strong" },
+  { label: "Ace", score: 1, className: "bg-ace" },
+  { label: "Eagle", score: 2, className: "bg-eagle" },
+  { label: "Birdie", score: 3, className: "bg-good" },
+  { label: "Par", score: 4, className: "" },
+  { label: "Bogey", score: 5, className: "bg-over" },
+  { label: "Double or worse", score: 6, className: "bg-over-strong" },
 ];
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
