@@ -1,3 +1,4 @@
+import type { Viewport } from "next";
 import { Suspense } from "react";
 import { createServerClient } from "@/lib/supabase/server";
 import { getAuthUserFirstName } from "@/lib/auth/get-auth-user-first-name";
@@ -5,6 +6,11 @@ import { ClaimTrialOnAuth } from "@/components/home/claim-trial-on-auth";
 import { LandingPage } from "@/components/home/landing";
 import { HomeSections } from "@/components/home/sections";
 import { HomeSectionsSkeleton } from "@/components/home/sections-skeleton";
+
+/** Home and the landing page start with the forest band, so the status bar matches it. */
+export const viewport: Viewport = {
+  themeColor: "#1d3a2c",
+};
 
 export default async function HomePage() {
   const supabase = await createServerClient();
