@@ -120,7 +120,7 @@ export function LandingPage() {
     <>
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto w-full max-w-3xl px-4 pb-[92px] sm:px-8">
-          <header className="flex min-h-[68px] items-center justify-between gap-3">
+          <header className="flex min-h-14 items-center justify-between gap-3">
             <p className="font-display text-xl font-bold tracking-tight">discore</p>
             <Link href="/auth" className="flex min-h-11 items-center text-[15px] font-bold">
               Sign in
