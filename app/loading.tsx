@@ -2,17 +2,21 @@ import { HomeSectionsSkeleton } from "@/components/home/sections-skeleton";
 
 export default function Loading() {
   return (
-    <main
-      className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8"
-      aria-busy="true"
-      aria-label="Loading home"
-    >
-      <header className="space-y-1">
-        <div className="h-7 w-32 animate-pulse rounded bg-muted" />
-        <div className="h-4 w-64 animate-pulse rounded bg-muted/70" />
-      </header>
-
-      <HomeSectionsSkeleton />
-    </main>
+    <>
+      <div className="bg-primary">
+        <div className="mx-auto w-full max-w-3xl px-4 pb-[108px] sm:px-8">
+          <div className="flex min-h-[68px] items-center">
+            <div className="h-6 w-24 animate-pulse rounded bg-primary-foreground/20" />
+          </div>
+        </div>
+      </div>
+      <main
+        className="mx-auto -mt-20 flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pb-4 sm:px-8 sm:pb-8"
+        aria-busy="true"
+        aria-label="Loading home"
+      >
+        <HomeSectionsSkeleton />
+      </main>
+    </>
   );
 }

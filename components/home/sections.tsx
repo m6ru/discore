@@ -54,6 +54,8 @@ export async function HomeSections({ userId }: Props) {
       layoutCount: course.layoutCount,
     }));
 
+  // The first frame overlaps the forest band, so it must always be a frame:
+  // Continue round, else the nearest course. Invites and thanks come after it.
   return (
     <>
       {data.activeRounds.length > 0 ? (
@@ -81,15 +83,13 @@ export async function HomeSections({ userId }: Props) {
             })}
           </ul>
         </section>
-      ) : null}
+      ) : (
+        <NearYouStart courses={nearYouCourses} />
+      )}
 
       <HomeInvites currentUserId={userId} invites={data.invites} />
 
       <SuggestionThanks items={data.suggestionThanks} />
-
-      {data.activeRounds.length === 0 ? (
-        <NearYouStart courses={nearYouCourses} />
-      ) : null}
 
       {!statsResult.error ? <HomeStatsTeaser stats={statsResult.stats} /> : null}
 

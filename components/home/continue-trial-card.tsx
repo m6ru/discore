@@ -13,7 +13,12 @@ import {
   pagePrimaryButtonClassName,
 } from "@/lib/ui/page-chrome";
 
-export function ContinueTrialCard() {
+type Props = {
+  /** Shown instead when this phone has no trial round. */
+  fallback?: React.ReactNode;
+};
+
+export function ContinueTrialCard({ fallback = null }: Props) {
   const [trial, setTrial] = useState<LocalTrialRound | null>(null);
 
   useEffect(() => {
@@ -22,7 +27,7 @@ export function ContinueTrialCard() {
   }, []);
 
   if (!trial) {
-    return null;
+    return fallback;
   }
 
   const isCompleted = trial.status === "completed";

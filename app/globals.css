@@ -28,6 +28,9 @@
   --good-foreground: #141814;
   --over: #e9d9c9;
   --over-strong: #d4b496;
+  /* Proposal (2026-11-09), only on the landing example so far; the scorecard still shows eagle/ace as lime with a ring. */
+  --eagle: #6fa6d9;
+  --ace: #ffe566;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -66,6 +69,8 @@
   --color-good-foreground: var(--good-foreground);
   --color-over: var(--over);
   --color-over-strong: var(--over-strong);
+  --color-eagle: var(--eagle);
+  --color-ace: var(--ace);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);

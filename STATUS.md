@@ -8,7 +8,7 @@
 
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
-- **Updated:** 2026-11-09 (MacBook session, plan only, no code)
+- **Updated:** 2026-11-09 (PC session: landing page + forest band built, PR open)
 - **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions live: `/courses/suggest` (fix or new course, up to 6 photos; "Missing one?" in the course list and on an empty search), "Wrong info?" per hole during a round (edit par/length/notes in place), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home, Telegram ping to the owner per new suggestion (trigger + `pg_net`; bot token and chat id in Supabase Vault as `telegram_bot_token` / `telegram_chat_id`; no secrets → no ping). Disc golf skill in `.claude/skills/disc-golf/`. Architecture walkthrough + decision records in `ARCHITECTURE.md`.
 - **Decisions (owner, 2026-10-21):** "OB" stays one yes/no per hole. Unfinished hole = par + 4 (not reachable today). Suggestions: signed-in only; owner reviews by hand (no AI pre-reading); sender is thanked in the app, not by email.
 - **Vercel previews work again (2026-10-22):** Supabase env vars were Production-only; now also set for Preview (as *Config*). Vercel CLI logged in and linked on the PC.
@@ -26,17 +26,18 @@ _Overwritten at the end of every session — describes now, not history (history
 - **Redesign done (2026-11-03):** every screen is in the C2 design. Small fixes from real use go straight to code; the canvas is not updated for those (`DESIGN-PATTERNS.md` is).
 - **State-handling audit done (2026-11-03):** the verified plan was built in one code-only PR (no migration). Round page = one request; setup actions update from the write's reply; Realtime reloads only the changed table and reads round changes from the message; course page, course stats, Profile, Home and History load in one wave; tapping a layout skips the Auth call and the double render. Fixed on the way: observers saw other registered players as "Registered user (uuid)". `e2e/request-counts.spec.ts` guards the phone's request counts (ARCHITECTURE §4.10).
 - **Next (owner, 2026-11-09), in this order:**
-  1. **Landing page** (Roadmap 1). Plan agreed in discussion, nothing built: `/` stays one address; the server shows **Home when signed in** and the **landing page when signed out** (no redirect, no flash; bookmarks and the home-screen icon keep working). Build **"Landing 1 · Play first"** from the canvas: headline "Score your round. Sign up later.", Start a round on top, "No account needed to try it.", example scorecard, How it works (pick a course · score hole by hole · see where it went), Bring your group, Start a round + Browse courses; Sign in top right. It replaces today's signed-out Home and keeps the continue-trial card on top. Use the plain "discore" wordmark for now. Phone first; desktop layout after.
+  1. **Landing page + forest band** — built in the open PR (designed with the owner on the canvas as "Landing 3" and "Home · forest band"; all decisions in DESIGN-PATTERNS → Forest band / Landing page / Home). Owner tests the preview (signed out and signed in; no migration), then merge. Later, not built: a signed-in user with **no rounds yet** sees How it works + the example under the start frame until the first finished round; desktop layout; forest status bar (theme colour) on these two screens.
   2. **Re-send a cancelled or declined invite** (Smaller debts). Finding: the insert fails on `unique (round_id, invited_user_id)`, but `round_invitations_update` already lets the scorer set status back to `pending`, so the fix is likely app-side (update the existing row to `pending`, clear `responded_at`) plus pgTAP proving the scorer can and the invitee can't. Check the invite search / UI treat the reset row as pending.
   3. **Stray `.` line in course `details`** (Smaller debts): in the Viimsi file **and** all three Järve layouts; remove it, seed migration, owner runs `npx supabase db push`.
   4. Later: `error.tsx` boundaries; the security review (owner does it on the PC, where Docker is).
 - **Splash + logo (owner, 2026-11-09), not decided, not urgent:** splash shown only on a device's **first open** (remembered in the browser), never between pages, under a second. Owner likes **C · Scorecard row** most; does **not** want the lime-disc logo (A). Choosing a splash also means choosing the logo: the app has **no icon** yet (`app/manifest.ts` has no `icons`, no apple touch icon), so the home-screen icon is generic and Android may not offer install.
-- **Design canvas for the above:** https://claude.ai/artifact/GDgZtsi8yLjcC6aNH1XGUY (private, owner's claude.ai account): Splash A/B/C, the logo each implies, Landing 1 and Landing 2 (forest band, card up front; not chosen). Example scores and names there are made up.
+- **Design canvas for the above:** https://claude.ai/artifact/GDgZtsi8yLjcC6aNH1XGUY (private, owner's claude.ai account): Splash A/B/C, the logo each implies, Landing 1/2 (earlier drafts), **Landing 3** (built: no location / location on) and **Home · forest band** (built). Example scores and names there are made up.
+- **Ace / eagle colours (owner, 2026-11-09):** ace should not look like a birdie or eagle. Proposal ace yellow `#FFE566`, eagle blue `#6FA6D9` (tokens `--ace`, `--eagle`), used only on the landing example so far. Next: move the scorecard, stats score mix and `/design` to them, after a colour-blind check (yellow vs lime).
 - **Sign-in persistence (read from code, not tested on phones):** sessions last until sign-out (auth cookie max-age 400 days, access token refreshes hourly). To check: production session limits (dashboard → Authentication → Sessions); iPhone Safari may drop the login after ~7 days without a visit (script-set cookies); an iPhone home-screen icon has its own storage, so you sign in once more there and a Safari trial doesn't carry over.
 - **MacBook set up (2026-10-24):** Node 24 + gh from official downloads, `.env.local` and `supabase link` point at production. npm 11 skipped postinstall scripts for `esbuild`, `unrs-resolver` (works anyway; decide later).
 - **Small debts cleared (2026-10-26):** all server pages use `getClaims()`; `lib/` no longer imports from `app/` (shared row types in `lib/rounds/round-rows.ts`); `config.toml` uses `[local_smtp]`, empty seed step off.
 - **Draft setup (owner, 2026-11-03):** hint under Add another player is "Players with an account get an invite. Others join as guests."; Delete draft deletes on tap (no popup), Abandon round keeps its confirmation (DESIGN-PATTERNS).
-- **In flight:** nothing in code. Dependabot PR #36 (minor and patch bumps) is still open.
+- **In flight:** PR `feat/landing-forest-band` (landing page + Home band). Dependabot PR #36 (minor and patch bumps) is still open.
 
 ---
 
@@ -44,7 +45,7 @@ _Overwritten at the end of every session — describes now, not history (history
 
 Ordered. The security and reliability items from an external code review (Oct 2026) are done.
 
-1. **Presentation.** The design language is done (C2, every screen, 2026-11-03). Left: landing page for visitors (plan in Handoff → Next); README with screenshots, what it does, and an architecture diagram.
+1. **Presentation.** The design language is done (C2, every screen, 2026-11-03). Landing page built (Handoff → Next 1). Left: README with screenshots, what it does, and an architecture diagram.
 2. **State-handling audit** — done (2026-11-03): page loads and setup actions wait less; see ARCHITECTURE §4.10.
 3. **Stats build** — done (2026-11-02/03): every question in BLUEPRINT §8a is on screen, in the new design.
 4. **Security review** (owner, 2026-11-03) — next; see Handoff → Next.
@@ -69,7 +70,7 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 
 **Shippable hobby app** for the Estonian disc golf community: pick a course, score a round with guests or invited friends, observers watch live, history and personal stats.
 
-- **Home** (`app/page.tsx`): continue-round cards, pending invites (Realtime), near-you start, Your stats, recent rounds. Signed out: play-first launchpad and continue card for a local trial.
+- **Home** (`app/page.tsx`): continue-round cards, pending invites (Realtime), near-you start, Your stats, recent rounds. Signed out: the landing page (`components/home/landing.tsx`): headline, example round, Start a round or the continue-trial card, How it works, Browse courses. Both sit under a forest band.
 - **Play** (`app/courses/`): ~182 parks / ~209 layouts, search + distance sort; course detail with layout picker, About, optional map; `/courses/[slug]/stats` per-layout and per-hole stats; `/courses/suggest` for fixes and new courses.
 - **Rounds** (`app/rounds/[roundId]/`): draft (guests by name, registered players by invite) → active scoring (scorer only, OB; each hole saves instantly and syncs in the background) → review step (edit any hole, then Confirm round) or abandon. Observers watch read-only via Realtime. Finished round: Results, scorecard, "Where it went", Your round line.
 - **Trial** (`app/rounds/trial/`): signed-out players score in `localStorage` (`discore:local-trial`) with named guests and a starting hole, on the same screens as a signed-in round; a **completed** trial is claimed on sign-in/sign-up via `claim_trial` (idempotent on `guest_claim_id`). In-progress or corrupt trials are discarded at claim time.
