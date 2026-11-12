@@ -81,7 +81,7 @@ export default async function CourseDetailPage({ params }: PageProps) {
     mapImageSrc !== null;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-2 pb-4 sm:p-8">
       <header className="space-y-2">
         <div className="flex items-center justify-between gap-3">
           <Link

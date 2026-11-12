@@ -25,7 +25,7 @@ export default async function HomePage() {
       <div className="bg-primary text-primary-foreground">
         {/* The first Home frame overlaps the band's lower 40 px (-mt-10 below). */}
         <div className="mx-auto w-full max-w-3xl px-4 pb-[52px] sm:px-8">
-          <header className="flex min-h-14 items-center justify-between gap-3">
+          <header className="flex min-h-11 items-center justify-between gap-3">
             <h1 className="font-display text-xl font-bold tracking-tight">discore</h1>
             <p className="truncate text-[15px] font-semibold text-primary-foreground/80">
               {firstName ? `Tere, ${firstName}` : "Tere!"}

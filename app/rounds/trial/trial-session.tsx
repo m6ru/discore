@@ -208,7 +208,7 @@ export function TrialSession() {
   if (isFinished) {
     const dateLabel = formatRoundDisplayDate(trial.completedAt, trial.startedAt);
     return (
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-2 pb-4 sm:p-8">
         <header className="space-y-1">
           <p className="truncate text-sm font-semibold">
             {trial.courseName}{" "}
@@ -338,7 +338,7 @@ export function TrialSession() {
     const lastHole = playHoles.at(-1);
     return (
       <main
-        className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-[18px] p-4 sm:p-8"
+        className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-[18px] px-4 pt-2 pb-4 sm:p-8"
         style={{ paddingBottom: ROUND_COMPLETE_BOTTOM_INSET }}
       >
         {header("trial")}
@@ -386,7 +386,7 @@ export function TrialSession() {
 
   return (
     <main
-      className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8"
+      className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-2 pb-4 sm:p-8"
       style={{ paddingBottom: ACTIVE_SCORING_BOTTOM_INSET }}
     >
       {header("trial")}
@@ -454,7 +454,7 @@ function TrialSetup({
 
   return (
     <main
-      className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8"
+      className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-2 pb-4 sm:p-8"
       style={{ paddingBottom: DRAFT_SETUP_BOTTOM_INSET }}
     >
       {header}

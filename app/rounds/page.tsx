@@ -44,7 +44,7 @@ export default async function RoundsHistoryPage() {
   const bestDate = stats.bestRound ? formatShortDate(stats.bestRound.completedAt) : null;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 p-4 sm:p-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 px-4 pt-2 pb-4 sm:p-8">
       <HistoryViewedMarker />
       <h1 className={pageTitleClassName}>History</h1>
 

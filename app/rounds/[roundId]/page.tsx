@@ -52,7 +52,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
 
   if (roundError) {
     return (
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-2 pb-4 sm:p-8">
         <p className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
           Failed to load round: {roundError.message}
         </p>
@@ -106,7 +106,7 @@ export default async function RoundPage({ params }: RoundPageProps) {
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-2 pb-4 sm:p-8">
       {isScoringHeader || isDraftSetupHeader ? (
         <header className={isScoringHeader ? "-mr-2 -mb-3" : "-mr-2 space-y-1"}>
           <div className="flex items-center gap-2">

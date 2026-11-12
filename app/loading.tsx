@@ -5,7 +5,7 @@ export default function Loading() {
     <>
       <div className="bg-primary">
         <div className="mx-auto w-full max-w-3xl px-4 pb-[52px] sm:px-8">
-          <div className="flex min-h-14 items-center">
+          <div className="flex min-h-11 items-center">
             <div className="h-6 w-24 animate-pulse rounded bg-primary-foreground/20" />
           </div>
         </div>

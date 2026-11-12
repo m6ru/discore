@@ -46,7 +46,7 @@ export default async function SuggestPage({ searchParams }: PageProps) {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col p-4 sm:p-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 pt-2 pb-4 sm:p-8">
       <SuggestionForm
         userId={claims.sub}
         course={course}
