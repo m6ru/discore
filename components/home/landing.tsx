@@ -126,7 +126,7 @@ export function LandingPage() {
               Sign in
             </Link>
           </header>
-          <div className="space-y-4 pt-7">
+          <div className="space-y-4 pt-2">
             <h1 className="font-display text-[44px] font-bold leading-[1.04] tracking-tight">
               Score your round. Sign up later.
             </h1>
