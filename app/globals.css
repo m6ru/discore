@@ -104,8 +104,11 @@
   body {
     overscroll-behavior-y: none;
   }
+  /* Forest behind everything: iOS 26 Safari tints its bars from the body
+     (or a fixed element) since it ignores theme-color. Content sits on the
+     light ground in AppChrome. */
   body {
-    @apply bg-background text-foreground;
+    @apply bg-primary text-foreground;
     font-family: var(--font-sans);
   }
 }

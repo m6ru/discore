@@ -14,7 +14,7 @@ function AppChromeInner({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className={cn("flex min-h-full flex-1 flex-col", tabBarPaddingClass(showTabs))}>
+      <div className={cn("flex min-h-full flex-1 flex-col bg-background", tabBarPaddingClass(showTabs))}>
         {children}
       </div>
       <BottomTabBar show={showTabs} />
