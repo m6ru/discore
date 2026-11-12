@@ -4,11 +4,11 @@ export const pageTitleClassName = "font-display text-[30px] font-semibold leadin
 export const pageSubtitleClassName = "text-sm text-muted-foreground";
 
 /** Framed section on Home (nearest course, continue round). */
-export const homeFrameClassName = "space-y-3.5 rounded-md border bg-secondary px-[18px] pt-4 pb-[18px]";
+export const homeFrameClassName = "space-y-2.5 rounded-md border bg-secondary px-[18px] pt-3.5 pb-4";
 
 /** Small label row at the top of a Home frame. */
 export const homeFrameLabelClassName =
-  "flex items-center justify-between gap-3 border-b pb-3 text-[13px] font-semibold text-muted-foreground";
+  "flex items-center justify-between gap-3 text-[13px] font-semibold text-muted-foreground";
 
 /** The big name inside a Home frame. */
 export const homeFrameTitleClassName =

@@ -76,7 +76,7 @@ export default async function SuggestionsReviewPage({ searchParams }: PageProps)
   });
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-[18px] p-4 sm:p-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-[18px] px-4 pt-2 pb-4 sm:p-8">
       <header className="space-y-2.5">
         <Link
           href="/auth"

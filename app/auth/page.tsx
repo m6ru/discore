@@ -56,7 +56,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
     );
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 p-4 sm:p-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 pt-2 pb-4 sm:p-8">
       {!claims ? (
         <p className="font-display text-xl font-bold tracking-tight">discore</p>
       ) : view === "menu" ? (

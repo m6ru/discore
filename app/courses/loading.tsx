@@ -5,7 +5,7 @@ const SKELETON_ROWS = ["a", "b", "c", "d", "e", "f"];
 export default function Loading() {
   return (
     <main
-      className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 p-4 sm:p-8"
+      className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4 pt-2 pb-4 sm:p-8"
       aria-busy="true"
       aria-label="Loading courses"
     >

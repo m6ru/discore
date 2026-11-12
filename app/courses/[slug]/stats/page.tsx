@@ -419,7 +419,7 @@ export default async function CourseStatsPage({ params, searchParams }: PageProp
     : null;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 p-4 sm:p-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 px-4 pt-2 pb-4 sm:p-8">
       <header className="space-y-1.5">
         <Link
           href={`/courses/${slug}`}

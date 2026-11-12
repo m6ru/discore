@@ -9,7 +9,7 @@ export default async function CoursesPage() {
   const { courses, error: coursesError } = await loadCourseSummaries(supabase);
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 p-4 sm:p-8">
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4 pt-2 pb-4 sm:p-8">
       <header className="flex items-baseline justify-between gap-3">
         <h1 className={pageTitleClassName}>Courses</h1>
         <Link href="/courses/suggest" className="shrink-0 text-sm font-semibold text-primary">
