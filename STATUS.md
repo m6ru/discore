@@ -8,7 +8,7 @@
 
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
-- **Updated:** 2026-11-12 (PC session: landing page, forest band, status bar, scorecard ± and slimmer top spacing merged; forest tab bar in a PR)
+- **Updated:** 2026-11-12 (PC session: landing page, forest band, status bar, scorecard ± and slimmer top spacing merged; forest tab bar merged; landing gap + search zoom fix in a PR)
 - **Scorecard during a round (owner, 2026-11-12):** ± was after the last hole, off-screen while watching a round. Now the pinned column shows first name + ± (DESIGN-PATTERNS → Scorecard); Tot stays at the end.
 - **Home scrolled a few px on an iPhone 12 Pro in the browser (owner, 2026-11-12):** top space on every page 16 → 8 px (phones), the wordmark row 56 → 44 px, the Home frame lost the divider under its label and some inner spacing. If Home still scrolls, next is the gaps between Home sections.
 - **Forest tab bar + Safari bars (owner, 2026-11-12):** iOS 26 Safari ignores theme-color and tints from a fixed element / the body, so the tab bar and body are forest now (DESIGN-PATTERNS → Status bar, Bottom navigation). Owner checks Safari on the preview; easy to revert. Margins and paddings across the app still feel raw — owner wants a pass on them later.

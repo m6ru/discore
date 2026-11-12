@@ -116,6 +116,7 @@ Each tab route has a `loading.tsx` skeleton for an instant shell while the serve
 
 ## Avoid
 
+- Text fields under 16 px on phones: iOS Safari zooms the whole page when one is focused (`text-base`, as `components/ui/input.tsx` does)
 - Nested cards where a flat list works
 - Centered small modals for full scorecard
 - Footer abandon on active scorer (lives in menu)
