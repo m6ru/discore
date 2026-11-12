@@ -42,6 +42,17 @@ function cellToneClass(tone: ReturnType<typeof holeScoreTone>): string {
 const pinnedClass =
   "sticky left-0 z-10 border-r bg-background pr-2 text-left shadow-[4px_0_6px_-4px_rgba(20,24,20,0.15)]";
 
+/** The ± beside each name in the pinned column. */
+const vsParCellClass = "ml-auto w-8 shrink-0 pl-1 text-right font-semibold";
+
+/** First names keep the pinned column narrow; players who share one keep their full name. */
+function firstNamesUnlessShared(labels: string[]): string[] {
+  const firstNames = labels.map((label) => label.trim().split(/\s+/)[0] || label);
+  return firstNames.map((name, index) =>
+    firstNames.filter((other) => other === name).length > 1 ? labels[index] : name
+  );
+}
+
 function scrollActiveHoleIntoView(container: HTMLElement, activeCell: HTMLElement): void {
   const containerRect = container.getBoundingClientRect();
   const cellLeft =
@@ -79,7 +90,8 @@ export function ScorecardSection({
   }
 
   const totalPar = sortedHoles.reduce((sum, hole) => sum + hole.par, 0);
-  const nameWidth = namesExpanded ? "max-w-none" : "w-[60px] max-w-[60px]";
+  const nameWidth = namesExpanded ? "max-w-none" : "w-[64px] max-w-[64px]";
+  const shortNames = firstNamesUnlessShared(rows.map((row) => row.label));
 
   return (
     <div className="space-y-2.5">
@@ -91,15 +103,19 @@ export function ScorecardSection({
           <thead>
             <tr>
               <th scope="col" className={cn(pinnedClass, "pb-1.5 font-sans text-xs font-semibold text-muted-foreground")}>
-                <button
-                  type="button"
-                  className="min-h-6 text-left"
-                  aria-expanded={namesExpanded}
-                  aria-label={namesExpanded ? "Shorten player names" : "Show full player names"}
-                  onClick={() => setNamesExpanded((expanded) => !expanded)}
-                >
-                  Hole
-                </button>
+                {/* The pinned column holds the name and ±, so the score vs par is visible at any hole. */}
+                <span className="flex items-center">
+                  <button
+                    type="button"
+                    className="min-h-6 text-left"
+                    aria-expanded={namesExpanded}
+                    aria-label={namesExpanded ? "Show first names" : "Show full player names"}
+                    onClick={() => setNamesExpanded((expanded) => !expanded)}
+                  >
+                    Hole
+                  </button>
+                  <span className={vsParCellClass}>±</span>
+                </span>
               </th>
               {sortedHoles.map((hole) => {
                 const isCurrent = hole.id === activeHoleId;
@@ -133,11 +149,8 @@ export function ScorecardSection({
                   </th>
                 );
               })}
-              <th scope="col" className="pb-1.5 pl-2.5 text-right font-sans text-xs font-semibold text-muted-foreground">
-                Tot
-              </th>
               <th scope="col" className="pb-1.5 pl-2.5 pr-1 text-right font-sans text-xs font-semibold text-muted-foreground">
-                ±
+                Tot
               </th>
             </tr>
             <tr>
@@ -149,19 +162,18 @@ export function ScorecardSection({
                   {hole.par}
                 </td>
               ))}
-              <td className="border-b pb-1.5 pl-2.5 pt-0.5 text-right text-xs text-muted-foreground">{totalPar}</td>
-              <td className="border-b pr-1" />
+              <td className="border-b pb-1.5 pl-2.5 pr-1 pt-0.5 text-right text-xs text-muted-foreground">{totalPar}</td>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={sortedHoles.length + 3} className="py-4 font-sans text-sm text-muted-foreground">
+                <td colSpan={sortedHoles.length + 2} className="py-4 font-sans text-sm text-muted-foreground">
                   No scoring players yet.
                 </td>
               </tr>
             ) : (
-              rows.map((row) => {
+              rows.map((row, rowIndex) => {
                 const stats = segmentPlayerStats(row.participantId, sortedHoles, scoreLookup);
                 const played = stats.thru > 0;
 
@@ -172,7 +184,14 @@ export function ScorecardSection({
                       className={cn(pinnedClass, "h-9 border-b font-sans text-sm font-semibold")}
                       title={row.label}
                     >
-                      <span className={cn("block truncate", nameWidth)}>{row.label}</span>
+                      <span className="flex items-center">
+                        <span className={cn("block shrink-0 truncate", nameWidth)}>
+                          {namesExpanded ? row.label : shortNames[rowIndex]}
+                        </span>
+                        <span className={cn(vsParCellClass, "font-mono text-[13px] text-foreground")}>
+                          {played ? formatVsPar(stats.vsPar) : "—"}
+                        </span>
+                      </span>
                     </th>
                     {sortedHoles.map((hole) => {
                       const key = makeScoreLookupKey(row.participantId, hole.id);
@@ -205,11 +224,8 @@ export function ScorecardSection({
                         </td>
                       );
                     })}
-                    <td className="border-b pl-2.5 text-right text-muted-foreground">
+                    <td className="border-b pl-2.5 pr-1 text-right text-muted-foreground">
                       {played ? stats.totalStrokes : "—"}
-                    </td>
-                    <td className="border-b pl-2.5 pr-1 text-right font-semibold">
-                      {played ? formatVsPar(stats.vsPar) : "—"}
                     </td>
                   </tr>
                 );

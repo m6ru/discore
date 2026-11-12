@@ -8,7 +8,8 @@
 
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
-- **Updated:** 2026-11-09 (PC session: landing page + forest band built, PR open)
+- **Updated:** 2026-11-12 (PC session: landing page, forest band and status bar merged; scorecard ± fix in a PR)
+- **Scorecard during a round (owner, 2026-11-12):** ± was after the last hole, off-screen while watching a round. Now the pinned column shows first name + ± (DESIGN-PATTERNS → Scorecard); Tot stays at the end.
 - **State:** Hardening done; product direction in BLUEPRINT §1; instant scoring live (§3a). Course suggestions live: `/courses/suggest` (fix or new course, up to 6 photos; "Missing one?" in the course list and on an empty search), "Wrong info?" per hole during a round (edit par/length/notes in place), owner review at `/admin/suggestions` (`app_admins`, Copy for agent), thank-you card on Home, Telegram ping to the owner per new suggestion (trigger + `pg_net`; bot token and chat id in Supabase Vault as `telegram_bot_token` / `telegram_chat_id`; no secrets → no ping). Disc golf skill in `.claude/skills/disc-golf/`. Architecture walkthrough + decision records in `ARCHITECTURE.md`.
 - **Decisions (owner, 2026-10-21):** "OB" stays one yes/no per hole. Unfinished hole = par + 4 (not reachable today). Suggestions: signed-in only; owner reviews by hand (no AI pre-reading); sender is thanked in the app, not by email.
 - **Vercel previews work again (2026-10-22):** Supabase env vars were Production-only; now also set for Preview (as *Config*). Vercel CLI logged in and linked on the PC.
