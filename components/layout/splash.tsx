@@ -3,7 +3,7 @@
  * only. The script runs before the first paint: a device that has seen it
  * gets `data-splash="seen"` on <html> and the CSS hides the splash, so a
  * returning player never sees a flash. Animation and timing live in
- * globals.css (gone in under a second, never blocks taps).
+ * globals.css (about 1.8 s, never blocks taps).
  */
 const SEEN_KEY = "discore-splash-seen";
 
