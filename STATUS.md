@@ -8,7 +8,7 @@
 
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
-- **Updated:** 2026-11-12 (PC session: landing page, forest band, status bar, scorecard ± and slimmer top spacing merged; forest tab bar merged; landing gap + search zoom fix in a PR)
+- **Updated:** 2026-11-12 (PC session: landing page, forest band, status bar, scorecard ± and slimmer top spacing merged; forest tab bar, landing gap + search zoom fix merged; stray `.` in course details removed in a PR, owner pushes its seed migration)
 - **Scorecard during a round (owner, 2026-11-12):** ± was after the last hole, off-screen while watching a round. Now the pinned column shows first name + ± (DESIGN-PATTERNS → Scorecard); Tot stays at the end.
 - **Home scrolled a few px on an iPhone 12 Pro in the browser (owner, 2026-11-12):** top space on every page 16 → 8 px (phones), the wordmark row 56 → 44 px, the Home frame lost the divider under its label and some inner spacing. If Home still scrolls, next is the gaps between Home sections.
 - **Forest tab bar + Safari bars (owner, 2026-11-12):** iOS 26 Safari ignores theme-color and tints from a fixed element / the body, so the tab bar and body are forest now (DESIGN-PATTERNS → Status bar, Bottom navigation). Owner checks Safari on the preview; easy to revert. Margins and paddings across the app still feel raw — owner wants a pass on them later.
@@ -31,7 +31,7 @@ _Overwritten at the end of every session — describes now, not history (history
 - **Next (owner, 2026-11-09), in this order:**
   1. **Landing page + forest band** — built (forest status bar on `/`, ace/eagle colours on the real scorecard), PR #57 (designed with the owner on the canvas as "Landing 3" and "Home · forest band"; all decisions in DESIGN-PATTERNS → Forest band / Landing page / Home). Merged on the owner's word; status bar is now **forest on every page** in both the phone browser and the home-screen app (owner chose one consistent look; PR #58). An existing home-screen icon may need removing and adding again to pick up the new status bar. Home band made slimmer after the owner's phone check. Later, not built: a signed-in user with **no rounds yet** sees How it works + the example under the start frame until the first finished round; desktop layout.
   2. **Re-send a cancelled or declined invite** (Smaller debts). Finding: the insert fails on `unique (round_id, invited_user_id)`, but `round_invitations_update` already lets the scorer set status back to `pending`, so the fix is likely app-side (update the existing row to `pending`, clear `responded_at`) plus pgTAP proving the scorer can and the invitee can't. Check the invite search / UI treat the reset row as pending.
-  3. **Stray `.` line in course `details`** (Smaller debts): in the Viimsi file **and** all three Järve layouts; remove it, seed migration, owner runs `npx supabase db push`.
+  3. **Stray `.` line in course `details`** — removed from Viimsi and the three Järve layouts; seed migration in the PR, owner runs `npx supabase db push` after merge.
   4. Later: `error.tsx` boundaries; the security review (owner does it on the PC, where Docker is).
 - **Splash + logo (owner, 2026-11-09), not decided, not urgent:** splash shown only on a device's **first open** (remembered in the browser), never between pages, under a second. Owner likes **C · Scorecard row** most; does **not** want the lime-disc logo (A). Choosing a splash also means choosing the logo: the app has **no icon** yet (`app/manifest.ts` has no `icons`, no apple touch icon), so the home-screen icon is generic and Android may not offer install.
 - **Design canvas for the above:** https://claude.ai/artifact/GDgZtsi8yLjcC6aNH1XGUY (private, owner's claude.ai account): Splash A/B/C, the logo each implies, Landing 1/2 (earlier drafts), **Landing 3** (built: no location / location on) and **Home · forest band** (built). Example scores and names there are made up.
@@ -65,7 +65,6 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 - No `error.tsx` boundaries.
 - 5 high **dev-only** npm vulnerabilities (eslint-config-next → micromatch → braces); wait for upstream.
 - TypeScript 7 / other majors: Dependabot ignores them until typescript-eslint supports TS 7.
-- Viimsi and Järve `details` start with a stray `.` line (likely a layout workaround); queued in Handoff → Next.
 
 ---
 
