@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { AppChrome } from "@/components/layout/app-chrome";
+import { Splash } from "@/components/layout/splash";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -41,13 +42,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // suppressHydrationWarning: the splash script sets data-splash before React hydrates.
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${manrope.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col pt-[env(safe-area-inset-top)]">
         {/* Status bar strip: zero height in a browser tab, the clock's height in the home-screen app. */}
         <div aria-hidden className="fixed inset-x-0 top-0 z-[60] h-[env(safe-area-inset-top)] bg-primary" />
+        <Splash />
         <AppChrome>{children}</AppChrome>
         <Toaster
           position="bottom-center"
