@@ -86,6 +86,8 @@ Chosen by the owner from three mockups (2026-10-24), refined in a second canvas 
 
 Four **equal-weight** tabs. Play's icon is **subtly** larger (`emphasized`, `size-6` vs `size-5`) — light accent only, **not** a primary-action button. Primary "start a round" flow lives on **Home** (near-you Start). Do not reintroduce a center create tab.
 
+**App icon and splash** (owner, 2026-11-23): icon = capital D (Space Grotesk 700, light) over three small cells par · birdie · ace, on forest; phones round the corners, the favicon has its own. Splash = the lower-case wordmark with the same three cells popping in, on forest, first open per device only, under a second. Regenerate the PNGs with `npx tsx scripts/generate-icons.ts`.
+
 **Forest tab bar** (owner, 2026-11-12, for more colour): `bg-primary`, tabs in light text at 70 %, the active tab full light + bold. No marker under it (owner, 2026-11-23: clutter).
 
 Each tab route has a `loading.tsx` skeleton for an instant shell while the server render streams ([BLUEPRINT §2b](BLUEPRINT.md)).
