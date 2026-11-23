@@ -17,10 +17,11 @@ export function Splash() {
         <span className="font-display text-[60px] font-bold leading-none tracking-[-0.03em]">
           discore
         </span>
-        <span className="mt-[22px] flex gap-2">
-          <span className="splash-cell bg-primary-foreground" />
-          <span className="splash-cell bg-good" />
-          <span className="splash-cell bg-ace" />
+        {/* Scorecard cells, scaled up: par 3, birdie 2, ace 1. */}
+        <span className="mt-6 flex gap-1.5 font-mono text-xl font-semibold text-foreground">
+          <span className="splash-cell bg-primary-foreground">3</span>
+          <span className="splash-cell bg-good">2</span>
+          <span className="splash-cell bg-ace">1</span>
         </span>
       </div>
     </>

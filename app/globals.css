@@ -123,7 +123,8 @@ html[data-splash="seen"] .splash {
   display: none;
 }
 .splash-cell {
-  @apply h-4 w-[34px] rounded-[4px];
+  /* The scorecard's 20 × 30 cell at 1.5×. */
+  @apply flex h-[45px] w-[30px] items-center justify-center rounded-[4px];
   animation: splash-cell-in 180ms ease-out both;
 }
 .splash-cell:nth-child(1) { animation-delay: 150ms; }
