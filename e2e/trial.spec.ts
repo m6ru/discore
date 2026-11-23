@@ -7,9 +7,15 @@ test("anonymous trial round is saved to history after signing in", async ({ page
   await startTestLayout(page);
   await page.waitForURL("/rounds/trial");
 
-  await page.getByRole("textbox", { name: "Your name" }).fill("Kris");
+  // The empty name field takes focus, and Start round without it leads back there.
+  const yourName = page.getByRole("textbox", { name: "Your name" });
+  await expect(yourName).toBeFocused();
   await page.getByRole("textbox", { name: "Guest name" }).fill("Gary");
   await page.getByRole("button", { name: "Add" }).click();
+  await page.getByRole("button", { name: "Start round" }).click();
+  await expect(yourName).toBeFocused();
+
+  await yourName.fill("Kris");
   await page.getByRole("button", { name: "Start round" }).click();
 
   await scoreAllHolesAtPar(page, ["Kris", "Gary"], 2);
