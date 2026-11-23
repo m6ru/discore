@@ -519,11 +519,10 @@ function TrialSetup({
         ) : scorer?.name.trim() ? (
           <button
             type="button"
-            className="flex min-h-13 w-full flex-col justify-center border-b text-left"
+            className="flex min-h-13 w-full items-center border-b text-left"
             onClick={openNameForm}
           >
-            <span className="block truncate text-base font-semibold">{scorer.name}</span>
-            <span className="block text-[13px] text-muted-foreground">You</span>
+            <span className="min-w-0 truncate text-base font-semibold">{scorer.name}</span>
           </button>
         ) : (
           <button
@@ -537,10 +536,7 @@ function TrialSetup({
         )}
         {guests.map((guest) => (
           <div key={guest.id} className="flex min-h-13 items-center gap-2.5 border-b">
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-base font-semibold">{guest.name}</span>
-              <span className="block text-[13px] text-muted-foreground">Guest</span>
-            </span>
+            <span className="min-w-0 flex-1 truncate text-base font-semibold">{guest.name}</span>
             <Button
               type="button"
               variant="ghost"
