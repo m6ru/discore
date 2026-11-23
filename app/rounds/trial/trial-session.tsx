@@ -577,9 +577,10 @@ function TrialSetup({
             </div>
           </form>
         ) : (
+          // No line under it: the Starting hole row below draws one.
           <button
             type="button"
-            className="flex min-h-13 w-full items-center gap-2.5 border-b text-left text-base font-semibold text-primary"
+            className="flex min-h-13 w-full items-center gap-2.5 text-left text-base font-semibold text-primary"
             onClick={() => setShowAddForm(true)}
           >
             <Plus className="size-5" aria-hidden />
