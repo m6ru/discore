@@ -62,7 +62,17 @@ jobs:
           version: 2.121.0
 
       - name: Start database (applies all migrations)
-        run: supabase db start
+        # Docker Hub rate limits and a busy port have failed this step before.
+        # Retry up to 3 times; images already pulled stay cached, and stopping
+        # between tries frees the ports.
+        run: |
+          for attempt in 1 2 3; do
+            supabase db start && exit 0
+            echo "Start failed (attempt $attempt), retrying in 20 s"
+            supabase stop --no-backup || true
+            sleep 20
+          done
+          exit 1
 
       - name: Database tests
         run: supabase test db
@@ -83,7 +93,17 @@ jobs:
       - run: npm ci
 
       - name: Start Supabase (applies all migrations)
-        run: npx supabase start -x studio,edge-runtime,vector,logflare,imgproxy,supavisor
+        # Docker Hub rate limits and a busy port have failed this step before.
+        # Retry up to 3 times; images already pulled stay cached, and stopping
+        # between tries frees the ports.
+        run: |
+          for attempt in 1 2 3; do
+            npx supabase start -x studio,edge-runtime,vector,logflare,imgproxy,supavisor && exit 0
+            echo "Start failed (attempt $attempt), retrying in 20 s"
+            npx supabase stop --no-backup || true
+            sleep 20
+          done
+          exit 1
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
