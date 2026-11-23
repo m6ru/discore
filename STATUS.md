@@ -8,7 +8,7 @@
 
 _Overwritten at the end of every session — describes now, not history (history: `git log`, merged PRs)._
 
-- **Updated:** 2026-11-12 (PC session: landing page, forest band, status bar, scorecard ± and slimmer top spacing merged; forest tab bar, landing gap + search zoom fix merged; stray `.` in course details removed in a PR, owner pushes its seed migration)
+- **Updated:** 2026-11-12 (PC session: landing page, forest band, status bar, scorecard ± and slimmer top spacing merged; forest tab bar, landing gap + search zoom fix merged; stray `.` in course details merged (#63, owner pushes its seed migration); invite re-send in a PR)
 - **Scorecard during a round (owner, 2026-11-12):** ± was after the last hole, off-screen while watching a round. Now the pinned column shows first name + ± (DESIGN-PATTERNS → Scorecard); Tot stays at the end.
 - **Home scrolled a few px on an iPhone 12 Pro in the browser (owner, 2026-11-12):** top space on every page 16 → 8 px (phones), the wordmark row 56 → 44 px, the Home frame lost the divider under its label and some inner spacing. If Home still scrolls, next is the gaps between Home sections.
 - **Forest tab bar + Safari bars (owner, 2026-11-12):** iOS 26 Safari ignores theme-color and tints from a fixed element / the body, so the tab bar and body are forest now (DESIGN-PATTERNS → Status bar, Bottom navigation). Owner checks Safari on the preview; easy to revert. Margins and paddings across the app still feel raw — owner wants a pass on them later.
@@ -30,7 +30,7 @@ _Overwritten at the end of every session — describes now, not history (history
 - **State-handling audit done (2026-11-03):** the verified plan was built in one code-only PR (no migration). Round page = one request; setup actions update from the write's reply; Realtime reloads only the changed table and reads round changes from the message; course page, course stats, Profile, Home and History load in one wave; tapping a layout skips the Auth call and the double render. Fixed on the way: observers saw other registered players as "Registered user (uuid)". `e2e/request-counts.spec.ts` guards the phone's request counts (ARCHITECTURE §4.10).
 - **Next (owner, 2026-11-09), in this order:**
   1. **Landing page + forest band** — built (forest status bar on `/`, ace/eagle colours on the real scorecard), PR #57 (designed with the owner on the canvas as "Landing 3" and "Home · forest band"; all decisions in DESIGN-PATTERNS → Forest band / Landing page / Home). Merged on the owner's word; status bar is now **forest on every page** in both the phone browser and the home-screen app (owner chose one consistent look; PR #58). An existing home-screen icon may need removing and adding again to pick up the new status bar. Home band made slimmer after the owner's phone check. Later, not built: a signed-in user with **no rounds yet** sees How it works + the example under the start frame until the first finished round; desktop layout.
-  2. **Re-send a cancelled or declined invite** (Smaller debts). Finding: the insert fails on `unique (round_id, invited_user_id)`, but `round_invitations_update` already lets the scorer set status back to `pending`, so the fix is likely app-side (update the existing row to `pending`, clear `responded_at`) plus pgTAP proving the scorer can and the invitee can't. Check the invite search / UI treat the reset row as pending.
+  2. **Re-send a cancelled or declined invite** — built in a PR: inviting the same player again sets the old row back to `pending` (the table stays unique on round + user); a migration lets the scorer do that only while the round is a draft (`supabase/tests/invite_resend_test.sql`). Owner runs `npx supabase db push` after merge. Then: CI hardening (pull Supabase images with retries, retry the start once).
   3. **Stray `.` line in course `details`** — removed from Viimsi and the three Järve layouts; seed migration in the PR, owner runs `npx supabase db push` after merge.
   4. Later: `error.tsx` boundaries; the security review (owner does it on the PC, where Docker is).
 - **Splash + logo (owner, 2026-11-09), not decided, not urgent:** splash shown only on a device's **first open** (remembered in the browser), never between pages, under a second. Owner likes **C · Scorecard row** most; does **not** want the lime-disc logo (A). Choosing a splash also means choosing the logo: the app has **no icon** yet (`app/manifest.ts` has no `icons`, no apple touch icon), so the home-screen icon is generic and Android may not offer install.
@@ -59,7 +59,6 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 
 ### Smaller debts
 
-- A cancelled or declined invite can't be re-sent to the same person in the same round (`round_invitations` is unique on round + user; the insert errors).
 - Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
 - Later, cheap: per-round par override (tee sign differs from course data); an "unfinished hole" option (par + 4).
 - No `error.tsx` boundaries.
