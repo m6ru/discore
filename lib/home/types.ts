@@ -47,7 +47,6 @@ export type HomeData = {
   invites: HomeInvite[];
   activeRounds: HomeActiveRound[];
   recentRounds: HomeRecentRound[];
-  hasJoinedRound: boolean;
   profileOnboardingComplete: boolean;
   suggestionThanks: HomeSuggestionThanks[];
 };

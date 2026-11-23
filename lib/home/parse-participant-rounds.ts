@@ -29,9 +29,7 @@ function namesFromRound(round: RoundEmbed) {
 
 export function parseHomeParticipantRounds(rows: ParticipationRow[]): {
   activeRounds: HomeActiveRound[];
-  hasJoinedRound: boolean;
 } {
-  const hasJoinedRound = rows.length > 0;
   const activeRounds: HomeActiveRound[] = [];
 
   for (const row of rows) {
@@ -53,8 +51,5 @@ export function parseHomeParticipantRounds(rows: ParticipationRow[]): {
     }
   }
 
-  return {
-    activeRounds,
-    hasJoinedRound,
-  };
+  return { activeRounds };
 }

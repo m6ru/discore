@@ -59,7 +59,7 @@ export async function loadHomeData(
   ]);
 
   const profile = profileResult.data;
-  const { activeRounds, hasJoinedRound } = parseHomeParticipantRounds(
+  const { activeRounds } = parseHomeParticipantRounds(
     participationResult.data ?? []
   );
 
@@ -110,7 +110,6 @@ export async function loadHomeData(
     invites,
     activeRounds,
     recentRounds,
-    hasJoinedRound,
     profileOnboardingComplete: profile ? isProfileOnboardingComplete(profile) : false,
     suggestionThanks,
   };

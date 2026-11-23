@@ -12,11 +12,10 @@ import {
 import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 
 type Props = {
-  hasJoinedRound: boolean;
   profileOnboardingComplete: boolean;
 };
 
-export function HomeGetStarted({ hasJoinedRound, profileOnboardingComplete }: Props) {
+export function HomeGetStarted({ profileOnboardingComplete }: Props) {
   const [historyViewed, setHistoryViewed] = useState(false);
 
   useEffect(() => {
@@ -48,7 +47,6 @@ export function HomeGetStarted({ hasJoinedRound, profileOnboardingComplete }: Pr
   }, []);
 
   const remaining = getRemainingGetStartedItems({
-    hasJoinedRound,
     historyViewed,
     profileOnboardingComplete,
   });

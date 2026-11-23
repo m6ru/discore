@@ -39,7 +39,6 @@ describe("parseHomeParticipantRounds", () => {
       },
     ]);
 
-    expect(result.hasJoinedRound).toBe(true);
     expect(result.activeRounds).toHaveLength(1);
     expect(result.activeRounds[0]?.id).toBe("active-1");
   });
@@ -59,7 +58,6 @@ describe("parseHomeParticipantRounds", () => {
       },
     ]);
 
-    expect(result.hasJoinedRound).toBe(true);
     expect(result.activeRounds).toHaveLength(0);
   });
 });
