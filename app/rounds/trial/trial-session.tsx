@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, X } from "lucide-react";
@@ -429,6 +429,7 @@ function TrialSetup({
   header: React.ReactNode;
 }) {
   const [guestName, setGuestName] = useState("");
+  const scorerNameRef = useRef<HTMLInputElement>(null);
   const scorer = trial.players.find((player) => player.isScorer);
   const guests = trial.players.filter((player) => !player.isScorer);
 
@@ -444,6 +445,12 @@ function TrialSetup({
   }
 
   function onStart() {
+    // A tester added friends and missed their own name: take them to the field.
+    if (!scorer?.name.trim()) {
+      scorerNameRef.current?.focus();
+      toastError("Add your name to start.");
+      return;
+    }
     const started = startLocalTrialPlay(trial, trial.players);
     if (!started.ok) {
       toastError(started.message);
@@ -467,9 +474,11 @@ function TrialSetup({
 
       <section>
         <h2 className="mb-1.5 font-display text-lg font-semibold">Players</h2>
-        <label className="flex min-h-13 items-center gap-2.5 border-b">
-          <span className="sr-only">Your name</span>
+        <label className="flex min-h-13 flex-col justify-center border-b">
           <input
+            ref={scorerNameRef}
+            // Focus is a hint: iOS opens the keyboard only after a tap.
+            autoFocus={!scorer?.name}
             value={scorer?.name ?? ""}
             onChange={(event) =>
               persist({ ...trial, players: setScorerName(trial.players, event.target.value) })
@@ -478,8 +487,9 @@ function TrialSetup({
             autoComplete="given-name"
             placeholder="Your name"
             aria-label="Your name"
-            className="min-w-0 flex-1 bg-transparent text-base font-bold outline-none placeholder:font-semibold placeholder:text-muted-foreground"
+            className="min-w-0 bg-transparent text-base font-bold outline-none placeholder:font-semibold placeholder:text-muted-foreground"
           />
+          <span className="block text-[13px] text-muted-foreground">You</span>
         </label>
         {guests.map((guest) => (
           <div key={guest.id} className="flex min-h-13 items-center gap-2.5 border-b">
