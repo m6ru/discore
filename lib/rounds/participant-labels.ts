@@ -18,3 +18,11 @@ export function getParticipantLabel(
     "Player"
   );
 }
+
+/** First names where space is tight; players who share one keep their full name. */
+export function firstNamesUnlessShared(labels: string[]): string[] {
+  const firstNames = labels.map((label) => label.trim().split(/\s+/)[0] || label);
+  return firstNames.map((name, index) =>
+    firstNames.filter((other) => other === name).length > 1 ? labels[index] : name
+  );
+}
