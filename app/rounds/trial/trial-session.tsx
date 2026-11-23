@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, Pencil, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useTabBarVisibilityOverride } from "@/components/layout/tab-bar-visibility";
 import {
   addGuestPlayer,
@@ -429,7 +430,9 @@ function TrialSetup({
   header: React.ReactNode;
 }) {
   const [guestName, setGuestName] = useState("");
-  const scorerNameRef = useRef<HTMLInputElement>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [showNameForm, setShowNameForm] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
   const scorer = trial.players.find((player) => player.isScorer);
   const guests = trial.players.filter((player) => !player.isScorer);
 
@@ -442,12 +445,24 @@ function TrialSetup({
     }
     persist({ ...trial, players: result.players });
     setGuestName("");
+    setShowAddForm(false);
+  }
+
+  function openNameForm() {
+    setNameDraft(scorer?.name ?? "");
+    setShowNameForm(true);
+  }
+
+  function onSaveName(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    persist({ ...trial, players: setScorerName(trial.players, nameDraft.trim()) });
+    setShowNameForm(false);
   }
 
   function onStart() {
-    // A tester added friends and missed their own name: take them to the field.
+    // A tester added friends and missed their own name: open it for them.
     if (!scorer?.name.trim()) {
-      scorerNameRef.current?.focus();
+      openNameForm();
       toastError("Add your name to start.");
       return;
     }
@@ -474,23 +489,52 @@ function TrialSetup({
 
       <section>
         <h2 className="mb-1.5 font-display text-lg font-semibold">Players</h2>
-        <label className="flex min-h-13 flex-col justify-center border-b">
-          <input
-            ref={scorerNameRef}
-            // Focus is a hint: iOS opens the keyboard only after a tap.
-            autoFocus={!scorer?.name}
-            value={scorer?.name ?? ""}
-            onChange={(event) =>
-              persist({ ...trial, players: setScorerName(trial.players, event.target.value) })
-            }
-            maxLength={80}
-            autoComplete="given-name"
-            placeholder="Your name"
-            aria-label="Your name"
-            className="min-w-0 bg-transparent text-base font-bold outline-none placeholder:font-semibold placeholder:text-muted-foreground"
-          />
-          <span className="block text-[13px] text-muted-foreground">You</span>
-        </label>
+        {/* Your name works like Add player: a row that opens a small form. */}
+        {showNameForm ? (
+          <form onSubmit={onSaveName} className="space-y-2 border-b pb-3">
+            <Input
+              value={nameDraft}
+              onChange={(event) => setNameDraft(event.target.value)}
+              maxLength={80}
+              autoFocus
+              autoComplete="given-name"
+              placeholder="Type your name"
+              aria-label="Your name"
+              className="min-h-12 bg-background px-3 text-base shadow-none"
+            />
+            <div className="flex gap-2">
+              <Button type="submit" className="min-h-12 flex-1 text-[15px] font-semibold">
+                Save
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-12 border-input shadow-none"
+                onClick={() => setShowNameForm(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        ) : scorer?.name.trim() ? (
+          <button
+            type="button"
+            className="flex min-h-13 w-full flex-col justify-center border-b text-left"
+            onClick={openNameForm}
+          >
+            <span className="block truncate text-base font-semibold">{scorer.name}</span>
+            <span className="block text-[13px] text-muted-foreground">You</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="flex min-h-13 w-full items-center gap-2.5 border-b text-left text-base font-semibold text-primary"
+            onClick={openNameForm}
+          >
+            <Pencil className="size-5" aria-hidden />
+            Type your name
+          </button>
+        )}
         {guests.map((guest) => (
           <div key={guest.id} className="flex min-h-13 items-center gap-2.5 border-b">
             <span className="min-w-0 flex-1">
@@ -507,21 +551,45 @@ function TrialSetup({
             </Button>
           </div>
         ))}
-        <form onSubmit={onAddGuest} className="flex min-h-13 items-center gap-2.5 border-b text-primary">
-          <input
-            value={guestName}
-            onChange={(event) => setGuestName(event.target.value)}
-            maxLength={80}
-            placeholder="+ Add player"
-            aria-label="Guest name"
-            className="min-w-0 flex-1 bg-transparent text-base font-semibold text-foreground outline-none placeholder:text-primary"
-          />
-          {guestName.trim() ? (
-            <Button type="submit" variant="ghost" className="min-h-11 shrink-0 px-2 font-semibold text-primary">
-              Add
-            </Button>
-          ) : null}
-        </form>
+        {/* Same add form as the signed-in setup (draft-players-panel.tsx). */}
+        {showAddForm ? (
+          <form onSubmit={onAddGuest} className="space-y-2 pt-3">
+            <Input
+              value={guestName}
+              onChange={(event) => setGuestName(event.target.value)}
+              maxLength={80}
+              autoFocus
+              placeholder="Type a name"
+              aria-label="Player name"
+              className="min-h-12 bg-background px-3 text-base shadow-none"
+            />
+            <div className="flex gap-2">
+              <Button type="submit" className="min-h-12 flex-1 text-[15px] font-semibold">
+                Add player
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-12 border-input shadow-none"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setGuestName("");
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <button
+            type="button"
+            className="flex min-h-13 w-full items-center gap-2.5 border-b text-left text-base font-semibold text-primary"
+            onClick={() => setShowAddForm(true)}
+          >
+            <Plus className="size-5" aria-hidden />
+            Add player
+          </button>
+        )}
       </section>
 
       <StartingHoleField
