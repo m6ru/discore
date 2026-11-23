@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { ChevronLeft, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { firstNamesUnlessShared } from "@/lib/rounds/participant-labels";
 import type { LeaderboardRow, HoleRow, ParticipantRow } from "../round-types";
 import { ScoringPlayerRoster } from "./scoring-player-roster";
 import { ActiveHoleStatus } from "./active-hole-status";
@@ -140,9 +141,9 @@ function Stepper({ playerLabel, par, value, disabled, onStrokeChange }: StepperP
   const canDecrement = !disabled && (isImplicitPar ? par > STROKE_MIN : parsed > STROKE_MIN);
   const canIncrement = !disabled && (isImplicitPar ? par < STROKE_MAX : parsed < STROKE_MAX);
 
-  // The score column only needs room for two digits; the buttons share the rest.
+  // Three equal columns: −, the name and score, +.
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_100px_minmax(0,1fr)] items-center gap-2">
+    <div className="grid grid-cols-3 items-center gap-2">
       <Button
         type="button"
         variant="outline"
@@ -225,6 +226,10 @@ export function ActiveHoleScoring({
   }
 
   const selectedLabel = getParticipantLabel(selectedParticipant);
+  // The deck and the Next button have room for a first name only.
+  const shortLabels = firstNamesUnlessShared(scoringParticipants.map(getParticipantLabel));
+  const shortLabelFor = (participantId: string) =>
+    shortLabels[scoringParticipants.findIndex((p) => p.id === participantId)] ?? "player";
   const obChecked = isObChecked(selectedParticipant.id);
   const allHoleScoresEntered = scoringParticipants.every(
     (participant) => getStrokeInputValue(participant.id).trim().length > 0
@@ -236,7 +241,7 @@ export function ActiveHoleScoring({
   const nextParticipant = scoringParticipants.find((p) => p.id === nextParticipantId);
 
   const forwardLabel = showNextPlayer
-    ? `Next: ${nextParticipant ? getParticipantLabel(nextParticipant) : "player"}`
+    ? `Next: ${nextParticipant ? shortLabelFor(nextParticipant.id) : "player"}`
     : isLastHole
       ? "Save scores"
       : "Next hole";
@@ -275,7 +280,7 @@ export function ActiveHoleScoring({
         {syncBadge}
         <div className="mx-auto w-full max-w-3xl space-y-3">
           <Stepper
-            playerLabel={selectedLabel}
+            playerLabel={shortLabelFor(selectedParticipant.id)}
             par={activeHole.par}
             value={getStrokeInputValue(selectedParticipant.id)}
             disabled={isSubmitting}

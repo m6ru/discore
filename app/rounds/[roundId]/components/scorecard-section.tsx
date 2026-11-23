@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { formatVsPar, segmentPlayerStats } from "@/lib/scoring/stats";
 import { holeScoreTone } from "@/lib/scoring/scorecard-display";
 import { makeScoreLookupKey } from "@/lib/scoring/types";
+import { firstNamesUnlessShared } from "@/lib/rounds/participant-labels";
 import { cn } from "@/lib/utils";
 import type { RoundStatus } from "@/lib/rounds/round-status";
 import type { HoleRow, LeaderboardRow } from "../round-types";
@@ -44,14 +45,6 @@ const pinnedClass =
 
 /** The ± beside each name in the pinned column. */
 const vsParCellClass = "ml-auto w-8 shrink-0 pl-1 text-right font-semibold";
-
-/** First names keep the pinned column narrow; players who share one keep their full name. */
-function firstNamesUnlessShared(labels: string[]): string[] {
-  const firstNames = labels.map((label) => label.trim().split(/\s+/)[0] || label);
-  return firstNames.map((name, index) =>
-    firstNames.filter((other) => other === name).length > 1 ? labels[index] : name
-  );
-}
 
 function scrollActiveHoleIntoView(container: HTMLElement, activeCell: HTMLElement): void {
   const containerRect = container.getBoundingClientRect();
