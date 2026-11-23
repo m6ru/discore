@@ -12,7 +12,7 @@ export async function sendRoundInvite(
   invitedUserId: string,
   invitedBy: string
 ) {
-  return supabase
+  const inserted = await supabase
     .from("round_invitations")
     .insert({
       round_id: roundId,
@@ -21,6 +21,25 @@ export async function sendRoundInvite(
     })
     .select(INVITE_SELECT)
     .single();
+  if (inserted.error?.code !== "23505") {
+    return inserted;
+  }
+
+  // One invite row per round + player: re-sending a declined or cancelled
+  // invite sets that row back to pending. A pending or accepted one matches
+  // nothing here, so the "already exists" error stands.
+  const resent = await supabase
+    .from("round_invitations")
+    .update({ status: "pending", responded_at: null })
+    .eq("round_id", roundId)
+    .eq("invited_user_id", invitedUserId)
+    .in("status", ["declined", "cancelled"])
+    .select(INVITE_SELECT)
+    .maybeSingle();
+  if (resent.error || !resent.data) {
+    return resent.error ? { data: null, error: resent.error } : inserted;
+  }
+  return { data: resent.data, error: null };
 }
 
 export async function addGuestParticipant(
