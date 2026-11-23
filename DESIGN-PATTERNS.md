@@ -2,7 +2,7 @@
 
 North star: **active scorer round** (`app/rounds/[roundId]/`). Works well and is field-tested — evolve **carefully, not carelessly**. It is **not frozen**: additions like advanced scoring inputs are planned. "Don't regress it" protects scoring *behaviour*, not the code from evolving.
 
-**What to build next:** [STATUS.md](STATUS.md) (priorities, Stats v2 action plan). **Architecture:** [BLUEPRINT.md](BLUEPRINT.md).
+**What to build next:** [STATUS.md](STATUS.md). **Architecture:** [BLUEPRINT.md](BLUEPRINT.md). **Design canvas** (private, the owner's claude.ai account; example names and scores there are made up): https://claude.ai/artifact/GDgZtsi8yLjcC6aNH1XGUY. Small fixes from real use go straight to code and are written down here, not on the canvas.
 
 ---
 

@@ -227,7 +227,7 @@ Short records of the choices that shape the code: what we decided, why, and what
 
 ### 4.8 Telegram ping from the database (pg_net)
 
-- **Decision.** When a course suggestion is inserted, a trigger calls the Telegram API with `pg_net` to message the owner. The bot token and chat id are stored in **Supabase Vault** (encrypted secrets inside the database).
+- **Decision.** When a course suggestion is inserted, a trigger calls the Telegram API with `pg_net` to message the owner. The bot token and chat id are stored in **Supabase Vault** (encrypted secrets inside the database) as `telegram_bot_token` and `telegram_chat_id`.
 - **Why.** Suggestions are written browser → database, so there is no server code that could send a message. A trigger fires on every insert no matter where it came from. `pg_net` is **asynchronous**: the request is queued and sent after the insert has committed, so a slow or broken Telegram can never slow down or fail a suggestion.
 - **Safe defaults.** With no secrets in Vault (local, CI) the trigger does nothing. Any error is logged as a warning and the suggestion is kept. No secret is ever in git.
 - **Trade-off.** If the ping fails, nobody retries it — fine, because the review page (`/admin/suggestions`) is the real inbox; the ping is only a nudge.
