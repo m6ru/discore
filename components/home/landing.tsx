@@ -8,6 +8,7 @@ import { pagePrimaryButtonClassName } from "@/lib/ui/page-chrome";
 import { cn } from "@/lib/utils";
 import { NearYouStart } from "@/components/home/near-you-start";
 import { ContinueTrialCard } from "@/components/home/continue-trial-card";
+import { HowItWorks } from "@/components/home/how-it-works";
 import { Button } from "@/components/ui/button";
 
 /** A made-up round: the card is a picture of the app, not data. */
@@ -15,12 +16,6 @@ const EXAMPLE_PAR = [3, 4, 3, 3, 5, 3, 4, 3, 4];
 const EXAMPLE_PLAYERS = [
   { name: "You", scores: [3, 3, 3, 3, 3, 1, 4, 4, 4] },
   { name: "Bob", scores: [4, 4, 2, 3, 5, 3, 6, 3, 3] },
-];
-
-const STEPS = [
-  { title: "Pick a course", text: "Choose a layout and add the players." },
-  { title: "Score your round", text: "One person keeps the score. Everyone else can observe live." },
-  { title: "See your progress", text: "All your rounds in one place, with stats on how you play." },
 ];
 
 function exampleToneClass(tone: HoleScoreTone): string {
@@ -146,22 +141,7 @@ export function LandingPage() {
           </Suspense>
         </div>
 
-        <section className="space-y-2">
-          <h2 className="font-display text-2xl font-bold tracking-tight">How it works</h2>
-          <ol>
-            {STEPS.map((step, index) => (
-              <li key={step.title} className="flex gap-2 border-b py-4 last:border-b-0">
-                <span className="w-6 shrink-0 pt-0.5 font-mono text-[13px] text-muted-foreground">
-                  {index + 1}
-                </span>
-                <div className="space-y-1">
-                  <h3 className="text-base font-bold">{step.title}</h3>
-                  <p className="text-[15px] leading-normal text-muted-foreground">{step.text}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <HowItWorks headingClassName="font-display text-2xl font-bold tracking-tight" />
 
         <Button
           asChild

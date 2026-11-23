@@ -16,6 +16,8 @@ import { SuggestionThanks } from "@/components/home/suggestion-thanks";
 import { HomeRecentRounds } from "@/components/home/recent-rounds";
 import { HomeGetStarted } from "@/components/home/get-started";
 import { NearYouStart } from "@/components/home/near-you-start";
+import { HowItWorks } from "@/components/home/how-it-works";
+import { sectionHeadingClassName } from "@/lib/ui/section-heading";
 import { Button } from "@/components/ui/button";
 
 function formatDateTime(iso: string | null): string {
@@ -54,6 +56,8 @@ export async function HomeSections({ userId }: Props) {
       layoutCount: course.layoutCount,
     }));
 
+  const hasFinishedRound = data.recentRounds.some((round) => round.status === "completed");
+
   // The first frame overlaps the forest band, so it must always be a frame:
   // Continue round, else the nearest course. Invites and thanks come after it.
   return (
@@ -91,12 +95,12 @@ export async function HomeSections({ userId }: Props) {
 
       <SuggestionThanks items={data.suggestionThanks} />
 
+      {/* New players see the steps from the landing page until their first finished round. */}
+      {hasFinishedRound ? null : <HowItWorks headingClassName={sectionHeadingClassName} />}
+
       {!statsResult.error ? <HomeStatsTeaser stats={statsResult.stats} /> : null}
 
-      <HomeGetStarted
-        hasJoinedRound={data.hasJoinedRound}
-        profileOnboardingComplete={data.profileOnboardingComplete}
-      />
+      <HomeGetStarted profileOnboardingComplete={data.profileOnboardingComplete} />
 
       <HomeRecentRounds rounds={data.recentRounds} />
     </>

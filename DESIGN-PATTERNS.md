@@ -16,7 +16,7 @@ Chosen by the owner from three mockups (2026-10-24), refined in a second canvas 
 
 - **Feel:** light, uncrowded, intuitive. Readable in sunlight (strong text contrast).
 - **Surfaces:** off-white ground `#FAFAF6`, hardly any filled tiles; structure from thin dividers `#E4E3DC` and whitespace. A section that must read as one unit gets a light frame: tint `#F2F1EA`, 1 px divider border, 6 px corners (never a dark filled card).
-- **Color:** ink `#141814`, muted text `#5B615B`, primary (forest) `#1D3A2C` for main actions, lime `#C9E36A` **only for good things** (birdie, under par, new best, active tab marker). Over-par tint `#E9D9C9`, double or worse `#D4B496` (quiet, not alarm red). Destructive actions: text `#A8261B`.
+- **Color:** ink `#141814`, muted text `#5B615B`, primary (forest) `#1D3A2C` for main actions, lime `#C9E36A` **only for good things** (birdie, under par, new best, admin tab marker). Over-par tint `#E9D9C9`, double or worse `#D4B496` (quiet, not alarm red). Destructive actions: text `#A8261B`.
 - **Score tones** (scorecard cells, five levels like today): birdie lime · eagle or ace lime with a 1.5 px forest outline · par no fill · bogey `#E9D9C9` · double or worse `#D4B496`. No legend; the colours speak for themselves.
 - **Shape:** square-ish corners, ~6 px buttons, ~4 px chips. **No pill shapes.**
 - **Type:** Space Grotesk for headings and big numbers; Manrope for body; JetBrains Mono for small tabular numbers.
@@ -86,7 +86,7 @@ Chosen by the owner from three mockups (2026-10-24), refined in a second canvas 
 
 Four **equal-weight** tabs. Play's icon is **subtly** larger (`emphasized`, `size-6` vs `size-5`) — light accent only, **not** a primary-action button. Primary "start a round" flow lives on **Home** (near-you Start). Do not reintroduce a center create tab.
 
-**Forest tab bar** (owner, 2026-11-12, for more colour): `bg-primary`, tabs in light text at 70 %, the active tab full light + bold with the lime marker.
+**Forest tab bar** (owner, 2026-11-12, for more colour): `bg-primary`, tabs in light text at 70 %, the active tab full light + bold. No marker under it (owner, 2026-11-23: clutter).
 
 Each tab route has a `loading.tsx` skeleton for an instant shell while the server render streams ([BLUEPRINT §2b](BLUEPRINT.md)).
 

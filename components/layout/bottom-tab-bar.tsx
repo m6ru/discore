@@ -101,10 +101,6 @@ export function BottomTabBar({ show }: { show: boolean }) {
                   aria-hidden
                 />
                 <span className="truncate">{tab.label}</span>
-                <span
-                  className={cn("h-[3px] w-4 rounded-sm", active ? "bg-good" : "bg-transparent")}
-                  aria-hidden
-                />
               </Link>
             </li>
           );
