@@ -109,11 +109,13 @@ export function HomeGetStarted({ profileOnboardingComplete }: Props) {
 }
 
 const STEPS: Record<Exclude<HomeScreenPlatform, "desktop">, React.ReactNode[]> = {
+  // Newer iPhones keep Share behind ⋯, so it gets its own step (owner: people miss it).
   ios: [
+    "Tap ⋯ in the browser bar",
     <>
-      Tap ⋯ or <Share className="inline size-[18px] -translate-y-px" aria-label="Share" /> in the browser bar
+      Tap Share <Share className="inline size-[18px] -translate-y-px" aria-hidden />
     </>,
-    "Choose Add to Home Screen",
+    "Scroll down, tap Add to Home Screen",
     "Tap Add",
   ],
   android: ["Tap ⋮ (the browser menu)", "Choose Add to Home screen or Install app", "Tap Install"],
@@ -168,9 +170,16 @@ function HomeScreenStepsSheet({
           ))}
         </ol>
         <p className="pt-3.5 text-[13px] leading-relaxed text-muted-foreground">
-          Don&apos;t see it? Look for <span className="font-semibold text-foreground">Add to Home screen</span> or{" "}
-          <span className="font-semibold text-foreground">Install app</span> in your browser&apos;s menu.
-          {platform === "ios" ? " You'll sign in once more in the home-screen app." : ""}
+          {platform === "ios" ? (
+            <>
+              Share already in the bar? Start at step 2. You&apos;ll sign in once more in the home-screen app.
+            </>
+          ) : (
+            <>
+              Don&apos;t see it? Look for <span className="font-semibold text-foreground">Add to Home screen</span> or{" "}
+              <span className="font-semibold text-foreground">Install app</span> in your browser&apos;s menu.
+            </>
+          )}
         </p>
       </DialogContent>
     </Dialog>
