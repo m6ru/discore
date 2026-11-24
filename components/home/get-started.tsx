@@ -113,10 +113,9 @@ const STEPS: Record<Exclude<HomeScreenPlatform, "desktop">, React.ReactNode[]> =
   ios: [
     "Tap ⋯ in the browser bar",
     <>
-      Tap Share <Share className="inline size-[18px] -translate-y-px" aria-hidden />
+      Share <Share className="inline size-[18px] -translate-y-px" aria-hidden />
     </>,
-    "Scroll down, tap Add to Home Screen",
-    "Tap Add",
+    "Add to Home Screen",
   ],
   android: ["Tap ⋮ (the browser menu)", "Choose Add to Home screen or Install app", "Tap Install"],
   "android-firefox": ["Tap ⋮ (the browser menu)", "Choose Install or Add to Home screen", "Confirm"],
@@ -172,7 +171,7 @@ function HomeScreenStepsSheet({
         <p className="pt-3.5 text-[13px] leading-relaxed text-muted-foreground">
           {platform === "ios" ? (
             <>
-              Share already in the bar? Start at step 2. You&apos;ll sign in once more in the home-screen app.
+              You&apos;ll sign in once more in the home-screen app.
             </>
           ) : (
             <>
