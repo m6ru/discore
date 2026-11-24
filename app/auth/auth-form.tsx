@@ -29,6 +29,8 @@ export function AuthForm({ message, initialMode = "sign-in" }: Props) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  /** Set after a sign-up that needs email confirmation: the form gives way to "Check your email". */
+  const [sentTo, setSentTo] = useState<string | null>(null);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -88,7 +90,7 @@ export function AuthForm({ message, initialMode = "sign-in" }: Props) {
         router.refresh();
         return;
       }
-      toastSuccess("Sign-up successful. Check your email for confirmation.");
+      setSentTo(email.trim());
     } finally {
       setIsLoading(false);
     }
@@ -99,6 +101,33 @@ export function AuthForm({ message, initialMode = "sign-in" }: Props) {
   }
 
   const isSignIn = mode === "sign-in";
+
+  if (sentTo) {
+    return (
+      <>
+        <header className="space-y-1.5">
+          <h1 className={pageTitleClassName}>Check your email</h1>
+          <p className="text-[15px] text-muted-foreground">
+            We sent a link to <span className="font-semibold text-foreground">{sentTo}</span>. Open it to
+            finish creating your account, on this phone or any other device.
+          </p>
+        </header>
+        <p className="text-[13px] text-muted-foreground">No email after a minute? Check your spam folder.</p>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            setSentTo(null);
+            setPassword("");
+            setMode("sign-in");
+          }}
+          className={cn(pagePrimaryButtonClassName, "min-h-[52px] border-foreground text-base")}
+        >
+          Back to sign in
+        </Button>
+      </>
+    );
+  }
 
   return (
     <>
