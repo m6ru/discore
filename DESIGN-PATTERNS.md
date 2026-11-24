@@ -81,7 +81,7 @@ Chosen by the owner from three mockups (2026-10-24), refined in a second canvas 
 |-----|-------|------|
 | **Home** | `/` | Launchpad: continue round, invites, near-you Start, get-started, recent rounds |
 
-**Get started** (Home, owner 2026-11-24): **Add discore to your home screen** (phones only, gone once opened from the home screen; Android Chromium opens its own install dialog, everything else gets a bottom sheet with the steps for that phone; iPhone: ⋯ → Share → Add to Home Screen → Add, since newer iPhones hide Share behind ⋯, plus "Share already in the bar? Start at step 2" and that you sign in once more there) and **Finish your profile**. "Check history" was dropped: a new player has none.
+**Get started** (Home, owner 2026-11-24): **Add discore to your home screen** (phones only, gone once opened from the home screen; Android Chromium opens its own install dialog, everything else gets a bottom sheet with the steps for that phone; iPhone, owner's wording: 1 Tap ⋯ in the browser bar · 2 Share (icon) · 3 Add to Home Screen, since newer iPhones hide Share behind ⋯; under it only that you sign in once more there) and **Finish your profile**. "Check history" was dropped: a new player has none.
 | **Play** | `/courses` | Course list + detail; **Your stats** → course stats screen (Stats v2) |
 | **History** | `/rounds` | Global summary + round list |
 | **Profile** | `/auth` | Account and preferences |
