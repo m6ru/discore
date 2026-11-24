@@ -3,10 +3,12 @@ import type { EmailOtpType } from "@supabase/supabase-js";
 import { createServerClient } from "@/lib/supabase/server";
 
 /**
- * The link in the "Confirm signup" email (supabase/templates/confirmation.html).
+ * The link in the "Confirm signup" and "Reset password" emails
+ * (supabase/templates/confirmation.html, recovery.html).
  * It carries a one-time token hash instead of a PKCE code, so it works in any
  * browser: the home-screen app, a mail app's own browser, another device.
- * Home then claims a waiting trial round (ClaimTrialOnAuth).
+ * Sign-up goes to Home, which claims a waiting trial round (ClaimTrialOnAuth);
+ * a reset goes to Set a new password.
  */
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -17,7 +19,8 @@ export async function GET(request: Request) {
     const supabase = await createServerClient();
     const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
     if (!error) {
-      return NextResponse.redirect(`${origin}/`);
+      const destination = type === "recovery" ? "/auth?view=password&reset=1" : "/";
+      return NextResponse.redirect(`${origin}${destination}`);
     }
   }
 

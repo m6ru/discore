@@ -70,6 +70,13 @@ export async function signUpTokenHash(firstName: string): Promise<string> {
   return data.properties.hashed_token;
 }
 
+/** The token hash a "Reset password" email would carry (supabase/templates/recovery.html). */
+export async function recoveryTokenHash(email: string): Promise<string> {
+  const { data, error } = await admin.auth.admin.generateLink({ type: "recovery", email });
+  if (error) throw error;
+  return data.properties.hashed_token;
+}
+
 /** The user's newest course suggestion (service role). */
 export async function latestSuggestion(user: TestUser) {
   const { data, error } = await admin

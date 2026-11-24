@@ -236,11 +236,15 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Sign-up confirmation. Production does not read this file: paste the same
-# subject and HTML into Dashboard → Authentication → Emails → Confirm signup.
+# Auth emails. Production does not read this file: paste the same subject and
+# HTML into Dashboard → Authentication → Emails (Confirm signup, Reset password).
 [auth.email.template.confirmation]
 subject = "Confirm your discore account"
 content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Reset your discore password"
+content_path = "./supabase/templates/recovery.html"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]

@@ -13,6 +13,15 @@ import { pagePrimaryButtonClassName, pageTitleClassName } from "@/lib/ui/page-ch
 import { cn } from "@/lib/utils";
 
 type AuthMode = "sign-in" | "sign-up";
+type FormMode = AuthMode | "forgot";
+
+/** Where a password-reset link lands (PKCE fallback until the reset template is pasted). */
+const RESET_PASSWORD_PATH = "/auth?view=password&reset=1";
+
+function emailErrorMessage(error: { message: string; status?: number }): string {
+  // Supabase caps emails per hour for the whole app (LAUNCH-PLAN.md step 6).
+  return error.status === 429 ? "Too many emails were sent just now. Try again in an hour." : error.message;
+}
 
 type Props = {
   message: string | null;
@@ -23,20 +32,32 @@ type Props = {
 export function AuthForm({ message, initialMode = "sign-in" }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
-  const [mode, setMode] = useState<AuthMode>(initialMode);
+  const [mode, setMode] = useState<FormMode>(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  /** Set after a sign-up that needs email confirmation: the form gives way to "Check your email". */
-  const [sentTo, setSentTo] = useState<string | null>(null);
+  /** Set after an email went out (sign-up confirmation or password reset): the form gives way to "Check your email". */
+  const [sentTo, setSentTo] = useState<{ email: string; kind: "sign-up" | "reset" } | null>(null);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
 
     try {
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(RESET_PASSWORD_PATH)}`,
+        });
+        if (error) {
+          toastError(emailErrorMessage(error));
+          return;
+        }
+        setSentTo({ email: email.trim(), kind: "reset" });
+        return;
+      }
+
       if (mode === "sign-in") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
@@ -76,7 +97,7 @@ export function AuthForm({ message, initialMode = "sign-in" }: Props) {
         },
       });
       if (error) {
-        toastError(error.message);
+        toastError(emailErrorMessage(error));
         return;
       }
       if (data.session) {
@@ -90,7 +111,7 @@ export function AuthForm({ message, initialMode = "sign-in" }: Props) {
         router.refresh();
         return;
       }
-      setSentTo(email.trim());
+      setSentTo({ email: email.trim(), kind: "sign-up" });
     } finally {
       setIsLoading(false);
     }
@@ -108,8 +129,17 @@ export function AuthForm({ message, initialMode = "sign-in" }: Props) {
         <header className="space-y-1.5">
           <h1 className={pageTitleClassName}>Check your email</h1>
           <p className="text-[15px] text-muted-foreground">
-            We sent a link to <span className="font-semibold text-foreground">{sentTo}</span>. Open it to
-            finish creating your account, on this phone or any other device.
+            {sentTo.kind === "sign-up" ? (
+              <>
+                We sent a link to <span className="font-semibold text-foreground">{sentTo.email}</span>. Open it
+                to finish creating your account, on this phone or any other device.
+              </>
+            ) : (
+              <>
+                If an account uses <span className="font-semibold text-foreground">{sentTo.email}</span>, we sent
+                it a link to choose a new password.
+              </>
+            )}
           </p>
         </header>
         <p className="text-[13px] text-muted-foreground">No email after a minute? Check your spam folder.</p>
@@ -121,6 +151,47 @@ export function AuthForm({ message, initialMode = "sign-in" }: Props) {
             setPassword("");
             setMode("sign-in");
           }}
+          className={cn(pagePrimaryButtonClassName, "min-h-[52px] border-foreground text-base")}
+        >
+          Back to sign in
+        </Button>
+      </>
+    );
+  }
+
+  if (mode === "forgot") {
+    return (
+      <>
+        <header className="space-y-1.5">
+          <h1 className={pageTitleClassName}>Reset your password</h1>
+          <p className="text-[15px] text-muted-foreground">We&apos;ll email you a link to choose a new one.</p>
+        </header>
+        <form onSubmit={onSubmit} className="space-y-3.5">
+          <div className="space-y-1.5">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              autoComplete="email"
+              className={fieldClassName}
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className={cn(pagePrimaryButtonClassName, "mt-1.5 min-h-[52px] justify-between px-[18px] text-base")}
+          >
+            {isLoading ? "Please wait..." : "Send reset link"}
+            <ArrowRight className="size-5" aria-hidden />
+          </Button>
+        </form>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setMode("sign-in")}
           className={cn(pagePrimaryButtonClassName, "min-h-[52px] border-foreground text-base")}
         >
           Back to sign in
@@ -188,7 +259,18 @@ export function AuthForm({ message, initialMode = "sign-in" }: Props) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="password">Password</Label>
+          <div className="flex items-center justify-between gap-3">
+            <Label htmlFor="password">Password</Label>
+            {isSignIn ? (
+              <button
+                type="button"
+                onClick={() => setMode("forgot")}
+                className="-my-3 min-h-11 text-[13px] font-semibold text-primary"
+              >
+                Forgot password?
+              </button>
+            ) : null}
+          </div>
           <Input
             id="password"
             type="password"

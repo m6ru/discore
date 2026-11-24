@@ -7,11 +7,11 @@ import { AccountPanel, type AccountView } from "./account-panel";
 import { AuthForm } from "./auth-form";
 
 type AuthPageProps = {
-  searchParams: Promise<{ message?: string; view?: string; mode?: string }>;
+  searchParams: Promise<{ message?: string; view?: string; mode?: string; reset?: string }>;
 };
 
 export default async function AuthPage({ searchParams }: AuthPageProps) {
-  const { message, view: viewParam, mode } = await searchParams;
+  const { message, view: viewParam, mode, reset } = await searchParams;
   const view: AccountView =
     viewParam === "edit" || viewParam === "password" ? viewParam : "menu";
   const supabase = await createServerClient();
@@ -70,7 +70,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
           >
             <ChevronLeft className="size-5" aria-hidden />
           </Link>
-          <h1 className={pageTitleClassName}>{view === "edit" ? "Edit profile" : "Change password"}</h1>
+          <h1 className={pageTitleClassName}>{view === "edit" ? "Edit profile" : reset ? "Set a new password" : "Change password"}</h1>
         </header>
       )}
 

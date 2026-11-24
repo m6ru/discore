@@ -50,12 +50,12 @@ Supabase → **Authentication → Emails → SMTP Settings** → Enable custom S
 
 - [ ] Save. (Never save with empty fields: sign-up emails would stop.)
 
-## 5. Email template — Owner
+## 5. Email templates — Owner
 
-Supabase → **Authentication → Emails → Templates → Confirm signup**:
+Supabase → **Authentication → Emails → Templates**:
 
-- [ ] Subject: `Confirm your discore account`
-- [ ] Body: the whole of [`supabase/templates/confirmation.html`](supabase/templates/confirmation.html).
+- [ ] **Confirm signup** — subject `Confirm your discore account`, body = the whole of [`supabase/templates/confirmation.html`](supabase/templates/confirmation.html).
+- [ ] **Reset password** — subject `Reset your discore password`, body = the whole of [`supabase/templates/recovery.html`](supabase/templates/recovery.html).
 
 ## 6. Rate limits — Owner
 
@@ -71,10 +71,11 @@ Supabase → **Authentication → Rate Limits**:
 - [ ] Tap **Confirm email** in the mail app → it opens in a browser and lands on Home, signed in.
 - [ ] Tap the same link again → "This link has expired or was already used…".
 - [ ] Bonus: play a trial first, then sign up and confirm on the **same** phone → the trial is in History.
+- [ ] Sign in → **Forgot password?** → the reset email arrives → **Choose a new password** opens **Set a new password** → sign in with it.
 
 ## 8. Code before inviting the public — Claude, one PR each
 
-- [ ] **Forgot password** — missing today; a player who forgets it is stuck. "Forgot password?" on Sign in → email with a link (token hash, like confirm) → set a new password. Comes with a **Reset password** template for step 5.
+- [x] **Forgot password** — "Forgot password?" on Sign in → email with a link (token hash, like confirm) → Set a new password. Template for step 5: `supabase/templates/recovery.html`.
 - [ ] **Privacy page** — what we store (name, email, city, birth year, gender, photo, scores; location only on the phone, never stored), why, who sees what, how to get it deleted. Linked from Sign in and Profile.
 - [ ] **Delete account** — in Profile, with a confirmation. Needs a database function (rounds and scores the player kept for others: decide together what happens to them).
 - [ ] Other auth templates if used later (change email, magic link): same look, token-hash links.
