@@ -23,6 +23,7 @@ Who does what: **Owner** = clicks in a dashboard or pays. **Claude** = code in a
   - **Site URL** → `https://discore.ee` (email links are built from it).
   - **Redirect URLs** → add `https://discore.ee/**`; keep the existing entries (previews, localhost).
 - [ ] Open `https://discore.ee` on the phone: sign in, start and discard a trial.
+- [ ] Send yourself a link to `https://discore.ee` in a chat: the preview card shows the share image and the description (chats cache previews; a link shared before can keep the old one).
 - [ ] Home-screen icon: remove it and add it again from `discore.ee` (it is tied to the old address; signing in once more is expected).
 
 ## 3. Email service (Resend) — Together (~30 min + DNS wait)
