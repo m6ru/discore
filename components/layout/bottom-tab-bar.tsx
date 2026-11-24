@@ -59,7 +59,7 @@ export function shouldShowTabBar(pathname: string): boolean {
 
 export function tabBarPaddingClass(show: boolean): string {
   return show
-    ? "pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))]"
+    ? "pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))]"
     : "";
 }
 
@@ -76,7 +76,7 @@ export function BottomTabBar({ show }: { show: boolean }) {
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       aria-label="Main navigation"
     >
-      <ul className="mx-auto flex h-[4.5rem] max-w-3xl items-stretch px-2">
+      <ul className="mx-auto flex h-14 max-w-3xl items-stretch px-2">
         {TABS.map((tab) => {
           const active = tab.isActive(pathname);
           const Icon = tab.icon;
@@ -86,7 +86,7 @@ export function BottomTabBar({ show }: { show: boolean }) {
               <Link
                 href={tab.href}
                 className={cn(
-                  "flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-2 text-xs font-medium transition-colors",
+                  "flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-1 text-xs font-medium transition-colors",
                   active
                     ? "font-bold text-primary-foreground"
                     : "text-primary-foreground/70 hover:text-primary-foreground"
