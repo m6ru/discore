@@ -55,6 +55,21 @@ export async function createUser(firstName: string): Promise<TestUser> {
   return { id: data.user!.id, email, firstName, lastName, displayName: `${firstName} ${lastName}` };
 }
 
+/**
+ * An unconfirmed sign-up and the token hash its confirmation email would carry
+ * (supabase/templates/confirmation.html links to /auth/confirm with it).
+ */
+export async function signUpTokenHash(firstName: string): Promise<string> {
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: "signup",
+    email: `${firstName.toLowerCase()}-${randomUUID()}@e2e.local`,
+    password: PASSWORD,
+    options: { data: { first_name: firstName, last_name: `E2e${randomUUID().slice(0, 6)}` } },
+  });
+  if (error) throw error;
+  return data.properties.hashed_token;
+}
+
 /** The user's newest course suggestion (service role). */
 export async function latestSuggestion(user: TestUser) {
   const { data, error } = await admin

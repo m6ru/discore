@@ -236,6 +236,12 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
+# Sign-up confirmation. Production does not read this file: paste the same
+# subject and HTML into Dashboard → Authentication → Emails → Confirm signup.
+[auth.email.template.confirmation]
+subject = "Confirm your discore account"
+content_path = "./supabase/templates/confirmation.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"
