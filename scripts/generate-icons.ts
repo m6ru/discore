@@ -1,6 +1,6 @@
 /**
- * Renders the app icon (capital D over a par / birdie / ace row, on forest)
- * to the PNGs browsers and phones ask for, and the share image chat apps show
+ * Renders the app icon (the discore wordmark on forest; a lower-case d for the
+ * browser tab) to the PNGs browsers and phones ask for, and the share image chat apps show
  * for a link (app/opengraph-image.png). Run after changing the design:
  *
  *   npx tsx scripts/generate-icons.ts
@@ -17,36 +17,38 @@ type IconFile = {
   size: number;
   /** Corner radius as a share of the size; phones round the corners themselves. */
   radius: number;
+  /**
+   * "wordmark" on the home screen (owner, 2026-11-24: just discore); the browser
+   * tab is too small for seven letters, so it gets a lower-case d.
+   */
+  mark: "wordmark" | "d";
   /** How big the mark is; maskable icons keep it inside Android's safe circle. */
   markScale: number;
 };
 
 const FILES: IconFile[] = [
-  { path: "app/icon.png", size: 64, radius: 0.22, markScale: 1 },
-  { path: "app/apple-icon.png", size: 180, radius: 0, markScale: 1 },
-  { path: "public/icons/icon-192.png", size: 192, radius: 0, markScale: 1 },
-  { path: "public/icons/icon-512.png", size: 512, radius: 0, markScale: 1 },
-  { path: "public/icons/maskable-512.png", size: 512, radius: 0, markScale: 0.78 },
+  { path: "app/icon.png", size: 64, radius: 0.22, mark: "d", markScale: 1 },
+  { path: "app/apple-icon.png", size: 180, radius: 0, mark: "wordmark", markScale: 1 },
+  { path: "public/icons/icon-192.png", size: 192, radius: 0, mark: "wordmark", markScale: 1 },
+  { path: "public/icons/icon-512.png", size: 512, radius: 0, mark: "wordmark", markScale: 1 },
+  { path: "public/icons/maskable-512.png", size: 512, radius: 0, mark: "wordmark", markScale: 0.78 },
 ];
 
-function iconHtml({ size, radius, markScale }: IconFile): string {
+function iconHtml({ size, radius, mark, markScale }: IconFile): string {
   const u = (size / 120) * markScale; // the canvas design is drawn at 120 px
+  // The wordmark fills about 86 % of the width; the d is centred by its x-height.
+  const text = mark === "wordmark" ? "discore" : "d";
+  const fontSize = mark === "wordmark" ? 31 * u : 92 * u;
   return `<!doctype html><html><head>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=block">
 <style>
 html,body{margin:0;background:transparent}
 .icon{width:${size}px;height:${size}px;border-radius:${radius * size}px;background:${FOREST};
-  display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-.D{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:${64 * u}px;letter-spacing:-.04em;
-  line-height:1;color:#fafaf6}
-.cells{display:flex;gap:${5 * u}px;margin-top:${9 * u}px}
-.cell{width:${20 * u}px;height:${10 * u}px;border-radius:${2 * u}px}
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.mark{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:${fontSize}px;letter-spacing:-.03em;
+  line-height:1;color:#fafaf6${mark === "d" ? ";transform:translateY(-4%)" : ""}}
 </style></head><body>
-<div class="icon"><span class="D">D</span><div class="cells">
-<span class="cell" style="background:#fafaf6"></span>
-<span class="cell" style="background:#c9e36a"></span>
-<span class="cell" style="background:#ffe566"></span>
-</div></div></body></html>`;
+<div class="icon"><span class="mark">${text}</span></div></body></html>`;
 }
 
 /** 1200 × 630: the wordmark and the splash's score cells, with the tagline. */
