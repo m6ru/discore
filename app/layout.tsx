@@ -21,9 +21,16 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin", "latin-ext"],
 });
 
+const DESCRIPTION =
+  "Disc golf scorecard for you and your friends. 180+ courses in Estonia, live scores and your stats. No account needed to start.";
+
+// Link previews in chats use these plus app/opengraph-image.png (scripts/generate-icons.ts).
+// On Vercel the image URL's origin comes from the deployment, so no metadataBase.
 export const metadata: Metadata = {
-  title: "Discore",
-  description: "Discore disc golf score tracking app.",
+  title: "discore",
+  description: DESCRIPTION,
+  openGraph: { title: "discore", description: DESCRIPTION, siteName: "discore", type: "website" },
+  twitter: { card: "summary_large_image" },
   manifest: "/manifest.webmanifest",
   // Home-screen app on iPhone: the page draws under the status bar (white clock);
   // the forest strip in the body keeps the clock readable on every page.

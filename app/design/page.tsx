@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 // Hidden reference page for direction C: not linked anywhere, not indexed.
 // The rules live in DESIGN-PATTERNS.md → Redesign brief; this page shows them.
 export const metadata: Metadata = {
-  title: "Design · Discore",
+  title: "Design · discore",
   robots: { index: false, follow: false },
 };
 

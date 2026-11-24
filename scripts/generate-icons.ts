@@ -1,6 +1,7 @@
 /**
  * Renders the app icon (capital D over a par / birdie / ace row, on forest)
- * to the PNGs browsers and phones ask for. Run after changing the design:
+ * to the PNGs browsers and phones ask for, and the share image chat apps show
+ * for a link (app/opengraph-image.png). Run after changing the design:
  *
  *   npx tsx scripts/generate-icons.ts
  *
@@ -48,6 +49,25 @@ html,body{margin:0;background:transparent}
 </div></div></body></html>`;
 }
 
+/** 1200 × 630: the wordmark and the splash's score cells, with the tagline. */
+function shareImageHtml(): string {
+  return `<!doctype html><html><head>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=JetBrains+Mono:wght@600&family=Manrope:wght@500&display=block">
+<style>
+html,body{margin:0}
+.card{width:1200px;height:630px;background:${FOREST};color:#fafaf6;box-sizing:border-box;padding:0 104px;
+  display:flex;flex-direction:column;justify-content:center}
+.word{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:132px;letter-spacing:-.03em;line-height:1}
+.cells{display:flex;gap:14px;margin-top:40px}
+.cell{width:56px;height:84px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-weight:600;font-size:38px;color:#141814}
+.line{font-family:Manrope,sans-serif;font-weight:500;font-size:44px;line-height:1.3;margin-top:48px;color:rgba(250,250,246,.82)}
+</style></head><body>
+<div class="card"><div class="word">discore</div>
+<div class="cells"><span class="cell" style="background:#fafaf6">3</span><span class="cell" style="background:#c9e36a">2</span><span class="cell" style="background:#ffe566">1</span></div>
+<div class="line">Disc golf scorecard for you<br>and your friends.</div></div></body></html>`;
+}
+
 async function main() {
   const browser = await chromium.launch();
   const page = await browser.newPage({ deviceScaleFactor: 1 });
@@ -58,6 +78,11 @@ async function main() {
     await page.locator(".icon").screenshot({ path: file.path, omitBackground: true });
     console.log(`wrote ${file.path} (${file.size}px)`);
   }
+  await page.setViewportSize({ width: 1200, height: 630 });
+  await page.setContent(shareImageHtml(), { waitUntil: "networkidle" });
+  await page.evaluate(() => document.fonts.ready);
+  await page.locator(".card").screenshot({ path: "app/opengraph-image.png" });
+  console.log("wrote app/opengraph-image.png (1200 × 630)");
   await browser.close();
 }
 
