@@ -56,7 +56,7 @@ export default function RootLayout({
         <Toaster
           position="bottom-center"
           theme="light"
-          offset="calc(4.5rem + env(safe-area-inset-bottom, 0px))"
+          offset="calc(3.5rem + env(safe-area-inset-bottom, 0px))"
         />
       </body>
     </html>

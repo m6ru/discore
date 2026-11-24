@@ -88,7 +88,7 @@ Four **equal-weight** tabs. Play's icon is **subtly** larger (`emphasized`, `siz
 
 **App icon and splash** (owner, 2026-11-23): icon = capital D (Space Grotesk 700, light) over three small cells par · birdie · ace, on forest; phones round the corners, the favicon has its own. Splash = the lower-case wordmark with three scorecard cells (the scorecard's 20 × 30 cell at 1.5×, strokes 3 · 2 · 1) popping in, on forest, first open per device only, about 1.8 s (under a second felt abrupt). Regenerate the PNGs with `npx tsx scripts/generate-icons.ts`.
 
-**Forest tab bar** (owner, 2026-11-12, for more colour): `bg-primary`, tabs in light text at 70 %, the active tab full light + bold. No marker under it (owner, 2026-11-23: clutter).
+**Forest tab bar** (owner, 2026-11-12, for more colour): `bg-primary`, tabs in light text at 70 %, the active tab full light + bold. No marker under it (owner, 2026-11-23: clutter). The bar is 56 px plus the iPhone home-line inset (was 72 px; owner, 2026-11-24: too much spacing).
 
 Each tab route has a `loading.tsx` skeleton for an instant shell while the server render streams ([BLUEPRINT §2b](BLUEPRINT.md)).
 

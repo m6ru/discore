@@ -11,7 +11,8 @@ _Overwritten at the end of every session — describes now, not history (history
 - **Updated:** 2026-11-23 (PC session).
 - **State:** everything merged, nothing in flight, no open security alerts. Every screen is in the C2 design (`DESIGN-PATTERNS.md`). Live: scoring with instant save, stats (BLUEPRINT §8a), course suggestions with admin review and a Telegram ping, signed-out trial claimed on sign-up, landing page, app icon and first-open splash.
 - **Latest (2026-11-23):** invite re-send while a draft (#65), error pages (#67), trial Players as two rows that open small forms (#75–#77), first names on the scoring deck (#70), app icon + splash (#73, #74), dependency updates (#71, #72, #78). Details are in the PRs.
-- **Next:** pick with the owner. Candidates: the unfinished-hole option (par + 4, decided, not built), per-round par override, advanced scoring (Roadmap 5), README with screenshots. Owner's own: the security review on the PC; a margins/paddings pass screen by screen when they want it.
+- **In flight:** tab bar 72 → 56 px; the light ground now fills the screen height, so short pages (Home) no longer show forest above the tab bar in the iPhone home-screen app (owner checks on the phone). Profile: Sign out partly under the bar is left as it is (owner: only the admin sees the extra Course suggestions box).
+- **Next:** pick with the owner. Candidates: per-round par override, advanced scoring (Roadmap 5), README with screenshots. Owner's own: the security review on the PC; a margins/paddings pass screen by screen when they want it.
 - **Phones:** a home-screen icon added before #73 keeps the old icon and status bar until removed and added again. Sign-in persistence is read from code, not tested: sessions last until sign-out (cookie 400 days, token refreshes hourly); iPhone Safari may drop it after ~7 days without a visit; a home-screen icon has its own storage (sign in once more there; a Safari trial doesn't carry over).
 - **Machines:** PC has Docker and the Vercel CLI (linked). MacBook (2026-10-24): Node 24 + gh, `.env.local` and `supabase link` point at production; npm 11 skipped postinstall scripts for `esbuild`, `unrs-resolver` (works anyway).
 
@@ -33,7 +34,7 @@ Not planned: exports or integration with other platforms; competitions/ratings (
 ### Smaller debts
 
 - Unsynced scores only send while the round page is open (resumes on return); a fully offline app (service worker) is not built.
-- Later, cheap: per-round par override (tee sign differs from course data); an "unfinished hole" option (par + 4).
+- Later, cheap: per-round par override (tee sign differs from course data). The "unfinished hole" option (par + 4) waits until players really need it (owner, 2026-11-24: maybe never).
 - TypeScript 7 / other majors: Dependabot ignores them until typescript-eslint supports TS 7.
 
 ---
@@ -66,7 +67,7 @@ The stats plan (what each screen shows and why) is BLUEPRINT §8a. Still true fr
 
 ### Locked product decisions (other)
 
-- "OB" stays one yes/no per hole. An unfinished hole will count as par + 4 (owner, 2026-10-21).
+- "OB" stays one yes/no per hole. If an unfinished-hole option is ever built, it counts as par + 4 (owner, 2026-10-21; not planned, 2026-11-24).
 - Course suggestions: signed-in only; the owner reviews them by hand (no AI pre-reading); the sender is thanked in the app, not by email.
 - Casual rounds never rank players: play against yourself (DESIGN-PATTERNS → Redesign brief).
 

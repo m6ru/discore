@@ -14,7 +14,15 @@ function AppChromeInner({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className={cn("flex min-h-full flex-1 flex-col bg-background", tabBarPaddingClass(showTabs))}>
+      {/* Full screen height, not min-h-full: in the iPhone home-screen app a
+          percentage height comes out one status bar short, and the forest body
+          showed above the tab bar on short pages like Home. */}
+      <div
+        className={cn(
+          "flex min-h-[calc(100dvh-env(safe-area-inset-top,0px))] flex-1 flex-col bg-background",
+          tabBarPaddingClass(showTabs)
+        )}
+      >
         {children}
       </div>
       <BottomTabBar show={showTabs} />
