@@ -61,7 +61,7 @@ html,body{margin:0}
 </style></head><body>
 <div class="card"><div class="word">discbook</div>
 <div class="cells"><span class="cell" style="background:#fafaf6">3</span><span class="cell" style="background:#c9e36a">2</span><span class="cell" style="background:#ffe566">1</span></div>
-<div class="line">Disc golf scorecard for you<br>and your friends.</div></div></body></html>`;
+<div class="line">The disc golf scorebook.</div></div></body></html>`;
 }
 
 async function main() {

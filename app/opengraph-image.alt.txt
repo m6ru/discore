@@ -1,1 +1,1 @@
-discbook: disc golf scorecard for you and your friends
+discbook: the disc golf scorebook

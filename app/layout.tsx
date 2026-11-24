@@ -21,15 +21,17 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin", "latin-ext"],
 });
 
+/** The name plus its line (owner, 2026-11-24): "-book" reads as scorebook. */
+const TITLE = "discbook – the disc golf scorebook";
 const DESCRIPTION =
-  "Disc golf scorecard for you and your friends. 180+ courses in Estonia, live scores and your stats. No account needed to start.";
+  "The disc golf scorebook for you and your friends. 180+ courses in Estonia, live scores and your stats. No account needed to start.";
 
 // Link previews in chats use these plus app/opengraph-image.png (scripts/generate-icons.ts).
 // On Vercel the image URL's origin comes from the deployment, so no metadataBase.
 export const metadata: Metadata = {
-  title: "discbook",
+  title: TITLE,
   description: DESCRIPTION,
-  openGraph: { title: "discbook", description: DESCRIPTION, siteName: "discbook", type: "website" },
+  openGraph: { title: TITLE, description: DESCRIPTION, siteName: "discbook", type: "website" },
   twitter: { card: "summary_large_image" },
   manifest: "/manifest.webmanifest",
   // Home-screen app on iPhone: the page draws under the status bar (white clock);

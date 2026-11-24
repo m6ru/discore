@@ -126,7 +126,7 @@ export function LandingPage() {
               Score your round. Sign up later.
             </h1>
             <p className="text-[17px] leading-normal text-primary-foreground/80">
-              A disc golf scorecard for you and your friends, 180+ courses.
+              The disc golf scorebook for you and your friends, 180+ courses.
             </p>
           </div>
         </div>
