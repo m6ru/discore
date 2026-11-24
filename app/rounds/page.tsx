@@ -9,7 +9,6 @@ import { createServerClient } from "@/lib/supabase/server";
 import { ChevronRight } from "lucide-react";
 import { homeRowMetaClassName, pageTitleClassName } from "@/lib/ui/page-chrome";
 import { cn } from "@/lib/utils";
-import { HistoryViewedMarker } from "./history-viewed-marker";
 
 type HistoryRound = {
   id: string;
@@ -45,7 +44,6 @@ export default async function RoundsHistoryPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 px-4 pt-2 pb-4 sm:p-8">
-      <HistoryViewedMarker />
       <h1 className={pageTitleClassName}>History</h1>
 
       {loadError ? (
