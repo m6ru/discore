@@ -1,5 +1,5 @@
 /**
- * Renders the app icon (the discore wordmark on forest; a lower-case d for the
+ * Renders the app icon (the discbook wordmark on forest; a lower-case d for the
  * browser tab) to the PNGs browsers and phones ask for, and the share image chat apps show
  * for a link (app/opengraph-image.png). Run after changing the design:
  *
@@ -18,7 +18,7 @@ type IconFile = {
   /** Corner radius as a share of the size; phones round the corners themselves. */
   radius: number;
   /**
-   * "wordmark" on the home screen (owner, 2026-11-24: just discore); the browser
+   * "wordmark" on the home screen (owner, 2026-11-24: just the name); the browser
    * tab is too small for seven letters, so it gets a lower-case d.
    */
   mark: "wordmark" | "d";
@@ -36,9 +36,9 @@ const FILES: IconFile[] = [
 
 function iconHtml({ size, radius, mark, markScale }: IconFile): string {
   const u = (size / 120) * markScale; // the canvas design is drawn at 120 px
-  // The wordmark fills about 86 % of the width; the d is centred by its x-height.
-  const text = mark === "wordmark" ? "discore" : "d";
-  const fontSize = mark === "wordmark" ? 31 * u : 92 * u;
+  // The wordmark fills about 80 % of the width; the d is centred by its x-height.
+  const text = mark === "wordmark" ? "discbook" : "d";
+  const fontSize = mark === "wordmark" ? 25.5 * u : 92 * u;
   return `<!doctype html><html><head>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=block">
 <style>
@@ -65,7 +65,7 @@ html,body{margin:0}
   font-family:'JetBrains Mono',monospace;font-weight:600;font-size:38px;color:#141814}
 .line{font-family:Manrope,sans-serif;font-weight:500;font-size:44px;line-height:1.3;margin-top:48px;color:rgba(250,250,246,.82)}
 </style></head><body>
-<div class="card"><div class="word">discore</div>
+<div class="card"><div class="word">discbook</div>
 <div class="cells"><span class="cell" style="background:#fafaf6">3</span><span class="cell" style="background:#c9e36a">2</span><span class="cell" style="background:#ffe566">1</span></div>
 <div class="line">Disc golf scorecard for you<br>and your friends.</div></div></body></html>`;
 }

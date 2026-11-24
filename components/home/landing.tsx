@@ -109,14 +109,14 @@ async function LandingStart() {
   );
 }
 
-/** Signed-out `/`: what discore is, an example card, and a way to start without an account. */
+/** Signed-out `/`: what discbook is, an example card, and a way to start without an account. */
 export function LandingPage() {
   return (
     <>
       <div className="bg-primary text-primary-foreground">
         <div className="mx-auto w-full max-w-3xl px-4 pb-[92px] sm:px-8">
           <header className="flex min-h-11 items-center justify-between gap-3">
-            <p className="font-display text-xl font-bold tracking-tight">discore</p>
+            <p className="font-display text-xl font-bold tracking-tight">discbook</p>
             <Link href="/auth" className="flex min-h-11 items-center text-[15px] font-bold">
               Sign in
             </Link>

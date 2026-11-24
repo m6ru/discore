@@ -1,8 +1,8 @@
 @AGENTS.md
 
-# Discore — agent guide
+# discbook — agent guide
 
-Disc golf scoring PWA for Estonia (Next.js 16 + Supabase). One-person project, worked on from two machines (Windows PC and MacBook). **Git is the only shared memory between sessions and machines** — local agent memory does not sync, so anything a future session needs goes into this repo.
+Disc golf scoring PWA for Estonia (Next.js 16 + Supabase). Players see the name **discbook** (renamed from discore on 2026-11-24); the repo, Vercel/Supabase projects and `localStorage` keys keep `discore`. One-person project, worked on from two machines (Windows PC and MacBook). **Git is the only shared memory between sessions and machines** — local agent memory does not sync, so anything a future session needs goes into this repo.
 
 ## Session protocol
 

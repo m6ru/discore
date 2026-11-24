@@ -16,11 +16,11 @@ export default function GlobalError({ retry }: { error: unknown; retry: () => vo
           fontFamily: "system-ui, sans-serif",
         }}
       >
-        <title>Discore</title>
+        <title>discbook</title>
         <main style={{ maxWidth: 480, margin: "0 auto", padding: "48px 16px" }}>
           <h1 style={{ fontSize: 28, margin: "0 0 8px" }}>Something went wrong</h1>
           <p style={{ fontSize: 15, color: "#5b615b", margin: "0 0 24px" }}>
-            Discore didn&apos;t load. Try again in a moment.
+            discbook didn&apos;t load. Try again in a moment.
           </p>
           <button
             type="button"

@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "discore",
-    short_name: "discore",
+    name: "discbook",
+    short_name: "discbook",
     start_url: "/",
     display: "standalone",
     background_color: "#1d3a2c",

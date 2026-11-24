@@ -15,7 +15,7 @@ export function Splash() {
       <script dangerouslySetInnerHTML={{ __html: rememberScript }} />
       <div aria-hidden className="splash">
         <span className="font-display text-[60px] font-bold leading-none tracking-[-0.03em]">
-          discore
+          discbook
         </span>
         {/* Scorecard cells, scaled up: par 3, birdie 2, ace 1. */}
         <span className="mt-6 flex gap-1.5 font-mono text-xl font-semibold text-foreground">

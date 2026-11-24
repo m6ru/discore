@@ -10,7 +10,7 @@ export type GetStartedItem = {
 export const GET_STARTED_ITEMS: GetStartedItem[] = [
   {
     id: "add-to-home-screen",
-    label: "Add discore to your home screen",
+    label: "Add discbook to your home screen",
   },
   {
     id: "complete-profile",
@@ -20,7 +20,7 @@ export const GET_STARTED_ITEMS: GetStartedItem[] = [
 ];
 
 export function getRemainingGetStartedItems(input: {
-  /** A phone that hasn't opened discore from the home screen. */
+  /** A phone that hasn't opened discbook from the home screen. */
   canAddToHomeScreen: boolean;
   profileOnboardingComplete: boolean;
 }): GetStartedItem[] {

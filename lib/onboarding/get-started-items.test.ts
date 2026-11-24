@@ -11,7 +11,7 @@ describe("getRemainingGetStartedItems", () => {
     ).toEqual(["add-to-home-screen", "complete-profile"]);
   });
 
-  it("drops the home-screen row once discore opens from the home screen, or on a computer", () => {
+  it("drops the home-screen row once discbook opens from the home screen, or on a computer", () => {
     expect(
       getRemainingGetStartedItems({
         canAddToHomeScreen: false,

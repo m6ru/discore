@@ -16,7 +16,7 @@ export function homeScreenPlatform(userAgent: string, maxTouchPoints: number): H
   return "desktop";
 }
 
-/** True when discore was opened from the home-screen icon. */
+/** True when discbook was opened from the home-screen icon. */
 export function isOpenedFromHomeScreen(): boolean {
   if (typeof window === "undefined") {
     return false;
