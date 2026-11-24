@@ -12,29 +12,30 @@ Who does what: **Owner** = clicks in a dashboard or pays. **Claude** = code in a
 
 ## 1. Domain — Owner
 
-- [ ] Buy **`discore.ee`** (looked free on 2026-11-24). `.ee` is sold by Estonian registrars (e.g. zone.ee, veebimajutus.ee); about €10–20 a year. Compare the **renewal** price, not just the first year. Pick one with a simple DNS page.
+- [ ] Buy **`discbook.ee`** (the app is renamed from discore: an old disc golf scorecard app in Estonia already used that name; owner chose discbook on 2026-11-24, `.ee` and `.app` looked free). First search the name in the Estonian Patent Office trademark database (Patendiamet → Kaubamärgid), 5 minutes. `.ee` is sold by Estonian registrars (e.g. zone.ee, veebimajutus.ee); about €10–20 a year. Compare the **renewal** price, not just the first year. Pick one with a simple DNS page.
 - [ ] Turn on auto-renew so the domain can't lapse.
 
 ## 2. Point the domain at the app — Together (~30 min)
 
-- [ ] Vercel → project → **Settings → Domains** → add `discore.ee` and `www.discore.ee`. Vercel shows the exact DNS records; add them at the registrar. HTTPS is automatic.
-- [ ] Make `discore.ee` the main address and let `www` redirect to it. The old `discore-eta.vercel.app` keeps working.
+- [ ] Vercel → project → **Settings → Domains** → add `discbook.ee` and `www.discbook.ee`. Vercel shows the exact DNS records; add them at the registrar. HTTPS is automatic.
+- [ ] Make `discbook.ee` the main address and let `www` redirect to it. The old `discore-eta.vercel.app` keeps working.
 - [ ] Supabase → **Authentication → URL Configuration**:
-  - **Site URL** → `https://discore.ee` (email links are built from it).
-  - **Redirect URLs** → add `https://discore.ee/**`; keep the existing entries (previews, localhost).
-- [ ] Open `https://discore.ee` on the phone: sign in, start and discard a trial.
-- [ ] Send yourself a link to `https://discore.ee` in a chat: the preview card shows the share image and the description (chats cache previews; a link shared before can keep the old one).
-- [ ] Home-screen icon: remove it and add it again from `discore.ee` (it is tied to the old address; signing in once more is expected).
+  - **Site URL** → `https://discbook.ee` (email links are built from it).
+  - **Redirect URLs** → add `https://discbook.ee/**`; keep the existing entries (previews, localhost).
+- [ ] Open `https://discbook.ee` on the phone: sign in, start and discard a trial.
+- [ ] Send yourself a link to `https://discbook.ee` in a chat: the preview card shows the share image and the description (chats cache previews; a link shared before can keep the old one).
+- [ ] Telegram ping: the link in the suggestion message is written into the database function (`discore-eta.vercel.app/admin/suggestions`). It keeps working; a small migration (Claude) points it at `discbook.ee`.
+- [ ] Home-screen icon: remove it and add it again from `discbook.ee` (it is tied to the old address; signing in once more is expected).
 
 ## 3. Email service (Resend) — Together (~30 min + DNS wait)
 
 Resend free tier: 100 emails a day, 3,000 a month — plenty for sign-ups and password resets.
 
 - [ ] Create an account at resend.com.
-- [ ] **Domains → Add domain** → `discore.ee`, region **EU (Ireland)** (keeps data in the EU).
+- [ ] **Domains → Add domain** → `discbook.ee`, region **EU (Ireland)** (keeps data in the EU).
 - [ ] Copy the DNS records Resend shows (DKIM, SPF, MX on a `send` subdomain) to the registrar's DNS page. Also add a DMARC record if Resend suggests one (`_dmarc`, `v=DMARC1; p=none;`) — it helps emails land in the inbox, not spam.
 - [ ] Wait until Resend says **Verified** (minutes to a few hours).
-- [ ] **API Keys → Create** → name `supabase-smtp`, permission **Sending access**, domain `discore.ee`. Copy it once, straight into the next step.
+- [ ] **API Keys → Create** → name `supabase-smtp`, permission **Sending access**, domain `discbook.ee`. Copy it once, straight into the next step.
 
 ## 4. Custom SMTP in Supabase — Owner, Claude guides
 
@@ -42,8 +43,8 @@ Supabase → **Authentication → Emails → SMTP Settings** → Enable custom S
 
 | Field | Value |
 |---|---|
-| Sender email | `noreply@discore.ee` |
-| Sender name | `discore` |
+| Sender email | `noreply@discbook.ee` |
+| Sender name | `discbook` |
 | Host | `smtp.resend.com` |
 | Port | `465` |
 | Username | `resend` |
@@ -55,8 +56,8 @@ Supabase → **Authentication → Emails → SMTP Settings** → Enable custom S
 
 Supabase → **Authentication → Emails → Templates**:
 
-- [ ] **Confirm signup** — subject `Confirm your discore account`, body = the whole of [`supabase/templates/confirmation.html`](supabase/templates/confirmation.html).
-- [ ] **Reset password** — subject `Reset your discore password`, body = the whole of [`supabase/templates/recovery.html`](supabase/templates/recovery.html).
+- [ ] **Confirm signup** — subject `Confirm your discbook account`, body = the whole of [`supabase/templates/confirmation.html`](supabase/templates/confirmation.html).
+- [ ] **Reset password** — subject `Reset your discbook password`, body = the whole of [`supabase/templates/recovery.html`](supabase/templates/recovery.html).
 
 ## 6. Rate limits — Owner
 
@@ -68,7 +69,7 @@ Supabase → **Authentication → Rate Limits**:
 ## 7. Test as a new player — Owner
 
 - [ ] On the phone, in the **home-screen app**, create an account with an address never used before.
-- [ ] The email comes from **discore <noreply@discore.ee>**, has no Supabase footer, and is not in spam.
+- [ ] The email comes from **discbook <noreply@discbook.ee>**, has no Supabase footer, and is not in spam.
 - [ ] Tap **Confirm email** in the mail app → it opens in a browser and lands on Home, signed in.
 - [ ] Tap the same link again → "This link has expired or was already used…".
 - [ ] Bonus: play a trial first, then sign up and confirm on the **same** phone → the trial is in History.

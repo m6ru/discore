@@ -126,7 +126,7 @@ export function buildAgentPrompt(s: AgentPromptInput): string {
         (s.holeNumber !== null ? ` · Hole ${s.holeNumber}` : "");
 
   const lines = [
-    `Apply this course suggestion from the Discore review page (id ${s.id}).`,
+    `Apply this course suggestion from the discbook review page (id ${s.id}).`,
     `Follow supabase/seeds/README.md ("Adding a layout with an agent"): edit the seed JSON, generate the seed migration, open a PR. Never invent hole data — use only the note and photos; ask me if something is unclear. Load the disc-golf skill first.`,
     "",
     `Type: ${suggestionKindLabel(s.kind)}`,
